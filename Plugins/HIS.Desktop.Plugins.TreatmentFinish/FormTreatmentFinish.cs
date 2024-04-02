@@ -278,6 +278,8 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
             }
         }
 
+        // nam them comment
+
         private void EnableControlByTreatment()
         {
             try
