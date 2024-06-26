@@ -480,6 +480,10 @@
             // 
             this.barManager1.Bars.AddRange(new DevExpress.XtraBars.Bar[] {
             this.bar1});
+            this.barManager1.DockControls.Add(this.barDockControlTop);
+            this.barManager1.DockControls.Add(this.barDockControlBottom);
+            this.barManager1.DockControls.Add(this.barDockControlLeft);
+            this.barManager1.DockControls.Add(this.barDockControlRight);
             this.barManager1.Form = this;
             this.barManager1.Items.AddRange(new DevExpress.XtraBars.BarItem[] {
             this.bbtnSave,
@@ -536,8 +540,8 @@
             // 
             this.barDockControlTop.CausesValidation = false;
             this.barDockControlTop.Dock = System.Windows.Forms.DockStyle.Top;
-            this.barDockControlTop.Location = new System.Drawing.Point(0, 38);
-            this.barDockControlTop.Size = new System.Drawing.Size(1712, 0);
+            this.barDockControlTop.Location = new System.Drawing.Point(0, 0);
+            this.barDockControlTop.Size = new System.Drawing.Size(1712, 38);
             // 
             // barDockControlBottom
             // 
@@ -1656,8 +1660,6 @@
             this.gridColumnRequestMedicineAmount.AppearanceHeader.Options.UseTextOptions = true;
             this.gridColumnRequestMedicineAmount.AppearanceHeader.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.gridColumnRequestMedicineAmount.Caption = "Số lượng";
-            this.gridColumnRequestMedicineAmount.DisplayFormat.FormatString = "#,##0.00";
-            this.gridColumnRequestMedicineAmount.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Custom;
             this.gridColumnRequestMedicineAmount.FieldName = "AMOUNT";
             this.gridColumnRequestMedicineAmount.Name = "gridColumnRequestMedicineAmount";
             this.gridColumnRequestMedicineAmount.OptionsColumn.AllowEdit = false;
@@ -2032,8 +2034,6 @@
             this.gridColumnRequestMaterialAmount.AppearanceHeader.Options.UseTextOptions = true;
             this.gridColumnRequestMaterialAmount.AppearanceHeader.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.gridColumnRequestMaterialAmount.Caption = "Số lượng";
-            this.gridColumnRequestMaterialAmount.DisplayFormat.FormatString = "#,##0.00";
-            this.gridColumnRequestMaterialAmount.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Custom;
             this.gridColumnRequestMaterialAmount.FieldName = "AMOUNT";
             this.gridColumnRequestMaterialAmount.Name = "gridColumnRequestMaterialAmount";
             this.gridColumnRequestMaterialAmount.OptionsColumn.AllowEdit = false;
@@ -2410,8 +2410,6 @@
             this.gridColumnApprovalMedicineAmount.AppearanceHeader.Options.UseTextOptions = true;
             this.gridColumnApprovalMedicineAmount.AppearanceHeader.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.gridColumnApprovalMedicineAmount.Caption = "Số lượng";
-            this.gridColumnApprovalMedicineAmount.DisplayFormat.FormatString = "#,##0.00";
-            this.gridColumnApprovalMedicineAmount.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Custom;
             this.gridColumnApprovalMedicineAmount.FieldName = "AMOUNT";
             this.gridColumnApprovalMedicineAmount.Name = "gridColumnApprovalMedicineAmount";
             this.gridColumnApprovalMedicineAmount.OptionsColumn.AllowEdit = false;
@@ -2809,8 +2807,6 @@
             this.gridColumnApprovalMaterialAmount.AppearanceHeader.Options.UseTextOptions = true;
             this.gridColumnApprovalMaterialAmount.AppearanceHeader.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.gridColumnApprovalMaterialAmount.Caption = "Số lượng";
-            this.gridColumnApprovalMaterialAmount.DisplayFormat.FormatString = "#,##0.00";
-            this.gridColumnApprovalMaterialAmount.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Custom;
             this.gridColumnApprovalMaterialAmount.FieldName = "AMOUNT";
             this.gridColumnApprovalMaterialAmount.Name = "gridColumnApprovalMaterialAmount";
             this.gridColumnApprovalMaterialAmount.OptionsColumn.AllowEdit = false;
