@@ -44,6 +44,7 @@ namespace HIS.Desktop.Plugins.AssignService.Config
         private const string CONFIG_KEY__SERVICE_REQ__IS_SERE_SERV_MIN_DURATION_ALERT = "HIS.Desktop.IsSereServMinDurationAlert";
         private const string CONFIG_KEY__IsUsingWarningHeinFee = "His.Desktop.IsUsingWarningHeinFee";
         private const string CONFIG_KEY__IsNotAutoLoadServiceOpenAssignService = "HIS.Desktop.Plugins.AssignService.IsNotAutoLoadAssignService";
+        private const string CONFIG_KEY__IsNotDisplayBedHein = "HIS.Desktop.Plugins.AssignService.IsNotDisplayBedHein";
         private const string CONFIG_KEY__IsloadIcdFromExamServiceExecute = "HIS.Desktop.Plugins.IsloadIcdFromExamServiceExecute";
         private const string CONFIG_KEY__IsAllowingChooseServiceWhichInAttachments = "HIS.Desktop.Plugins.AssignService.IsAllowingChooseServiceWhichInAttachments";
         private const string CONFIG_KEY__ReqUserMustHaveDiploma = "MOS.HIS_SERVICE_REQ.REQ_USER_MUST_HAVE_DIPLOMA";
@@ -90,6 +91,7 @@ namespace HIS.Desktop.Plugins.AssignService.Config
         internal static bool IsAllowingChooseServiceWhichInAttachments;
         internal static bool IsAutoCheckPriorityForPrioritizedExam;
         internal static bool IsNotAutoLoadServiceOpenAssignService;
+        internal static bool IsNotDisplayBedHein;
         internal static string IsUsingWarningHeinFee;
         public static bool IsSereServMinDurationAlert { get; set; }
         public static decimal WarningOverCeiling__Exam { get; set; }
@@ -205,6 +207,7 @@ namespace HIS.Desktop.Plugins.AssignService.Config
                 IsloadIcdFromExamServiceExecute = GetValue(CONFIG_KEY__IsloadIcdFromExamServiceExecute) == GlobalVariables.CommonStringTrue;
                 IsAutoCheckPriorityForPrioritizedExam = GetValue(CONFIG_KEY__IsAutoCheckPriorityForPrioritizedExam) == GlobalVariables.CommonStringTrue;
                 IsNotAutoLoadServiceOpenAssignService = GetValue(CONFIG_KEY__IsNotAutoLoadServiceOpenAssignService) == GlobalVariables.CommonStringTrue;
+                IsNotDisplayBedHein = GetValue(CONFIG_KEY__IsNotDisplayBedHein) == GlobalVariables.CommonStringTrue;
                 IsUsingWarningHeinFee = GetValue(CONFIG_KEY__IsUsingWarningHeinFee);
                 IsSereServMinDurationAlert = (GetValue(CONFIG_KEY__SERVICE_REQ__IS_SERE_SERV_MIN_DURATION_ALERT) == GlobalVariables.CommonStringTrue);
                 ShowRequestUser = GetValue(CONFIG_KEY__ShowRequestUser);
