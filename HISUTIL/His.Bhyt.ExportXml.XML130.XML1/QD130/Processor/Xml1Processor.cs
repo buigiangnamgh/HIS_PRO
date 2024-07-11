@@ -122,6 +122,10 @@ namespace His.Bhyt.ExportXml.XML130.XML1.Processor
                             {
                                 MaDTKCB = "1.2";
                             }
+                            else if (PatientTypeAlter.HEIN_CARD_NUMBER.StartsWith("HN") || PatientTypeAlter.LIVE_AREA_CODE == MOS.LibraryHein.Bhyt.HeinLiveArea.HeinLiveAreaCode.K1 || PatientTypeAlter.LIVE_AREA_CODE == MOS.LibraryHein.Bhyt.HeinLiveArea.HeinLiveAreaCode.K2 || PatientTypeAlter.LIVE_AREA_CODE == MOS.LibraryHein.Bhyt.HeinLiveArea.HeinLiveAreaCode.K3)
+                            {
+                                MaDTKCB = "3.6";
+                            }
                             
                         }
                         else if (PatientTypeAlter.RIGHT_ROUTE_CODE == MOS.LibraryHein.Bhyt.HeinRightRoute.HeinRightRouteCode.FALSE)
