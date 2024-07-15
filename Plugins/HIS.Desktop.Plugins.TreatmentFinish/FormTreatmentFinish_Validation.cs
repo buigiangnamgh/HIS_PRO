@@ -29,7 +29,7 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
 
             ValidationFinishType();
             ValidationResult();
-            ValidationMaxLength(txtMethod, 3000);
+            ValidationMaxLength(txtMethod, 1500);
             ValidationMaxLength(txtAdvised, 500);
 
             if (ConfigKey.PathologicalProcessOption == "1" && currentHisTreatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNGOAITRU)
