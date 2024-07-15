@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 
 namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
@@ -116,6 +117,37 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             }
             return result;
         }
+        /// <summary>
+        ///  kiem tra max length cua huong dan su dung
+        /// </summary>
+        /// <param name="mediMaTy">Doi tuong</param>
+        /// <param name="maxLenth">do lon</param>
+        /// <returns></returns>
+        private bool CheckMaxlenghTutorial(string tutorialText, string mediMaty, decimal? maxLenth)
+        {
+            bool result = true;
+            try
+            {
+                if (!string.IsNullOrEmpty(tutorialText) && tutorialText.Length > 0)
+                {
+                    Encoding utf8 = Encoding.UTF8;
+                    if (utf8.GetByteCount(tutorialText) > maxLenth)
+                    {
+                        result = false;
+                        MessageBox.Show(String.Format(ResourceMessage.ThuocVatTuChuaNhapQuaKyTuChoPhep, mediMaty), HIS.Desktop.LibraryMessage.MessageUtil.GetMessage(LibraryMessage.Message.Enum.TieuDeCuaSoThongBaoLaThongBao));
+                    }
+                }
+                else
+                    result = true;
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+            return result;
+        }
+
         private bool CheckMaxInPrescriptionForMemoReason(MediMatyTypeADO mediMaTy, decimal? _amount)
         {
             bool result = true;
@@ -198,7 +230,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                     if (mediMatyTypeADOs == null)
                         mediMatyTypeADOs = new List<MediMatyTypeADO>();
 
-                    amount = amountPrescribed + mediMatyTypeADOs.Where(o => o.ID == mediMaTy.ID && o.PrimaryKey != mediMaTy.PrimaryKey).Sum(o => o.UseDays != 0 ? o.AMOUNT/o.UseDays : o.AMOUNT)
+                    amount = amountPrescribed + mediMatyTypeADOs.Where(o => o.ID == mediMaTy.ID && o.PrimaryKey != mediMaTy.PrimaryKey).Sum(o => o.UseDays != 0 ? o.AMOUNT / o.UseDays : o.AMOUNT)
                         + _amount;
 
                     if (amount > mediMaTy.ALERT_MAX_IN_DAY.Value)
@@ -294,7 +326,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                                 decimal amountPrescribed = 0;
                                 mediMaty = item.First();
                                 amountPrescribed = GetAmountPrescriptionInDay(mediMaty);
-                                var amount = amountPrescribed + item.Sum(o => o.AMOUNT/o.UseDays);
+                                var amount = amountPrescribed + item.Sum(o => o.AMOUNT / o.UseDays);
                                 if (amount > mediMaty.ALERT_MAX_IN_DAY.Value)
                                 {
                                     if (mediMaty.SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__THUOC && mediMaty.IS_BLOCK_MAX_IN_DAY == 1)

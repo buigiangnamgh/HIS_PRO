@@ -2527,7 +2527,7 @@ o.SERVICE_ID == medi.SERVICE_ID && o.TDL_INTRUCTION_TIME.ToString().Substring(0,
                 valid = valid && (selectedOpionGroup == 2 ? CheckAmoutMediMaty(currentMedicineTypeADOForEdit) : true);
 
                 valid = valid && (selectedOpionGroup == 1 ? CheckMedicineGroupWarning() : true);
-
+                valid = valid && (selectedOpionGroup != 3 ? CheckMaxlenghTutorial(txtTutorial.Text, currentMedicineTypeADOForEdit.MEDICINE_TYPE_NAME, 255) : true);
                 Inventec.Common.Logging.LogSystem.Debug("btnAdd_TabMedicine_Click.8____valid=" + valid);
                 if (!valid)
                 {

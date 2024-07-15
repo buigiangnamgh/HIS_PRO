@@ -184,7 +184,7 @@
     <value>Trùng nhóm dược tính: 
 	{0}</value>
   </data>
-	<data name="CacThuocCoCungMaGroupATC_BanCoMuonTiepTuc" xml:space="preserve">
+  <data name="CacThuocCoCungMaGroupATC_BanCoMuonTiepTuc" xml:space="preserve">
     <value>Trùng nhóm dược lý: 
 	{0}</value>
   </data>
@@ -646,5 +646,8 @@
   </data>
   <data name="TrongTruongHopCoVuiLongNhapLyDo" xml:space="preserve">
     <value>Trong trường hợp chọn “Có”, vui lòng nhập lý do.”</value>
+  </data>
+  <data name="ThuocVatTuChuaNhapQuaKyTuChoPhep" xml:space="preserve">
+    <value>Thuốc/Vật tư {0} nhập quá 255 ký tự cho phép</value>
   </data>
 </root>
