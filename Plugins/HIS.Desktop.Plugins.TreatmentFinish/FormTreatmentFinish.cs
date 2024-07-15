@@ -2009,6 +2009,24 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
         }
         #endregion
 
+
+        //Chi dinh can lam sang
+        public  List<long> SUBCLINICAL_TYPE_IDs = new List<long>(){
+                IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__CDHA,
+                IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__GPBL,
+                IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__NS,
+                IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__SA,
+                IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__TDCN,
+                IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__XN,
+            };
+
+        //Chi dinh lam sang
+        public  List<long> CLINICAL_TYPE_IDs = new List<long>(){
+                IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__KH,
+                IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__PHCN,
+                IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__PT,
+                IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__TT,
+            };
         #region click
         private void btnPatientProgram_Click(object sender, EventArgs e)
         {
@@ -2038,7 +2056,7 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
                     List<HIS_SERVICE_REQ> serviceReqs = new BackendAdapter(new CommonParam()).Get<List<HIS_SERVICE_REQ>>("api/HisServiceReq/Get", ApiConsumers.MosConsumer, srFilter, null);
                     if (serviceReqs != null && serviceReqs.Count > 0)
                     {
-                        serviceReqs = serviceReqs.Where(o => o.SERVICE_REQ_STT_ID != IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_STT.ID__HT && o.IS_NOT_REQUIRED_COMPLETE != 1).ToList();
+                        serviceReqs = serviceReqs.Where(o => o.SERVICE_REQ_STT_ID != IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_STT.ID__HT && o.IS_NOT_REQUIRED_COMPLETE != 1 && (this.CLINICAL_TYPE_IDs.Contains(o.SERVICE_REQ_TYPE_ID) || this.SUBCLINICAL_TYPE_IDs.Contains(o.SERVICE_REQ_TYPE_ID))).ToList();
                         if (serviceReqs != null && serviceReqs.Count > 0)
                         {
                             CommonParam param = new CommonParam();
