@@ -181,7 +181,8 @@ namespace His.Bhyt.ExportXml.XML130.XML1.Processor
                 }
                 xml1.MA_KHOA = data.vTreatment.END_ROOM_BHYT_CODE ?? data.vTreatment.EXIT_BHYT_CODE ?? data.vTreatment.END_DEPARTMENT_BHYT_CODE ?? "";
                 xml1.MA_DOITUONG_KCB = MaDTKCB;
-                xml1.LY_DO_VV = this.ConvertStringToXmlDocument(data.vTreatment.HOSPITALIZATION_REASON ?? "");
+                var sss = data.vSereServ.FirstOrDefault(o=>!string.IsNullOrWhiteSpace(o.HOSPITALIZATION_REASON))??new V_HIS_SERE_SERV_2();
+                xml1.LY_DO_VV = this.ConvertStringToXmlDocument(data.vTreatment.HOSPITALIZATION_REASON ?? sss.HOSPITALIZATION_REASON?? "");
                 xml1.LY_DO_VNT = this.ConvertStringToXmlDocument(data.vTreatment.HOSPITALIZE_REASON_NAME ?? "");
                 xml1.MA_LY_DO_VNT = data.vTreatment.HOSPITALIZE_REASON_CODE ?? "";
                 xml1.CHAN_DOAN_VAO = this.ConvertStringToXmlDocument(data.vTreatment.PROVISIONAL_DIAGNOSIS ?? data.vTreatment.ICD_NAME ?? "");
