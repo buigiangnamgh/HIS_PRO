@@ -150,7 +150,12 @@ namespace His.Bhyt.ExportXml.XML130.XML7
                         chanDoanRV += ";";
                     }
                     chanDoanRV += treatment.ICD_TEXT ?? "";
-                    ppDieuTri = !string.IsNullOrWhiteSpace(treatment.TREATMENT_METHOD) ?treatment.TREATMENT_METHOD: ".";
+
+                    ppDieuTri = !string.IsNullOrWhiteSpace(treatment.TREATMENT_METHOD) ? treatment.TREATMENT_METHOD : ".";
+                    if (!string.IsNullOrEmpty(ppDieuTri) && Encoding.UTF8.GetByteCount(ppDieuTri) > 1500)
+                    {
+                        ppDieuTri = SubStringWithSeparate(ppDieuTri, 1500);
+                    }
                     ghiChu = treatment.END_TYPE_EXT_NOTE ?? "";
                     maTTDV = treatment.REPRESENTATIVE_HEIN_CODE ?? "";
                     var bacSi = GetBacSi(treatment.END_HEAD_LOGINNAME, data.Employees);
@@ -218,6 +223,36 @@ namespace His.Bhyt.ExportXml.XML130.XML7
                     result.ngoaiTruTuNgay = ngoaiTruTuNgay;
                     result.ngoaiTruDenNgay = ngoaiTruDenNgay;
                     result.duPhong = DuPhong;
+                }
+            }
+            catch (Exception ex)
+            {
+                result = null;
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+            return result;
+        }
+
+        private string SubStringWithSeparate(string multiCharString, decimal limit)
+        {
+            string result = "";
+            try
+            {
+                Encoding utf8 = Encoding.UTF8;
+                int leng = utf8.GetByteCount(multiCharString);
+                if (leng > limit)
+                {
+                    int index = multiCharString.LastIndexOf(";");
+                    while (utf8.GetByteCount(multiCharString) > limit)
+                    {
+                        index = multiCharString.LastIndexOf(";");
+                        multiCharString = multiCharString.Substring(0, index);
+                        result = multiCharString;
+                    }
+                }
+                else
+                {
+                    result = multiCharString;
                 }
             }
             catch (Exception ex)
