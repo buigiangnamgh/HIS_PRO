@@ -2038,7 +2038,7 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
                     List<HIS_SERVICE_REQ> serviceReqs = new BackendAdapter(new CommonParam()).Get<List<HIS_SERVICE_REQ>>("api/HisServiceReq/Get", ApiConsumers.MosConsumer, srFilter, null);
                     if (serviceReqs != null && serviceReqs.Count > 0)
                     {
-                        serviceReqs = serviceReqs.Where(o => o.SERVICE_REQ_STT_ID != IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_STT.ID__HT && o.IS_NOT_REQUIRED_COMPLETE == 1).ToList();
+                        serviceReqs = serviceReqs.Where(o => o.SERVICE_REQ_STT_ID != IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_STT.ID__HT && o.IS_NOT_REQUIRED_COMPLETE != 1).ToList();
                         if (serviceReqs != null && serviceReqs.Count > 0)
                         {
                             CommonParam param = new CommonParam();
