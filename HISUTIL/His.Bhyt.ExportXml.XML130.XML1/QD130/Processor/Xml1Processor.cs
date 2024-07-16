@@ -48,14 +48,14 @@ namespace His.Bhyt.ExportXml.XML130.XML1.Processor
                 {
                     xml1.MA_NGHE_NGHIEP = "00000";
                 }
-                xml1.DIA_CHI = this.ConvertStringToXmlDocument(data.vTreatment.TDL_PATIENT_ADDRESS ?? "");
+                xml1.DIA_CHI = this.ConvertStringToXmlDocument(PatientTypeAlter.ADDRESS ?? "");
 
                 //cap nhat thx
                 if (data.vTreatment != null && His.Bhyt.ExportXml.XML130.XML1.ADO.THX_ADO.Get_THX().FirstOrDefault(o => o.MA_PHUONG_XA == (data.vTreatment.TDL_PATIENT_COMMUNE_CODE ?? "")
                     && o.MA_QUAN_HUYEN == (data.vTreatment.TDL_PATIENT_DISTRICT_CODE ?? "")
                     && o.MA_THANH_PHO == (data.vTreatment.TDL_PATIENT_PROVINCE_CODE ?? "")) == null)
                 {
-                    UpdateTHX(data.vTreatment, His.Bhyt.ExportXml.XML130.XML1.ADO.THX_ADO.Get_THX());
+                    UpdateTHX(data.vTreatment, His.Bhyt.ExportXml.XML130.XML1.ADO.THX_ADO.Get_THX(), PatientTypeAlter.ADDRESS);
                 }
                 xml1.MATINH_CU_TRU = data.vTreatment.TDL_PATIENT_PROVINCE_CODE ?? "";
                 xml1.MAHUYEN_CU_TRU = data.vTreatment.TDL_PATIENT_DISTRICT_CODE ?? "";
@@ -455,14 +455,14 @@ namespace His.Bhyt.ExportXml.XML130.XML1.Processor
             return result;
         }
         //., Thị trấn Anh Sơn, Huyện Anh Sơn, Nghệ An
-        private void UpdateTHX(V_HIS_TREATMENT_12 treatment, List<THX_ADO> listAdoThx)
+        private void UpdateTHX(V_HIS_TREATMENT_12 treatment, List<THX_ADO> listAdoThx, string DiaChiThe)
         {
             try
             {
                 string maTinh = "";
                 string maHuyen = "";
                 string maXa = "";
-                List<string> array = treatment.TDL_PATIENT_ADDRESS.ToString().Split(',').ToList();
+                List<string> array = DiaChiThe.ToString().Split(',').ToList();
                 foreach (THX_ADO drHC in listAdoThx)
                 {
                     foreach (string t in array)
@@ -478,7 +478,7 @@ namespace His.Bhyt.ExportXml.XML130.XML1.Processor
                                     maHuyen = drHC.MA_QUAN_HUYEN.ToString();
                                     foreach (string x in array.Where(o => o != t && o != h).ToList())
                                     {
-                                        if (drHC.TEN_PHUONG_XA.ToUpper().Trim().Contains(x.ToString().ToUpper().Trim()))
+                                        if (Inventec.Common.String.Convert.UnSignVNese2(drHC.TEN_PHUONG_XA.ToUpper().Trim()).Contains(Inventec.Common.String.Convert.UnSignVNese2(x.ToString().ToUpper().Trim())))
                                         {
                                             maXa = drHC.MA_PHUONG_XA.ToString();
                                             goto exit;
