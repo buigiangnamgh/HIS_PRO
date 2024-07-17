@@ -777,7 +777,7 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
                 ado.Width = 440;
                 ado.Height = 24;
                 ado.IsColor = true;
-                ado.DataIcds = listIcd;
+                ado.DataIcds = listIcd.Where(o => o.IS_TRADITIONAL.HasValue && o.IS_TRADITIONAL.Value == 1 ? false : true).ToList();
                 ado.AutoCheckIcd = AutoCheckIcd == "1";
                 ado.hisTreatment = currentHisTreatment_;
                 ucIcd = (UserControl)icdProcessor.Run(ado);
@@ -876,7 +876,8 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
         {
             try
             {
-                subIcdProcessor = new SecondaryIcdProcessor(new CommonParam(), listIcd);
+                // bo cac ma YHCT
+                subIcdProcessor = new SecondaryIcdProcessor(new CommonParam(), listIcd.Where(o => o.IS_TRADITIONAL.HasValue && o.IS_TRADITIONAL.Value == 1 ? false : true).ToList());
                 HIS.UC.SecondaryIcd.ADO.SecondaryIcdInitADO ado = new UC.SecondaryIcd.ADO.SecondaryIcdInitADO();
                 ado.DelegateNextFocus = NextForcusOut;
                 ado.DelegateGetIcdMain = GetIcdMainCode;

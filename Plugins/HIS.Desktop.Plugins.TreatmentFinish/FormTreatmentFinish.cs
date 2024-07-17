@@ -2008,10 +2008,8 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
             }
         }
         #endregion
-
-
         //Chi dinh can lam sang
-        public  List<long> SUBCLINICAL_TYPE_IDs = new List<long>(){
+        public List<long> SUBCLINICAL_TYPE_IDs = new List<long>(){
                 IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__CDHA,
                 IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__GPBL,
                 IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__NS,
@@ -2021,7 +2019,7 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
             };
 
         //Chi dinh lam sang
-        public  List<long> CLINICAL_TYPE_IDs = new List<long>(){
+        public List<long> CLINICAL_TYPE_IDs = new List<long>(){
                 IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__KH,
                 IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__PHCN,
                 IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__PT,
