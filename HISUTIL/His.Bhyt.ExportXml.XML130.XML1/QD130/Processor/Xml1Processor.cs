@@ -48,14 +48,19 @@ namespace His.Bhyt.ExportXml.XML130.XML1.Processor
                 {
                     xml1.MA_NGHE_NGHIEP = "00000";
                 }
-                xml1.DIA_CHI = this.ConvertStringToXmlDocument(PatientTypeAlter.ADDRESS ?? "");
+                xml1.DIA_CHI = this.ConvertStringToXmlDocument(data.vTreatment.TDL_PATIENT_ADDRESS ?? "");
 
                 //cap nhat thx
                 if (data.vTreatment != null && His.Bhyt.ExportXml.XML130.XML1.ADO.THX_ADO.Get_THX().FirstOrDefault(o => o.MA_PHUONG_XA == (data.vTreatment.TDL_PATIENT_COMMUNE_CODE ?? "")
                     && o.MA_QUAN_HUYEN == (data.vTreatment.TDL_PATIENT_DISTRICT_CODE ?? "")
                     && o.MA_THANH_PHO == (data.vTreatment.TDL_PATIENT_PROVINCE_CODE ?? "")) == null)
                 {
-                    UpdateTHX(data.vTreatment, His.Bhyt.ExportXml.XML130.XML1.ADO.THX_ADO.Get_THX(), PatientTypeAlter.ADDRESS);
+                    UpdateTHX(data.vTreatment, His.Bhyt.ExportXml.XML130.XML1.ADO.THX_ADO.Get_THX(), data.vTreatment.TDL_PATIENT_ADDRESS);
+                    if (string.IsNullOrWhiteSpace(data.vTreatment.TDL_PATIENT_COMMUNE_CODE))
+                    {
+                        UpdateTHX(data.vTreatment, His.Bhyt.ExportXml.XML130.XML1.ADO.THX_ADO.Get_THX(), PatientTypeAlter.ADDRESS);
+                        xml1.DIA_CHI = this.ConvertStringToXmlDocument(PatientTypeAlter.ADDRESS ?? "");
+                    }
                 }
                 xml1.MATINH_CU_TRU = data.vTreatment.TDL_PATIENT_PROVINCE_CODE ?? "";
                 xml1.MAHUYEN_CU_TRU = data.vTreatment.TDL_PATIENT_DISTRICT_CODE ?? "";
