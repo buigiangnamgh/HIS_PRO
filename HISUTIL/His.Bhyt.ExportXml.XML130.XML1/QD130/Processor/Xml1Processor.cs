@@ -256,8 +256,12 @@ namespace His.Bhyt.ExportXml.XML130.XML1.Processor
                 xml1.NGAY_VAO_NOI_TRU = data.vTreatment.CLINICAL_IN_TIME != null ? data.vTreatment.CLINICAL_IN_TIME.ToString().Substring(0, 12) : "";
                 xml1.NGAY_RA = data.vTreatment.OUT_TIME != null ? data.vTreatment.OUT_TIME.ToString().Substring(0, 12) : "";
                 xml1.GIAY_CHUYEN_TUYEN = data.vTreatment.TRANSFER_IN_CODE ?? "";
-                
-                xml1.PP_DIEU_TRI = data.vTreatment.TREATMENT_METHOD ?? "";
+                string ppDieuTri = data.vTreatment.TREATMENT_METHOD ?? "";
+                if (!string.IsNullOrEmpty(ppDieuTri) && Encoding.UTF8.GetByteCount(ppDieuTri) > 2000)
+                {
+                    ppDieuTri = SubStringWithSeparate(ppDieuTri, 2000);
+                }
+                xml1.PP_DIEU_TRI = ppDieuTri;
                 xml1.KET_QUA_DTRI = !string.IsNullOrEmpty(data.vTreatment.TREATMENT_RESULT_CODE) ? data.vTreatment.TREATMENT_RESULT_CODE.Reverse().ToList()[0].ToString() : "";
                 xml1.MA_LOAI_RV = "1";
                 switch (data.vTreatment.TREATMENT_END_TYPE_ID)
@@ -456,6 +460,35 @@ namespace His.Bhyt.ExportXml.XML130.XML1.Processor
             {
                 Inventec.Common.Logging.LogSystem.Error(ex);
                 result = new ResultADO(false, ex.Message, null);
+            }
+            return result;
+        }
+        private string SubStringWithSeparate(string multiCharString, decimal limit)
+        {
+            string result = "";
+            try
+            {
+                Encoding utf8 = Encoding.UTF8;
+                int leng = utf8.GetByteCount(multiCharString);
+                if (leng > limit)
+                {
+                    int index = multiCharString.LastIndexOf(";");
+                    while (utf8.GetByteCount(multiCharString) > limit)
+                    {
+                        index = multiCharString.LastIndexOf(";");
+                        multiCharString = multiCharString.Substring(0, index);
+                        result = multiCharString;
+                    }
+                }
+                else
+                {
+                    result = multiCharString;
+                }
+            }
+            catch (Exception ex)
+            {
+                result = null;
+                Inventec.Common.Logging.LogSystem.Error(ex);
             }
             return result;
         }
