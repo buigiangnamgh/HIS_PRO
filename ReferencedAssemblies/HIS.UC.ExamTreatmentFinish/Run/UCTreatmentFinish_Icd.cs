@@ -36,7 +36,7 @@ namespace HIS.UC.ExamTreatmentFinish.Run
         {
             try
             {
-                DataToComboChuanDoanTD(cboIcds, this.currentIcds);
+                DataToComboChuanDoanTD(cboIcds, this.currentIcds.Where(o => o.IS_TRADITIONAL.HasValue && o.IS_TRADITIONAL.Value == 1 ? false : true).ToList());
                 DataToComboChuanDoanTD(cboTraditionalIcds, this.currentTraditionalIcds);
                 chkEditIcd.Enabled = (this.autoCheckIcd != 2);
                 chkTraditionalIcd.Enabled = (this.autoCheckIcd != 2);
