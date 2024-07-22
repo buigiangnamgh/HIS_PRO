@@ -31,6 +31,8 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130.ADO
         internal const string MOS_USER_URI = "Inventec.Token.ClientSystem.MosUser.Base.Uri";
         internal static string QD_130_BYT__CONNECTION_INFO;
         internal static string USER_URI;
+        internal const string ICD_CODE__EXCLUDEs = "HIS.Desktop.Plugins.ExportXmlQD130__IcdCodeExcludes";// danh sach ma icd loai bo khoi xml ngan cach boi dau phay
+        internal static string IcdCodeExcludes = "HIS.Desktop.Plugins.ExportXmlQD130__IcdCodeExcludes";
 
         internal static void LoadConfig()
         {
@@ -38,6 +40,7 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130.ADO
             {
                 QD_130_BYT__CONNECTION_INFO = GetValue(HIS_QD_130_BYT__CONNECTION_INFO);
                 USER_URI = GetValue(MOS_USER_URI);
+                IcdCodeExcludes = GetValue(ICD_CODE__EXCLUDEs);
             }
             catch (Exception ex)
             {
