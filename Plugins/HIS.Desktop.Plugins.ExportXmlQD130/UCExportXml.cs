@@ -41,6 +41,7 @@ using Newtonsoft.Json;
 using DevExpress.XtraBars;
 using System.Resources;
 using Inventec.Desktop.Common.LanguageManager;
+using HIS.Desktop.Plugins.ExportXmlQD130.FormWarning;
 
 namespace HIS.Desktop.Plugins.ExportXmlQD130
 {
@@ -3091,7 +3092,19 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                         {
                             listMessageError.AddRange(paramUpdateXml130.Messages);
                         }
-                        XtraMessageBox.Show(Resources.ResourceMessageLang.XuLyThatBai + String.Join("\r\n", listMessageError), Resources.ResourceMessageLang.ThongBao);
+                        //XtraMessageBox.Show(Resources.ResourceMessageLang.XuLyThatBai + String.Join("\r\n", listMessageError), Resources.ResourceMessageLang.ThongBao);
+                        List<WarningADO> warningADOs = new List<WarningADO>();
+                        WarningADO fals = new WarningADO();
+                        fals.Description = Resources.ResourceMessageLang.XuLyThatBai;
+                        warningADOs.Add(fals);
+                        foreach (var item in listMessageError)
+                        {
+                            WarningADO warn = new WarningADO();
+                            warn.Description = item;
+                            warningADOs.Add(warn);
+                        }
+                        frmWarning form = new frmWarning(warningADOs);
+                        form.ShowDialog();
                     }
                     else if (paramUpdateXml130.Messages != null && paramUpdateXml130.Messages.Count > 0)
                     {
