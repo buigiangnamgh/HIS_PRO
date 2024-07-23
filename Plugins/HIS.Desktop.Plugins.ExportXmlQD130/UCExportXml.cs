@@ -230,7 +230,7 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                 this.InitComboBranch();
                 this.InitComboPatientType();
                 this.InitComboPatientTypeTT();
-                this.InitControlState(); 
+                this.InitControlState();
                 this.GetConsumer();
             }
             catch (Exception ex)
@@ -403,7 +403,7 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
             try
             {
                 List<FilterCheckinTypeADO> ListCheckinResultAll = new List<FilterCheckinTypeADO>();
-                FilterCheckinTypeADO valueNull = new FilterCheckinTypeADO(0,"Chưa tạo file Check In");
+                FilterCheckinTypeADO valueNull = new FilterCheckinTypeADO(0, "Chưa tạo file Check In");
                 ListCheckinResultAll.Add(valueNull);
 
                 FilterCheckinTypeADO valueOne = new FilterCheckinTypeADO(1, "Tạo file Check In thành công");
@@ -482,6 +482,7 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                 dtTimeFrom.DateTime = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(Inventec.Common.DateTime.Get.StartDay() ?? 0) ?? DateTime.MinValue;
                 dtTimeTo.DateTime = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(Inventec.Common.DateTime.Get.EndDay() ?? 0) ?? DateTime.MinValue;
                 dtHeinLockTime.DateTime = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(Inventec.Common.DateTime.Get.Now() ?? 0) ?? DateTime.MinValue;
+                this.lcCheckin.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
             }
             catch (Exception ex)
             {
@@ -1376,6 +1377,11 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                     {
                         ado.TuberculosisTreat = dicTuberculosisTreat[treatment.ID];
                     }
+                    //cap nhat icd
+                    if (!string.IsNullOrWhiteSpace(HIS.Desktop.Plugins.ExportXmlQD130.ADO.HisConfigCFG.IcdCodeExcludes))
+                    {
+                        if (!CheckIcdCode(ado, HIS.Desktop.Plugins.ExportXmlQD130.ADO.HisConfigCFG.IcdCodeExcludes)) continue;
+                    }
                     His.Bhyt.ExportXml.XML130.CreateXmlProcessor xmlProcessor = new His.Bhyt.ExportXml.XML130.CreateXmlProcessor(ado);
 
                     string errorMess = "";
@@ -2015,7 +2021,7 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                                             throw new ArgumentNullException("moduleData is null");
                                         }
 
-                                    ((Form)extenceInstance).ShowDialog();
+                                        ((Form)extenceInstance).ShowDialog();
                                     }
                                     else
                                         MessageManager.Show("Tải file XML thất bại!");
@@ -3023,7 +3029,7 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                     }
                     LogSystem.Debug("Treatment Filter: " + LogUtil.TraceData("Filter", filter));
                     result = new BackendAdapter(new CommonParam()).Get<List<V_HIS_TREATMENT_1>>("api/HisTreatment/GetView1", ApiConsumers.MosConsumer, filter, null);
-                    if(result != null)
+                    if (result != null)
                     {
                         result = result.Where(o => o.XML130_RESULT == null || o.XML130_RESULT == 1).ToList();
                     }
@@ -3203,8 +3209,8 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                 {
                     Inventec.Common.Logging.LogSystem.Error("Key cấu hình hệ thống chỉ thiết lập 3 giá trị");
                 }
-                
-              
+
+
                 Dictionary<string, List<string>> DicErrorMess = new Dictionary<string, List<string>>();
                 if (listTreatmentSync != null && listTreatmentSync.Count > 0)
                 {
@@ -3234,7 +3240,7 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                         CreateThreadGetData(limit);
                         Dictionary<long, List<V_HIS_PATIENT_TYPE_ALTER>> dicPatientTypeAlter = new Dictionary<long, List<V_HIS_PATIENT_TYPE_ALTER>>();
                         Dictionary<long, List<V_HIS_SERE_SERV_2>> dicSereServ = new Dictionary<long, List<V_HIS_SERE_SERV_2>>();
-                        Dictionary<long, List<V_HIS_SERE_SERV_TEIN>> dicSereServTein = new Dictionary<long, List<V_HIS_SERE_SERV_TEIN>>(); 
+                        Dictionary<long, List<V_HIS_SERE_SERV_TEIN>> dicSereServTein = new Dictionary<long, List<V_HIS_SERE_SERV_TEIN>>();
                         Dictionary<long, List<V_HIS_SERE_SERV_SUIN>> dicSereServSuin = new Dictionary<long, List<V_HIS_SERE_SERV_SUIN>>();
                         Dictionary<long, List<V_HIS_SERE_SERV_PTTT>> dicSereServPttt = new Dictionary<long, List<V_HIS_SERE_SERV_PTTT>>();
                         Dictionary<long, List<V_HIS_BED_LOG>> dicBedLog = new Dictionary<long, List<V_HIS_BED_LOG>>();
@@ -3468,7 +3474,7 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                             ado.TotalIcdData = BackendDataWorker.Get<HIS_ICD>();
                             ado.TotalSericeData = BackendDataWorker.Get<V_HIS_SERVICE>();
                             ado.TotalEmployeeData = BackendDataWorker.Get<HIS_EMPLOYEE>();
-                            ado.serverInfo = new ServerInfo() { Username = username, Password = password, Address = address,TypeXml = typeXml, Xml130Api = xml130Api, XmlGdykApi = xmlGdykApi};
+                            ado.serverInfo = new ServerInfo() { Username = username, Password = password, Address = address, TypeXml = typeXml, Xml130Api = xml130Api, XmlGdykApi = xmlGdykApi };
                             #endregion
                             //cap nhat thx
                             if (treatment != null && HIS.Desktop.Plugins.ExportXmlQD130.ADO.THX_ADO.Get_THX().FirstOrDefault(o => o.MA_PHUONG_XA == (treatment.TDL_PATIENT_COMMUNE_CODE ?? "")
@@ -3477,7 +3483,11 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                             {
                                 UpdateTHX(treatment, HIS.Desktop.Plugins.ExportXmlQD130.ADO.THX_ADO.Get_THX());
                             }
-
+                            //cap nhat icd
+                            if (!string.IsNullOrWhiteSpace(HIS.Desktop.Plugins.ExportXmlQD130.ADO.HisConfigCFG.IcdCodeExcludes))
+                            {
+                                if (!CheckIcdCode(ado, HIS.Desktop.Plugins.ExportXmlQD130.ADO.HisConfigCFG.IcdCodeExcludes)) continue;
+                            }
                             His.Bhyt.ExportXml.XML130.CreateXmlProcessor xmlProcessor = new His.Bhyt.ExportXml.XML130.CreateXmlProcessor(ado);
                             SyncResultADO syncResult = null;
                             SyncResultADO syncResult12 = null;
@@ -3584,6 +3594,52 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
             }
         }
 
+        private bool CheckIcdCode(InputADO ado, string IcdCodeExcludes)
+        {
+            bool result = true;
+            try
+            {
+                List<string> icdCodes = IcdCodeExcludes.Split(',').ToList();
+                if (icdCodes.Contains(ado.Treatment.ICD_CODE ?? ""))
+                {
+                    result = false;
+                }
+                else
+                {
+                    List<string> icdTreatmentSubCodes = (ado.Treatment.ICD_SUB_CODE ?? "").Trim(';').Split(';').ToList();
+                    foreach (var item in icdTreatmentSubCodes)
+                    {
+                        if (icdCodes.Contains(item))
+                        {
+                            ado.Treatment.ICD_SUB_CODE = (ado.Treatment.ICD_SUB_CODE ?? "").Replace(item, "");
+                        }
+
+                    }
+                    foreach (var ss in ado.ListSereServ)
+                    {
+                        if (icdCodes.Contains(ss.ICD_CODE ?? ""))
+                        {
+                            ss.ICD_CODE = "";
+                        }
+                        List<string> icdSSSubCodes = (ss.ICD_SUB_CODE ?? "").Trim(';').Split(';').ToList();
+                        foreach (var icdCode in icdSSSubCodes)
+                        {
+                            if (icdCodes.Contains(icdCode))
+                            {
+                                ss.ICD_SUB_CODE = (ss.ICD_SUB_CODE ?? "").Replace(icdCode, "");
+                            }
+                        }
+
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+            return result;
+        }
+
         private void UpdateTHX(V_HIS_TREATMENT_12 treatment, List<THX_ADO> listAdoThx)
         {
             try
@@ -3591,18 +3647,18 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                 string maTinh = "";
                 string maHuyen = "";
                 string maXa = "";
-                List<string> array= treatment.TDL_PATIENT_ADDRESS.ToString().Split(',').ToList();
+                List<string> array = treatment.TDL_PATIENT_ADDRESS.ToString().Split(',').ToList();
                 foreach (THX_ADO drHC in listAdoThx)
                 {
                     foreach (string t in array)
                     {
                         if (t.ToUpper().Trim() == drHC.TEN_THANH_PHO.ToUpper().Trim())
                         {
-                            foreach (string h in array.Where(o=>o!=t).ToList())
+                            foreach (string h in array.Where(o => o != t).ToList())
                             {
                                 if (h.ToUpper().Trim() == drHC.TEN_QUAN_HUYEN.ToString().ToUpper().Trim())
                                 {
-                                    foreach (string x in array.Where(o => o != t && o!=h).ToList())
+                                    foreach (string x in array.Where(o => o != t && o != h).ToList())
                                     {
                                         if (x.ToUpper().Trim() == drHC.TEN_PHUONG_XA.ToString().ToUpper().Trim())
                                         {
