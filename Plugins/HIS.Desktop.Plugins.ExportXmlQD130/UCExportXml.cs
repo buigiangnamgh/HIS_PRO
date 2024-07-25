@@ -662,7 +662,7 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                     {
                         filter.HAS_IN_CODE = true;
                     }
-                    if (cboXml130Result.EditValue != null && (int)cboXml130Result.EditValue == 0)// Đã gửi hồ sơ
+                    if (cboXml130Result.EditValue != null && (int)cboXml130Result.EditValue == 1)// Đã gửi hồ sơ
                     {
                         filter.HAS_XML130_RESULT = true;
                     }
