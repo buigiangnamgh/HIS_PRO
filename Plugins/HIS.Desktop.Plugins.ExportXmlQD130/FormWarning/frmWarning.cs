@@ -90,5 +90,24 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130.FormWarning
         {
             this.Close();
         }
+
+        private void btnExportExcel_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                SaveFileDialog saveFile = new SaveFileDialog();
+                saveFile.Filter = "Excel file|*.xlsx|All file|*.*";
+                if (saveFile.ShowDialog() == DialogResult.OK)
+                {
+                    gridViewWarning.RefreshData();
+                    gridControlWarning.Refresh();
+                    gridControlWarning.ExportToXlsx(saveFile.FileName);
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
     }
 }

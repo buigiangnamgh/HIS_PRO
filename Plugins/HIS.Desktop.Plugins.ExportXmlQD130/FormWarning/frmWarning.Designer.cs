@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.layoutControlRoot = new DevExpress.XtraLayout.LayoutControl();
+            this.btnClose = new DevExpress.XtraEditors.SimpleButton();
             this.gridControlWarning = new DevExpress.XtraGrid.GridControl();
             this.gridViewWarning = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.gridColumnDescription = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -36,8 +37,9 @@
             this.Root = new DevExpress.XtraLayout.LayoutControlGroup();
             this.layoutControlItem1 = new DevExpress.XtraLayout.LayoutControlItem();
             this.emptySpaceItem1 = new DevExpress.XtraLayout.EmptySpaceItem();
-            this.btnClose = new DevExpress.XtraEditors.SimpleButton();
             this.layoutControlItem2 = new DevExpress.XtraLayout.LayoutControlItem();
+            this.btnExportExcel = new DevExpress.XtraEditors.SimpleButton();
+            this.layoutControlItem3 = new DevExpress.XtraLayout.LayoutControlItem();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlRoot)).BeginInit();
             this.layoutControlRoot.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridControlWarning)).BeginInit();
@@ -47,10 +49,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.emptySpaceItem1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem3)).BeginInit();
             this.SuspendLayout();
             // 
             // layoutControlRoot
             // 
+            this.layoutControlRoot.Controls.Add(this.btnExportExcel);
             this.layoutControlRoot.Controls.Add(this.btnClose);
             this.layoutControlRoot.Controls.Add(this.gridControlWarning);
             this.layoutControlRoot.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -61,6 +65,16 @@
             this.layoutControlRoot.Size = new System.Drawing.Size(1177, 611);
             this.layoutControlRoot.TabIndex = 0;
             this.layoutControlRoot.Text = "layoutControl1";
+            // 
+            // btnClose
+            // 
+            this.btnClose.Location = new System.Drawing.Point(1041, 581);
+            this.btnClose.Name = "btnClose";
+            this.btnClose.Size = new System.Drawing.Size(133, 27);
+            this.btnClose.StyleController = this.layoutControlRoot;
+            this.btnClose.TabIndex = 5;
+            this.btnClose.Text = "Đóng";
+            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
             // 
             // gridControlWarning
             // 
@@ -112,7 +126,8 @@
             this.Root.Items.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] {
             this.layoutControlItem1,
             this.emptySpaceItem1,
-            this.layoutControlItem2});
+            this.layoutControlItem2,
+            this.layoutControlItem3});
             this.Root.Location = new System.Drawing.Point(0, 0);
             this.Root.Name = "Root";
             this.Root.Padding = new DevExpress.XtraLayout.Utils.Padding(0, 0, 0, 0);
@@ -133,18 +148,8 @@
             this.emptySpaceItem1.AllowHotTrack = false;
             this.emptySpaceItem1.Location = new System.Drawing.Point(0, 578);
             this.emptySpaceItem1.Name = "emptySpaceItem1";
-            this.emptySpaceItem1.Size = new System.Drawing.Size(1038, 33);
+            this.emptySpaceItem1.Size = new System.Drawing.Size(898, 33);
             this.emptySpaceItem1.TextSize = new System.Drawing.Size(0, 0);
-            // 
-            // btnClose
-            // 
-            this.btnClose.Location = new System.Drawing.Point(1041, 581);
-            this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(133, 27);
-            this.btnClose.StyleController = this.layoutControlRoot;
-            this.btnClose.TabIndex = 5;
-            this.btnClose.Text = "Đóng";
-            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
             // 
             // layoutControlItem2
             // 
@@ -154,6 +159,25 @@
             this.layoutControlItem2.Size = new System.Drawing.Size(139, 33);
             this.layoutControlItem2.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem2.TextVisible = false;
+            // 
+            // btnExportExcel
+            // 
+            this.btnExportExcel.Location = new System.Drawing.Point(901, 581);
+            this.btnExportExcel.Name = "btnExportExcel";
+            this.btnExportExcel.Size = new System.Drawing.Size(134, 27);
+            this.btnExportExcel.StyleController = this.layoutControlRoot;
+            this.btnExportExcel.TabIndex = 6;
+            this.btnExportExcel.Text = "Xuất excel";
+            this.btnExportExcel.Click += new System.EventHandler(this.btnExportExcel_Click);
+            // 
+            // layoutControlItem3
+            // 
+            this.layoutControlItem3.Control = this.btnExportExcel;
+            this.layoutControlItem3.Location = new System.Drawing.Point(898, 578);
+            this.layoutControlItem3.Name = "layoutControlItem3";
+            this.layoutControlItem3.Size = new System.Drawing.Size(140, 33);
+            this.layoutControlItem3.TextSize = new System.Drawing.Size(0, 0);
+            this.layoutControlItem3.TextVisible = false;
             // 
             // frmWarning
             // 
@@ -175,6 +199,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.emptySpaceItem1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem3)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -191,5 +216,7 @@
         private DevExpress.XtraEditors.Repository.RepositoryItemMemoEdit repositoryItemMemoEdit1;
         private DevExpress.XtraEditors.SimpleButton btnClose;
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem2;
+        private DevExpress.XtraEditors.SimpleButton btnExportExcel;
+        private DevExpress.XtraLayout.LayoutControlItem layoutControlItem3;
     }
 }
