@@ -224,7 +224,7 @@ namespace HIS.Desktop.Plugins.BedHistory
             {
                 if (bebHistoryAdos != null && bebHistoryAdos.Count > 0)
                 {
-                    long tongSoGio = 0;
+                    long tongSoPhut = 0;
                     foreach (var item in bebHistoryAdos)
                     {
                         DateTime timeFinish = new DateTime();
@@ -240,7 +240,6 @@ namespace HIS.Desktop.Plugins.BedHistory
                             timeFinish = item.finishTime ?? DateTime.Now;
                             timeStart = item.startTime;
                         }
-
                         TimeSpan diff = timeFinish - timeStart;
                         if (diff.Days > 0)
                         {
@@ -251,9 +250,9 @@ namespace HIS.Desktop.Plugins.BedHistory
                             if (ChkNotCountHours.Checked) result += 1;
                         }
 
-                        if (diff.Hours > 0)
+                        if (diff.Minutes > 0)
                         {
-                            tongSoGio += diff.Hours;
+                            tongSoPhut += diff.Minutes;
                         }
 
                         if (item.SHARE_COUNT.HasValue)
@@ -265,16 +264,24 @@ namespace HIS.Desktop.Plugins.BedHistory
                         }
                     }
 
-                    if (tongSoGio > 0)
+                    if (tongSoPhut > 0)
                     {
-                        result += tongSoGio / 24;
-                        if ((tongSoGio % 24) != 0)
+                        result += tongSoPhut / (24 * 60);
+                        // thời gian xử dụng < 4h thì sl 0.5 nếu > 4h thì tính sl 1
+                        if ((tongSoPhut % (24 * 60)) != 0)
                         {
-                            result += 1;
+                            if ((tongSoPhut % (24 * 60)) < (4 * 60))
+                            {
+                                result += System.Convert.ToDecimal(0.5);
+                            }
+                            else
+                            {
+                                result += 1;
+                            }
                         }
                         else
                         {
-                            result += 1;
+                            //result += 1; khong cong
                             //tongSoNgayGiuong += System.Convert.ToDecimal(0.5);
                         }
                     }

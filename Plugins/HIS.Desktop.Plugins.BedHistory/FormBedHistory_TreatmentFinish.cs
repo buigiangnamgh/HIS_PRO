@@ -94,7 +94,7 @@ namespace HIS.Desktop.Plugins.BedHistory
             return result;
         }
 
-        private decimal SplitBedServiceByCircular(DateTime startTime,DateTime finishTime)
+        private decimal SplitBedServiceByCircular(DateTime startTime, DateTime finishTime)
         {
             decimal result = 0;
             try
