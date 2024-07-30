@@ -1124,7 +1124,10 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
             {
                 if (e.KeyCode == Keys.Escape)
                 {
-                    this.Close();
+                    if (MessageBox.Show("Thông báo", "Bạn muốn đóng form không ?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    {
+                        this.Close();
+                    }
                 }
             }
             catch (Exception ex)

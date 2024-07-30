@@ -111,7 +111,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk
                     Inventec.Common.Logging.LogSystem.Warn(ex + "ContentImage is null");
 
                 }
-               
+
 
                 //Thời gian hiển thị thông báo khi quẹt thẻ ms
                 timerLabel.Interval = 3000;
@@ -213,7 +213,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk
                         {
                             using (FileStream fs = new FileStream(item, FileMode.Open, FileAccess.Read))
                             {
-                               
+
                                 Inventec.Common.Logging.LogSystem.Info("HIS.Desktop.Plugins.RegisterExamKiosk getImageFromFile item " + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => item), item));
                                 using (Image original = Image.FromStream(fs))
                                 {
@@ -1281,7 +1281,10 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk
             {
                 if (e.KeyCode == Keys.Escape)
                 {
-                    this.Close();
+                    if (MessageBox.Show("Thông báo", "Bạn muốn đóng form không ?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    {
+                        this.Close();
+                    }
                 }
             }
             catch (Exception ex)
@@ -1412,5 +1415,20 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk
             }
         }
         #endregion
+
+        private void pnBtnCLose_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (MessageBox.Show("Bạn muốn đóng không ?", "Thông báo", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                {
+                    this.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
     }
 }
