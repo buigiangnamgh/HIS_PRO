@@ -2225,7 +2225,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                         ReLoadPrintExamAddition();
                         if (this.isPrintExamServiceAdd || this.isSignExamServiceAdd)
                         {
-                            PrintProcess(PrintType.YEU_CAU_KHAM_THEM);
+                            PrintProcess(PrintType.YEU_CAU_KHAM);
                         }
                     }
 

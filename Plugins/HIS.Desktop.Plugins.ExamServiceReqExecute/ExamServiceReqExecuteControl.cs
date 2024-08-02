@@ -58,6 +58,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Windows.Forms;
 
 namespace HIS.Desktop.Plugins.ExamServiceReqExecute
@@ -2531,6 +2532,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
             }
         }
 
+
         private void btnSaveFinish_Click_Action(object sender, EventArgs e)
         {
             try
@@ -2563,6 +2565,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                     isClickSaveFinish = false;
                     return;
                 }
+              
                 isClickSaveFinish = false;
 
                 if (this.requiredControl != null && this.requiredControl == 1 && string.IsNullOrEmpty(this.txtPathologicalProcess.Text.Trim()))

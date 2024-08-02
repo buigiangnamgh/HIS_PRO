@@ -240,8 +240,8 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
             try
             {
                 DXPopupMenu menu = btnPrint_ExamService.DropDownControl as DXPopupMenu;
-                DXMenuItem itemKhamThem = new DXMenuItem("Yêu cầu khám thêm", new EventHandler(onClickInPhieuKhamBenh));
-                itemKhamThem.Tag = PrintType.YEU_CAU_KHAM_THEM;
+                DXMenuItem itemKhamThem = new DXMenuItem("Yêu cầu khám", new EventHandler(onClickInPhieuKhamBenh));
+                itemKhamThem.Tag = PrintType.YEU_CAU_KHAM;
                 menu.Items.Add(itemKhamThem);
                 btnPrint_ExamService.DropDownControl = menu;
             }

@@ -365,6 +365,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
             IN_GIAY_RA_VIEN,
             IN_GIAY_BAO_TU,
             YEU_CAU_KHAM_THEM,
+            YEU_CAU_KHAM,
             BANG_KE_NGOAI_TRU_BHYT,
             BANG_KE_NGOAI_TRU_VIEN_PHI,
             KET_QUA_XET_NGHIEM_TONG_HOP,
@@ -599,6 +600,9 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                     case PrintType.YEU_CAU_KHAM_THEM:
                         InPhieuYeuCauDichVu(PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__YEU_CAU_KHAM_THEM__MPS000071);
                         //richEditorMain.RunPrintTemplate(PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__YEU_CAU_KHAM_THEM__MPS000071, DelegateRunPrinter);
+                        break;
+                    case PrintType.YEU_CAU_KHAM:
+                        InPhieuYeuCauDichVu(PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__YEU_CAU_KHAM__MPS000001);
                         break;
                     case PrintType.IN_GIAY_CHUYEN_VIEN:
                         richEditorMain.RunPrintTemplate(PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__GIAY_CHUYEN_VIEN__MPS000011, DelegateRunPrinter);

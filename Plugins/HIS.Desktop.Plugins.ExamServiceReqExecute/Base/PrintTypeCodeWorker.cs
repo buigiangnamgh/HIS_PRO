@@ -37,5 +37,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute.Base
         internal const string PRINT_TYPE_CODE__TOM_TAT_Y_LENH_PTTT_VA_DON_THUOC_MPS000478 = "Mps000478";
         internal const string PRINT_TYPE_CODE__PHIEU_THU_THANH_TOAN_MPS000111 = "Mps000111";
         internal const string PRINT_TYPE_CODE__NGUYEN_NHAN_TU_VONG = "Mps000485";
+
+        internal const string PRINT_TYPE_CODE__BIEUMAU__YEU_CAU_KHAM__MPS000001 = "Mps000001";
     }
 }
