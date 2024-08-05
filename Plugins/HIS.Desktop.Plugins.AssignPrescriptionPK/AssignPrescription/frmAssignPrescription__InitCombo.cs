@@ -879,9 +879,9 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 this.cboMediStockExport.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.cboMediStockExport_TabMedicine_KeyUp);
 
                 List<ColumnInfo> columnInfos = new List<ColumnInfo>();
-                columnInfos.Add(new ColumnInfo("MEDI_STOCK_CODE", "", 200, 1));
-                columnInfos.Add(new ColumnInfo("MEDI_STOCK_NAME", "", 500, 2));
-                ControlEditorADO controlEditorADO = new ControlEditorADO("MEDI_STOCK_NAME", "MEDI_STOCK_ID", columnInfos, false, 700);
+                columnInfos.Add(new ColumnInfo("MEDI_STOCK_CODE", "", 100, 1));
+                columnInfos.Add(new ColumnInfo("MEDI_STOCK_NAME", "", 250, 2));
+                ControlEditorADO controlEditorADO = new ControlEditorADO("MEDI_STOCK_NAME", "MEDI_STOCK_ID", columnInfos, false, 350);
                 ControlEditorLoader.Load(cboMediStockExport, listMediStock, controlEditorADO);
             }
             catch (Exception ex)
@@ -1092,13 +1092,13 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                     cboMediStockExport.Properties.ValueMember = "MEDI_STOCK_ID";
                     DevExpress.XtraGrid.Columns.GridColumn col2 = cboMediStockExport.Properties.View.Columns.AddField("MEDI_STOCK_CODE");
                     col2.VisibleIndex = 1;
-                    col2.Width = 200;
+                    col2.Width = 100;
                     col2.Caption = "Mã phòng khám";
                     DevExpress.XtraGrid.Columns.GridColumn col3 = cboMediStockExport.Properties.View.Columns.AddField("MEDI_STOCK_NAME");
                     col3.VisibleIndex = 2;
-                    col3.Width = 400;
+                    col3.Width = 200;
                     col3.Caption = "Tên phòng khám";
-                    cboMediStockExport.Properties.PopupFormWidth = 620;
+                    cboMediStockExport.Properties.PopupFormWidth = 320;
                     cboMediStockExport.Properties.View.OptionsView.ShowColumnHeaders = false;
                     cboMediStockExport.Properties.View.OptionsSelection.MultiSelect = true;
                     this.cboMediStockExport.Closed += new DevExpress.XtraEditors.Controls.ClosedEventHandler(this.cboMediStockExport_TabMedicine_Closed);
