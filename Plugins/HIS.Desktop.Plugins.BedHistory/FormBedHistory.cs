@@ -1079,6 +1079,7 @@ namespace HIS.Desktop.Plugins.BedHistory
 
                 Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData("row___________________", bedLogChecks));
                 bedLogChecks.ForEach(o => CheckErrorDataBedLog(o));
+                Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData("row affter___________________", bedLogChecks));
                 gridControlBedHistory.DataSource = bedLogChecks;
 
                 if (gridControlBedServiceType.DataSource != null)
@@ -1451,9 +1452,11 @@ namespace HIS.Desktop.Plugins.BedHistory
                         CheckWarningTimeOverLap(ado);
                     }
 
+                    // nambg sửa chặn "Thời gian bắt đầu trùng với khoảng thời gian của lịch sử giường khác"
                     if (ado.ErrorTypeBedId == ErrorType.Warning
-                        || (ado.ErrorTypeStartTime == ErrorType.Warning && ado.ErrorMessageStartTime != ResourceMessage.ERROR_OVERLAP_START_TIME)
-                        || (ado.ErrorTypeFinishTime == ErrorType.Warning && ado.ErrorMessageFinishTime != ResourceMessage.ERROR_OVERLAP_FINISH_TIME) || ado.ErrorTypeBebServiceTypeId == ErrorType.Warning
+                        || (ado.ErrorTypeStartTime == ErrorType.Warning) // && ado.ErrorMessageStartTime != ResourceMessage.ERROR_OVERLAP_START_TIME
+                        || (ado.ErrorTypeFinishTime == ErrorType.Warning) //&& ado.ErrorMessageFinishTime != ResourceMessage.ERROR_OVERLAP_FINISH_TIME
+                        || ado.ErrorTypeBebServiceTypeId == ErrorType.Warning
                         || ado.ErrorTypePrimaryPatientTypeId == ErrorType.Warning)
                     {
                         ado.Error = true;
@@ -1807,13 +1810,15 @@ namespace HIS.Desktop.Plugins.BedHistory
                                 var bedLog = this.bedLogChecks.FirstOrDefault(o => o.ID == id);
                                 if (bedLog != null && bedLog.ID > 0)
                                 {
-                                    if (bedLog.IsChecked)
+                                    CheckErrorDataBedLog(bedLog);
+                                    if (bedLog.IsChecked || IsDisable || bedLog.HasServiceReq || bedLog.BED_SERVICE_TYPE_ID == null || _TreatmentBedRoom.BED_ROOM_ID != WorkPlaceSDO.BedRoomId)
                                     {
                                         bedLog.IsChecked = false;
                                         gridControlBedServiceType.DataSource = null;
                                     }
-                                    else
+                                    else if (!bedLog.Error)
                                     {
+
                                         bedLog.IsChecked = true;
                                         CountTimeBed();
                                     }
