@@ -37,6 +37,7 @@ namespace HIS.Desktop.Plugins.BedHistory.ADO
 
         public bool HasDefaultPatientTypeId { get; set; }
         public bool HasServiceReq { get; set; }
+        public decimal LastAmount { get; set; }
 
         public HisBedHistoryADO()
         {

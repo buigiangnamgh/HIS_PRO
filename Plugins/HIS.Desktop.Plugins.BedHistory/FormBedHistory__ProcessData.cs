@@ -147,12 +147,12 @@ namespace HIS.Desktop.Plugins.BedHistory
                     foreach (var item in bedLogCheckProcessing)
                     {
                         long? namghep = null;
-
-                        var days = chkSplitByResult.Checked ? SplitBedServiceByCircular(item.startTime, item.finishTime ?? DateTime.Now) : ProcessTotalBedDay(new List<HisBedHistoryADO>() { item }, ref namghep);
+                        decimal lastAmount = 0;
+                        var days = chkSplitByResult.Checked ? SplitBedServiceByCircular(item.startTime, item.finishTime ?? DateTime.Now) : ProcessTotalBedDay1(new List<HisBedHistoryADO>() { item }, ref namghep, ref lastAmount);
 
                         if (days > 1)
                         {
-                            for (int i = 0; i < days; i++)
+                            for (int i = 0; i < Math.Ceiling(days); i++)
                             {
                                 ADO.HisBedHistoryADO ado = new ADO.HisBedHistoryADO();
                                 Inventec.Common.Mapper.DataObjectMapper.Map<ADO.HisBedHistoryADO>(ado, item);
@@ -165,7 +165,7 @@ namespace HIS.Desktop.Plugins.BedHistory
                                     ado.FINISH_TIME = Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(startTime.AddDays(1)) ?? 0;
                                 }
 
-                                if (i == days - 1)
+                                if (i == Math.Ceiling(days) - 1)
                                 {
                                     if (ado.START_TIME > item.FINISH_TIME)
                                     {
@@ -176,6 +176,7 @@ namespace HIS.Desktop.Plugins.BedHistory
 
                                     }
                                     ado.FINISH_TIME = item.FINISH_TIME;
+                                    ado.LastAmount = lastAmount;
                                 }
 
                                 ado.startTime = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(ado.START_TIME) ?? DateTime.Now;
@@ -190,21 +191,22 @@ namespace HIS.Desktop.Plugins.BedHistory
                         }
 
                         var last = result.Last();
-                        if (last.startTime.Day != last.finishTime.Value.Day && !chkSplitByResult.Checked)
+                        if (last.startTime.Day != last.finishTime.Value.Day && last.finishTime.Value.Hour > 0 && !chkSplitByResult.Checked) // nambg sua
                         {
-                            ADO.HisBedHistoryADO ado = new ADO.HisBedHistoryADO();
-                            Inventec.Common.Mapper.DataObjectMapper.Map<ADO.HisBedHistoryADO>(ado, item);
+                            //ADO.HisBedHistoryADO ado = new ADO.HisBedHistoryADO();
+                            //Inventec.Common.Mapper.DataObjectMapper.Map<ADO.HisBedHistoryADO>(ado, item);
 
-                            //DateTime date = (DateTime)Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(item.FINISH_TIME ?? 0);
+                            ////DateTime date = (DateTime)Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(item.FINISH_TIME ?? 0);
 
-                            ado.START_TIME = item.FINISH_TIME ?? 0;
+                            //ado.START_TIME = item.FINISH_TIME ?? 0;
 
-                            ado.FINISH_TIME = item.FINISH_TIME ?? 0;
+                            //ado.FINISH_TIME = item.FINISH_TIME ?? 0;
 
-                            ado.startTime = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(ado.START_TIME) ?? DateTime.Now;
-                            ado.finishTime = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(ado.FINISH_TIME ?? 0) ?? DateTime.Now;
+                            //ado.startTime = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(ado.START_TIME) ?? DateTime.Now;
+                            //ado.finishTime = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(ado.FINISH_TIME ?? 0) ?? DateTime.Now;
+                            //ado.LastAmount = lastAmount;
 
-                            result.Add(ado);
+                            //result.Add(ado);
                         }
                     }
                 }
@@ -217,7 +219,7 @@ namespace HIS.Desktop.Plugins.BedHistory
             return result;
         }
 
-        private decimal ProcessTotalBedDay(List<HisBedHistoryADO> bebHistoryAdos, ref long? namghep)
+        private decimal ProcessTotalBedDay(List<HisBedHistoryADO> bebHistoryAdos, ref long? namghep, ref decimal lastAmount)
         {
             decimal result = 0;
             try
@@ -264,19 +266,42 @@ namespace HIS.Desktop.Plugins.BedHistory
                         }
                     }
 
+                    //if (tongSoPhut > 0)
+                    //{
+                    //    result += tongSoPhut / (24 * 60);
+                    //    // thời gian xử dụng < 4h thì sl 0.5 nếu > 4h thì tính sl 1
+                    //    if ((tongSoPhut % (24 * 60)) != 0)
+                    //    {
+                    //        if ((tongSoPhut % (24 * 60)) < (4 * 60))
+                    //        {
+                    //            result += System.Convert.ToDecimal(0.5);
+                    //        }
+                    //        else
+                    //        {
+                    //            result += 1;
+                    //        }
+                    //    }
+                    //    else
+                    //    {
+                    //        //result += 1; khong cong
+                    //        //tongSoNgayGiuong += System.Convert.ToDecimal(0.5);
+                    //    }
+                    //}
                     if (tongSoPhut > 0)
                     {
-                        result += tongSoPhut / (24 * 60);
+                        //result += Convert.ToDecimal(tongSoPhutNew / (24 * 60));
                         // thời gian xử dụng < 4h thì sl 0.5 nếu > 4h thì tính sl 1
                         if ((tongSoPhut % (24 * 60)) != 0)
                         {
                             if ((tongSoPhut % (24 * 60)) < (4 * 60))
                             {
                                 result += System.Convert.ToDecimal(0.5);
+                                lastAmount = System.Convert.ToDecimal(0.5);
                             }
                             else
                             {
                                 result += 1;
+                                lastAmount = 1;
                             }
                         }
                         else
@@ -291,6 +316,123 @@ namespace HIS.Desktop.Plugins.BedHistory
                     //    //tongSoNgayGiuong += System.Convert.ToDecimal(0.5);
                     //}
 
+                    if (result == 0) result = 1;
+                }
+            }
+            catch (Exception ex)
+            {
+                result = 0;
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+            return result;
+        }
+
+        public static DateTime TrimMilliseconds(DateTime dt)
+        {
+            return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, 0, 0, dt.Kind);
+        }
+
+        private decimal ProcessTotalBedDay1(List<HisBedHistoryADO> bebHistoryAdos, ref long? namghep, ref decimal lastAmount)
+        {
+            decimal result = 0;
+            try
+            {
+                if (bebHistoryAdos != null && bebHistoryAdos.Count > 0)
+                {
+                    long tongSoGio = 0;
+                    foreach (var item in bebHistoryAdos)
+                    {
+                        DateTime timeFinish = new DateTime();
+                        DateTime timeStart = new DateTime();
+                        if (ChkNotCountHours.Checked)
+                        {
+                            DateTime time = item.finishTime ?? DateTime.Now;
+                            timeFinish = new DateTime(time.Year, time.Month, time.Day);
+                            timeStart = new DateTime(item.startTime.Year, item.startTime.Month, item.startTime.Day);
+                        }
+                        else
+                        {
+                            timeFinish = item.finishTime ?? DateTime.Now;
+                            timeStart = item.startTime;
+                        }
+
+                        TimeSpan diff = TrimMilliseconds(timeFinish) - TrimMilliseconds(timeStart);
+                        if (diff.Days > 0)
+                        {
+                            result += diff.Days;
+                        }
+                        else
+                        {
+                            if (ChkNotCountHours.Checked) result += 1;
+                        }
+
+                        if (diff.Hours > 0)
+                        {
+                            tongSoGio += diff.Hours;
+                        }
+
+                        if (item.SHARE_COUNT.HasValue)
+                        {
+                            if (!namghep.HasValue || namghep < item.SHARE_COUNT)
+                            {
+                                namghep = item.SHARE_COUNT;
+                            }
+                        }
+                    }
+
+                    if (tongSoGio > 0)
+                    {
+                        result += tongSoGio / 24;
+                        if ((tongSoGio / 24) >= 1)
+                        {
+                            if (tongSoGio % 24 < 4)
+                            {
+                                result += System.Convert.ToDecimal(0.5);
+                                lastAmount = System.Convert.ToDecimal(0.5);
+                            }
+                            else
+                            {
+                                result += 1;
+                                lastAmount = 1;
+                            }
+                        }
+                        else
+                        {
+                            if (tongSoGio < 4)
+                            {
+                                result += System.Convert.ToDecimal(0.5);
+                                lastAmount = System.Convert.ToDecimal(0.5);
+                            }
+                            else
+                            {
+                                result += 1;
+                                lastAmount = 1;
+                            }
+                        }
+
+                        //if ((tongSoGio % 24) != 0)
+                        //{
+                        //    result += 1;
+                        //}
+                        //else
+                        //{
+                        //    if (tongSoGio < 4)
+                        //    {
+                        //        result += System.Convert.ToDecimal(0.5);
+                        //    }
+                        //    else
+                        //    {
+                        //        result += 1;
+                        //    }
+                        //    //result += 1;
+
+                        //}
+                    }
+                    //else
+                    //{
+                    //    tongSoNgayGiuong += 1;
+                    //    //tongSoNgayGiuong += System.Convert.ToDecimal(0.5);
+                    //}
                     if (result == 0) result = 1;
                 }
             }

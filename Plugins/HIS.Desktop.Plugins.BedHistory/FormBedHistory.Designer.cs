@@ -996,6 +996,11 @@
             this.repositoryItemSpinAmount.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Custom;
             this.repositoryItemSpinAmount.EditFormat.FormatString = "#,##0.00";
             this.repositoryItemSpinAmount.EditFormat.FormatType = DevExpress.Utils.FormatType.Custom;
+            this.repositoryItemSpinAmount.Increment = new decimal(new int[] {
+            5,
+            0,
+            0,
+            65536});
             this.repositoryItemSpinAmount.MaxValue = new decimal(new int[] {
             -1530494977,
             232830,

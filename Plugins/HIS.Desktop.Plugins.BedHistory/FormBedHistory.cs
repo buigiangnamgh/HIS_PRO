@@ -29,8 +29,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MOS.Filter;
-using MOS.EFMODEL.DataModels;
 using HIS.Desktop.LocalStorage.HisConfig;
 using HIS.Desktop.ApiConsumer;
 
@@ -1189,7 +1187,7 @@ namespace HIS.Desktop.Plugins.BedHistory
         }
         #endregion
 
-        int checkedRowIndex = -1;  
+        int checkedRowIndex = -1;
         #region Event Bed History
         private void gridViewBedHistory_CellValueChanged(object sender, DevExpress.XtraGrid.Views.Base.CellValueChangedEventArgs e)
         {
@@ -1218,6 +1216,8 @@ namespace HIS.Desktop.Plugins.BedHistory
                                     return;
                                 }
                             }
+                            ListBedServiceTypes = new List<HisBedServiceTypeADO>();
+                            gridControlBedServiceType.DataSource = ListBedServiceTypes;
                             ProcessSaveBedLog(ado);
                         }
 
@@ -1256,6 +1256,8 @@ namespace HIS.Desktop.Plugins.BedHistory
                                     return;
                                 }
                             }
+                            ListBedServiceTypes = new List<HisBedServiceTypeADO>();
+                            gridControlBedServiceType.DataSource = ListBedServiceTypes;
                             ProcessSaveBedLog(ado);
                         }
                         RefeshDataToCboBed(0, ado, false);
@@ -1267,31 +1269,32 @@ namespace HIS.Desktop.Plugins.BedHistory
 
                         if (Base.GlobalStore.PreventChooseMultiBedLog == "1")
                         {
-                            List<ADO.HisBedHistoryADO> BedLogCheckList = bedLogChecks.Where(o=>o.ID != ado.ID && o.IsChecked).ToList();
+                            List<ADO.HisBedHistoryADO> BedLogCheckList = bedLogChecks.Where(o => o.ID != ado.ID && o.IsChecked).ToList();
                             if ((bool)e.Value)
                             {
-                                //ado.IsChecked = false;
-                                GridView view = sender as GridView;
-                                int rowHandle = view.GetRowHandle(checkedRowIndex);
-                                view.SetRowCellValue(rowHandle, "IsChecked", false);
-                                checkedRowIndex = view.GetDataSourceRowIndex(e.RowHandle);
+                                ado.IsChecked = false;// nambg ++
+                                //GridView view = sender as GridView;
+                                //checkedRowIndex = view.GetDataSourceRowIndex(e.RowHandle);
+                                //int rowHandle = view.GetRowHandle(checkedRowIndex);
+                                //view.SetRowCellValue(rowHandle, "IsChecked", false);
                                 foreach (var item in BedLogCheckList)
                                 {
                                     item.IsChecked = false;
                                 }
+                                ListBedServiceTypes = null;
+                                gridControlBedServiceType.DataSource = ListBedServiceTypes;// nambg ++
                             }
                             else
                             {
                                 ado.IsChecked = true;
+                                CountTimeBed();
                             }
-
                         }
                         if (!ado.IsSave && !ado.Error)
                         {
                             ProcessSaveBedLog(ado);
                         }
-
-                        CountTimeBed();
+                        gridControlBedHistory.RefreshDataSource();
                     }
                     else if (e.Column.FieldName == "BED_SERVICE_TYPE_ID" || e.Column.FieldName == "AmoutNamGhep")
                     {
@@ -1312,6 +1315,8 @@ namespace HIS.Desktop.Plugins.BedHistory
 
                         ado.IsChecked = false;
                         ado.IsSave = false;
+                        ListBedServiceTypes = new List<HisBedServiceTypeADO>();
+                        gridControlBedServiceType.DataSource = ListBedServiceTypes;
                     }
                     else if (e.Column.FieldName == "BED_CODE" || e.Column.FieldName == "PRIMARY_PATIENT_TYPE_ID" || e.Column.FieldName == "PATIENT_TYPE_ID")
                     {
@@ -1319,6 +1324,8 @@ namespace HIS.Desktop.Plugins.BedHistory
                         //CheckErrorDataBedLog(ado);
                         ado.IsSave = false;
                         ado.IsChecked = false;
+                        ListBedServiceTypes = new List<HisBedServiceTypeADO>();
+                        gridControlBedServiceType.DataSource = ListBedServiceTypes;
 
                     }
 
@@ -1786,6 +1793,35 @@ namespace HIS.Desktop.Plugins.BedHistory
                             }
                             (e as DevExpress.Utils.DXMouseEventArgs).Handled = true;
                         }
+                        if (hi.Column.FieldName == "IsChecked")
+                        {
+                            var data = view.GetFocusedRow();
+                            long id = 0;
+                            if (data != null)
+                            {
+                                id = ((HisBedHistoryADO)data).ID;
+                            }
+                            Inventec.Common.Logging.LogSystem.Debug("gridViewBedHistory_MouseDown " + id);
+                            if (id > 0)
+                            {
+                                var bedLog = this.bedLogChecks.FirstOrDefault(o => o.ID == id);
+                                if (bedLog != null && bedLog.ID > 0)
+                                {
+                                    if (bedLog.IsChecked)
+                                    {
+                                        bedLog.IsChecked = false;
+                                        gridControlBedServiceType.DataSource = null;
+                                    }
+                                    else
+                                    {
+                                        bedLog.IsChecked = true;
+                                        CountTimeBed();
+                                    }
+                                }
+                            }
+                            gridControlBedHistory.RefreshDataSource();
+                        }
+
                     }
                     if (hi.HitTest == GridHitTest.Column)
                     {
@@ -1807,12 +1843,14 @@ namespace HIS.Desktop.Plugins.BedHistory
                             }
                             else
                             {
+
                                 foreach (var item in this.bedLogChecks)
                                 {
                                     item.IsChecked = false;
                                 }
                                 isCheckAll = true;
                             }
+
                             gridViewBedHistory.EndUpdate();
 
                             if (!IsDisable)
@@ -3647,6 +3685,7 @@ namespace HIS.Desktop.Plugins.BedHistory
         {
             try
             {
+                ListBedServiceTypes = new List<HisBedServiceTypeADO>();
                 gridControlBedServiceType.DataSource = null;
                 this.bedLogCheckProcessing = new List<ADO.HisBedHistoryADO>();
                 if (bedLogChecks != null && bedLogChecks.Count > 0)
@@ -3747,11 +3786,20 @@ namespace HIS.Desktop.Plugins.BedHistory
                     bebHistoryAdos = bebHistoryAdos.OrderBy(o => o.startTime).ToList();
                     Inventec.Common.Mapper.DataObjectMapper.Map<ADO.HisBedServiceTypeADO>(bedServiceType, bebHistoryAdos.FirstOrDefault());
                     long? namghep = null;
+                    decimal lastAmount = 0;
                     //Review
-                    tongSoNgayGiuong = ProcessTotalBedDay(bebHistoryAdos, ref namghep);
+                    tongSoNgayGiuong = ProcessTotalBedDay1(bebHistoryAdos, ref namghep, ref lastAmount);
 
                     bedServiceType.BED_SERVICE_TYPE_NAME = _services.FirstOrDefault(p => p.ID == bebHistoryAdos[0].BED_SERVICE_TYPE_ID).SERVICE_NAME;
-                    bedServiceType.AMOUNT = tongSoNgayGiuong <= 0 ? 1 : tongSoNgayGiuong;
+                    if (tongSoNgayGiuong > 1) // so ngay khi chua tach ngay
+                    {
+                        bedServiceType.AMOUNT = tongSoNgayGiuong;
+                    }
+                    else
+                    {
+                        bedServiceType.AMOUNT = lastAmount > 0 ? lastAmount : (tongSoNgayGiuong <= 0 ? 1 : tongSoNgayGiuong);
+                    }
+
                     bedServiceType.IsExpend = false;
                     bedServiceType.IsOutKtcFee = false;
                     bedServiceType.REQUEST_LOGINNAME = this.loginName;
