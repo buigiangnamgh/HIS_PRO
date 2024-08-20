@@ -2241,6 +2241,7 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
 
                 bool valid = (bool)icdProcessor.ValidationIcd(ucIcd);
                 valid = (bool)subIcdProcessor.GetValidate(ucSecondaryIcd) && valid;
+                valid = (bool)subIcdYhctProcessor.GetValidate(ucSecondaryIcdYhct) && valid;
                 valid = IsValiICDCause() && valid;
                 valid = dxValidationProvider.Validate() && valid;
                 if (!valid) return;
