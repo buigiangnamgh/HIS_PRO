@@ -87,6 +87,8 @@ namespace HIS.UC.ExamTreatmentFinish.Run
         List<AcsUserADO> lstReAcsUserADO;
         internal SecondaryIcdProcessor subIcdProcessor;
         internal UserControl ucSecondaryIcd;
+        internal SecondaryIcdProcessor subIcdYhctProcessor;
+        internal UserControl ucSecondaryIcdYhct;
         public UCExamTreatmentFinish(TreatmentFinishInitADO _ExamTreatmentFinishInitADO)
         {
             InitializeComponent();
@@ -118,6 +120,7 @@ namespace HIS.UC.ExamTreatmentFinish.Run
                 this.currentTraditionalIcds = BackendDataWorker.Get<HIS_ICD>().Where(p => p.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE && p.IS_TRADITIONAL == 1).OrderBy(o => o.ICD_CODE).ToList();
                 this.isAutoCheckIcd = (this.autoCheckIcd == 1);
                 InitUcSecondaryIcd();
+                InitUcSecondaryIcdYhct();
                 UCIcdInit();
                 SetDefaultConfig();
                 ValidateForm();
@@ -253,6 +256,41 @@ namespace HIS.UC.ExamTreatmentFinish.Run
                 Inventec.Common.Logging.LogSystem.Error(ex);
             }
         }
+
+        private void InitUcSecondaryIcdYhct()
+        {
+            try
+            {
+                //VisibleLayoutSubIcd(HisConfig.OptionSubIcdWhenFinish == "3");
+                //if (HisConfig.OptionSubIcdWhenFinish != "3")
+                //    return;
+                subIcdYhctProcessor = new SecondaryIcdProcessor(new CommonParam(), currentTraditionalIcds);
+                HIS.UC.SecondaryIcd.ADO.SecondaryIcdInitADO ado = new UC.SecondaryIcd.ADO.SecondaryIcdInitADO();
+                ado.DelegateNextFocus = NextForcusCareer;
+                ado.DelegateGetIcdMain = GetTraditionalIcdMainCode;
+                ado.hisTreatment = this.ExamTreatmentFinishInitADO.Treatment;
+                ado.Width = 440;
+                ado.Height = 24;
+                ado.TextSize = 100;
+                ado.TextLblIcd = "CĐ phụ YHCT:";
+                ado.TootiplciIcdSubCode = "Chẩn đoán phụ YHCT";
+                ado.TextNullValue = GetStringFromKey("IVT_LANGUAGE_KEY__FORM_TREATMENT_FINISH__TXT_ICD_TEXT__NULL_VALUE");
+                ado.limitDataSource = (int)HIS.Desktop.LocalStorage.ConfigApplication.ConfigApplications.NumPageSize;
+                ucSecondaryIcdYhct = (UserControl)subIcdYhctProcessor.Run(ado);
+
+                if (ucSecondaryIcdYhct != null)
+                {
+                    this.panelControlSubIcdYhct.Controls.Add(ucSecondaryIcdYhct);
+                    ucSecondaryIcdYhct.Dock = DockStyle.Fill;
+                    LoaducSecondaryIcdYhct(this.ExamTreatmentFinishInitADO.Treatment.TRADITIONAL_IN_ICD_SUB_CODE, this.ExamTreatmentFinishInitADO.Treatment.TRADITIONAL_IN_ICD_TEXT);
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+        }
+
         private void LoaducSecondaryIcd(string icdCode, string icdName)
         {
             try
@@ -271,12 +309,42 @@ namespace HIS.UC.ExamTreatmentFinish.Run
             }
         }
 
+        private void LoaducSecondaryIcdYhct(string icdCode, string icdName)
+        {
+            try
+            {
+                SecondaryIcdDataADO subIcd = new SecondaryIcdDataADO();
+                subIcd.ICD_SUB_CODE = icdCode;
+                subIcd.ICD_TEXT = icdName;
+                if (ucSecondaryIcdYhct != null)
+                {
+                    subIcdYhctProcessor.Reload(ucSecondaryIcdYhct, subIcd);
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+
         private void NextForcusOut()
         {
             try
             {
                 txtTraditionalIcdCode.Focus();
                 txtTraditionalIcdCode.SelectAll();
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+        }
+
+        private void NextForcusCareer()
+        {
+            try
+            {
+                cboCareer.Focus();
             }
             catch (Exception ex)
             {

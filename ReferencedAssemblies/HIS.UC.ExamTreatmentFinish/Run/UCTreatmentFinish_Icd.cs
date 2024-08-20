@@ -649,15 +649,23 @@ namespace HIS.UC.ExamTreatmentFinish.Run
             try
             {
                 SecondaryIcdDataADO outPut = new SecondaryIcdDataADO();
-
-                if (!String.IsNullOrEmpty(txtIcdSubCode.Text))
+                if (ucSecondaryIcdYhct != null)
                 {
-                    outPut.ICD_SUB_CODE = txtIcdSubCode.Text;
+                    var subIcd = subIcdYhctProcessor.GetValue(ucSecondaryIcdYhct);
+                    if (subIcd != null && subIcd is SecondaryIcdDataADO)
+                    {
+                        outPut.ICD_SUB_CODE = ((SecondaryIcdDataADO)subIcd).ICD_SUB_CODE;
+                        outPut.ICD_TEXT = ((SecondaryIcdDataADO)subIcd).ICD_TEXT;
+                    }
                 }
-                if (!String.IsNullOrEmpty(txtIcdText.Text))
-                {
-                    outPut.ICD_TEXT = txtIcdText.Text;
-                }
+                //if (!String.IsNullOrEmpty(txtIcdSubCode.Text))
+                //{
+                //    outPut.ICD_SUB_CODE = txtIcdSubCode.Text;
+                //}
+                //if (!String.IsNullOrEmpty(txtIcdText.Text))
+                //{
+                //    outPut.ICD_TEXT = txtIcdText.Text;
+                //}
                 result = outPut;
             }
             catch (Exception ex)
@@ -1044,6 +1052,45 @@ namespace HIS.UC.ExamTreatmentFinish.Run
                     txtIcdCode.ErrorText = "";
                     dxValidationProvider1.RemoveControlError(txtIcdCode);
                     dxValidationProvider1.SetValidationRule(txtIcdCode, null);
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+
+        public void ValidationICDYhct(int? maxLengthCode, int? maxLengthText, bool isRequired)
+        {
+            try
+            {
+                if (isRequired)
+                {
+                    layoutControlItem3.AppearanceItemCaption.ForeColor = Color.Maroon;
+
+                    IcdYhctValidationRuleControl icdMainRule = new IcdYhctValidationRuleControl();
+                    icdMainRule.txtIcdYhctCode = txtTraditionalIcdCode;
+                    icdMainRule.txtYhctMainText = txtTraditionalIcdMainText;
+                    icdMainRule.maxLengthCode = maxLengthCode;
+                    icdMainRule.maxLengthText = maxLengthText;
+                    icdMainRule.ErrorText = "Trường dữ liệu bắt buộc nhập";
+                    icdMainRule.ErrorType = ErrorType.Warning;
+                    icdMainRule.icdYhcts = currentTraditionalIcds;
+                    dxValidationProvider1.SetValidationRule(txtTraditionalIcdCode, icdMainRule);
+                }
+                else
+                {
+                    layoutControlItem3.AppearanceItemCaption.ForeColor = new System.Drawing.Color();
+                    IcdYhctValidationRuleControl icdMainRule = new IcdYhctValidationRuleControl();
+                    icdMainRule.txtIcdYhctCode = txtTraditionalIcdCode;
+                    icdMainRule.txtYhctMainText = txtTraditionalIcdMainText;
+                    icdMainRule.maxLengthCode = maxLengthCode;
+                    icdMainRule.maxLengthText = maxLengthText;
+                    //icdMainRule.ErrorText = "Trường dữ liệu bắt buộc nhập";
+                    icdMainRule.ErrorType = ErrorType.Warning;
+                    icdMainRule.IsRequired = false;
+                    icdMainRule.icdYhcts = currentTraditionalIcds;
+                    dxValidationProvider1.SetValidationRule(txtTraditionalIcdCode, icdMainRule);
                 }
             }
             catch (Exception ex)

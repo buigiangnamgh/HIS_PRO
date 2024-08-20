@@ -27,6 +27,7 @@ namespace HIS.UC.ExamTreatmentFinish.Run
             ValidateCombo(cboTreatmentEndType);
             ValidateCombo(cboTreatmentResult);
             ValidationICD(10, 500, !this.isAllowNoIcd);
+            ValidationICDYhct(10, 500, false);
             ValidateComboCareer();
             ValidationControlMaxLength(memNote, 2000);
         }

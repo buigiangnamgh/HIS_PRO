@@ -35,6 +35,8 @@ namespace HIS.UC.ExamTreatmentFinish.Run
                 var valid = dxValidationProvider1.Validate();
                 if (ucSecondaryIcd != null)
                     valid = valid && (bool)subIcdProcessor.GetValidate(ucSecondaryIcd);
+                if (ucSecondaryIcdYhct != null)
+                    valid = valid && (bool)subIcdYhctProcessor.GetValidate(ucSecondaryIcdYhct);
                 if (!valid)
                     return null;
                 ExamTreatmentFinish = new ExamTreatmentFinishResult();
