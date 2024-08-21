@@ -588,7 +588,7 @@ namespace His.Bhyt.ExportXml.XML130.XML3
                         }
 
                     }
-                    else if (String.IsNullOrEmpty(maMay) && hisSereServ.MACHINE_ID != null)
+                    else if (String.IsNullOrEmpty(maMay) && hisSereServ.MACHINE_ID != null && !String.IsNullOrEmpty(hisSereServ.SERIAL_NUMBER))
                     {
                         maMay = String.Format("{0}.{1}.{2}.{3}", hisSereServ.MACHINE_GROUP_CODE, hisSereServ.SOURCE_CODE, data.Treatment.HEIN_MEDI_ORG_CODE, hisSereServ.SERIAL_NUMBER);
                     }
