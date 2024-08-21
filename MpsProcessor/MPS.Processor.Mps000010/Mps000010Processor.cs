@@ -122,7 +122,7 @@ namespace MPS.Processor.Mps000010
                     {
                         SetSingleKey(new KeyValue(Mps000010ExtendSingleKey.CAP_CUU,"X"));
                     }
-                    else if( !string.IsNullOrEmpty(rdo.PatyAlterBhyt.RIGHT_ROUTE_TYPE_CODE) || rdo.PatyAlterBhyt.RIGHT_ROUTE_TYPE_CODE == "DT")
+                    else if( !string.IsNullOrEmpty(rdo.PatyAlterBhyt.RIGHT_ROUTE_CODE) || rdo.PatyAlterBhyt.RIGHT_ROUTE_CODE == "DT")
                     {
                         SetSingleKey(new KeyValue(Mps000010ExtendSingleKey.DUNG_TUYEN, "X"));
                     }
