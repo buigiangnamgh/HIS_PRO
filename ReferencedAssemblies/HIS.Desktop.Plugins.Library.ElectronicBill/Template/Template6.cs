@@ -138,8 +138,8 @@ namespace HIS.Desktop.Plugins.Library.ElectronicBill.Template
                             {
                                 ProductBase product = new ProductBase();
                                 product.ProdName = item.TDL_SERVICE_NAME;
-                                product.ProdPrice = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(item.PRICE);
-                                product.ProdQuantity = 1;
+                                product.ProdPrice = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(item.TDL_PRICE ?? 0);
+                                product.ProdQuantity = item.TDL_AMOUNT;
                                 product.Amount = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(item.PRICE);
                                 product.ProdUnit = " ";
                                 product.TaxRateID = Base.ProviderType.tax_KCT;
