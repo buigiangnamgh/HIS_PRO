@@ -397,24 +397,9 @@ namespace His.Bhyt.ExportXml.XML130.XML3
                         donGiaBV = Math.Round(donGiaBV_TamTinh.Value * (1 + hisSereServ.VAT_RATIO), 3, MidpointRounding.AwayFromZero);
                     else
                         donGiaBV = hisSereServ.VIR_PRICE ?? 0;
+                    tyLeThanhToanDV = 100;
 
-                    donGiaBH = Math.Round(hisSereServ.ORIGINAL_PRICE * (1 + hisSereServ.VAT_RATIO), 3, MidpointRounding.AwayFromZero);
-
-                    decimal tyle = 0;
-                    if (hisSereServ.ORIGINAL_PRICE > 0)
-                    {
-                        tyle = hisSereServ.HEIN_LIMIT_PRICE.HasValue ? (hisSereServ.HEIN_LIMIT_PRICE.Value / (hisSereServ.ORIGINAL_PRICE * (1 + hisSereServ.VAT_RATIO))) * 100 : (hisSereServ.PRICE / hisSereServ.ORIGINAL_PRICE) * 100;
-                    }
-                    tyLeThanhToanDV = Math.Round(tyle, 0);
-                    if (patientType.PATIENT_TYPE_CODE == Config_PatientTypeCodeBHYTOption)
-                    {
-                        if (hisSereServ.HEIN_LIMIT_RATIO.HasValue)
-                            tyLeThanhToanBH = Math.Round(hisSereServ.HEIN_LIMIT_RATIO.Value, 0);
-                        else
-                            tyLeThanhToanBH = 100;
-                    }
                     thanhTienBV = Math.Round(soLuong * donGiaBV * (tyLeThanhToanDV / 100), 2, MidpointRounding.AwayFromZero);
-                    thanhTienBH = Math.Round(soLuong * donGiaBH * (tyLeThanhToanDV / 100) * (tyLeThanhToanBH / 100), 2, MidpointRounding.AwayFromZero);
 
                     mucHuong = hisSereServ.HEIN_RATIO.HasValue ? (int)(hisSereServ.HEIN_RATIO.Value * 100) : 0;
 
@@ -434,10 +419,27 @@ namespace His.Bhyt.ExportXml.XML130.XML3
                             tNguonKhacCl = tNguonKhac;
                             break;
                     }
+                    donGiaBH = Math.Round(hisSereServ.ORIGINAL_PRICE * (1 + hisSereServ.VAT_RATIO), 3, MidpointRounding.AwayFromZero);
 
-                    tBhtt = Math.Round(thanhTienBH * (hisSereServ.HEIN_RATIO ?? 0), 2, MidpointRounding.AwayFromZero);
-                    tBncct = Math.Round(thanhTienBH - tBhtt, 2, MidpointRounding.AwayFromZero);
-                    tBntt = Math.Round(thanhTienBV - thanhTienBH - tNguonKhac, 2, MidpointRounding.AwayFromZero);
+                    tBhtt = Math.Round((hisSereServ.VIR_TOTAL_HEIN_PRICE ?? 0), 2, MidpointRounding.AwayFromZero);
+                    tBncct = Math.Round((hisSereServ.VIR_TOTAL_PATIENT_PRICE_BHYT ?? 0), 2, MidpointRounding.AwayFromZero);
+                    tBntt = Math.Round((hisSereServ.VIR_TOTAL_PATIENT_PRICE ?? 0) - (hisSereServ.VIR_TOTAL_PATIENT_PRICE_BHYT ?? 0) - tNguonKhac, 2, MidpointRounding.AwayFromZero);
+                    thanhTienBH = Math.Round((hisSereServ.VIR_TOTAL_HEIN_PRICE ?? 0) + (hisSereServ.VIR_TOTAL_PATIENT_PRICE_BHYT ?? 0), 2, MidpointRounding.AwayFromZero);
+
+                    decimal tyle = 0;
+                    if (hisSereServ.ORIGINAL_PRICE > 0)
+                    {
+                        tyle = ((hisSereServ.VIR_TOTAL_HEIN_PRICE ?? 0) + (hisSereServ.VIR_TOTAL_PATIENT_PRICE_BHYT ?? 0)) / (hisSereServ.AMOUNT * (hisSereServ.ORIGINAL_PRICE * (1 + hisSereServ.VAT_RATIO))) * 100;
+                    }
+                   
+                    if (patientType.PATIENT_TYPE_CODE == Config_PatientTypeCodeBHYTOption)
+                    {
+                        tyLeThanhToanBH = Math.Round(tyle, 0);
+                    }
+                    else
+                    {
+                        tyLeThanhToanBH = 0;
+                    }
                     if (tBntt < 0)
                     {
                         tBncct += tBntt;
