@@ -164,13 +164,21 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
 
                     List<long> lstNotDisplayIds = BackendDataWorker.Get<HIS_SERVICE_TYPE>().ToList().Where(o => o.IS_NOT_DISPLAY_ASSIGN == 1).Select(o => o.ID).ToList();
 
-                    if (lstNotDisplayIds !=null && lstNotDisplayIds.Count>0)
-					{
-                        this.ServiceAllADOs = this.ServiceAllADOs.Where(o => !lstNotDisplayIds.Exists(p=>p == o.SERVICE_TYPE_ID) &&!(o.SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__G && o.HEIN_SERVICE_BHYT_CODE != null &&HisConfigCFG.IsNotDisplayBedHein)).ToList();
-                        this.ServiceParentADOs = this.ServiceParentADOs.Where(o => !lstNotDisplayIds.Exists(p => p == o.SERVICE_TYPE_ID) && !(o.SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__G && o.HEIN_SERVICE_BHYT_CODE != null && HisConfigCFG.IsNotDisplayBedHein)).ToList();
-                        this.ServiceParentADOForGridServices = this.ServiceParentADOForGridServices.Where(o => !lstNotDisplayIds.Exists(p => p == o.SERVICE_TYPE_ID) && !(o.SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__G && o.HEIN_SERVICE_BHYT_CODE != null && HisConfigCFG.IsNotDisplayBedHein)).ToList();
-                        this.ServiceIsleafADOs = this.ServiceIsleafADOs.Where(o => !lstNotDisplayIds.Exists(p => p == o.SERVICE_TYPE_ID) && !(o.SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__G && o.TDL_HEIN_SERVICE_BHYT_CODE != null && HisConfigCFG.IsNotDisplayBedHein)).ToList();
-                    }                        
+                    if (lstNotDisplayIds != null && lstNotDisplayIds.Count > 0)
+                    {
+                        this.ServiceAllADOs = this.ServiceAllADOs.Where(o => !lstNotDisplayIds.Exists(p => p == o.SERVICE_TYPE_ID)).ToList();
+                        this.ServiceParentADOs = this.ServiceParentADOs.Where(o => !lstNotDisplayIds.Exists(p => p == o.SERVICE_TYPE_ID)).ToList();
+                        this.ServiceParentADOForGridServices = this.ServiceParentADOForGridServices.Where(o => !lstNotDisplayIds.Exists(p => p == o.SERVICE_TYPE_ID)).ToList();
+                        this.ServiceIsleafADOs = this.ServiceIsleafADOs.Where(o => !lstNotDisplayIds.Exists(p => p == o.SERVICE_TYPE_ID)).ToList();
+                    }
+
+                    if (HisConfigCFG.IsNotDisplayBedHein)
+                    {
+                        this.ServiceAllADOs = this.ServiceAllADOs.Where(o =>!(o.SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__G && o.HEIN_SERVICE_BHYT_CODE != null)).ToList();
+                        this.ServiceParentADOs = this.ServiceParentADOs.Where(o => !(o.SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__G && o.HEIN_SERVICE_BHYT_CODE != null)).ToList();
+                        this.ServiceParentADOForGridServices = this.ServiceParentADOForGridServices.Where(o => !(o.SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__G && o.HEIN_SERVICE_BHYT_CODE != null)).ToList();
+                        this.ServiceIsleafADOs = this.ServiceIsleafADOs.Where(o => !(o.SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__G && o.TDL_HEIN_SERVICE_BHYT_CODE != null)).ToList();
+                    }     
 
                     foreach (var item in this.ServiceIsleafADOs)
                     {
