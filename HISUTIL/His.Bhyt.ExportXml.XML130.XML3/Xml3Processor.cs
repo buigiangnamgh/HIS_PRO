@@ -388,18 +388,22 @@ namespace His.Bhyt.ExportXml.XML130.XML3
 
                     soLuong = Math.Round(hisSereServ.AMOUNT, 3, MidpointRounding.AwayFromZero);
 
-                    //decimal? donGiaBV_TamTinh = null;
-                    //if (hisSereServ.PRIMARY_PATIENT_TYPE_ID != null)
-                    //    donGiaBV_TamTinh = hisSereServ.LIMIT_PRICE;
-                    //else
-                    //    donGiaBV_TamTinh = hisSereServ.PRIMARY_PRICE;
-                    //if (donGiaBV_TamTinh > 0)
-                    //    donGiaBV = Math.Round(donGiaBV_TamTinh.Value * (1 + hisSereServ.VAT_RATIO), 3, MidpointRounding.AwayFromZero);
-                    //else
-                    donGiaBV = Math.Round(hisSereServ.VIR_PRICE ?? 0, 3, MidpointRounding.AwayFromZero);
+                    decimal? donGiaBV_TamTinh = null;
+                    if (hisSereServ.PRIMARY_PATIENT_TYPE_ID != null)
+                        donGiaBV_TamTinh = hisSereServ.LIMIT_PRICE;
+                    else
+                        donGiaBV_TamTinh = hisSereServ.PRIMARY_PRICE;
+                    if (donGiaBV_TamTinh > 0)
+                        donGiaBV = Math.Round(donGiaBV_TamTinh.Value * (1 + hisSereServ.VAT_RATIO), 3, MidpointRounding.AwayFromZero);
+                    else
+                        donGiaBV = Math.Round(hisSereServ.VIR_PRICE ?? 0, 3, MidpointRounding.AwayFromZero);
                     tyLeThanhToanDV = 100;
 
-                    thanhTienBV = Math.Round(soLuong * donGiaBV * (tyLeThanhToanDV / 100), 2, MidpointRounding.AwayFromZero);
+                    thanhTienBV = Math.Round((hisSereServ.VIR_TOTAL_PRICE ?? 0), 2, MidpointRounding.AwayFromZero);
+                    if (donGiaBV > 0 && donGiaBV > (hisSereServ.VIR_PRICE ?? 0))
+                    {
+                        tyLeThanhToanDV = Math.Round((hisSereServ.VIR_PRICE ?? 0) / donGiaBV * 100, 0);
+                    }
 
                     mucHuong = hisSereServ.HEIN_RATIO.HasValue ? (int)(hisSereServ.HEIN_RATIO.Value * 100) : 0;
 
@@ -431,7 +435,7 @@ namespace His.Bhyt.ExportXml.XML130.XML3
                     {
                         tyle = ((hisSereServ.VIR_TOTAL_HEIN_PRICE ?? 0) + (hisSereServ.VIR_TOTAL_PATIENT_PRICE_BHYT ?? 0)) / (hisSereServ.AMOUNT * (hisSereServ.ORIGINAL_PRICE * (1 + hisSereServ.VAT_RATIO))) * 100;
                     }
-                   
+
                     if (patientType.PATIENT_TYPE_CODE == Config_PatientTypeCodeBHYTOption)
                     {
                         tyLeThanhToanBH = Math.Round(tyle, 0);
@@ -528,7 +532,7 @@ namespace His.Bhyt.ExportXml.XML130.XML3
                         lstMaBenh.AddRange(benh);
                     }
                     maBenh = string.Join(";", lstMaBenh.Where(o => !String.IsNullOrWhiteSpace(o)).Distinct());
-                   if (Encoding.UTF8.GetByteCount(maBenh) > 100)
+                    if (Encoding.UTF8.GetByteCount(maBenh) > 100)
                     {
                         maBenh = SubStringWithSeparate(maBenh);
                     }
