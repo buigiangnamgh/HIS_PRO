@@ -151,6 +151,9 @@ namespace His.Bhyt.ExportXml.XML130.XML2.QD130.Processor
                     else
                         xml2.TT_THAU = "";
 
+                    if (xml2.MA_THUOC == "40.17") xml2.TT_THAU = ""; //nếu thuốc có mã thuốc 40.17 thì để trống TT_THAU
+
+
                     decimal TyleTTBH = 0;
                     if (patientType.PATIENT_TYPE_CODE == Config_PatientTypeCodeBHYTOption)
                     {
