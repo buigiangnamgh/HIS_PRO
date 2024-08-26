@@ -388,15 +388,15 @@ namespace His.Bhyt.ExportXml.XML130.XML3
 
                     soLuong = Math.Round(hisSereServ.AMOUNT, 3, MidpointRounding.AwayFromZero);
 
-                    decimal? donGiaBV_TamTinh = null;
-                    if (hisSereServ.PRIMARY_PATIENT_TYPE_ID != null)
-                        donGiaBV_TamTinh = hisSereServ.LIMIT_PRICE;
-                    else
-                        donGiaBV_TamTinh = hisSereServ.PRIMARY_PRICE;
-                    if (donGiaBV_TamTinh > 0)
-                        donGiaBV = Math.Round(donGiaBV_TamTinh.Value * (1 + hisSereServ.VAT_RATIO), 3, MidpointRounding.AwayFromZero);
-                    else
-                        donGiaBV = hisSereServ.VIR_PRICE ?? 0;
+                    //decimal? donGiaBV_TamTinh = null;
+                    //if (hisSereServ.PRIMARY_PATIENT_TYPE_ID != null)
+                    //    donGiaBV_TamTinh = hisSereServ.LIMIT_PRICE;
+                    //else
+                    //    donGiaBV_TamTinh = hisSereServ.PRIMARY_PRICE;
+                    //if (donGiaBV_TamTinh > 0)
+                    //    donGiaBV = Math.Round(donGiaBV_TamTinh.Value * (1 + hisSereServ.VAT_RATIO), 3, MidpointRounding.AwayFromZero);
+                    //else
+                    donGiaBV = Math.Round(hisSereServ.VIR_PRICE ?? 0, 3, MidpointRounding.AwayFromZero);
                     tyLeThanhToanDV = 100;
 
                     thanhTienBV = Math.Round(soLuong * donGiaBV * (tyLeThanhToanDV / 100), 2, MidpointRounding.AwayFromZero);
