@@ -300,7 +300,7 @@ namespace His.Bhyt.ExportXml.XML130.XML2.QD130.Processor
                     }
 
                     xml2.NGAY_YL = SereServ.INTRUCTION_TIME.ToString().Substring(0, 12);
-                    xml2.NGAY_TH_YL = SereServ.START_TIME != null && SereServ.START_TIME > 0 ? SereServ.START_TIME.ToString().Substring(0, 12) : xml2.NGAY_YL;
+                    xml2.NGAY_TH_YL = xml2.NGAY_YL;// SereServ.START_TIME != null && SereServ.START_TIME > 0 ? SereServ.START_TIME.ToString().Substring(0, 12) : xml2.NGAY_YL; tam thoi xu ly ngay y lenh = ngay thyl vi thuoc chua co cho de nhap NGAY_TH_YL
                     xml2.MA_PTTT = "1";
 
                     if (tBHTT > 0)
