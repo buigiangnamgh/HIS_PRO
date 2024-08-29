@@ -1785,7 +1785,7 @@ namespace HIS.Desktop.Plugins.ExecuteRoom
                         && serviceReqInput.SERVICE_REQ_TYPE_ID != IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__PT
                         && serviceReqInput.SERVICE_REQ_TYPE_ID != IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__TT) // PTTT sẽ check lúc kết thúc bên form xử lý pttt
                     {
-                        MessageBox.Show("Tài khoản chưa nhập chứng chỉ hành nghề", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("Xử lý thất bại. Tài khoản thực hiện dịch vụ chưa cập nhật chứng chỉ hành nghề, vui lòng cập nhật!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
