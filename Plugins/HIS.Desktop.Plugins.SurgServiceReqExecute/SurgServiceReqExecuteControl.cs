@@ -1150,7 +1150,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 if (HisConfigCFG.REQUIRED_DIPLOMA == "1"
                     && String.IsNullOrEmpty(employee.DIPLOMA))
                 {
-                    MessageBox.Show("Tài khoản chưa nhập chứng chỉ hành nghề", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("Xử lý thất bại. Tài khoản kết thúc dịch vụ chưa cập nhật chứng chỉ hành nghề, vui lòng cập nhật!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
