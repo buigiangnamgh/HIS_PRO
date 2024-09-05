@@ -35,7 +35,13 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute.Config
                 return HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>("HIS.Desktop.Plugins.SurgServiceReqExecute.RequiredGroupPTTTOption");
             }
         }
-
+        internal static string REQUIRED_CONCLUDE
+        {
+            get
+            {
+                return HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>("HIS.Desktop.Plugins.SurgServiceReqExecute.RequiedConclude");
+            }
+        }
         internal static string REQUIRED_DIPLOMA
         {
             get
@@ -67,6 +73,6 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute.Config
                 return HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>("HIS.Desktop.Plugins.ProcessTimeMustBeLessThanMaxTotalProcessTime");
             }
         }
-        
+
     }
 }

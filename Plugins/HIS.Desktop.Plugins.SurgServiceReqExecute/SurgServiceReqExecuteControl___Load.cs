@@ -1877,6 +1877,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                     this.lciStartTime.AppearanceItemCaption.ForeColor = ColorStart;
                     ValidationStartTime();
                 }
+                ValidationConclude();
                 var Color = layoutControlItem17.AppearanceItemCaption.ForeColor;
                 if (txtLoaiPT.ReadOnly)
                 {

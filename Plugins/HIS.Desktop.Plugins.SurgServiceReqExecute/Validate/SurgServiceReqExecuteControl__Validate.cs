@@ -48,6 +48,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                     ValidationLookUpWithTextEdit(cbbPtttGroup, txtPtttGroupCode);
                 }
                 ValidationStartTime();
+                ValidationConclude();
                 ValiVuotQuaKyTu();
                 ValidationFinishTime();
                 if (PriorityIsRequired == 1 || (PriorityIsRequired == 2 && this.serviceReq.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__PT))
@@ -112,6 +113,29 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 mainRule.keyCheckStatsTime = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>("HIS.DESKTOP.PLUGINS.SURGSERVICEREQEXECUTE.BIG_START_TIME_CURRENT_TIME") == "1"; ;
                 mainRule.ErrorType = ErrorType.Warning;
                 this.dxValidationProvider1.SetValidationRule(dtStart, mainRule);
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+
+        private void ValidationConclude()
+        {
+            try
+            {
+                if (this.sereServ != null)
+                {
+                    var service = BackendDataWorker.Get<V_HIS_SERVICE>().FirstOrDefault(o => o.ID == this.sereServ.SERVICE_ID);
+                    ConcludeValidationRule mainRule = new ConcludeValidationRule();
+                    mainRule.conclude = txtConclude;
+                    mainRule.is_CDHA_Type_Bhyt = service.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__CDHA;
+                    mainRule.requiedConfig = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>("HIS.Desktop.Plugins.SurgServiceReqExecute.RequiedConclude") == "1";
+                    mainRule.ErrorType = ErrorType.Warning;
+                    this.dxValidationProvider1.SetValidationRule(txtConclude, mainRule);
+
+                }
+
             }
             catch (Exception ex)
             {
