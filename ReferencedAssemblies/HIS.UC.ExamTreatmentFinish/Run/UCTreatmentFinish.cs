@@ -160,6 +160,8 @@ namespace HIS.UC.ExamTreatmentFinish.Run
                 checkIcdManager = new Desktop.Plugins.Library.CheckIcd.CheckIcdManager(DlgIcdSubCode, this.ExamTreatmentFinishInitADO.Treatment);
                 SetCaptionByLanguageKey();
                 LoadDataTocboUser();
+                if (this.layoutControlItem31.AppearanceItemCaption.ForeColor == Color.Brown) ValidateSignDirect();
+                if (this.layoutControlItem30.AppearanceItemCaption.ForeColor == Color.Brown) ValidateSignHead();
             }
             catch (Exception ex)
             {

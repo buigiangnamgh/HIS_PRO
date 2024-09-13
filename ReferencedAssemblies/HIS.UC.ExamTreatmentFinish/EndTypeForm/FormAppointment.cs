@@ -32,6 +32,8 @@ using HIS.UC.ExamTreatmentFinish.Run;
 using HIS.UC.ExamTreatmentFinish.Resources;
 using System.Resources;
 using Inventec.Desktop.Common.LanguageManager;
+using HIS.Desktop.Library.CacheClient;
+using Inventec.Desktop.Common.Message;
 
 namespace HIS.UC.ExamTreatmentFinish.EndTypeForm
 {
@@ -61,6 +63,11 @@ namespace HIS.UC.ExamTreatmentFinish.EndTypeForm
         bool IsReturnClosed = false;
         bool IsRoomBlock = false;
         UCAppointmentAdvise ucAdvise;
+        private bool isNotLoadWhileChangeControlStateInFirst;
+        private ControlStateWorker controlStateWorker;
+        private List<ControlStateRDO> currentControlStateRDO;
+        string moduleLink = "HIS.UC.ExamTreatmentFinish.EndTypeForm.FormAppointment";
+
         #endregion
 
         #region Construct
@@ -84,6 +91,8 @@ namespace HIS.UC.ExamTreatmentFinish.EndTypeForm
         {
             try
             {
+                isNotLoadWhileChangeControlStateInFirst = true;
+                InitControlState();
                 this.initNumOderBlock = true;
                 SetIcon();
 
@@ -142,7 +151,7 @@ namespace HIS.UC.ExamTreatmentFinish.EndTypeForm
                 ValidationControlMaxLength(this.txtAdvise, 500);
                 this.initNumOderBlock = false;
                 this.StartPosition = FormStartPosition.CenterParent;
-                
+                isNotLoadWhileChangeControlStateInFirst = false;
             }
             catch (Exception ex)
             {
@@ -195,7 +204,7 @@ namespace HIS.UC.ExamTreatmentFinish.EndTypeForm
                     filter.ROOM_ID = Inventec.Common.TypeConvert.Parse.ToInt64(cboRoomEx.EditValue.ToString());
                 }
 
-                apiResult = new BackendAdapter(param).Get<List<HisNumOrderBlockSDO>>("api/HisNumOrderBlock/GetOccupiedStatus", ApiConsumers.MosConsumer, filter, param);
+                apiResult = new BackendAdapter(param).Get<List<HisNumOrderBlockSDO>>("api/HisNumOrderBlock/GetOccupiedStatus", Desktop.ApiConsumer.ApiConsumers.MosConsumer, filter, param);
 
                 ProcessCreateTab(apiResult);
 
@@ -262,7 +271,7 @@ namespace HIS.UC.ExamTreatmentFinish.EndTypeForm
                 HisNumOrderBlockOccupiedStatusFilter filter = new HisNumOrderBlockOccupiedStatusFilter();
                 filter.ISSUE_DATE = Inventec.Common.TypeConvert.Parse.ToInt64(dtTimeAppointments.DateTime.ToString("yyyyMMdd") + "000000");
                 filter.ROOM_ID = Int64.Parse(cboRoomEx.EditValue.ToString());
-                var HisNumOrderBlockSDOTmps = new Inventec.Common.Adapter.BackendAdapter(new CommonParam()).Get<List<HisNumOrderBlockSDO>>("api/HisNumOrderBlock/GetOccupiedStatus", ApiConsumers.MosConsumer, filter, null);
+                var HisNumOrderBlockSDOTmps = new Inventec.Common.Adapter.BackendAdapter(new CommonParam()).Get<List<HisNumOrderBlockSDO>>("api/HisNumOrderBlock/GetOccupiedStatus", Desktop.ApiConsumer.ApiConsumers.MosConsumer, filter, null);
                 if (HisNumOrderBlockSDOTmps != null && HisNumOrderBlockSDOTmps.Count > 0)
                 {
                     HisNumOrderBlockSDOs = HisNumOrderBlockSDOTmps.Where(o => o.IS_ISSUED == null || o.IS_ISSUED != 1).OrderBy(o => o.FROM_TIME).ToList();
@@ -376,7 +385,7 @@ namespace HIS.UC.ExamTreatmentFinish.EndTypeForm
                     filter.ROOM_ID = _RoomExamADOs.Where(o => o.IsCheck).FirstOrDefault().ID;
                 }
                 //filter.IS_ACTIVE = 1;
-                var HisNumOrderBlockSDOTmps = new Inventec.Common.Adapter.BackendAdapter(new CommonParam()).Get<List<HisNumOrderBlockSDO>>("api/HisNumOrderBlock/GetOccupiedStatus", ApiConsumers.MosConsumer, filter, null);
+                var HisNumOrderBlockSDOTmps = new Inventec.Common.Adapter.BackendAdapter(new CommonParam()).Get<List<HisNumOrderBlockSDO>>("api/HisNumOrderBlock/GetOccupiedStatus", Desktop.ApiConsumer.ApiConsumers.MosConsumer, filter, null);
                 if (HisNumOrderBlockSDOTmps != null && HisNumOrderBlockSDOTmps.Count > 0)
                 {
                     HisNumOrderBlockSDOs = HisNumOrderBlockSDOTmps.Where(o => o.IS_ISSUED == null || o.IS_ISSUED != 1).OrderBy(o => o.FROM_TIME).ToList();
@@ -429,7 +438,7 @@ namespace HIS.UC.ExamTreatmentFinish.EndTypeForm
                 filter.APPOINTMENT_DATE = Inventec.Common.TypeConvert.Parse.ToInt64(dtTimeAppointments.DateTime.ToString("yyyyMMdd") + "000000");
                 filter.BRANCH_ID = HIS.Desktop.LocalStorage.LocalData.WorkPlace.GetBranchId();
                 filter.IS_ACTIVE = 1;
-                ListTime = new Inventec.Common.Adapter.BackendAdapter(new CommonParam()).Get<List<HisAppointmentPeriodCountByDateSDO>>("api/HisAppointmentPeriod/GetCountByDate", ApiConsumers.MosConsumer, filter, null);
+                ListTime = new Inventec.Common.Adapter.BackendAdapter(new CommonParam()).Get<List<HisAppointmentPeriodCountByDateSDO>>("api/HisAppointmentPeriod/GetCountByDate", Desktop.ApiConsumer.ApiConsumers.MosConsumer, filter, null);
                 if (ListTime != null && ListTime.Count > 0)
                 {
                     ListTime = ListTime.OrderBy(o => o.FROM_HOUR).ThenBy(o => o.FROM_MINUTE).ThenBy(o => o.TO_HOUR).ThenBy(o => o.TO_MINUTE).ToList();
@@ -491,7 +500,7 @@ namespace HIS.UC.ExamTreatmentFinish.EndTypeForm
                     filter.SERVICE_REQ_TYPE_IDs = new List<long> { IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__DONK };
                     filter.ORDER_DIRECTION = "DESC";
                     filter.ORDER_FIELD = "CREATE_TIME";
-                    var serviceReqs = new Inventec.Common.Adapter.BackendAdapter(new Inventec.Core.CommonParam()).Get<List<MOS.EFMODEL.DataModels.HIS_SERVICE_REQ>>("api/HisServiceReq/Get", ApiConsumers.MosConsumer, filter, null);
+                    var serviceReqs = new Inventec.Common.Adapter.BackendAdapter(new Inventec.Core.CommonParam()).Get<List<MOS.EFMODEL.DataModels.HIS_SERVICE_REQ>>("api/HisServiceReq/Get", Desktop.ApiConsumer.ApiConsumers.MosConsumer, filter, null);
 
                     var serviceReq = serviceReqs.Where(o => o.USE_TIME_TO.HasValue).OrderByDescending(o => o.USE_TIME_TO).FirstOrDefault();
                     if (serviceReq != null)
@@ -659,7 +668,7 @@ namespace HIS.UC.ExamTreatmentFinish.EndTypeForm
                 HisAppointmentServFilter appointmentServFilter = new HisAppointmentServFilter();
                 appointmentServFilter.TREATMENT_ID = hisTreatment.ID;
                 List<HIS_APPOINTMENT_SERV> appoinmentServs = new BackendAdapter(param)
-                    .Get<List<HIS_APPOINTMENT_SERV>>("api/HisAppointmentServ/Get", ApiConsumers.MosConsumer, appointmentServFilter, param);
+                    .Get<List<HIS_APPOINTMENT_SERV>>("api/HisAppointmentServ/Get", Desktop.ApiConsumer.ApiConsumers.MosConsumer, appointmentServFilter, param);
                 if (appoinmentServs != null && appoinmentServs.Count > 0)
                 {
                     count = true;
@@ -740,17 +749,20 @@ namespace HIS.UC.ExamTreatmentFinish.EndTypeForm
                     }
                 }
 
-                if (dtTimeAppointments.DateTime.DayOfWeek == DayOfWeek.Sunday)
+                if (!chkNotCheckT7CN.Checked)
                 {
-                    if (DevExpress.XtraEditors.XtraMessageBox.Show(Resources.ResourceMessage.CanhBaoNgayHenLaChuNhat,
-                    Resources.ResourceMessage.ThongBao,
-                    MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No) return;
-                }
-                else if (dtTimeAppointments.DateTime.DayOfWeek == DayOfWeek.Saturday)
-                {
-                    if (DevExpress.XtraEditors.XtraMessageBox.Show(Resources.ResourceMessage.CanhBaoNgayHenLaThuBay,
-                    Resources.ResourceMessage.ThongBao,
-                    MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No) return;
+                    if (dtTimeAppointments.DateTime.DayOfWeek == DayOfWeek.Sunday)
+                    {
+                        if (DevExpress.XtraEditors.XtraMessageBox.Show(Resources.ResourceMessage.CanhBaoNgayHenLaChuNhat,
+                        Resources.ResourceMessage.ThongBao,
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No) return;
+                    }
+                    else if (dtTimeAppointments.DateTime.DayOfWeek == DayOfWeek.Saturday)
+                    {
+                        if (DevExpress.XtraEditors.XtraMessageBox.Show(Resources.ResourceMessage.CanhBaoNgayHenLaThuBay,
+                        Resources.ResourceMessage.ThongBao,
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No) return;
+                    }
                 }
 
                 long dtAppointmentTime = Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(dtTimeAppointments.DateTime) ?? 0;
@@ -928,7 +940,7 @@ namespace HIS.UC.ExamTreatmentFinish.EndTypeForm
                     filter.INTR_OR_APPOINT_DATE = Convert.ToInt64(dtTimeAppointments.DateTime.ToString("yyyyMMdd") + "000000");
                     LogSystem.Debug("Filter: \n" + LogUtil.TraceData("Filter", filter));
 
-                    List<HisExecuteRoomAppointedSDO> sdos = new BackendAdapter(new CommonParam()).Get<List<HisExecuteRoomAppointedSDO>>("api/HisExecuteRoom/GetCountAppointed", ApiConsumers.MosConsumer, filter, null);
+                    List<HisExecuteRoomAppointedSDO> sdos = new BackendAdapter(new CommonParam()).Get<List<HisExecuteRoomAppointedSDO>>("api/HisExecuteRoom/GetCountAppointed", Desktop.ApiConsumer.ApiConsumers.MosConsumer, filter, null);
                     List<HisExecuteRoomAppointedSDO> overs = sdos != null ? sdos.Where(o => (o.MaxAmount ?? 0) > 0 && (o.CurrentAmount ?? 0) > 0 && o.CurrentAmount.Value >= o.MaxAmount).ToList() : null;
                     LogSystem.Debug("sdos: \n" + LogUtil.TraceData("sdos", sdos));
                     if (overs != null && overs.Count > 0)
@@ -1690,6 +1702,65 @@ namespace HIS.UC.ExamTreatmentFinish.EndTypeForm
             {
                 Inventec.Common.Logging.LogSystem.Error(ex);
             }
+        }
+
+        private void chkNotCheckT7CN_CheckedChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                if (isNotLoadWhileChangeControlStateInFirst)
+                {
+                    return;
+                }
+                WaitingManager.Show();
+                HIS.Desktop.Library.CacheClient.ControlStateRDO csAddOrUpdate = (this.currentControlStateRDO != null && this.currentControlStateRDO.Count > 0) ? this.currentControlStateRDO.Where(o => o.KEY == chkNotCheckT7CN.Name && o.MODULE_LINK == moduleLink).FirstOrDefault() : null;
+                if (csAddOrUpdate != null)
+                {
+                    csAddOrUpdate.VALUE = (chkNotCheckT7CN.Checked ? "1" : "");
+                }
+                else
+                {
+                    csAddOrUpdate = new HIS.Desktop.Library.CacheClient.ControlStateRDO();
+                    csAddOrUpdate.KEY = chkNotCheckT7CN.Name;
+                    csAddOrUpdate.VALUE = (chkNotCheckT7CN.Checked ? "1" : "");
+                    csAddOrUpdate.MODULE_LINK = moduleLink;
+                    if (this.currentControlStateRDO == null)
+                        this.currentControlStateRDO = new List<HIS.Desktop.Library.CacheClient.ControlStateRDO>();
+                    this.currentControlStateRDO.Add(csAddOrUpdate);
+                }
+                this.controlStateWorker.SetData(this.currentControlStateRDO);
+                WaitingManager.Hide();
+            }
+            catch (Exception ex)
+            {
+                WaitingManager.Hide();
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+        }
+        private void InitControlState()
+        {
+            isNotLoadWhileChangeControlStateInFirst = true;
+            try
+            {
+                this.controlStateWorker = new HIS.Desktop.Library.CacheClient.ControlStateWorker();
+                this.currentControlStateRDO = controlStateWorker.GetData(moduleLink);
+                Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => currentControlStateRDO), currentControlStateRDO));
+                if (this.currentControlStateRDO != null && this.currentControlStateRDO.Count > 0)
+                {
+                    foreach (var item in this.currentControlStateRDO)
+                    {
+                        if (item.KEY == chkNotCheckT7CN.Name)
+                        {
+                            chkNotCheckT7CN.Checked = item.VALUE == "1";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+            isNotLoadWhileChangeControlStateInFirst = false;
         }
     }
 }

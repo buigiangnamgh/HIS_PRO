@@ -42,6 +42,42 @@ namespace HIS.UC.ExamTreatmentFinish.Run
             this.dxValidationProvider1.SetValidationRule(control, validate);
         }
 
+        private void ValidateSignHead()
+        {
+
+            try
+            {
+                GridLookupEditValidationRule validationRule = new GridLookupEditValidationRule();
+                validationRule.cbo = cboEndDeptSubs;
+                validationRule.ErrorText = Inventec.Desktop.Common.LibraryMessage.MessageUtil.GetMessage(Inventec.Desktop.Common.LibraryMessage.Message.Enum.TruongDuLieuBatBuoc);
+                //validationRule.ErrorText = "Bắt buộc nhập thông tin nghề nghiệp";
+                validationRule.ErrorType = ErrorType.Warning;
+                dxValidationProvider1.SetValidationRule(cboEndDeptSubs, validationRule);
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+
+        private void ValidateSignDirect()
+        {
+
+            try
+            {
+                GridLookupEditValidationRule validationRule = new GridLookupEditValidationRule();
+                validationRule.cbo = cboHospSubs;
+                validationRule.ErrorText = Inventec.Desktop.Common.LibraryMessage.MessageUtil.GetMessage(Inventec.Desktop.Common.LibraryMessage.Message.Enum.TruongDuLieuBatBuoc);
+                //validationRule.ErrorText = "Bắt buộc nhập thông tin nghề nghiệp";
+                validationRule.ErrorType = ErrorType.Warning;
+                dxValidationProvider1.SetValidationRule(cboHospSubs, validationRule);
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+
         private void ValidateComboCareer()
         {
             try
