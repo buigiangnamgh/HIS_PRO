@@ -40,7 +40,7 @@ namespace HIS.Desktop.Plugins.HisImportMedicineType.ADO
         public string PARENT_CODE { get; set; }
         public string TDL_GENDER_CODE { get; set; }
         public string TDL_GENDER_NAME { get; set; }
-        
+
         public string ERROR { get; set; }
         public bool IS_LESS_MANUFACTURER { get; set; }
         public string ATC_CODES_STR { get; set; }
@@ -85,6 +85,7 @@ namespace HIS.Desktop.Plugins.HisImportMedicineType.ADO
         public int HEIN_SERVICE_BHYT_CODE_ERROR { get; set; }
         public int HEIN_SERVICE_BHYT_NAME_ERROR { get; set; }
         public int HEIN_ORDER_ERROR { get; set; }
+        public int MEDICINE_NATIONAL_CODE_ERROR { get; set; }
         public int HEIN_LIMIT_RATIO_STR_ERROR { get; set; }
         public int HEIN_LIMIT_RATIO_OLD_STR_ERROR { get; set; }
         public int HEIN_LIMIT_PRICE_OLD_STR_ERROR { get; set; }

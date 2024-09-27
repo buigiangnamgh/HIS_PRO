@@ -1283,6 +1283,14 @@ namespace HIS.Desktop.Plugins.HisImportMedicineType.FormLoad
                             mediAdo.HEIN_ORDER_ERROR = 1;
                         }
                     }
+                    if (!string.IsNullOrEmpty(item.MEDICINE_NATIONAL_CODE))
+                    {
+                        if (item.MEDICINE_NATIONAL_CODE.Length > 30)
+                        {
+                            error += string.Format(Message.MessageImport.Maxlength, "Mã dược QG");
+                            mediAdo.MEDICINE_NATIONAL_CODE_ERROR = 1;
+                        }
+                    }
 
                     if (!string.IsNullOrEmpty(item.HEIN_LIMIT_RATIO_STR))
                     {
