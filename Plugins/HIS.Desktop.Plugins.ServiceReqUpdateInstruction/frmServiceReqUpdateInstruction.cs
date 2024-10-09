@@ -854,21 +854,10 @@ namespace HIS.Desktop.Plugins.ServiceReqUpdateInstruction
                     if ((XtraMessageBox.Show("Bạn có chắc không cho bệnh nhân hưởng bhyt các chi phí phát sinh tại phòng khám ", "Thông báo", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No))
                         return;
                 }
-
-                if (!CheckBedService(this.currentServiceReq))
-                {
-                    return;
-                }
-
                 if (!CheckUseTime())
                 {
                     XtraMessageBox.Show("Thời gian dự trù không được nhỏ hơn thời gian y lệnh.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     dtUseTime.Focus();
-                    return;
-                }
-
-                if (CheckBedService(this.currentServiceReq))
-                {
                     return;
                 }
 
@@ -915,7 +904,7 @@ namespace HIS.Desktop.Plugins.ServiceReqUpdateInstruction
                 //        }
                 //    }
                 //}
-                vali = vali & CheckIntructionTimeWithInTime() & CheckMinDuration() & CheckHIS_DEPARTMENT_TRAN();
+                vali = vali & CheckIntructionTimeWithInTime() & CheckMinDuration() & CheckHIS_DEPARTMENT_TRAN() && CheckBedService(this.currentServiceReq);
                 if (vali)
                 {
                     WaitingManager.Show();
