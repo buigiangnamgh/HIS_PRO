@@ -7854,7 +7854,7 @@ o.SERVICE_ID == medi.SERVICE_ID && o.TDL_INTRUCTION_TIME.ToString().Substring(0,
                 if (e.KeyCode == Keys.F1)
                 {
                     WaitingManager.Show();
-                    frmSecondaryIcd FormSecondaryIcd = new frmSecondaryIcd(stringIcds, this.txtIcdSubCode.Text, this.txtIcdText.Text, (int)HIS.Desktop.LocalStorage.ConfigApplication.ConfigApplications.NumPageSize, currentIcds, currentTreatment);
+                    frmSecondaryIcd FormSecondaryIcd = new frmSecondaryIcd(stringIcds, this.txtIcdSubCode.Text, this.txtIcdText.Text, (int)HIS.Desktop.LocalStorage.ConfigApplication.ConfigApplications.NumPageSize, currentIcds.Where(o => o.IS_TRADITIONAL.HasValue && o.IS_TRADITIONAL.Value == 1 ? false : true).ToList(), currentTreatment);
 
                     WaitingManager.Hide();
                     FormSecondaryIcd.ShowDialog();
@@ -7934,7 +7934,7 @@ o.SERVICE_ID == medi.SERVICE_ID && o.TDL_INTRUCTION_TIME.ToString().Substring(0,
                 if (e.KeyCode == Keys.F1)
                 {
                     WaitingManager.Show();
-                    frmSecondaryIcd FormSecondaryIcd = new frmSecondaryIcd(stringIcds, this.txtIcdSubCode.Text, this.txtIcdText.Text, (int)HIS.Desktop.LocalStorage.ConfigApplication.ConfigApplications.NumPageSize, currentIcds, currentTreatment);
+                    frmSecondaryIcd FormSecondaryIcd = new frmSecondaryIcd(stringIcds, this.txtIcdSubCode.Text, this.txtIcdText.Text, (int)HIS.Desktop.LocalStorage.ConfigApplication.ConfigApplications.NumPageSize, currentIcds.Where(o => o.IS_TRADITIONAL.HasValue && o.IS_TRADITIONAL.Value == 1 ? false : true).ToList(), currentTreatment);
                     WaitingManager.Hide();
                     FormSecondaryIcd.ShowDialog();
                 }
