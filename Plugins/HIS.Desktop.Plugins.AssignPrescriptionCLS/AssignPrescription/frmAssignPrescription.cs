@@ -3683,7 +3683,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionCLS.AssignPrescription
                 if (e.KeyCode == Keys.F1)
                 {
                     WaitingManager.Show();
-                    frmSecondaryIcd FormSecondaryIcd = new frmSecondaryIcd(stringIcds, this.txtIcdSubCode.Text, this.txtIcdText.Text, (int)HIS.Desktop.LocalStorage.ConfigApplication.ConfigApplications.NumPageSize, this.currentIcds);
+                    frmSecondaryIcd FormSecondaryIcd = new frmSecondaryIcd(stringIcds, this.txtIcdSubCode.Text, this.txtIcdText.Text, (int)HIS.Desktop.LocalStorage.ConfigApplication.ConfigApplications.NumPageSize, this.currentIcds.Where(o => o.IS_TRADITIONAL.HasValue && o.IS_TRADITIONAL.Value == 1 ? false : true).ToList());
                     WaitingManager.Hide();
                     FormSecondaryIcd.ShowDialog();
                 }
@@ -3717,7 +3717,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionCLS.AssignPrescription
                 if (e.KeyCode == Keys.F1)
                 {
                     WaitingManager.Show();
-                    frmSecondaryIcd FormSecondaryIcd = new frmSecondaryIcd(stringIcds, this.txtIcdSubCode.Text, this.txtIcdText.Text, (int)HIS.Desktop.LocalStorage.ConfigApplication.ConfigApplications.NumPageSize, this.currentIcds);
+                    frmSecondaryIcd FormSecondaryIcd = new frmSecondaryIcd(stringIcds, this.txtIcdSubCode.Text, this.txtIcdText.Text, (int)HIS.Desktop.LocalStorage.ConfigApplication.ConfigApplications.NumPageSize, this.currentIcds.Where(o => o.IS_TRADITIONAL.HasValue && o.IS_TRADITIONAL.Value == 1 ? false : true).ToList());
                     WaitingManager.Hide();
                     FormSecondaryIcd.ShowDialog();
                 }
