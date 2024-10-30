@@ -68,7 +68,8 @@ namespace HIS.Desktop.Plugins.ExpMestViewDetail.ExpMestViewDetail
             Mps000234_DON_TONG_HOP,
             Mps000044_IN_DON_THUOC,
             PHIEU_XUAT_HAO_PHI_KHOA_PHONG_THEO_DIEU_KIEN,
-            Mps000118_DON_THUOC_TONG_HOP
+            Mps000118_DON_THUOC_TONG_HOP,
+            Mps000244_PHIEU_SAN_XUAT_THUOC
         }
 
         string printerName = "";
@@ -263,6 +264,13 @@ namespace HIS.Desktop.Plugins.ExpMestViewDetail.ExpMestViewDetail
                 itemDonThuocTongHop.Tag = PrintType.Mps000118_DON_THUOC_TONG_HOP;
                 menu.Items.Add(itemDonThuocTongHop);
 
+
+                if (this._CurrentExpMest.EXP_MEST_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_EXP_MEST_TYPE.ID__BCT)
+                {
+                    DXMenuItem itemSanXuatThuoc = new DXMenuItem("In phiếu sản xuất thuốc", new EventHandler(OnClickInPhieuXuatKho));
+                    itemSanXuatThuoc.Tag = PrintType.Mps000244_PHIEU_SAN_XUAT_THUOC;
+                    menu.Items.Add(itemSanXuatThuoc);
+                }
                 cboPrint.DropDownControl = menu;
             }
             catch (Exception ex)
@@ -390,6 +398,9 @@ namespace HIS.Desktop.Plugins.ExpMestViewDetail.ExpMestViewDetail
                     case PrintType.Mps000118_DON_THUOC_TONG_HOP:
                         InDonThuocTongHop(PrintTypeCodeStore.PRINT_TYPE_CODE__BIEUMAU__IN_DON_THUOC_TONG_HOP__MPS000118);
                         break;
+                    case PrintType.Mps000244_PHIEU_SAN_XUAT_THUOC:
+                        richEditorMain.RunPrintTemplate("Mps000244", DelegateRunPrinter);
+                        break;
                     default:
                         break;
                 }
@@ -498,6 +509,10 @@ namespace HIS.Desktop.Plugins.ExpMestViewDetail.ExpMestViewDetail
                         //store.RunPrintTemplate(PrintTypeCodeStore.PRINT_TYPE_CODE__PhieuXuatSuDungTheoDieuKien_MPS000134, delegateRunTemplate);
                         break;
 
+                    case "Mps000244":
+                        InPhieuBaoCheThuoc(printTypeCode, fileName, ref result);
+                        break;
+
                     default:
                         break;
                 }
@@ -508,6 +523,77 @@ namespace HIS.Desktop.Plugins.ExpMestViewDetail.ExpMestViewDetail
             }
 
             return result;
+        }
+
+        private void InPhieuBaoCheThuoc(string printTypeCode, string fileName, ref bool result)
+        {
+            try
+            {
+                List<HIS_IMP_MEST> ImpMestPrints = new List<HIS_IMP_MEST>();
+                List<HIS_EXP_MEST> ExpMestPrints = new List<HIS_EXP_MEST>();
+                List<V_HIS_IMP_MEST_MEDICINE> impMestMedicines = new List<V_HIS_IMP_MEST_MEDICINE>();
+                List<V_HIS_EXP_MEST_MATERIAL> expMestMaterials = new List<V_HIS_EXP_MEST_MATERIAL>();
+                List<V_HIS_EXP_MEST_MEDICINE> expMestMedicines = new List<V_HIS_EXP_MEST_MEDICINE>();
+                V_HIS_IMP_MEST impMest = new V_HIS_IMP_MEST();
+                HIS_DISPENSE DispenseDetail = new HIS_DISPENSE();
+                CommonParam param = new CommonParam();
+                WaitingManager.Show();
+
+                if (_CurrentExpMest != null && _CurrentExpMest.DISPENSE_ID != null)
+                {
+                    CommonParam parama = new CommonParam();
+                    HisImpMestFilter HisImpMest = new HisImpMestFilter();
+                    HisImpMest.DISPENSE_ID = _CurrentExpMest.DISPENSE_ID;
+                    ImpMestPrints = new BackendAdapter(parama).Get<List<HIS_IMP_MEST>>("api/HisImpMest/Get", ApiConsumers.MosConsumer, HisImpMest, parama);
+                    HisExpMestFilter HisExpMest = new HisExpMestFilter();
+                    HisExpMest.DISPENSE_ID = _CurrentExpMest.DISPENSE_ID;
+                    ExpMestPrints = new BackendAdapter(parama).Get<List<HIS_EXP_MEST>>("api/HisExpMest/Get", ApiConsumers.MosConsumer, HisExpMest, parama);
+                    HisDispenseFilter HisDispenseFilter = new HisDispenseFilter();
+                    HisDispenseFilter.ID = _CurrentExpMest.DISPENSE_ID;
+                    DispenseDetail = (new BackendAdapter(parama).Get<List<HIS_DISPENSE>>("api/HisDispense/Get", ApiConsumers.MosConsumer, HisDispenseFilter, parama) ?? new List<HIS_DISPENSE>()).FirstOrDefault();
+                }
+
+                if (ImpMestPrints != null && ImpMestPrints.Count > 0)
+                {
+                    MOS.Filter.HisImpMestMedicineViewFilter impMestMedicineViewFilter = new HisImpMestMedicineViewFilter();
+                    impMestMedicineViewFilter.IMP_MEST_IDs = ImpMestPrints.Select(o => o.ID).Distinct().ToList();
+                    impMestMedicines = new BackendAdapter(param).Get<List<V_HIS_IMP_MEST_MEDICINE>>("api/HisImpMestMedicine/GetView", ApiConsumer.ApiConsumers.MosConsumer, impMestMedicineViewFilter, param);
+                }
+
+                if (ExpMestPrints != null && ExpMestPrints.Count > 0)
+                {
+                    MOS.Filter.HisExpMestMaterialViewFilter hisExpMestMaterialViewFilter = new HisExpMestMaterialViewFilter();
+                    hisExpMestMaterialViewFilter.EXP_MEST_IDs = ExpMestPrints.Select(o => o.ID).Distinct().ToList();
+                    expMestMaterials = new BackendAdapter(param).Get<List<V_HIS_EXP_MEST_MATERIAL>>("api/HisExpMestMaterial/GetView", ApiConsumer.ApiConsumers.MosConsumer, hisExpMestMaterialViewFilter, param);
+
+                    MOS.Filter.HisExpMestMedicineViewFilter expMestMedicineFilter = new HisExpMestMedicineViewFilter();
+                    expMestMedicineFilter.EXP_MEST_IDs = ExpMestPrints.Select(o => o.ID).Distinct().ToList();
+                    expMestMedicines = new BackendAdapter(param).Get<List<V_HIS_EXP_MEST_MEDICINE>>("api/HisExpMestMedicine/GetView", ApiConsumer.ApiConsumers.MosConsumer, expMestMedicineFilter, param);
+                }
+
+                MPS.Processor.Mps000244.PDO.Mps000244PDO rdo = new MPS.Processor.Mps000244.PDO.Mps000244PDO(
+                    DispenseDetail,
+                      BackendDataWorker.Get<HIS_MEDI_STOCK>(),
+                      impMestMedicines,
+                      expMestMaterials,
+                      expMestMedicines);
+
+                MPS.ProcessorBase.Core.PrintData PrintData = null;
+                if (GlobalVariables.CheDoInChoCacChucNangTrongPhanMem == 2)
+                {
+                    PrintData = new MPS.ProcessorBase.Core.PrintData(printTypeCode, fileName, rdo, MPS.ProcessorBase.PrintConfig.PreviewType.ShowDialog, "");
+                }
+                else
+                {
+                    PrintData = new MPS.ProcessorBase.Core.PrintData(printTypeCode, fileName, rdo, MPS.ProcessorBase.PrintConfig.PreviewType.ShowDialog, "");
+                }
+                WaitingManager.Hide();
+                result = MPS.MpsPrinter.Run(PrintData);
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
         }
 
         private void InDonThuocTongHop(string printTypeCode)
