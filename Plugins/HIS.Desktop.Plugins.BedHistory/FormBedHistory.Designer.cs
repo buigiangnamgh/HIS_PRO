@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormBedHistory));
             DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject1 = new DevExpress.Utils.SerializableAppearanceObject();
             DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject2 = new DevExpress.Utils.SerializableAppearanceObject();
@@ -71,7 +72,7 @@
             DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject40 = new DevExpress.Utils.SerializableAppearanceObject();
             this.layoutControl1 = new DevExpress.XtraLayout.LayoutControl();
             this.chkBedAll = new DevExpress.XtraEditors.CheckEdit();
-            this.barManager1 = new DevExpress.XtraBars.BarManager();
+            this.barManager1 = new DevExpress.XtraBars.BarManager(this.components);
             this.bar1 = new DevExpress.XtraBars.Bar();
             this.barButtonAssign = new DevExpress.XtraBars.BarButtonItem();
             this.barBtnSaveBedLog = new DevExpress.XtraBars.BarButtonItem();
@@ -914,6 +915,7 @@
             this.Gv_BedServiceType__Gc_IntructionTime.ColumnEdit = this.repositoryItemDtIntructionTime;
             this.Gv_BedServiceType__Gc_IntructionTime.FieldName = "IntructionTime";
             this.Gv_BedServiceType__Gc_IntructionTime.Name = "Gv_BedServiceType__Gc_IntructionTime";
+            this.Gv_BedServiceType__Gc_IntructionTime.OptionsColumn.AllowEdit = false;
             this.Gv_BedServiceType__Gc_IntructionTime.Visible = true;
             this.Gv_BedServiceType__Gc_IntructionTime.VisibleIndex = 2;
             this.Gv_BedServiceType__Gc_IntructionTime.Width = 100;

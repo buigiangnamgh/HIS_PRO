@@ -1811,7 +1811,11 @@ namespace HIS.Desktop.Plugins.BedHistory
                                 if (bedLog != null && bedLog.ID > 0)
                                 {
                                     CheckErrorDataBedLog(bedLog);
-                                    if (bedLog.IsChecked || IsDisable || bedLog.HasServiceReq || bedLog.BED_SERVICE_TYPE_ID == null || _TreatmentBedRoom.BED_ROOM_ID != WorkPlaceSDO.BedRoomId)
+                                    if (bedLog.IsChecked
+                                        || IsDisable
+                                        || bedLog.HasServiceReq
+                                        || bedLog.BED_SERVICE_TYPE_ID == null
+                                        || _TreatmentBedRoom.BED_ROOM_ID != WorkPlaceSDO.BedRoomId)
                                     {
                                         bedLog.IsChecked = false;
                                         gridControlBedServiceType.DataSource = null;
@@ -4894,7 +4898,7 @@ namespace HIS.Desktop.Plugins.BedHistory
                 {
                     this.ListVBedRoom = LocalStorage.BackendData.BackendDataWorker.Get<V_HIS_BED_ROOM>().Where(o => o.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE).ToList().Where(o => o.ROOM_ID == this.WorkPlaceSDO.RoomId).ToList();
                 }
-                //Inventec.Common.Logging.LogSystem.Info(Inventec.Common.Logging.LogUtil.TraceData("this.ListVBedRoom__:", this.ListVBedRoom));
+                Inventec.Common.Logging.LogSystem.Info(Inventec.Common.Logging.LogUtil.TraceData("this.ListVBedRoom__:", this.ListVBedRoom));
 
 
                 var allData = LocalStorage.BackendData.BackendDataWorker.Get<V_HIS_BED_ROOM>().Where(o => o.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE).ToList().OrderByDescending(o => o.DEPARTMENT_ID == departmentId).ToList();

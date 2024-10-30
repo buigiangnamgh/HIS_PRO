@@ -152,7 +152,7 @@ namespace HIS.Desktop.Plugins.BedHistory
 
                         if (days > 1)
                         {
-                            for (int i = 0; i < Math.Ceiling(days); i++)
+                            for (int i = 0; i < Math.Ceiling(days); i++) // Math.Ceiling(days) neu ngay la le thi lam tron len de duoc them 1 dong
                             {
                                 ADO.HisBedHistoryADO ado = new ADO.HisBedHistoryADO();
                                 Inventec.Common.Mapper.DataObjectMapper.Map<ADO.HisBedHistoryADO>(ado, item);
@@ -189,6 +189,8 @@ namespace HIS.Desktop.Plugins.BedHistory
                         {
                             result.Add(item);
                         }
+
+                        Inventec.Common.Logging.LogSystem.Debug("ProcessSplitBedLogByDay List<HisBedHistoryADO> " + Inventec.Common.Logging.LogUtil.TraceData("", result));
 
                         var last = result.Last();
                         if (last.startTime.Day != last.finishTime.Value.Day && last.finishTime.Value.Hour > 0 && !chkSplitByResult.Checked) // nambg sua
