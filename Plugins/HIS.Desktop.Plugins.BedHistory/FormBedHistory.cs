@@ -1358,12 +1358,55 @@ namespace HIS.Desktop.Plugins.BedHistory
                             ProcessSaveBedLog(ado);
                         }
                     }
+
+                    if (e.Column.FieldName == "IsChecked")
+                    {
+                        if (this.gridViewBedHistory.GetFocusedDisplayText() == "Unchecked")
+                            DeleteBedLog(ado);
+                    }
+                    else
+                    {
+                        if (isChange && !ado.Error && !ado.IsChecked)
+                        {
+                            DeleteBedLog(ado);
+                        }
+                    }
+
                     gridControlBedHistory.RefreshDataSource();
                 }
             }
             catch (Exception ex)
             {
                 gridControlBedHistory.RefreshDataSource();
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+        }
+
+        private void DeleteBedLog(ADO.HisBedHistoryADO row)
+        {
+            try
+            {
+                bool success = false;
+                CommonParam param = new CommonParam();
+
+                var resultRow = DeleteDataBedLog(row, ref success, ref param);
+                if (resultRow)
+                {
+                    FillDataToGridBedLog();
+                }
+
+                
+                if ((param.BugCodes != null && param.BugCodes.Count > 0) || (param.Messages != null && param.Messages.Count > 0))
+                {
+                    #region Show message
+                    Inventec.Common.Logging.LogSystem.Error(String.Join("; ", param.Messages));
+                    MessageManager.Show(this, param, success);
+                    #endregion
+                }
+            }
+            catch (Exception ex)
+            {
+                WaitingManager.Hide();
                 Inventec.Common.Logging.LogSystem.Error(ex);
             }
         }
@@ -2113,6 +2156,32 @@ namespace HIS.Desktop.Plugins.BedHistory
                 WaitingManager.Hide();
                 success = false;
                 outPut = null;
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+            return outPut;
+        }
+
+        private bool DeleteDataBedLog(ADO.HisBedHistoryADO row, ref bool success, ref CommonParam param)
+        {
+            bool outPut = false;
+            try
+            {
+                if (row != null)
+                {
+                    outPut = new BackendAdapter(param).Post<bool>("api/HisBedLog/Delete", ApiConsumer.ApiConsumers.MosConsumer, row.ID, param);
+                    if (outPut)
+                    {
+                        success = true;
+                       
+                            listCurrentBedLog.RemoveAll(o => o.ID == row.ID);
+                            LoadDataGridServiceReq();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                WaitingManager.Hide();
+                success = false;
                 Inventec.Common.Logging.LogSystem.Error(ex);
             }
             return outPut;
