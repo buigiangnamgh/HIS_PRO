@@ -85,6 +85,7 @@ namespace Inventec.CustomControls
             this.Text = "XÁC NHẬN";
             this.Size = new System.Drawing.Size(335, 94);
             this.Padding = new Padding(0, 10, 0, 10);
+            this.AutoSizeMode = AutoSizeMode.GrowOnly;
         }
 
         private GraphicsPath GetFigurePath(RectangleF rect, float radius)

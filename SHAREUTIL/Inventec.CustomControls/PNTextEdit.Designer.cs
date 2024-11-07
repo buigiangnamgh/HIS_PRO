@@ -38,14 +38,14 @@
             this.textEdit1.EditValue = "";
             this.textEdit1.Location = new System.Drawing.Point(10, 10);
             this.textEdit1.Name = "textEdit1";
-            this.textEdit1.Properties.Appearance.Font = new System.Drawing.Font("Arial", 30F, System.Drawing.FontStyle.Bold);
+            this.textEdit1.Properties.Appearance.Font = new System.Drawing.Font("Arial", 33F, System.Drawing.FontStyle.Bold);
             this.textEdit1.Properties.Appearance.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(64)))), ((int)(((byte)(0)))));
             this.textEdit1.Properties.Appearance.Options.UseFont = true;
             this.textEdit1.Properties.Appearance.Options.UseForeColor = true;
             this.textEdit1.Properties.Appearance.Options.UseTextOptions = true;
             this.textEdit1.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
             this.textEdit1.Properties.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
-            this.textEdit1.Size = new System.Drawing.Size(380, 64);
+            this.textEdit1.Size = new System.Drawing.Size(502, 68);
             this.textEdit1.TabIndex = 0;
             this.textEdit1.EditValueChanged += new System.EventHandler(this.textEdit1_EditValueChanged);
             this.textEdit1.TextChanged += new System.EventHandler(this.textEdit1_TextChanged);
@@ -54,13 +54,14 @@
             // 
             // PNTextEdit
             // 
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.Controls.Add(this.textEdit1);
             this.ForeColor = System.Drawing.Color.Transparent;
             this.Name = "PNTextEdit";
             this.Padding = new System.Windows.Forms.Padding(10);
-            this.Size = new System.Drawing.Size(400, 97);
+            this.Size = new System.Drawing.Size(522, 84);
             ((System.ComponentModel.ISupportInitialize)(this.textEdit1.Properties)).EndInit();
             this.ResumeLayout(false);
 

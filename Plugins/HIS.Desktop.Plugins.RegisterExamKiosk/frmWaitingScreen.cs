@@ -124,7 +124,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk
                 RegisterTimer(currentModule.ModuleLink, "timerCheckFocus", timerCheckFocus.Interval, timerCheckFocus_Tick);
                 StartTimer(currentModule.ModuleLink, "timerCheckFocus");
                 lblMessage.Text = "HỆ THỐNG ĐĂNG KÝ KHÁM CHỮA BỆNH THÔNG MINH.";
-                label2.Text = "XIN MỜI QUẸT THẺ HOẶC NHẬP SỐ THẺ\nCMND, CCCD, MÃ BỆNH NHÂN";
+                label2.Text = "MỜI BỆNH NHÂN NHẬP SỐ CCCD \r\nHOẶC MÃ BỆNH NHÂN";
                 //Mở host CDA
                 InitWCFReadCard();
                 txtNumberInput.Focus();
