@@ -760,8 +760,9 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
                         Inventec.Common.Logging.LogSystem.Debug("IsNotRequireFee 2" + chkRecieveLater.Checked);
                         frmServiceRoom.IsRecieveLater = chkRecieveLater.Checked ? true : false;
                     }
-                    //frmServiceRoom.IsRecieveLater = chkRecieveLater.Checked;
+                    frmServiceRoom.IsRecieveLater = chkRecieveLater.Checked;
                     frmServiceRoom.ShowDialog();
+
                 }
                 else if (vlistService != null && vlistService.Count == 1)
                 {

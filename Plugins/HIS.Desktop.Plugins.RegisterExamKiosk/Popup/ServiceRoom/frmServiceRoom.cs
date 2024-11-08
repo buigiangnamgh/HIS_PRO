@@ -292,9 +292,10 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.ServiceRoom
                         tileNew = new TileItem();
                         tileNew.Text = item.SERVICE_NAME;
                         tileNew.AppearanceItem.Normal.ForeColor = Color.White;
-                        tileNew.AppearanceItem.Normal.FontSizeDelta = 2;
+                        tileNew.AppearanceItem.Normal.FontSizeDelta = 10;
                         tileNew.TextAlignment = TileItemContentAlignment.MiddleCenter;
-                        tileNew.ItemSize = TileItemSize.Medium;
+                        tileNew.ItemSize = TileItemSize.Large;
+                        tileNew.AppearanceItem.Normal.TextOptions.WordWrap = DevExpress.Utils.WordWrap.Wrap;
                         tileNew.Tag = item;
                         Thread.Sleep(10);
                         tileNew.AppearanceItem.Normal.BorderColor = Color.DarkGreen;
