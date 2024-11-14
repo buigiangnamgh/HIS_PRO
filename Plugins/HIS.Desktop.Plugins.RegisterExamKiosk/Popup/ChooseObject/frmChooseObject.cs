@@ -85,7 +85,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.ChooseObject
                     {
                         content.Text = "KHÁM " + hisPatientType[i].PATIENT_TYPE_NAME.ToUpper();
                     }
-                    content.Appearance.Normal.Font = new Font("Microsoft Sans Serif", 17, FontStyle.Regular);
+                    content.Appearance.Normal.Font = new Font("Microsoft Sans Serif", 35, FontStyle.Regular);
                     content.TextAlignment = TileItemContentAlignment.MiddleCenter;
                     tile.Elements.Add(content);
 
@@ -103,7 +103,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.ChooseObject
                 TileItem tileCelcel = new TileItem();
                 TileItemElement contentCancel = new TileItemElement();
                 contentCancel.Text = "HỦY BỎ";
-                contentCancel.Appearance.Normal.Font = new Font("Microsoft Sans Serif", 17, FontStyle.Regular);
+                contentCancel.Appearance.Normal.Font = new Font("Microsoft Sans Serif", 35, FontStyle.Regular);
                 contentCancel.TextAlignment = TileItemContentAlignment.MiddleCenter;
                 tileCelcel.Elements.Add(contentCancel);
                 tileCelcel.AppearanceItem.Normal.BackColor = Color.Red;
@@ -111,6 +111,8 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.ChooseObject
                 tileCelcel.Tag = this.cancelId;
                 tileCelcel.AppearanceItem.Normal.ForeColor = Color.White;
                 tileGroup1.Items.Add(tileCelcel);
+                this.tileControl1.ItemSize = 300;
+                this.tileControl1.Groups.Add(this.tileGroup1);
             }
             catch (Exception ex)
             {

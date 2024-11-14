@@ -62,6 +62,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\RELEASE\HIS\His.Bhyt.InsuranceExpertise\His.Bhyt.InsuranceExpertise.dll</HintPath>
     </Reference>
+    <Reference Include="HIS.Desktop.IsAdmin">
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\2.276.0\ReferencedAssemblies\HIS.Desktop.IsAdmin.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.Library.CacheClient, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\2.276.0\ReferencedAssemblies\HIS.Desktop.Library.CacheClient.dll</HintPath>
+    </Reference>
     <Reference Include="HIS.Desktop.Plugins.Library.PrintServiceReqTreatment">
       <HintPath>..\..\..\..\..\..\RELEASE\HIS\HIS.Desktop.Plugins.Library.PrintServiceReqTreatment\HIS.Desktop.Plugins.Library.PrintServiceReqTreatment.dll</HintPath>
     </Reference>
@@ -197,8 +204,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\RELEASE\MPSv2\MPS\MPS.dll</HintPath>
     </Reference>
-    <Reference Include="MPS.Processor.Mps000025.PDO">
-      <HintPath>..\..\..\..\..\..\RELEASE\MPSv2\MPS.PDO\MPS.Processor.Mps000025.PDO.dll</HintPath>
+    <Reference Include="MPS.Processor.Mps000001.PDO, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\2.276.0\ReferencedAssemblies\MPS.Processor.Mps000001.PDO.dll</HintPath>
     </Reference>
     <Reference Include="MPS.Processor.Mps000026.PDO">
       <HintPath>..\..\..\TEST\HIS\x64\ReferencedAssemblies\MPS.Processor.Mps000026.PDO.dll</HintPath>
@@ -234,9 +242,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ADO\CmktADO.cs" />
+    <Compile Include="ADO\HisRegisterGateADO.cs" />
     <Compile Include="ADO\InformationObjectADO.cs" />
     <Compile Include="ADO\InputSaveADO.cs" />
     <Compile Include="ADO\RightRouteTypeADO.cs" />
+    <Compile Include="ADO\SettingADO.cs" />
     <Compile Include="Config\AppConfigs.cs" />
     <Compile Include="ADO\CccdPatientLocalADO.cs" />
     <Compile Include="Config\BHXHLoginCFG.cs">
@@ -245,6 +255,7 @@
     <Compile Include="Config\CheckExamHistoryCFG.cs" />
     <Compile Include="Config\CheckHeinCardCFG.cs" />
     <Compile Include="Config\HisConfigCFG.cs" />
+    <Compile Include="Delegates.cs" />
     <Compile Include="frmWaitingScreen.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -300,6 +311,12 @@
     <Compile Include="Popup\RegisterExamKiosk\frmRegisterExamKiosk.Designer.cs">
       <DependentUpon>frmRegisterExamKiosk.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmRegisterOrderConfig.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmRegisterOrderConfig.Designer.cs">
+      <DependentUpon>frmRegisterOrderConfig.cs</DependentUpon>
+    </Compile>
     <Compile Include="Popup\RegisterExamKiosk\ModuleLinkString.cs" />
     <Compile Include="Popup\ServiceRoom\frmServiceRoom.cs">
       <SubType>Form</SubType>
@@ -342,6 +359,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Popup\RegisterExamKiosk\frmRegisterExamKiosk.resx">
       <DependentUpon>frmRegisterExamKiosk.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmRegisterOrderConfig.resx">
+      <DependentUpon>frmRegisterOrderConfig.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Popup\ServiceRoom\frmServiceRoom.resx">
       <DependentUpon>frmServiceRoom.cs</DependentUpon>

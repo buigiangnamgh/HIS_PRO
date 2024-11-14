@@ -1,4 +1,5 @@
 ﻿using HIS.Desktop.LocalStorage.BackendData;
+using HIS.Desktop.Plugins.RegisterExamKiosk;
 using Inventec.Core;
 using System;
 using System.Collections.Generic;
@@ -41,7 +42,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.WaitingScreen
 
                     if (Module != null)
                     {
-                        result = new frmWaitingScreen(Module);
+                        result = new frmRegisterOrderConfig(Module);
                         
                     }
                 }

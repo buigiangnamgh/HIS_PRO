@@ -34,6 +34,7 @@ using HIS.Desktop.Plugins.Library.CheckHeinGOV;
 using HIS.Desktop.LocalStorage.HisConfig;
 using HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisteredExam;
 using System.IO;
+using HIS.Desktop.Plugins.RegisterExamKiosk.ADO;
 
 namespace HIS.Desktop.Plugins.RegisterExamKiosk
 {
@@ -56,6 +57,8 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk
 
         bool isHandling = false;
 
+        SettingADO stADO;
+
         Inventec.Desktop.Common.Modules.Module currentModule;
 
         InformationObjectADO PatientData = null;
@@ -70,13 +73,14 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk
             InitializeComponent();
         }
 
-        public frmWaitingScreen(Inventec.Desktop.Common.Modules.Module module)
+        public frmWaitingScreen(Inventec.Desktop.Common.Modules.Module module, SettingADO stADO)
             : base(module)
         {
             InitializeComponent();
             try
             {
                 this.currentModule = module;
+                this.stADO = stADO;
                 string iconPath = System.IO.Path.Combine(HIS.Desktop.LocalStorage.Location.ApplicationStoreLocation.ApplicationStartupPath, System.Configuration.ConfigurationSettings.AppSettings["Inventec.Desktop.Icon"]);
                 this.Icon = Icon.ExtractAssociatedIcon(iconPath);
             }
@@ -530,12 +534,12 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk
                 if (patienType != null && patienType.GetType() == typeof(long))
                 {
                     long patientTypeId = (long)patienType;
-                    var frm = new frmRegisterExamKiosk(PatientData, (HIS.Desktop.Common.DelegateRefreshData)SetNull, this.currentModule, (HIS.Desktop.Common.DelegateCloseForm_Uc)closingForm, patientTypeId);
+                    var frm = new frmRegisterExamKiosk(PatientData, (HIS.Desktop.Common.DelegateRefreshData)SetNull, this.currentModule, (HIS.Desktop.Common.DelegateCloseForm_Uc)closingForm, patientTypeId,stADO);
                     frm.ShowDialog();
                 }
                 else
                 {
-                    var frm = new frmRegisterExamKiosk(PatientData, (HIS.Desktop.Common.DelegateRefreshData)SetNull, this.currentModule, (HIS.Desktop.Common.DelegateCloseForm_Uc)closingForm, HisConfigCFG.PATIENT_TYPE_ID__IS_FEE);
+                    var frm = new frmRegisterExamKiosk(PatientData, (HIS.Desktop.Common.DelegateRefreshData)SetNull, this.currentModule, (HIS.Desktop.Common.DelegateCloseForm_Uc)closingForm, HisConfigCFG.PATIENT_TYPE_ID__IS_FEE, stADO);
                     frm.ShowDialog();
                 }
             }

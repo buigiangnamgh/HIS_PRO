@@ -304,6 +304,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisteredExam
                 {
                     return;
                 }
+
                 var PatientTypeAlterPrint = this.currentPatientSdo.PatientTypeAlters != null && this.currentPatientSdo.PatientTypeAlters.Count() > 0 ? this.currentPatientSdo.PatientTypeAlters.OrderByDescending(o => o.LOG_TIME).FirstOrDefault() : null;
                 var ServiceReqPrint = this.currentPatientSdo.ServiceReqs != null && this.currentPatientSdo.ServiceReqs.Count() > 0 ? this.currentPatientSdo.ServiceReqs.FirstOrDefault(o => o.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__KH) : null;
                 if (this.currentTreatment != null && this.currentTreatment.HAS_CARD == 1)
@@ -314,15 +315,15 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisteredExam
                     hisCardList = new BackendAdapter(new CommonParam()).Get<List<HIS_CARD>>("api/HisCard/Get", ApiConsumers.MosConsumer, cardfilter, null);
                     if (hisCardList != null && hisCardList.Count > 0)
                     {
-                        PrintKiosk printKiosk = new PrintKiosk(PatientTypeAlterPrint, ServiceReqPrint, this.currentPatientSdo.SereServs, null, printTypeCode, fileName, this.currentTreatment, currentPatientSdo.SereServDeposits, currentPatientSdo.SereServBills, currentPatientSdo.Transactions, false, hisCardList);
-                        printKiosk.RunPrintHasCard();
+                        PrintKiosk printKiosk = new PrintKiosk(this.currentModule,PatientTypeAlterPrint, ServiceReqPrint, this.currentPatientSdo.SereServs, null, printTypeCode, fileName, this.currentTreatment, currentPatientSdo.SereServDeposits, currentPatientSdo.SereServBills, currentPatientSdo.Transactions, false, hisCardList);
+                        printKiosk.PrintProcess();
                     }
                 }
                 else
                 {
-                    PrintKiosk printKiosk = new PrintKiosk(PatientTypeAlterPrint, ServiceReqPrint, this.currentPatientSdo.SereServs, null, printTypeCode, fileName, this.currentTreatment, currentPatientSdo.SereServDeposits, currentPatientSdo.SereServBills, currentPatientSdo.Transactions, false);
+                    PrintKiosk printKiosk = new PrintKiosk(this.currentModule, PatientTypeAlterPrint, ServiceReqPrint, this.currentPatientSdo.SereServs, null, printTypeCode, fileName, this.currentTreatment, currentPatientSdo.SereServDeposits, currentPatientSdo.SereServBills, currentPatientSdo.Transactions, false);
                     //printKiosk.PrintMps25();
-                    printKiosk.RunPrint();
+                    printKiosk.PrintProcess();
 
                 }
             }
