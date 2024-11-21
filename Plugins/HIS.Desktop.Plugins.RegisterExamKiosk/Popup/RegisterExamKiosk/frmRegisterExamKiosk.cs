@@ -606,6 +606,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
             {
                 if (data != null)
                 {
+                    var lstConfig = BackendDataWorker.Get<HIS_CONFIG>().Where(o => o.KEY.StartsWith("HIS.Desktop.Plugins.PaymentQrCode") && !string.IsNullOrEmpty(o.VALUE)).ToList();
                     lblName.Text = data.LastName + " " + data.FirstName;
                     lblAddress.Text = string.IsNullOrEmpty(data.HeinAddress) ? data.Address : data.HeinAddress;
                     lblCardNumber.Text = data.CardCode;
@@ -617,6 +618,33 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
                     {
                         layoutControlItem35.Visibility = layoutControlItem36.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Always;
                         lblBalance.Text = this.patientForKioskSDO.Balance.ToString();
+                    }
+                    if (treatmentId == 0 && this.patientForKioskSDO != null)
+                    {
+                        treatmentId = this.patientForKioskSDO.TreatmentId ?? 0;
+                    }
+                    getServiceReq(treatmentId);
+                    if (ServiceReqPrint != null)
+                    {
+                        MOS.Filter.HisTransReqFilter filter = new HisTransReqFilter();
+                        filter.ID = ServiceReqPrint.TRANS_REQ_ID;
+                        var transReq = new BackendAdapter(new CommonParam()).Get<List<HIS_TRANS_REQ>>("api/HisTransReq/Get", ApiConsumer.ApiConsumers.MosConsumer, filter, new CommonParam());
+                        if (transReq != null && transReq.Count > 0)
+                        {
+                            var dataIMG = HIS.Desktop.Common.BankQrCode.QrCodeProcessor.CreateQrImage(transReq.FirstOrDefault(), lstConfig).FirstOrDefault();
+                            using (var ms = new MemoryStream((byte[])dataIMG.Value))
+                            {
+                                pE_QR.Image = Image.FromStream(ms);
+                            }
+                        }
+                        else
+                        {
+                            pE_QR.Image = null;
+                        }
+                    }
+                    else
+                    {
+                        pE_QR.Image = null;
                     }
                 }
             }
@@ -734,7 +762,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
                                 tileNewtemp.Text = item.RESPONSIBLE_USERNAME;
                                 tileNewtemp.AppearanceItem.Normal.FontSizeDelta = 1;
                                 tileNew = new TileItem();
-                                tileNew.Text =  item.EXECUTE_ROOM_NAME + "\n(" + AMOUNT + "/" + TOTAL + ")" + "\n" + tileNewtemp.Text;
+                                tileNew.Text = item.EXECUTE_ROOM_NAME + "\n(" + AMOUNT + "/" + TOTAL + ")" + "\n" + tileNewtemp.Text;
                                 tileNew.AppearanceItem.Normal.FontSizeDelta = (int)this.stADO.Pk_SizeTitle;
                                 tileNew.AppearanceItem.Normal.ForeColor = Color.White;
                                 tileNew.TextAlignment = TileItemContentAlignment.MiddleCenter;
@@ -862,6 +890,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
                 lblAddress.Text = "";
                 lblPlaceRegister.Text = "";
                 lblBorn.Text = "";
+                pE_QR.EditValue = null;
                 SetDefaultRecieveLater();
                 ChkPriority.Checked = false;
             }

@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -252,6 +253,31 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisteredExam
                 lblTotalPatientPrice.Text = totalPatientPrice.ToString() + " đ";
                 lblPatientPaid.Text = Math.Round(patientPaid).ToString() + " đ";
                 LoadDataTile(patientMissing, balance);
+                var lstConfig = BackendDataWorker.Get<HIS_CONFIG>().Where(o => o.KEY.StartsWith("HIS.Desktop.Plugins.PaymentQrCode") && !string.IsNullOrEmpty(o.VALUE)).ToList();
+                //getServiceReq(treatmentId);
+                if (data.ServiceReqs != null && data.ServiceReqs.Count() > 0)
+                {
+                    MOS.Filter.HisTransReqFilter filter = new HisTransReqFilter();
+                    filter.ID = data.ServiceReqs.FirstOrDefault(o => o.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__KH).TRANS_REQ_ID;
+                    var transReq = new BackendAdapter(new CommonParam()).Get<List<HIS_TRANS_REQ>>("api/HisTransReq/Get", ApiConsumer.ApiConsumers.MosConsumer, filter, new CommonParam());
+                    if (transReq != null && transReq.Count > 0)
+                    {
+                        var dataIMG = HIS.Desktop.Common.BankQrCode.QrCodeProcessor.CreateQrImage(transReq.FirstOrDefault(), lstConfig).FirstOrDefault();
+                        using (var ms = new MemoryStream((byte[])dataIMG.Value))
+                        {
+                            Pe_QR.Image = Image.FromStream(ms);
+                        }
+                    }
+                    else
+                    {
+                        Pe_QR.Image = null;
+                    }
+
+                }
+                else
+                {
+                    Pe_QR.Image = null;
+                }
 
             }
             catch (Exception ex)
@@ -315,7 +341,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisteredExam
                     hisCardList = new BackendAdapter(new CommonParam()).Get<List<HIS_CARD>>("api/HisCard/Get", ApiConsumers.MosConsumer, cardfilter, null);
                     if (hisCardList != null && hisCardList.Count > 0)
                     {
-                        PrintKiosk printKiosk = new PrintKiosk(this.currentModule,PatientTypeAlterPrint, ServiceReqPrint, this.currentPatientSdo.SereServs, null, printTypeCode, fileName, this.currentTreatment, currentPatientSdo.SereServDeposits, currentPatientSdo.SereServBills, currentPatientSdo.Transactions, false, hisCardList);
+                        PrintKiosk printKiosk = new PrintKiosk(this.currentModule, PatientTypeAlterPrint, ServiceReqPrint, this.currentPatientSdo.SereServs, null, printTypeCode, fileName, this.currentTreatment, currentPatientSdo.SereServDeposits, currentPatientSdo.SereServBills, currentPatientSdo.Transactions, false, hisCardList);
                         printKiosk.PrintProcess();
                     }
                 }
