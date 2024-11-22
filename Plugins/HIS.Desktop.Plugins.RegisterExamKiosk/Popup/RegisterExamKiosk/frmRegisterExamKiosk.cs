@@ -463,16 +463,16 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
             }
         }
 
-        private void getServiceReq(long treatmentID)
+        private void getServiceReq(long treatmentId)
         {
             try
             {
-                if (treatmentID > 0)
+                if (treatmentId > 0)
                 {
                     CommonParam param = new CommonParam();
                     HisServiceReqFilter filter = new HisServiceReqFilter();
                     ServiceReqPrint = new V_HIS_SERVICE_REQ();
-                    filter.TREATMENT_ID = treatmentID;
+                    filter.TREATMENT_ID = treatmentId;
                     filter.ORDER_FIELD = "INTRUCTION_TIME";
                     filter.ORDER_DIRECTION = "ASC";
                     var listServiceReq = new BackendAdapter(param).Get<List<V_HIS_SERVICE_REQ>>("api/HisServiceReq/GetView", ApiConsumer.ApiConsumers.MosConsumer, filter, param);
@@ -530,16 +530,16 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
             }
         }
 
-        private HIS_TREATMENT getTreatmentID(HisCardSDO data)
+        private HIS_TREATMENT getTreatmentID(long PatientId)
         {
             HIS_TREATMENT rs = new HIS_TREATMENT();
             try
             {
-                if (data != null)
+                if (PatientId > 0)
                 {
                     CommonParam param = new CommonParam();
                     HisTreatmentFilter filter = new HisTreatmentFilter();
-                    filter.PATIENT_ID = data.PatientId;
+                    filter.PATIENT_ID = PatientId;
                     var result = new BackendAdapter(param).Get<List<HIS_TREATMENT>>("api/HisTreatment/Get", ApiConsumer.ApiConsumers.MosConsumer, filter, param);
                     if (result != null && result.Count > 0)
                     {
@@ -600,13 +600,57 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
 
         }
 
+        private void FillDataToQR()
+        {
+            try
+            {
+                var lstConfig = BackendDataWorker.Get<HIS_CONFIG>().Where(o => o.KEY.StartsWith("HIS.Desktop.Plugins.PaymentQrCode") && !string.IsNullOrEmpty(o.VALUE)).ToList();
+                if (this.patientForKioskSDO != null)
+                {
+                    var treatmentPrint = getTreatmentID(patientForKioskSDO.ID);
+                    treatmentId = treatmentPrint.ID;    
+                }
+              
+                getServiceReq(treatmentId);
+                if (ServiceReqPrint != null && ServiceReqPrint.ID > 0 && ServiceReqPrint.TRANS_REQ_ID > 0)
+                {
+                    MOS.Filter.HisTransReqFilter filter = new HisTransReqFilter();
+                    filter.ID = ServiceReqPrint.TRANS_REQ_ID;
+                    var transReq = new BackendAdapter(new CommonParam()).Get<List<HIS_TRANS_REQ>>("api/HisTransReq/Get", ApiConsumer.ApiConsumers.MosConsumer, filter, new CommonParam());
+                    if (transReq != null && transReq.Count > 0)
+                    {
+                        var dataIMG = HIS.Desktop.Common.BankQrCode.QrCodeProcessor.CreateQrImage(transReq.FirstOrDefault(), lstConfig).FirstOrDefault();
+                        using (var ms = new MemoryStream((byte[])dataIMG.Value))
+                        {
+                            pE_QR.Image = Image.FromStream(ms);
+                        }
+                        lblSoTien.Text = String.Format("Số tiền: {0}", Inventec.Common.Number.Convert.NumberToString(transReq.FirstOrDefault().AMOUNT, ConfigApplications.NumberSeperator));
+                    }
+                    else
+                    {
+                        pE_QR.Image = null;
+                        lblSoTien.Text = "";
+                    }
+                }
+                else
+                {
+                    pE_QR.Image = null;
+                    lblSoTien.Text = "";
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+
         private void loadInfoPatient(HisCardSDO data)
         {
             try
             {
                 if (data != null)
                 {
-                    var lstConfig = BackendDataWorker.Get<HIS_CONFIG>().Where(o => o.KEY.StartsWith("HIS.Desktop.Plugins.PaymentQrCode") && !string.IsNullOrEmpty(o.VALUE)).ToList();
+
                     lblName.Text = data.LastName + " " + data.FirstName;
                     lblAddress.Text = string.IsNullOrEmpty(data.HeinAddress) ? data.Address : data.HeinAddress;
                     lblCardNumber.Text = data.CardCode;
@@ -617,35 +661,10 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
                     if (this.patientForKioskSDO != null && this.patientForKioskSDO.Balance != null)
                     {
                         layoutControlItem35.Visibility = layoutControlItem36.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Always;
-                        lblBalance.Text = this.patientForKioskSDO.Balance.ToString();
+                        lblBalance.Text = Inventec.Common.Number.Convert.NumberToString(this.patientForKioskSDO.Balance ?? 0, ConfigApplications.NumberSeperator);
                     }
-                    if (treatmentId == 0 && this.patientForKioskSDO != null)
-                    {
-                        treatmentId = this.patientForKioskSDO.TreatmentId ?? 0;
-                    }
-                    getServiceReq(treatmentId);
-                    if (ServiceReqPrint != null)
-                    {
-                        MOS.Filter.HisTransReqFilter filter = new HisTransReqFilter();
-                        filter.ID = ServiceReqPrint.TRANS_REQ_ID;
-                        var transReq = new BackendAdapter(new CommonParam()).Get<List<HIS_TRANS_REQ>>("api/HisTransReq/Get", ApiConsumer.ApiConsumers.MosConsumer, filter, new CommonParam());
-                        if (transReq != null && transReq.Count > 0)
-                        {
-                            var dataIMG = HIS.Desktop.Common.BankQrCode.QrCodeProcessor.CreateQrImage(transReq.FirstOrDefault(), lstConfig).FirstOrDefault();
-                            using (var ms = new MemoryStream((byte[])dataIMG.Value))
-                            {
-                                pE_QR.Image = Image.FromStream(ms);
-                            }
-                        }
-                        else
-                        {
-                            pE_QR.Image = null;
-                        }
-                    }
-                    else
-                    {
-                        pE_QR.Image = null;
-                    }
+
+                    FillDataToQR();
                 }
             }
             catch (Exception ex)
@@ -660,7 +679,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
             {
                 string branchName = BranchDataWorker.Branch.BRANCH_NAME.ToUpper();
                 lblHospitalInfo.Text = "CHÀO MỪNG BẠN ĐẾN VỚI " + branchName;
-                lblHospitalInfo1.Text = "Dịch vụ đăng ký khám bệnh tự động bằng thẻ KCB thông minh";
+                lblHospitalInfo1.Text = "Dịch vụ đăng ký khám bệnh tự động bằng Kiosk thông minh";
             }
             catch (Exception ex)
             {
@@ -839,7 +858,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
                 {
                     //frmServiceRoom = new frmServiceRoom((V_HIS_EXECUTE_ROOM_1)e.Item.Tag, hisCardPatientSdo, requestRoomId, patient, vlistService, this.currentModule);
                     Inventec.Common.Logging.LogSystem.Debug("this.PatientTypeId là : " + this.PatientTypeId);
-                    frmServiceRoom = new frmServiceRoom((V_HIS_EXECUTE_ROOM_1)e.Item.Tag, hisCardPatientSdo, requestRoomId, null, vlistService, this.currentModule, this.PatientTypeId, sdoData, stADO);
+                    frmServiceRoom = new frmServiceRoom((V_HIS_EXECUTE_ROOM_1)e.Item.Tag, hisCardPatientSdo, requestRoomId, null, vlistService, this.currentModule, this.PatientTypeId, sdoData, stADO, RefreshData);
                     frmServiceRoom.IsPriority = ChkPriority.Checked;
                     frmServiceRoom.IsChroNic = chkChronic.Checked;
                     if (radioGroup1.SelectedIndex != -1)
@@ -879,6 +898,12 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
             }
         }
 
+        private void RefreshData(object data)
+        {
+            if (data != null)
+                FillDataToQR();
+        }
+
         private void SetDefaultControl()
         {
             try
@@ -891,6 +916,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
                 lblPlaceRegister.Text = "";
                 lblBorn.Text = "";
                 pE_QR.EditValue = null;
+                lblSoTien.Text = "";
                 SetDefaultRecieveLater();
                 ChkPriority.Checked = false;
             }
@@ -1140,6 +1166,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
                     hisCardPatientSdo.PatientId = examServiceReqRegisterResultSDO.HisPatientProfile.HisPatient.ID;
                     hisCardPatientSdo.PatientCode = examServiceReqRegisterResultSDO.HisPatientProfile.HisPatient.PATIENT_CODE;
                     success = true;
+                    FillDataToQR();
                     onClickPrint();
                 }
 
@@ -1560,7 +1587,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
                 HIS_TREATMENT treatmentPrint = new HIS_TREATMENT();
 
                 if (hisCardPatientSdo.PatientId != null)
-                    treatmentPrint = getTreatmentID(hisCardPatientSdo);
+                    treatmentPrint = getTreatmentID(hisCardPatientSdo.PatientId ?? 0);
 
                 //Nếu là in lại thì checkPrint=true
                 if (this.checkPrint)

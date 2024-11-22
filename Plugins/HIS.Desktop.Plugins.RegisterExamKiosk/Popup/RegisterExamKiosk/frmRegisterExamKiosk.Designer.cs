@@ -90,6 +90,8 @@
             this.layoutControlItem35 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem36 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControl2 = new DevExpress.XtraLayout.LayoutControl();
+            this.lblSoTien = new DevExpress.XtraEditors.LabelControl();
+            this.labelControl1 = new DevExpress.XtraEditors.LabelControl();
             this.pE_QR = new DevExpress.XtraEditors.PictureEdit();
             this.btnTamthu = new System.Windows.Forms.Button();
             this.btnThanhtoan = new System.Windows.Forms.Button();
@@ -107,6 +109,8 @@
             this.layoutControlItem25 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem26 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem37 = new DevExpress.XtraLayout.LayoutControlItem();
+            this.layoutControlItem38 = new DevExpress.XtraLayout.LayoutControlItem();
+            this.layoutControlItem39 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlGroup1 = new DevExpress.XtraLayout.LayoutControlGroup();
             this.layoutControlItem1 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem2 = new DevExpress.XtraLayout.LayoutControlItem();
@@ -160,6 +164,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem25)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem26)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem37)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem38)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem39)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlGroup1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem2)).BeginInit();
@@ -849,6 +855,8 @@
             // 
             // layoutControl2
             // 
+            this.layoutControl2.Controls.Add(this.lblSoTien);
+            this.layoutControl2.Controls.Add(this.labelControl1);
             this.layoutControl2.Controls.Add(this.pE_QR);
             this.layoutControl2.Controls.Add(this.btnTamthu);
             this.layoutControl2.Controls.Add(this.btnThanhtoan);
@@ -865,12 +873,43 @@
             this.layoutControl2.TabIndex = 4;
             this.layoutControl2.Text = "layoutControl2";
             // 
+            // lblSoTien
+            // 
+            this.lblSoTien.Appearance.BackColor = System.Drawing.Color.White;
+            this.lblSoTien.Appearance.BorderColor = System.Drawing.Color.White;
+            this.lblSoTien.Appearance.Font = new System.Drawing.Font("Arial", 19.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblSoTien.Appearance.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.lblSoTien.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            this.lblSoTien.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
+            this.lblSoTien.Location = new System.Drawing.Point(1568, 773);
+            this.lblSoTien.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
+            this.lblSoTien.Name = "lblSoTien";
+            this.lblSoTien.Size = new System.Drawing.Size(244, 38);
+            this.lblSoTien.StyleController = this.layoutControl2;
+            this.lblSoTien.TabIndex = 13;
+            this.lblSoTien.Text = "Số tiền: 50.000";
+            // 
+            // labelControl1
+            // 
+            this.labelControl1.Appearance.BackColor = System.Drawing.Color.White;
+            this.labelControl1.Appearance.Font = new System.Drawing.Font("Arial", 19.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelControl1.Appearance.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.labelControl1.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            this.labelControl1.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
+            this.labelControl1.Location = new System.Drawing.Point(1568, 658);
+            this.labelControl1.Name = "labelControl1";
+            this.labelControl1.Size = new System.Drawing.Size(244, 38);
+            this.labelControl1.StyleController = this.layoutControl2;
+            this.labelControl1.TabIndex = 12;
+            this.labelControl1.Text = "QR-CODE";
+            // 
             // pE_QR
             // 
-            this.pE_QR.Location = new System.Drawing.Point(1568, 688);
+            this.pE_QR.Location = new System.Drawing.Point(1568, 696);
             this.pE_QR.Name = "pE_QR";
+            this.pE_QR.Properties.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
             this.pE_QR.Properties.SizeMode = DevExpress.XtraEditors.Controls.PictureSizeMode.Squeeze;
-            this.pE_QR.Size = new System.Drawing.Size(244, 123);
+            this.pE_QR.Size = new System.Drawing.Size(244, 74);
             this.pE_QR.StyleController = this.layoutControl2;
             this.pE_QR.TabIndex = 11;
             // 
@@ -927,7 +966,7 @@
             this.btnEnd.Location = new System.Drawing.Point(1568, 538);
             this.btnEnd.Margin = new System.Windows.Forms.Padding(4);
             this.btnEnd.Name = "btnEnd";
-            this.btnEnd.Size = new System.Drawing.Size(244, 144);
+            this.btnEnd.Size = new System.Drawing.Size(244, 114);
             this.btnEnd.TabIndex = 7;
             this.btnEnd.Text = "Kết thúc";
             this.btnEnd.UseVisualStyleBackColor = false;
@@ -1000,7 +1039,9 @@
             this.layoutControlItem9,
             this.layoutControlItem25,
             this.layoutControlItem26,
-            this.layoutControlItem37});
+            this.layoutControlItem37,
+            this.layoutControlItem38,
+            this.layoutControlItem39});
             this.Root.Location = new System.Drawing.Point(0, 0);
             this.Root.Name = "Root";
             this.Root.Padding = new DevExpress.XtraLayout.Utils.Padding(0, 0, 0, 0);
@@ -1044,10 +1085,10 @@
             // 
             this.layoutControlItem8.Control = this.btnEnd;
             this.layoutControlItem8.Location = new System.Drawing.Point(1565, 535);
-            this.layoutControlItem8.MaxSize = new System.Drawing.Size(250, 170);
-            this.layoutControlItem8.MinSize = new System.Drawing.Size(250, 150);
+            this.layoutControlItem8.MaxSize = new System.Drawing.Size(250, 120);
+            this.layoutControlItem8.MinSize = new System.Drawing.Size(250, 120);
             this.layoutControlItem8.Name = "layoutControlItem8";
-            this.layoutControlItem8.Size = new System.Drawing.Size(250, 150);
+            this.layoutControlItem8.Size = new System.Drawing.Size(250, 120);
             this.layoutControlItem8.SizeConstraintsType = DevExpress.XtraLayout.SizeConstraintsType.Custom;
             this.layoutControlItem8.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem8.TextVisible = false;
@@ -1083,12 +1124,47 @@
             // 
             // layoutControlItem37
             // 
+            this.layoutControlItem37.AppearanceItemCaption.BorderColor = System.Drawing.Color.White;
+            this.layoutControlItem37.AppearanceItemCaption.Options.UseBorderColor = true;
             this.layoutControlItem37.Control = this.pE_QR;
-            this.layoutControlItem37.Location = new System.Drawing.Point(1565, 685);
+            this.layoutControlItem37.Location = new System.Drawing.Point(1565, 696);
             this.layoutControlItem37.Name = "layoutControlItem37";
-            this.layoutControlItem37.Size = new System.Drawing.Size(250, 129);
+            this.layoutControlItem37.Padding = new DevExpress.XtraLayout.Utils.Padding(3, 3, 0, 3);
+            this.layoutControlItem37.Size = new System.Drawing.Size(250, 77);
             this.layoutControlItem37.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem37.TextVisible = false;
+            // 
+            // layoutControlItem38
+            // 
+            this.layoutControlItem38.AppearanceItemCaption.BackColor = System.Drawing.Color.White;
+            this.layoutControlItem38.AppearanceItemCaption.BackColor2 = System.Drawing.Color.White;
+            this.layoutControlItem38.AppearanceItemCaption.BorderColor = System.Drawing.Color.White;
+            this.layoutControlItem38.AppearanceItemCaption.Options.UseBackColor = true;
+            this.layoutControlItem38.AppearanceItemCaption.Options.UseBorderColor = true;
+            this.layoutControlItem38.Control = this.labelControl1;
+            this.layoutControlItem38.Location = new System.Drawing.Point(1565, 655);
+            this.layoutControlItem38.Name = "layoutControlItem38";
+            this.layoutControlItem38.Padding = new DevExpress.XtraLayout.Utils.Padding(3, 3, 3, 0);
+            this.layoutControlItem38.Size = new System.Drawing.Size(250, 41);
+            this.layoutControlItem38.TextSize = new System.Drawing.Size(0, 0);
+            this.layoutControlItem38.TextVisible = false;
+            // 
+            // layoutControlItem39
+            // 
+            this.layoutControlItem39.AppearanceItemCaption.BackColor = System.Drawing.Color.White;
+            this.layoutControlItem39.AppearanceItemCaption.BackColor2 = System.Drawing.Color.White;
+            this.layoutControlItem39.AppearanceItemCaption.BorderColor = System.Drawing.Color.White;
+            this.layoutControlItem39.AppearanceItemCaption.ForeColor = System.Drawing.Color.White;
+            this.layoutControlItem39.AppearanceItemCaption.Options.UseBackColor = true;
+            this.layoutControlItem39.AppearanceItemCaption.Options.UseBorderColor = true;
+            this.layoutControlItem39.AppearanceItemCaption.Options.UseForeColor = true;
+            this.layoutControlItem39.Control = this.lblSoTien;
+            this.layoutControlItem39.Location = new System.Drawing.Point(1565, 773);
+            this.layoutControlItem39.Name = "layoutControlItem39";
+            this.layoutControlItem39.Padding = new DevExpress.XtraLayout.Utils.Padding(3, 3, 0, 3);
+            this.layoutControlItem39.Size = new System.Drawing.Size(250, 41);
+            this.layoutControlItem39.TextSize = new System.Drawing.Size(0, 0);
+            this.layoutControlItem39.TextVisible = false;
             // 
             // layoutControlGroup1
             // 
@@ -1189,6 +1265,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem25)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem26)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem37)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem38)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem39)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlGroup1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem2)).EndInit();
@@ -1280,5 +1358,9 @@
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem36;
         private DevExpress.XtraEditors.PictureEdit pE_QR;
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem37;
+        private DevExpress.XtraEditors.LabelControl lblSoTien;
+        private DevExpress.XtraEditors.LabelControl labelControl1;
+        private DevExpress.XtraLayout.LayoutControlItem layoutControlItem38;
+        private DevExpress.XtraLayout.LayoutControlItem layoutControlItem39;
     }
 }

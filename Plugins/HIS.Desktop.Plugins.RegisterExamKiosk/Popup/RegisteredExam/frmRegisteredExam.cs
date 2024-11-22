@@ -4,6 +4,7 @@ using His.Bhyt.InsuranceExpertise.LDO;
 using HIS.Desktop.ApiConsumer;
 using HIS.Desktop.Common;
 using HIS.Desktop.LocalStorage.BackendData;
+using HIS.Desktop.LocalStorage.ConfigApplication;
 using HIS.Desktop.Plugins.RegisterExamKiosk.ADO;
 using HIS.Desktop.Plugins.RegisterExamKiosk.Config;
 using HIS.Desktop.Plugins.RegisterExamKiosk.Popup.CheckHeinCardGOV;
@@ -241,38 +242,45 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisteredExam
                 if (patientMissing >= 0)
                 {
                     lciConThieu.Visibility = lcilbConThieu.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Always;
-                    lblPatientMissing.Text = patientMissing.ToString() + " đ";
+                    lblPatientMissing.Text = Inventec.Common.Number.Convert.NumberToString(patientMissing, ConfigApplications.NumberSeperator) + " đ";
                 }
 
                 if (data.Balance != null)
                 {
                     lciSoDu.Visibility = layoutControlItem18.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Always;
                     balance = Math.Round(data.Balance ?? 0);
-                    lblBalance.Text = balance.ToString() + " đ";
+                    lblBalance.Text = Inventec.Common.Number.Convert.NumberToString(balance, ConfigApplications.NumberSeperator) + " đ";
                 }
-                lblTotalPatientPrice.Text = totalPatientPrice.ToString() + " đ";
-                lblPatientPaid.Text = Math.Round(patientPaid).ToString() + " đ";
+                lblTotalPatientPrice.Text = Inventec.Common.Number.Convert.NumberToString(totalPatientPrice, ConfigApplications.NumberSeperator) + " đ";
+                lblPatientPaid.Text = Inventec.Common.Number.Convert.NumberToString(Math.Round(patientPaid), ConfigApplications.NumberSeperator) + " đ";
                 LoadDataTile(patientMissing, balance);
                 var lstConfig = BackendDataWorker.Get<HIS_CONFIG>().Where(o => o.KEY.StartsWith("HIS.Desktop.Plugins.PaymentQrCode") && !string.IsNullOrEmpty(o.VALUE)).ToList();
                 //getServiceReq(treatmentId);
                 if (data.ServiceReqs != null && data.ServiceReqs.Count() > 0)
                 {
-                    MOS.Filter.HisTransReqFilter filter = new HisTransReqFilter();
-                    filter.ID = data.ServiceReqs.FirstOrDefault(o => o.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__KH).TRANS_REQ_ID;
-                    var transReq = new BackendAdapter(new CommonParam()).Get<List<HIS_TRANS_REQ>>("api/HisTransReq/Get", ApiConsumer.ApiConsumers.MosConsumer, filter, new CommonParam());
-                    if (transReq != null && transReq.Count > 0)
+                    var serviceReq_KH = data.ServiceReqs.FirstOrDefault(o => o.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__KH);
+                    if (serviceReq_KH != null && serviceReq_KH.TRANS_REQ_ID > 0)
                     {
-                        var dataIMG = HIS.Desktop.Common.BankQrCode.QrCodeProcessor.CreateQrImage(transReq.FirstOrDefault(), lstConfig).FirstOrDefault();
-                        using (var ms = new MemoryStream((byte[])dataIMG.Value))
+                        MOS.Filter.HisTransReqFilter filter = new HisTransReqFilter();
+                        filter.ID = serviceReq_KH.TRANS_REQ_ID;
+                        var transReq = new BackendAdapter(new CommonParam()).Get<List<HIS_TRANS_REQ>>("api/HisTransReq/Get", ApiConsumer.ApiConsumers.MosConsumer, filter, new CommonParam());
+                        if (transReq != null && transReq.Count > 0)
                         {
-                            Pe_QR.Image = Image.FromStream(ms);
+                            var dataIMG = HIS.Desktop.Common.BankQrCode.QrCodeProcessor.CreateQrImage(transReq.FirstOrDefault(), lstConfig).FirstOrDefault();
+                            using (var ms = new MemoryStream((byte[])dataIMG.Value))
+                            {
+                                Pe_QR.Image = Image.FromStream(ms);
+                            }
+                        }
+                        else
+                        {
+                            Pe_QR.Image = null;
                         }
                     }
                     else
                     {
                         Pe_QR.Image = null;
                     }
-
                 }
                 else
                 {

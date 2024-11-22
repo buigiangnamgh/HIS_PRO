@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmWaitingScreen));
             this.layoutControl1 = new DevExpress.XtraLayout.LayoutControl();
             this.layoutControl2 = new DevExpress.XtraLayout.LayoutControl();
@@ -52,10 +51,10 @@
             this.layoutControlItem3 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlGroup1 = new DevExpress.XtraLayout.LayoutControlGroup();
             this.layoutControlItem1 = new DevExpress.XtraLayout.LayoutControlItem();
-            this.imageCollection1 = new DevExpress.Utils.ImageCollection(this.components);
-            this.timerLabel = new System.Windows.Forms.Timer(this.components);
-            this.timerWallPaper = new System.Windows.Forms.Timer(this.components);
-            this.timerCheckFocus = new System.Windows.Forms.Timer(this.components);
+            this.imageCollection1 = new DevExpress.Utils.ImageCollection();
+            this.timerLabel = new System.Windows.Forms.Timer();
+            this.timerWallPaper = new System.Windows.Forms.Timer();
+            this.timerCheckFocus = new System.Windows.Forms.Timer();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).BeginInit();
             this.layoutControl1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl2)).BeginInit();
@@ -114,6 +113,7 @@
             this.layoutControl3.Location = new System.Drawing.Point(3, 3);
             this.layoutControl3.Name = "layoutControl3";
             this.layoutControl3.OptionsCustomizationForm.DesignTimeCustomizationFormPositionAndSize = new System.Drawing.Rectangle(127, 417, 312, 437);
+            this.layoutControl3.Padding = new System.Windows.Forms.Padding(5);
             this.layoutControl3.Root = this.layoutControlGroup2;
             this.layoutControl3.Size = new System.Drawing.Size(1793, 896);
             this.layoutControl3.TabIndex = 4;
@@ -130,11 +130,11 @@
             this.pnBtnCLose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.pnBtnCLose.Font = new System.Drawing.Font("Arial", 25F, System.Drawing.FontStyle.Bold);
             this.pnBtnCLose.ForeColor = System.Drawing.Color.White;
-            this.pnBtnCLose.Location = new System.Drawing.Point(1559, 807);
+            this.pnBtnCLose.Location = new System.Drawing.Point(1559, 796);
             this.pnBtnCLose.Margin = new System.Windows.Forms.Padding(0);
             this.pnBtnCLose.Name = "pnBtnCLose";
             this.pnBtnCLose.Padding = new System.Windows.Forms.Padding(0, 12, 0, 12);
-            this.pnBtnCLose.Size = new System.Drawing.Size(231, 86);
+            this.pnBtnCLose.Size = new System.Drawing.Size(231, 97);
             this.pnBtnCLose.TabIndex = 5;
             this.pnBtnCLose.Text = "ĐÓNG";
             this.pnBtnCLose.TextColor = System.Drawing.Color.White;
@@ -152,7 +152,7 @@
             this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
             this.label2.Padding = new System.Windows.Forms.Padding(0, 0, 0, 15);
-            this.label2.Size = new System.Drawing.Size(1787, 371);
+            this.label2.Size = new System.Drawing.Size(1787, 221);
             this.label2.TabIndex = 2;
             this.label2.Text = "MỜI BỆNH NHÂN NHẬP SỐ CCCD \r\nHOẶC MÃ BỆNH NHÂN";
             this.label2.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
@@ -181,11 +181,11 @@
             this.btnConfirm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnConfirm.Font = new System.Drawing.Font("Arial", 25F, System.Drawing.FontStyle.Bold);
             this.btnConfirm.ForeColor = System.Drawing.Color.White;
-            this.btnConfirm.Location = new System.Drawing.Point(1124, 472);
+            this.btnConfirm.Location = new System.Drawing.Point(1124, 322);
             this.btnConfirm.Margin = new System.Windows.Forms.Padding(0);
             this.btnConfirm.Name = "btnConfirm";
             this.btnConfirm.Padding = new System.Windows.Forms.Padding(0, 12, 0, 12);
-            this.btnConfirm.Size = new System.Drawing.Size(304, 103);
+            this.btnConfirm.Size = new System.Drawing.Size(304, 104);
             this.btnConfirm.TabIndex = 1;
             this.btnConfirm.Text = "XÁC NHẬN";
             this.btnConfirm.TextColor = System.Drawing.Color.White;
@@ -203,7 +203,7 @@
             this.txtNumberInput.EditMaskPn = "";
             this.txtNumberInput.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtNumberInput.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(64)))), ((int)(((byte)(0)))));
-            this.txtNumberInput.Location = new System.Drawing.Point(340, 472);
+            this.txtNumberInput.Location = new System.Drawing.Point(340, 322);
             this.txtNumberInput.Margin = new System.Windows.Forms.Padding(4);
             this.txtNumberInput.MaskTypes = DevExpress.XtraEditors.Mask.MaskType.None;
             this.txtNumberInput.MaxLengthTexts = 200;
@@ -242,9 +242,9 @@
             // layoutControlItem5
             // 
             this.layoutControlItem5.Control = this.txtNumberInput;
-            this.layoutControlItem5.Location = new System.Drawing.Point(332, 469);
+            this.layoutControlItem5.Location = new System.Drawing.Point(332, 319);
             this.layoutControlItem5.Name = "layoutControlItem5";
-            this.layoutControlItem5.Size = new System.Drawing.Size(789, 109);
+            this.layoutControlItem5.Size = new System.Drawing.Size(789, 110);
             this.layoutControlItem5.TextAlignMode = DevExpress.XtraLayout.TextAlignModeItem.CustomSize;
             this.layoutControlItem5.TextSize = new System.Drawing.Size(0, 20);
             this.layoutControlItem5.TextToControlDistance = 5;
@@ -252,9 +252,9 @@
             // layoutControlItem6
             // 
             this.layoutControlItem6.Control = this.btnConfirm;
-            this.layoutControlItem6.Location = new System.Drawing.Point(1121, 469);
+            this.layoutControlItem6.Location = new System.Drawing.Point(1121, 319);
             this.layoutControlItem6.Name = "layoutControlItem6";
-            this.layoutControlItem6.Size = new System.Drawing.Size(310, 109);
+            this.layoutControlItem6.Size = new System.Drawing.Size(310, 110);
             this.layoutControlItem6.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem6.TextVisible = false;
             // 
@@ -263,7 +263,7 @@
             this.layoutControlItem4.Control = this.label2;
             this.layoutControlItem4.Location = new System.Drawing.Point(0, 92);
             this.layoutControlItem4.Name = "layoutControlItem4";
-            this.layoutControlItem4.Size = new System.Drawing.Size(1793, 377);
+            this.layoutControlItem4.Size = new System.Drawing.Size(1793, 227);
             this.layoutControlItem4.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem4.TextVisible = false;
             // 
@@ -279,43 +279,43 @@
             // emptySpaceItem1
             // 
             this.emptySpaceItem1.AllowHotTrack = false;
-            this.emptySpaceItem1.Location = new System.Drawing.Point(0, 578);
+            this.emptySpaceItem1.Location = new System.Drawing.Point(0, 429);
             this.emptySpaceItem1.Name = "emptySpaceItem1";
-            this.emptySpaceItem1.Size = new System.Drawing.Size(1556, 318);
+            this.emptySpaceItem1.Size = new System.Drawing.Size(1556, 467);
             this.emptySpaceItem1.TextAlignMode = DevExpress.XtraLayout.TextAlignModeItem.CustomSize;
             this.emptySpaceItem1.TextSize = new System.Drawing.Size(0, 0);
             // 
             // emptySpaceItem2
             // 
             this.emptySpaceItem2.AllowHotTrack = false;
-            this.emptySpaceItem2.Location = new System.Drawing.Point(0, 469);
+            this.emptySpaceItem2.Location = new System.Drawing.Point(0, 319);
             this.emptySpaceItem2.Name = "emptySpaceItem2";
-            this.emptySpaceItem2.Size = new System.Drawing.Size(332, 109);
+            this.emptySpaceItem2.Size = new System.Drawing.Size(332, 110);
             this.emptySpaceItem2.TextSize = new System.Drawing.Size(0, 0);
             // 
             // emptySpaceItem3
             // 
             this.emptySpaceItem3.AllowHotTrack = false;
-            this.emptySpaceItem3.Location = new System.Drawing.Point(1431, 469);
+            this.emptySpaceItem3.Location = new System.Drawing.Point(1431, 319);
             this.emptySpaceItem3.Name = "emptySpaceItem3";
-            this.emptySpaceItem3.Size = new System.Drawing.Size(362, 109);
+            this.emptySpaceItem3.Size = new System.Drawing.Size(362, 110);
             this.emptySpaceItem3.TextSize = new System.Drawing.Size(0, 0);
             // 
             // layoutControlItem7
             // 
             this.layoutControlItem7.Control = this.pnBtnCLose;
-            this.layoutControlItem7.Location = new System.Drawing.Point(1556, 804);
+            this.layoutControlItem7.Location = new System.Drawing.Point(1556, 793);
             this.layoutControlItem7.Name = "layoutControlItem7";
-            this.layoutControlItem7.Size = new System.Drawing.Size(237, 92);
+            this.layoutControlItem7.Size = new System.Drawing.Size(237, 103);
             this.layoutControlItem7.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem7.TextVisible = false;
             // 
             // emptySpaceItem5
             // 
             this.emptySpaceItem5.AllowHotTrack = false;
-            this.emptySpaceItem5.Location = new System.Drawing.Point(1556, 578);
+            this.emptySpaceItem5.Location = new System.Drawing.Point(1556, 429);
             this.emptySpaceItem5.Name = "emptySpaceItem5";
-            this.emptySpaceItem5.Size = new System.Drawing.Size(237, 226);
+            this.emptySpaceItem5.Size = new System.Drawing.Size(237, 364);
             this.emptySpaceItem5.TextSize = new System.Drawing.Size(0, 0);
             // 
             // Root

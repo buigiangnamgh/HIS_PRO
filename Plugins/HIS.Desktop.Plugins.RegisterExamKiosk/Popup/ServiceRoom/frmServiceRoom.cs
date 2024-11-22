@@ -56,6 +56,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.ServiceRoom
         long patientType;
         HisExamRegisterKioskSDO sdoData;
         SettingADO stADO;
+        DelegateSelectData delegateSelectData = null;
         #endregion
 
         #region Contructor
@@ -157,7 +158,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.ServiceRoom
             }
         }
 
-        public frmServiceRoom(V_HIS_EXECUTE_ROOM_1 data, HisCardSDO hisCardPatientSdo, long roomId, V_HIS_PATIENT patient, List<V_HIS_SERVICE> vlistService, Inventec.Desktop.Common.Modules.Module module, long _patientType, HisExamRegisterKioskSDO sdoData, SettingADO stADO)
+        public frmServiceRoom(V_HIS_EXECUTE_ROOM_1 data, HisCardSDO hisCardPatientSdo, long roomId, V_HIS_PATIENT patient, List<V_HIS_SERVICE> vlistService, Inventec.Desktop.Common.Modules.Module module, long _patientType, HisExamRegisterKioskSDO sdoData, SettingADO stADO, DelegateSelectData refreshData)
         {
             InitializeComponent();
             try
@@ -168,6 +169,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.ServiceRoom
                 this.hisCardPatientSdo = hisCardPatientSdo;
                 this.requestRoomId = roomId;
                 this.patient = patient;
+                this.delegateSelectData = refreshData;
                 this.vlistService = vlistService;
                 this.patientType = _patientType;
                 this.sdoData = sdoData;
@@ -537,6 +539,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.ServiceRoom
                     hisCardPatientSdo.PatientId = examServiceReqRegisterResultSDO.HisPatientProfile.HisPatient.ID;
                     hisCardPatientSdo.PatientCode = examServiceReqRegisterResultSDO.HisPatientProfile.HisPatient.PATIENT_CODE;
                     success = true;
+                    this.delegateSelectData(examServiceReqRegisterResultSDO);
                     onClickPrint();
                 }
 
