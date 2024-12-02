@@ -20,8 +20,10 @@ namespace MPS.Processor.Mps000338
     {
         List<ServiceTypeADO> GroupPatientTypes = new List<ServiceTypeADO>();
         List<ServiceTypeADO> GroupIsExpends = new List<ServiceTypeADO>();
+        List<ServiceTypeADO> GroupAll = new List<ServiceTypeADO>();
         List<V_HIS_SERE_SERV> ListSereServIsExpend = new List<V_HIS_SERE_SERV>();
         List<V_HIS_SERE_SERV> ListSereServPatientType = new List<V_HIS_SERE_SERV>();
+        List<V_HIS_SERE_SERV> ListSereServAll = new List<V_HIS_SERE_SERV>();
         List<PatientTypeADO> PatientTypes = new List<PatientTypeADO>();
         decimal totalPricePatientType = 0, totalPriceIsExpend = 0, totalPrice = 0;
 
@@ -34,7 +36,20 @@ namespace MPS.Processor.Mps000338
                     Inventec.Common.Logging.LogSystem.Info("MPS.Processor.Mps000338 DataInputProcess this.rdo.ListSereServ is NULL or empty");
                     return;
                 }
-
+                // tat ca
+                GroupAll = new List<ServiceTypeADO>();
+                ListSereServAll = new List<V_HIS_SERE_SERV>();
+                ListSereServAll = this.rdo.ListSereServ;
+                var GroupSereServAll = ListSereServAll.OrderBy(p => p.SERVICE_TYPE_NAME)
+                                   .GroupBy(o => o.TDL_SERVICE_TYPE_ID).ToList();
+                foreach (var item in GroupSereServAll)
+                {
+                    ServiceTypeADO ado = new ServiceTypeADO();
+                    AutoMapper.Mapper.CreateMap<V_HIS_SERE_SERV, ServiceTypeADO>();
+                    ado = AutoMapper.Mapper.Map<ServiceTypeADO>(item.FirstOrDefault());
+                    ado.TOTAL_AMOUNT = item.Sum(o => o.AMOUNT * o.PRICE);
+                    GroupAll.Add(ado);
+                }
                 //Nhóm theo hao phí
                 GroupIsExpends = new List<ServiceTypeADO>();
                 ListSereServIsExpend = this.rdo.ListSereServ.Where(o => o.IS_EXPEND.HasValue && o.IS_EXPEND.Value == 1).ToList();

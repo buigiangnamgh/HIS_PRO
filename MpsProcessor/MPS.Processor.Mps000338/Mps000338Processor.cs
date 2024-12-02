@@ -69,18 +69,21 @@ namespace MPS.Processor.Mps000338
 
         private List<V_HIS_EKIP_USER> GetEkipUsers()
         {
-            List<V_HIS_EKIP_USER> result = null;
+            List<V_HIS_EKIP_USER> result = new List<V_HIS_EKIP_USER>();
             try
             {
-                CommonParam param = new CommonParam();
-                HisEkipFilter filter = new HisEkipFilter();
-                filter.ID = rdo.SereServ.EKIP_ID;
-                var lstEkip = new BackendAdapter(param).Get<List<HIS_EKIP>>("api/HisEkip/Get", HIS.Desktop.ApiConsumer.ApiConsumers.MosConsumer, filter, param);
-                if (lstEkip != null && lstEkip.Count > 0)
+                if (rdo.SereServ.EKIP_ID.HasValue && rdo.SereServ.EKIP_ID.Value > 0)
                 {
-                    HisEkipUserViewFilter filterUser = new HisEkipUserViewFilter();
-                    filterUser.EKIP_IDs = lstEkip.Select(o => o.ID).Distinct().ToList();
-                    result = new BackendAdapter(param).Get<List<V_HIS_EKIP_USER>>("api/HisEkipUser/GetView", HIS.Desktop.ApiConsumer.ApiConsumers.MosConsumer, filterUser, param);
+                    CommonParam param = new CommonParam();
+                    HisEkipFilter filter = new HisEkipFilter();
+                    filter.ID = rdo.SereServ.EKIP_ID;
+                    var lstEkip = new BackendAdapter(param).Get<List<HIS_EKIP>>("api/HisEkip/Get", HIS.Desktop.ApiConsumer.ApiConsumers.MosConsumer, filter, param);
+                    if (lstEkip != null && lstEkip.Count > 0)
+                    {
+                        HisEkipUserViewFilter filterUser = new HisEkipUserViewFilter();
+                        filterUser.EKIP_IDs = lstEkip.Select(o => o.ID).Distinct().ToList();
+                        result = new BackendAdapter(param).Get<List<V_HIS_EKIP_USER>>("api/HisEkipUser/GetView", HIS.Desktop.ApiConsumer.ApiConsumers.MosConsumer, filterUser, param);
+                    }
                 }
             }
             catch (Exception ex)
@@ -106,6 +109,10 @@ namespace MPS.Processor.Mps000338
                 //SetNumOrderKey(GetNumOrderPrint(ProcessUniqueCodeData()));
                 singleTag.ProcessData(store, singleValueDictionary);
                 barCodeTag.ProcessData(store, dicImage);
+                // tất cả
+                objectTag.AddObjectData(store, "GroupAll", GroupAll);
+                objectTag.AddObjectData(store, "SereServAll", this.ListSereServAll);
+                objectTag.AddRelationship(store, "GroupAll", "SereServAll", "TDL_SERVICE_TYPE_ID", "TDL_SERVICE_TYPE_ID");
                 // hao phí
                 objectTag.AddObjectData(store, "GroupIsExpends", GroupIsExpends);
                 objectTag.AddObjectData(store, "SereServIsExpend", this.ListSereServIsExpend);
@@ -165,7 +172,7 @@ namespace MPS.Processor.Mps000338
                 SetSingleKey(new KeyValue(Mps000338ExtendSingleKey.TOTAL_PRICE_IS_EXPEND, this.totalPriceIsExpend));
                 SetSingleKey(new KeyValue(Mps000338ExtendSingleKey.TOTAL_PRICE_PATIENT_TYPE, this.totalPricePatientType));
                 SetSingleKey(new KeyValue(Mps000338ExtendSingleKey.TOTAL_PRICE, totalPrice));
-                SetSingleKey(new KeyValue(Mps000338ExtendSingleKey.AGE_STRING, Inventec.Common.DateTime.Calculation.AgeString(rdo.Treatment.TDL_PATIENT_DOB, "", "", "", "",rdo.Treatment.IN_TIME)));
+                SetSingleKey(new KeyValue(Mps000338ExtendSingleKey.AGE_STRING, Inventec.Common.DateTime.Calculation.AgeString(rdo.Treatment.TDL_PATIENT_DOB, "", "", "", "", rdo.Treatment.IN_TIME)));
             }
             catch (Exception ex)
             {
