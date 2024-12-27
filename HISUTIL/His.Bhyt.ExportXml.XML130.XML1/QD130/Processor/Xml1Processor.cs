@@ -180,7 +180,6 @@ namespace His.Bhyt.ExportXml.XML130.XML1.Processor
                             {
                                 MaDTKCB = "1.8";
                             }
-                            
                             else if (data.vTreatment.IS_HIV == 1)
                             {
                                 MaDTKCB = "1.9";
@@ -198,6 +197,10 @@ namespace His.Bhyt.ExportXml.XML130.XML1.Processor
                             else if (PatientTypeAlter.HAS_BIRTH_CERTIFICATE == MOS.LibraryHein.Bhyt.HeinHasBirthCertificate.HeinHasBirthCertificateCode.TRUE || xml1.MA_THE_BHYT.StartsWith("TE") || ((MOS.LibraryHein.Bhyt.HeinLevel.HeinLevelCode.DISTRICT == data.vTreatment.HEIN_LEVEL_CODE || MOS.LibraryHein.Bhyt.HeinLevel.HeinLevelCode.COMMUNE == data.vTreatment.HEIN_LEVEL_CODE) && ProvinceCode == branchProvinceCode && (levelCodeHeinMediOrg == MOS.LibraryHein.Bhyt.HeinLevel.HeinLevelCode.DISTRICT || levelCodeHeinMediOrg == MOS.LibraryHein.Bhyt.HeinLevel.HeinLevelCode.COMMUNE)))
                             {
                                 MaDTKCB = "1.2";
+                            }
+                            else if (PatientTypeAlter.HEIN_CARD_NUMBER.StartsWith("HN") || PatientTypeAlter.LIVE_AREA_CODE == MOS.LibraryHein.Bhyt.HeinLiveArea.HeinLiveAreaCode.K1 || PatientTypeAlter.LIVE_AREA_CODE == MOS.LibraryHein.Bhyt.HeinLiveArea.HeinLiveAreaCode.K2 || PatientTypeAlter.LIVE_AREA_CODE == MOS.LibraryHein.Bhyt.HeinLiveArea.HeinLiveAreaCode.K3)
+                            {
+                                MaDTKCB = "3.6";
                             }
                         }
                         else if (PatientTypeAlter.RIGHT_ROUTE_CODE == MOS.LibraryHein.Bhyt.HeinRightRoute.HeinRightRouteCode.FALSE)
@@ -226,7 +229,7 @@ namespace His.Bhyt.ExportXml.XML130.XML1.Processor
                             {
                                 MaDTKCB = "3.5";
                             }
-                            else
+                            else 
                             {
                                 MaDTKCB = "3.7";
                             }
