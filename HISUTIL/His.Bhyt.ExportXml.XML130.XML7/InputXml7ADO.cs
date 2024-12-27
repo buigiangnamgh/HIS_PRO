@@ -25,5 +25,7 @@ namespace His.Bhyt.ExportXml.XML130.XML7
         /// </summary>
         public List<HIS_EMPLOYEE> Employees { get; set; }
 
+        public bool IS_3176 { get; set; }
+
     }
 }

@@ -150,13 +150,10 @@ namespace His.Bhyt.ExportXml.XML130.XML7
                         chanDoanRV += ";";
                     }
                     chanDoanRV += treatment.ICD_TEXT ?? "";
+                    //viec 181191
+                    ppDieuTri = Inventec.Common.String.CountVi.Count(treatment.TREATMENT_METHOD) > 1500 ? Inventec.Common.String.CountVi.SubStringVi(treatment.TREATMENT_METHOD,1500) : (treatment.TREATMENT_METHOD ?? "");
 
-                    ppDieuTri = !string.IsNullOrWhiteSpace(treatment.TREATMENT_METHOD) ? treatment.TREATMENT_METHOD : ".";
-                    if (!string.IsNullOrEmpty(ppDieuTri) && Encoding.UTF8.GetByteCount(ppDieuTri) > 1500)
-                    {
-                        ppDieuTri = SubStringWithSeparate(ppDieuTri, 1500);
-                    }
-                    ghiChu = treatment.END_TYPE_EXT_NOTE ?? "";
+                    ghiChu = Inventec.Common.String.CountVi.Count(treatment.ADVISE) > 1500 ? Inventec.Common.String.CountVi.SubStringVi(treatment.ADVISE,1500): (treatment.ADVISE ?? "");
                     maTTDV = treatment.REPRESENTATIVE_HEIN_CODE ?? "";
                     var bacSi = GetBacSi(treatment.END_HEAD_LOGINNAME, data.Employees);
                     maBS = bacSi != null ? bacSi.SOCIAL_INSURANCE_NUMBER ?? "" : "";
@@ -223,6 +220,12 @@ namespace His.Bhyt.ExportXml.XML130.XML7
                     result.ngoaiTruTuNgay = ngoaiTruTuNgay;
                     result.ngoaiTruDenNgay = ngoaiTruDenNgay;
                     result.duPhong = DuPhong;
+                    if (data.IS_3176)
+                    {
+                        result.ppDieuTri = data.Treatment.TREATMENT_METHOD;
+                        result.maTTDV = GetMaBacSi(data.Treatment.HOSP_SUBS_DIRECTOR_LOGINNAME ?? data.Treatment.HOSPITAL_DIRECTOR_LOGINNAME, data.Employees);
+                        result.maBS = GetMaBacSi(data.Treatment.END_DEPT_SUBS_HEAD_LOGINNAME ?? data.Treatment.END_DEPARTMENT_HEAD_LOGINNAME ?? data.Treatment.END_HEAD_LOGINNAME, data.Employees);
+                    }
                 }
             }
             catch (Exception ex)
@@ -232,6 +235,7 @@ namespace His.Bhyt.ExportXml.XML130.XML7
             }
             return result;
         }
+
 
         private string SubStringWithSeparate(string multiCharString, decimal limit)
         {
@@ -275,7 +279,7 @@ namespace His.Bhyt.ExportXml.XML130.XML7
                     var dataEmployee = listEmployees.FirstOrDefault(p => p.LOGINNAME == loginName);
                     if (dataEmployee != null)
                     {
-                        result = dataEmployee.SOCIAL_INSURANCE_NUMBER;
+                        result = dataEmployee.SOCIAL_INSURANCE_NUMBER ?? "";
                     }
                 }
                 else
