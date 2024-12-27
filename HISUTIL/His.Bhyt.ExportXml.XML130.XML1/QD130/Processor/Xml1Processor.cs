@@ -1,5 +1,4 @@
-﻿using His.Bhyt.ExportXml.XML130.XML1.ADO;
-using His.Bhyt.ExportXml.XML130.XML1.Base;
+﻿using His.Bhyt.ExportXml.XML130.XML1.Base;
 using His.Bhyt.ExportXml.XML130.XML1.QD130.ADO;
 using His.Bhyt.ExportXml.XML130.XML1.QD130.XML;
 using MOS.EFMODEL.DataModels;
@@ -20,15 +19,20 @@ namespace His.Bhyt.ExportXml.XML130.XML1.Processor
             try
             {
                 V_HIS_PATIENT_TYPE_ALTER PatientTypeAlter = null;
+                List<V_HIS_PATIENT_TYPE_ALTER> lstPatientTypeAlter = new List<V_HIS_PATIENT_TYPE_ALTER>();
                 if (data.PatientTypeAlter != null && data.PatientTypeAlter.Count > 0)
                 {
                     PatientTypeAlter = data.PatientTypeAlter.OrderByDescending(o => o.ID).ToList()[0];
+                    //lstPatientTypeAlter = data.PatientTypeAlter.Distinct().ToList();
+                    lstPatientTypeAlter = data.PatientTypeAlter.OrderBy(o => o.HEIN_CARD_FROM_TIME).ThenBy(o => o.HEIN_CARD_TO_TIME).ToList();              
                 }
                 HIS_DHST dhst = null;
                 if (data.Dhst != null && data.Dhst.Count > 0)
                 {
                     dhst = data.Dhst.Where(o => o.WEIGHT != null && o.WEIGHT > 0).Count() > 0 ? data.Dhst.Where(o => o.WEIGHT != null && o.WEIGHT > 0).OrderByDescending(o => o.EXECUTE_TIME).ToList()[0] : null;
                 }
+                var QtOption = HisConfigKey.GetConfigData(data.Configs, HisConfigKey.THOI_GIAN_QT_OPTION);
+
                 XML1Data xml1 = new XML1Data();
                 xml1.MA_LK = data.vTreatment.TREATMENT_CODE ?? "";
                 xml1.STT = 1;
@@ -38,42 +42,105 @@ namespace His.Bhyt.ExportXml.XML130.XML1.Processor
                 xml1.NGAY_SINH = data.vTreatment.TDL_PATIENT_IS_HAS_NOT_DAY_DOB == 1 ? data.vTreatment.TDL_PATIENT_DOB.ToString().Substring(0, 4) + "00000000" : data.vTreatment.TDL_PATIENT_DOB.ToString().Substring(0, 12);
                 xml1.GIOI_TINH = data.vTreatment.TDL_PATIENT_GENDER_ID == 1 ? "2" : data.vTreatment.TDL_PATIENT_GENDER_ID == 2 ? "1" : "3";
                 xml1.NHOM_MAU = data.vTreatment.TDL_PATIENT_BLOOD_ABO_CODE ?? "";
-                if (string.IsNullOrWhiteSpace(xml1.MA_QUOCTICH)||xml1.MA_QUOCTICH.Length < 3)
-                {
-                    xml1.MA_QUOCTICH = "000";
-                }
+                xml1.MA_QUOCTICH = data.vTreatment.TDL_PATIENT_MPS_NATIONAL_CODE ?? "";
                 xml1.MA_DANTOC = data.vTreatment.ETHNIC_CODE ?? "";
-                xml1.MA_NGHE_NGHIEP = data.vTreatment.CAREER_CODE ?? "";
-                if (string.IsNullOrWhiteSpace(xml1.MA_NGHE_NGHIEP) || xml1.MA_NGHE_NGHIEP.Length < 5)
-                {
-                    xml1.MA_NGHE_NGHIEP = "00000";
-                }
+                xml1.MA_NGHE_NGHIEP = data.vTreatment.TDL_PATIENT_CAREER_CODE ?? "";
                 xml1.DIA_CHI = this.ConvertStringToXmlDocument(data.vTreatment.TDL_PATIENT_ADDRESS ?? "");
-
-                //cap nhat thx
-                if (data.vTreatment != null && His.Bhyt.ExportXml.XML130.XML1.ADO.THX_ADO.Get_THX().FirstOrDefault(o => o.MA_PHUONG_XA == (data.vTreatment.TDL_PATIENT_COMMUNE_CODE ?? "")
-                    && o.MA_QUAN_HUYEN == (data.vTreatment.TDL_PATIENT_DISTRICT_CODE ?? "")
-                    && o.MA_THANH_PHO == (data.vTreatment.TDL_PATIENT_PROVINCE_CODE ?? "")) == null)
+                if (!string.IsNullOrEmpty(data.vTreatment.TDL_PATIENT_PROVINCE_CODE) && !string.IsNullOrEmpty(data.vTreatment.TDL_PATIENT_DISTRICT_CODE) && !string.IsNullOrEmpty(data.vTreatment.TDL_PATIENT_COMMUNE_CODE))
                 {
-                    UpdateTHX(data.vTreatment, His.Bhyt.ExportXml.XML130.XML1.ADO.THX_ADO.Get_THX(), data.vTreatment.TDL_PATIENT_ADDRESS);
-                    if (string.IsNullOrWhiteSpace(data.vTreatment.TDL_PATIENT_COMMUNE_CODE))
-                    {
-                        UpdateTHX(data.vTreatment, His.Bhyt.ExportXml.XML130.XML1.ADO.THX_ADO.Get_THX(), PatientTypeAlter.ADDRESS);
-                        xml1.DIA_CHI = this.ConvertStringToXmlDocument(PatientTypeAlter.ADDRESS ?? "");
-                    }
+                    xml1.MATINH_CU_TRU = data.vTreatment.TDL_PATIENT_PROVINCE_CODE ?? "";
+                    xml1.MAHUYEN_CU_TRU = data.vTreatment.TDL_PATIENT_DISTRICT_CODE ?? "";
+                    xml1.MAXA_CU_TRU = data.vTreatment.TDL_PATIENT_COMMUNE_CODE ?? "";
                 }
-                xml1.MATINH_CU_TRU = data.vTreatment.TDL_PATIENT_PROVINCE_CODE ?? "";
-                xml1.MAHUYEN_CU_TRU = data.vTreatment.TDL_PATIENT_DISTRICT_CODE ?? "";
-                xml1.MAXA_CU_TRU = data.vTreatment.TDL_PATIENT_COMMUNE_CODE ?? "";
-                xml1.DIEN_THOAI = data.vTreatment.TDL_PATIENT_MOBILE ?? "";
+                else
+                {
+                    xml1.MATINH_CU_TRU = data.vTreatment.HT_PROVINCE_CODE ?? "";
+                    xml1.MAHUYEN_CU_TRU = data.vTreatment.HT_DISTRICT_CODE ?? "";
+                    xml1.MAXA_CU_TRU = data.vTreatment.HT_COMMUNE_CODE ?? "";
+                }
+                xml1.DIEN_THOAI = data.vTreatment.TDL_PATIENT_MOBILE ?? data.vTreatment.TDL_PATIENT_PHONE ?? "";
                 xml1.MA_CSKCB = data.vTreatment.HEIN_MEDI_ORG_CODE ?? "";
                 string MaDTKCB = "";
+
+                if (lstPatientTypeAlter != null && lstPatientTypeAlter.Count > 0)
+                {
+                    var uniqueRecords = lstPatientTypeAlter
+                           .GroupBy(p => new
+                           {
+                               p.HEIN_CARD_NUMBER,
+                               p.HEIN_MEDI_ORG_CODE,
+                               p.HEIN_CARD_FROM_TIME,
+                               p.HEIN_CARD_TO_TIME
+                           })
+                           .Select(g => g.First())
+                           .Distinct()
+                           .ToList();
+                    Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => uniqueRecords), uniqueRecords));
+                    List<string> maTheBHYTs = uniqueRecords.Where(a => !string.IsNullOrWhiteSpace(a.HEIN_CARD_NUMBER)).Select(o => o.HEIN_CARD_NUMBER).ToList();
+                    if (maTheBHYTs != null && maTheBHYTs.Count == 1)
+                    {
+                        xml1.MA_THE_BHYT = maTheBHYTs.First();
+                    }
+                    else if (maTheBHYTs != null && maTheBHYTs.Count > 1)
+                    {
+                        xml1.MA_THE_BHYT = string.Join(";", maTheBHYTs);
+                    }
+                    Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => maTheBHYTs), maTheBHYTs));
+
+                    List<string> maDKBD = uniqueRecords.Where(a => !string.IsNullOrWhiteSpace(a.HEIN_MEDI_ORG_CODE)).Select(o => o.HEIN_MEDI_ORG_CODE).ToList();
+                    if (maDKBD != null && maDKBD.Count == 1)
+                    {
+                        xml1.MA_DKBD = maDKBD.First();
+                    }
+                    else if (maTheBHYTs != null && maDKBD.Count > 1)
+                    {
+                        xml1.MA_DKBD = string.Join(";", maDKBD);
+                    }
+                    Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => maDKBD), maDKBD));
+
+                    List<string> gtTheDens = uniqueRecords.Where(a => a.HEIN_CARD_TO_TIME.HasValue).Select(o => o.HEIN_CARD_TO_TIME.ToString().Substring(0, 8)).ToList();
+                   
+                    if (gtTheDens != null && gtTheDens.Count == 1)
+                    {
+                        xml1.GT_THE_DEN = gtTheDens.First();
+                    }
+                    else if (gtTheDens != null && gtTheDens.Count > 1)
+                    {
+                        xml1.GT_THE_DEN = string.Join(";", gtTheDens);
+                    }
+                    Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => gtTheDens), gtTheDens));
+
+                    List<string> gtTheTus = uniqueRecords.Where(a => a.HEIN_CARD_FROM_TIME.HasValue).Select(o => o.HEIN_CARD_FROM_TIME.ToString().Substring(0, 8)).ToList();
+                  
+                    if (gtTheTus != null && gtTheTus.Count == 1)
+                    {
+                        xml1.GT_THE_TU = gtTheTus.First();
+                    }
+                    else if (gtTheDens != null && gtTheTus.Count > 1)
+                    {
+                        xml1.GT_THE_TU = string.Join(";", gtTheTus);
+                    }
+                    Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => gtTheTus), gtTheTus));
+                }
+                
                 if (PatientTypeAlter != null)
                 {
-                    xml1.MA_THE_BHYT = PatientTypeAlter.HEIN_CARD_NUMBER ?? "";
-                    xml1.MA_DKBD = PatientTypeAlter.HEIN_MEDI_ORG_CODE ?? "";
-                    xml1.GT_THE_TU = PatientTypeAlter.HEIN_CARD_FROM_TIME != null ? PatientTypeAlter.HEIN_CARD_FROM_TIME.ToString().Substring(0, 8) : "";
-                    xml1.GT_THE_DEN = PatientTypeAlter.HEIN_CARD_TO_TIME != null ? PatientTypeAlter.HEIN_CARD_TO_TIME.ToString().Substring(0, 8) : "";
+                    if (string.IsNullOrEmpty(xml1.MA_THE_BHYT))
+                    {
+                        xml1.MA_THE_BHYT = PatientTypeAlter.HEIN_CARD_NUMBER ?? "";
+                    }
+                    if (string.IsNullOrEmpty(xml1.MA_DKBD))
+                    {
+                        xml1.MA_DKBD = PatientTypeAlter.HEIN_MEDI_ORG_CODE ?? "";
+                    }
+                    if (string.IsNullOrEmpty(xml1.GT_THE_TU))
+                    {
+                        xml1.GT_THE_TU = PatientTypeAlter.HEIN_CARD_FROM_TIME != null ? PatientTypeAlter.HEIN_CARD_FROM_TIME.ToString().Substring(0, 8) : "";
+                    }
+                    if (string.IsNullOrEmpty(xml1.GT_THE_DEN))
+                    {
+                        xml1.GT_THE_DEN = PatientTypeAlter.HEIN_CARD_TO_TIME != null ? PatientTypeAlter.HEIN_CARD_TO_TIME.ToString().Substring(0, 8) : "";
+                    }
                     xml1.NGAY_MIEN_CCT = PatientTypeAlter.FREE_CO_PAID_TIME != null ? PatientTypeAlter.FREE_CO_PAID_TIME.ToString().Substring(0, 8) : "";
                     xml1.MA_KHUVUC = PatientTypeAlter.LIVE_AREA_CODE ?? "";
                     xml1.NAM_NAM_LIEN_TUC = PatientTypeAlter.JOIN_5_YEAR_TIME != null ? PatientTypeAlter.JOIN_5_YEAR_TIME.ToString().Substring(0, 8) : "";
@@ -93,7 +160,11 @@ namespace His.Bhyt.ExportXml.XML130.XML1.Processor
                         }
                         else if (PatientTypeAlter.RIGHT_ROUTE_CODE == MOS.LibraryHein.Bhyt.HeinRightRoute.HeinRightRouteCode.TRUE)
                         {
-                            if (PatientTypeAlter.RIGHT_ROUTE_TYPE_CODE == MOS.LibraryHein.Bhyt.HeinRightRouteType.HeinRightRouteTypeCode.PRESENT)
+                            if (PatientTypeAlter.IS_NEWBORN == 1)//Trẻ sơ sinh cần điều trị sau khi sinh ra (IS_NEWBORN= 1)
+                            {
+                                MaDTKCB = "1.7";
+                            }
+                            else if (PatientTypeAlter.RIGHT_ROUTE_TYPE_CODE == MOS.LibraryHein.Bhyt.HeinRightRouteType.HeinRightRouteTypeCode.PRESENT)
                             {
                                 MaDTKCB = "1.3";
                             }
@@ -109,6 +180,7 @@ namespace His.Bhyt.ExportXml.XML130.XML1.Processor
                             {
                                 MaDTKCB = "1.8";
                             }
+                            
                             else if (data.vTreatment.IS_HIV == 1)
                             {
                                 MaDTKCB = "1.9";
@@ -127,19 +199,18 @@ namespace His.Bhyt.ExportXml.XML130.XML1.Processor
                             {
                                 MaDTKCB = "1.2";
                             }
-                            else if (PatientTypeAlter.HEIN_CARD_NUMBER.StartsWith("HN") || PatientTypeAlter.LIVE_AREA_CODE == MOS.LibraryHein.Bhyt.HeinLiveArea.HeinLiveAreaCode.K1 || PatientTypeAlter.LIVE_AREA_CODE == MOS.LibraryHein.Bhyt.HeinLiveArea.HeinLiveAreaCode.K2 || PatientTypeAlter.LIVE_AREA_CODE == MOS.LibraryHein.Bhyt.HeinLiveArea.HeinLiveAreaCode.K3)
-                            {
-                                MaDTKCB = "3.6";
-                            }
-                            
                         }
                         else if (PatientTypeAlter.RIGHT_ROUTE_CODE == MOS.LibraryHein.Bhyt.HeinRightRoute.HeinRightRouteCode.FALSE)
                         {
-                            if (data.vTreatment.HEIN_LEVEL_CODE == MOS.LibraryHein.Bhyt.HeinLevel.HeinLevelCode.NATIONAL && data.vTreatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNOITRU)
+                            if (PatientTypeAlter.HEIN_CARD_NUMBER.StartsWith("HN") || PatientTypeAlter.LIVE_AREA_CODE == MOS.LibraryHein.Bhyt.HeinLiveArea.HeinLiveAreaCode.K1 || PatientTypeAlter.LIVE_AREA_CODE == MOS.LibraryHein.Bhyt.HeinLiveArea.HeinLiveAreaCode.K2 || PatientTypeAlter.LIVE_AREA_CODE == MOS.LibraryHein.Bhyt.HeinLiveArea.HeinLiveAreaCode.K3)
+                            {
+                                MaDTKCB = "3.6";
+                            }
+                            else if (data.vTreatment.HEIN_LEVEL_CODE == MOS.LibraryHein.Bhyt.HeinLevel.HeinLevelCode.NATIONAL && (data.vTreatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNOITRU || data.vTreatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTBANNGAY))
                             {
                                 MaDTKCB = "3.1";
                             }
-                            else if (data.vTreatment.HEIN_LEVEL_CODE == MOS.LibraryHein.Bhyt.HeinLevel.HeinLevelCode.PROVINCE && data.vTreatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNOITRU)
+                            else if (data.vTreatment.HEIN_LEVEL_CODE == MOS.LibraryHein.Bhyt.HeinLevel.HeinLevelCode.PROVINCE && (data.vTreatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNOITRU || data.vTreatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTBANNGAY))
                             {
                                 MaDTKCB = "3.2";
                             }
@@ -154,10 +225,6 @@ namespace His.Bhyt.ExportXml.XML130.XML1.Processor
                             else if (data.vTreatment.HEIN_LEVEL_CODE == MOS.LibraryHein.Bhyt.HeinLevel.HeinLevelCode.PROVINCE && data.vTreatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__KHAM)
                             {
                                 MaDTKCB = "3.5";
-                            }
-                            else if (PatientTypeAlter.HEIN_CARD_NUMBER.StartsWith("HN") || PatientTypeAlter.LIVE_AREA_CODE == MOS.LibraryHein.Bhyt.HeinLiveArea.HeinLiveAreaCode.K1 || PatientTypeAlter.LIVE_AREA_CODE == MOS.LibraryHein.Bhyt.HeinLiveArea.HeinLiveAreaCode.K2 || PatientTypeAlter.LIVE_AREA_CODE == MOS.LibraryHein.Bhyt.HeinLiveArea.HeinLiveAreaCode.K3)
-                            {
-                                MaDTKCB = "3.6";
                             }
                             else
                             {
@@ -186,8 +253,7 @@ namespace His.Bhyt.ExportXml.XML130.XML1.Processor
                 }
                 xml1.MA_KHOA = data.vTreatment.END_ROOM_BHYT_CODE ?? data.vTreatment.EXIT_BHYT_CODE ?? data.vTreatment.END_DEPARTMENT_BHYT_CODE ?? "";
                 xml1.MA_DOITUONG_KCB = MaDTKCB;
-                var sss = data.vSereServ.FirstOrDefault(o=>!string.IsNullOrWhiteSpace(o.HOSPITALIZATION_REASON))??new V_HIS_SERE_SERV_2();
-                xml1.LY_DO_VV = this.ConvertStringToXmlDocument(data.vTreatment.HOSPITALIZATION_REASON ?? sss.HOSPITALIZATION_REASON?? "");
+                xml1.LY_DO_VV = this.ConvertStringToXmlDocument(data.vTreatment.HOSPITALIZATION_REASON ?? "");
                 xml1.LY_DO_VNT = this.ConvertStringToXmlDocument(data.vTreatment.HOSPITALIZE_REASON_NAME ?? "");
                 xml1.MA_LY_DO_VNT = data.vTreatment.HOSPITALIZE_REASON_CODE ?? "";
                 xml1.CHAN_DOAN_VAO = this.ConvertStringToXmlDocument(data.vTreatment.PROVISIONAL_DIAGNOSIS ?? data.vTreatment.ICD_NAME ?? "");
@@ -256,12 +322,8 @@ namespace His.Bhyt.ExportXml.XML130.XML1.Processor
                 xml1.NGAY_VAO_NOI_TRU = data.vTreatment.CLINICAL_IN_TIME != null ? data.vTreatment.CLINICAL_IN_TIME.ToString().Substring(0, 12) : "";
                 xml1.NGAY_RA = data.vTreatment.OUT_TIME != null ? data.vTreatment.OUT_TIME.ToString().Substring(0, 12) : "";
                 xml1.GIAY_CHUYEN_TUYEN = data.vTreatment.TRANSFER_IN_CODE ?? "";
-                string ppDieuTri = data.vTreatment.TREATMENT_METHOD ?? "";
-                if (!string.IsNullOrEmpty(ppDieuTri) && Encoding.UTF8.GetByteCount(ppDieuTri) > 2000)
-                {
-                    ppDieuTri = SubStringWithSeparate(ppDieuTri, 2000);
-                }
-                xml1.PP_DIEU_TRI = ppDieuTri;
+
+                xml1.PP_DIEU_TRI = data.vTreatment.TREATMENT_METHOD ?? "";
                 xml1.KET_QUA_DTRI = !string.IsNullOrEmpty(data.vTreatment.TREATMENT_RESULT_CODE) ? data.vTreatment.TREATMENT_RESULT_CODE.Reverse().ToList()[0].ToString() : "";
                 xml1.MA_LOAI_RV = "1";
                 switch (data.vTreatment.TREATMENT_END_TYPE_ID)
@@ -299,17 +361,32 @@ namespace His.Bhyt.ExportXml.XML130.XML1.Processor
                 xml1.T_BNCCT = data.tongBNCCT.ToString("G27", CultureInfo.InvariantCulture);
                 xml1.T_NGUONKHAC = data.tongNguonKhac.ToString("G27", CultureInfo.InvariantCulture);
 
-                if (xml1.MA_THE_BHYT.StartsWith("CA") || xml1.MA_THE_BHYT.StartsWith("QN") || xml1.MA_THE_BHYT.StartsWith("CY"))
+                if (xml1.MA_THE_BHYT != null)
                 {
-                    xml1.T_BHTT_GDV = "0";
+                    if (xml1.MA_THE_BHYT.StartsWith("CA") || xml1.MA_THE_BHYT.StartsWith("QN") || xml1.MA_THE_BHYT.StartsWith("CY"))
+                    {
+                        xml1.T_BHTT_GDV = "0";
+                    }
+                    else
+                    {
+                        xml1.T_BHTT_GDV = data.tongBHTTGDV.ToString("G27", CultureInfo.InvariantCulture);
+                    }
+                }
+                if (QtOption == "1")
+                {
+                    xml1.NAM_QT = (data.vTreatment.OUT_TIME != null ? data.vTreatment.OUT_TIME.ToString().Substring(0, 4) : "");
+                    xml1.THANG_QT = (data.vTreatment.OUT_TIME != null ? data.vTreatment.OUT_TIME.ToString().Substring(4, 2) : "");
+                }
+                else if (QtOption == "2")
+                {
+                    xml1.NAM_QT = DateTime.Now.ToString("yyyy");
+                    xml1.THANG_QT = DateTime.Now.ToString("MM");
                 }
                 else
                 {
-                    xml1.T_BHTT_GDV = data.tongBHTTGDV.ToString("G27", CultureInfo.InvariantCulture);
+                    xml1.NAM_QT = data.vTreatment.HEIN_LOCK_TIME != null ? data.vTreatment.HEIN_LOCK_TIME.ToString().Substring(0, 4) : (data.vTreatment.OUT_TIME != null ? data.vTreatment.OUT_TIME.ToString().Substring(0, 4) : "");
+                    xml1.THANG_QT = data.vTreatment.HEIN_LOCK_TIME != null ? data.vTreatment.HEIN_LOCK_TIME.ToString().Substring(4, 2) : (data.vTreatment.OUT_TIME != null ? data.vTreatment.OUT_TIME.ToString().Substring(4, 2) : "");
                 }
-                
-                xml1.NAM_QT = data.vTreatment.HEIN_LOCK_TIME != null ? data.vTreatment.HEIN_LOCK_TIME.ToString().Substring(0, 4) : (data.vTreatment.OUT_TIME != null ? data.vTreatment.OUT_TIME.ToString().Substring(0, 4) : "");
-                xml1.THANG_QT = data.vTreatment.HEIN_LOCK_TIME != null ? data.vTreatment.HEIN_LOCK_TIME.ToString().Substring(4, 2) : (data.vTreatment.OUT_TIME != null ? data.vTreatment.OUT_TIME.ToString().Substring(4, 2) : "");
                 string MaLoaiKCB = "10";
                 switch (data.vTreatment.TDL_TREATMENT_TYPE_ID)
                 {
@@ -392,27 +469,27 @@ namespace His.Bhyt.ExportXml.XML130.XML1.Processor
                     long dayOfTreatment = 0;
                     if (data.vSereServ != null && data.vSereServ.Count > 0)
                     {
-                         var ssFinishs = data.vSereServ.Where(a => a.FINISH_TIME.HasValue).ToList();
-                         if (ssFinishs != null && ssFinishs.Count() > 0)
-                         {
-                             List<long> soNgaySuDungThuoc = new List<long>();
-                             foreach (var ss in ssFinishs)
-                             {
-                                 if (ss.USE_TIME_TO.HasValue)
-                                 {
-                                     DateTime UseTimeToD = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(ss.USE_TIME_TO.Value) ?? DateTime.Now;
-                                     DateTime InstructionTimeD = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(ss.INTRUCTION_TIME) ?? DateTime.Now;
-                                     
-                                     var timeSpan = UseTimeToD - InstructionTimeD;
-                                     long day = (int)timeSpan.TotalDays + 1;
-                                     soNgaySuDungThuoc.Add(day);
-                                 }
-                             }
-                             if (soNgaySuDungThuoc != null && soNgaySuDungThuoc.Count > 0)
-                             {
-                                 dayOfTreatment = soNgaySuDungThuoc.Max();
-                             }
-                         }
+                        var ssFinishs = data.vSereServ.Where(a => a.FINISH_TIME.HasValue).ToList();
+                        if (ssFinishs != null && ssFinishs.Count() > 0)
+                        {
+                            List<long> soNgaySuDungThuoc = new List<long>();
+                            foreach (var ss in ssFinishs)
+                            {
+                                if (ss.USE_TIME_TO.HasValue)
+                                {
+                                    DateTime UseTimeToD = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(ss.USE_TIME_TO.Value) ?? DateTime.Now;
+                                    DateTime InstructionTimeD = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(ss.INTRUCTION_TIME) ?? DateTime.Now;
+
+                                    var timeSpan = UseTimeToD - InstructionTimeD;
+                                    long day = (int)timeSpan.TotalDays + 1;
+                                    soNgaySuDungThuoc.Add(day);
+                                }
+                            }
+                            if (soNgaySuDungThuoc != null && soNgaySuDungThuoc.Count > 0)
+                            {
+                                dayOfTreatment = soNgaySuDungThuoc.Max();
+                            }
+                        }
                     }
                     xml1.SO_NGAY_DTRI = dayOfTreatment;
                 }
@@ -454,6 +531,31 @@ namespace His.Bhyt.ExportXml.XML130.XML1.Processor
                 xml1.MA_HSBA = data.vTreatment.TREATMENT_CODE ?? "";
                 xml1.MA_TTDV = data.vTreatment.REPRESENTATIVE_HEIN_CODE ?? "";
                 xml1.DU_PHONG = "";
+                if (data.IS_3176)
+                {
+                    xml1.SO_CCCD = data.vTreatment.TDL_PATIENT_CCCD_NUMBER ?? data.vTreatment.TDL_PATIENT_CMND_NUMBER ?? data.vTreatment.TDL_PATIENT_PASSPORT_NUMBER ?? "";
+                    xml1.MA_NGHE_NGHIEP = !string.IsNullOrEmpty(data.vTreatment.TDL_PATIENT_CAREER_CODE) && data.vTreatment.TDL_PATIENT_CAREER_CODE.Length > 2 ? data.vTreatment.TDL_PATIENT_CAREER_CODE.Substring(data.vTreatment.TDL_PATIENT_CAREER_CODE.Length - 2, 2) : (data.vTreatment.TDL_PATIENT_CAREER_CODE ?? "");
+                    xml1.CHAN_DOAN_VAO = this.ConvertStringToXmlDocument(data.vTreatment.PROVISIONAL_DIAGNOSIS ?? "");
+                    List<string> lstIcd = new List<string>();
+                    if (!string.IsNullOrEmpty(data.vTreatment.TRADITIONAL_ICD_CODE))
+                        lstIcd.Add(data.vTreatment.TRADITIONAL_ICD_CODE);
+                    if (!string.IsNullOrEmpty(data.vTreatment.TRADITIONAL_ICD_SUB_CODE))
+                        lstIcd.AddRange(data.vTreatment.TRADITIONAL_ICD_SUB_CODE.Split(new string[] {";"}, StringSplitOptions.RemoveEmptyEntries).ToList());
+                    if (!string.IsNullOrEmpty(data.vTreatment.ICD_CODE) && lstIcd.Count > 0)
+                        lstIcd = lstIcd.Where(o => o != data.vTreatment.ICD_CODE).ToList();
+                    xml1.MA_BENH_YHCT = string.Join(";", lstIcd != null && lstIcd.Count > 0 ? lstIcd.Distinct().Take(13).ToList() : new List<string>());
+
+                    Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => data.vTreatment), data.vTreatment));
+                    xml1.MA_TTDV = GetMaBacSi(data.vTreatment.HOSP_SUBS_DIRECTOR_LOGINNAME ?? data.vTreatment.HOSPITAL_DIRECTOR_LOGINNAME, data.Employees);
+                    if (data.Dhst != null && data.Dhst.Count > 0)
+                    {
+                        var dhstHeight = data.Dhst.Where(o => o.HEIGHT != null).ToList();
+                        if (dhstHeight != null && dhstHeight.Count > 0)
+                        {
+                            xml1.DU_PHONG = dhstHeight.OrderByDescending(o => o.EXECUTE_TIME).ThenByDescending(o => o.ID).ToList()[0].HEIGHT.ToString();
+                        }
+                    }
+                }
                 result = new ResultADO(true, "", new object[] { xml1 });
             }
             catch (Exception ex)
@@ -463,83 +565,33 @@ namespace His.Bhyt.ExportXml.XML130.XML1.Processor
             }
             return result;
         }
-        private string SubStringWithSeparate(string multiCharString, decimal limit)
+        private string GetMaBacSi(string loginName, List<HIS_EMPLOYEE> listEmployees)
         {
             string result = "";
             try
             {
-                Encoding utf8 = Encoding.UTF8;
-                int leng = utf8.GetByteCount(multiCharString);
-                if (leng > limit)
+                if (String.IsNullOrEmpty(loginName))
+                    return result;
+                if (listEmployees != null)
                 {
-                    int index = multiCharString.LastIndexOf(";");
-                    while (utf8.GetByteCount(multiCharString) > limit)
+                    var dataEmployee = listEmployees.FirstOrDefault(p => p.LOGINNAME == loginName);
+                    if (dataEmployee != null)
                     {
-                        index = multiCharString.LastIndexOf(";");
-                        multiCharString = multiCharString.Substring(0, index);
-                        result = multiCharString;
+                        result = dataEmployee.DIPLOMA ?? "";
                     }
                 }
                 else
                 {
-                    result = multiCharString;
+                    Inventec.Common.Logging.LogSystem.Info("ListEmployees null");
                 }
             }
             catch (Exception ex)
             {
-                result = null;
+                result = "";
                 Inventec.Common.Logging.LogSystem.Error(ex);
             }
             return result;
         }
-        //., Thị trấn Anh Sơn, Huyện Anh Sơn, Nghệ An
-        private void UpdateTHX(V_HIS_TREATMENT_12 treatment, List<THX_ADO> listAdoThx, string DiaChiThe)
-        {
-            try
-            {
-                string maTinh = "";
-                string maHuyen = "";
-                string maXa = "";
-                List<string> array = DiaChiThe.ToString().Split(',').ToList();
-                foreach (THX_ADO drHC in listAdoThx)
-                {
-                    foreach (string t in array)
-                    {
-                        if (drHC.TEN_THANH_PHO.ToUpper().Trim().Contains(t.ToUpper().Trim()))
-                        {
-                            maTinh = drHC.MA_THANH_PHO.ToString();
-                            foreach (string h in array.Where(o => o != t).ToList())
-                            {
-
-                                if (drHC.TEN_QUAN_HUYEN.ToUpper().Trim().Contains(h.ToString().ToUpper().Trim()))
-                                {
-                                    maHuyen = drHC.MA_QUAN_HUYEN.ToString();
-                                    foreach (string x in array.Where(o => o != t && o != h).ToList())
-                                    {
-                                        if (Inventec.Common.String.Convert.UnSignVNese2(drHC.TEN_PHUONG_XA.ToUpper().Trim()).Contains(Inventec.Common.String.Convert.UnSignVNese2(x.ToString().ToUpper().Trim())))
-                                        {
-                                            maXa = drHC.MA_PHUONG_XA.ToString();
-                                            goto exit;
-
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                exit:;
-                treatment.TDL_PATIENT_PROVINCE_CODE = maTinh;
-                treatment.TDL_PATIENT_DISTRICT_CODE = maHuyen;
-                treatment.TDL_PATIENT_COMMUNE_CODE = maXa;
-            }
-            catch (Exception ex)
-            {
-                Inventec.Common.Logging.LogSystem.Error(ex);
-            }
-        }
-
-        
         private bool ValidAccept(string mediOrgCode, string AcceptCode)
         {
             bool valid = false;

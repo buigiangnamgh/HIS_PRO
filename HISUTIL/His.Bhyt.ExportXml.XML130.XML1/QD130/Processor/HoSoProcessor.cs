@@ -60,8 +60,18 @@ namespace His.Bhyt.ExportXml.XML130.XML1.QD130.Processor
                 if (rs == null)
                     return;
                 rs.NGAY_SINH = rs.NGAY_SINH.Contains("00000000") ? rs.NGAY_SINH.Substring(0, 4) : Inventec.Common.DateTime.Convert.TimeNumberToDateString(rs.NGAY_SINH);
-                rs.GT_THE_TU = !string.IsNullOrEmpty(rs.GT_THE_TU) ? Inventec.Common.DateTime.Convert.TimeNumberToDateString(rs.GT_THE_TU) : "";
-                rs.GT_THE_DEN = !string.IsNullOrEmpty(rs.GT_THE_DEN) ? Inventec.Common.DateTime.Convert.TimeNumberToDateString(rs.GT_THE_DEN) : "";
+
+                List<string> lstGTTheTu = new List<string>();
+                List<string> lstGTTheDen = new List<string>();
+
+                lstGTTheTu.AddRange(rs.GT_THE_TU.Split(';'));
+                var lstGTTheTuConvert = lstGTTheTu.Select(item => Inventec.Common.DateTime.Convert.TimeNumberToDateString(item).ToString()).ToList();
+                rs.GT_THE_TU = string.Join(";", lstGTTheTuConvert);
+
+                lstGTTheDen.AddRange(rs.GT_THE_DEN.Split(';'));
+                var lstGTTheDenConvert = lstGTTheDen.Select(item => Inventec.Common.DateTime.Convert.TimeNumberToDateString(item).ToString()).ToList();
+                rs.GT_THE_DEN = string.Join(";", lstGTTheDenConvert);
+
                 rs.NGAY_MIEN_CCT = !string.IsNullOrEmpty(rs.NGAY_MIEN_CCT) ? Inventec.Common.DateTime.Convert.TimeNumberToDateString(rs.NGAY_MIEN_CCT) : "";
                 rs.NAM_NAM_LIEN_TUC = !string.IsNullOrEmpty(rs.NAM_NAM_LIEN_TUC) ? Inventec.Common.DateTime.Convert.TimeNumberToDateString(rs.NAM_NAM_LIEN_TUC) : "";
                 rs.NGAY_VAO = !string.IsNullOrEmpty(rs.NGAY_VAO) ? Inventec.Common.DateTime.Convert.TimeNumberToTimeStringWithoutSecond(Int64.Parse(rs.NGAY_VAO + "00")) : "";

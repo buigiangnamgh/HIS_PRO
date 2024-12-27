@@ -18,6 +18,7 @@ namespace His.Bhyt.ExportXml.XML130.XML1.Base
         public List<HIS_MEDI_ORG> ListHeinMediOrg { get; set; }
         public List<HIS_ICD> TotalIcdData { get; set; }
         public List<V_HIS_BABY> vBaby { get; set; }
+        public List<HIS_EMPLOYEE> Employees { get; set; }
         public decimal tienThuoc { get; set; }
         public decimal tienVTYT { get; set; }
         public decimal tongchiBV { get; set; }
@@ -27,6 +28,7 @@ namespace His.Bhyt.ExportXml.XML130.XML1.Base
         public decimal tongBHTT { get; set; }
         public decimal tongNguonKhac { get; set; }
         public decimal tongBHTTGDV { get; set; }
+        public bool IS_3176 { get; set; }
     }
 }
     
