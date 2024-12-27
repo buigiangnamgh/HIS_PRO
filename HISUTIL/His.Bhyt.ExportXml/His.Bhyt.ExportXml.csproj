@@ -1,0 +1,188 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{6CBC7A6A-985B-40ED-813E-C993EE397285}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>His.Bhyt.ExportXml</RootNamespace>
+    <AssemblyName>His.Bhyt.ExportXml</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ACS.EFMODEL">
+      <HintPath>..\..\..\RELEASE\ACS\ACS.EFMODEL.dll</HintPath>
+    </Reference>
+    <Reference Include="AutoMapper">
+      <HintPath>..\..\..\RELEASE\HIS\ReferencedAssemblies\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Common.Treatment">
+      <HintPath>..\..\..\RELEASE\HIS\HIS.Common\HIS.Common.Treatment\HIS.Common.Treatment.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Treatment.DateTime">
+      <HintPath>..\..\..\RELEASE\HIS\ReferencedAssemblies\HIS.Treatment.DateTime.dll</HintPath>
+    </Reference>
+    <Reference Include="IMSys.DbConfig.HIS_RS">
+      <HintPath>..\..\..\RELEASE\IMSys.DbConfig\IMSys.DbConfig.HIS_RS\IMSys.DbConfig.HIS_RS.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.DateTime">
+      <HintPath>..\..\..\RELEASE\Inventec.Common\Inventec.Common.DateTime\Inventec.Common.DateTime.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.Logging">
+      <HintPath>..\..\..\RELEASE\Inventec.Common\Inventec.Common.Logging\Inventec.Common.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.Mapper">
+      <HintPath>..\..\..\RELEASE\Inventec.Common\Inventec.Common.Mapper\Inventec.Common.Mapper.dll</HintPath>
+    </Reference>
+    <Reference Include="MOS.EFMODEL, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\RELEASE\MOS\MOS.EFMODEL.dll</HintPath>
+    </Reference>
+    <Reference Include="MOS.LibraryHein.Bhyt">
+      <HintPath>..\..\..\RELEASE\MOS\MOS.LibraryHein.Bhyt.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\RELEASE\Library packages\Newtonsoft.Json.6.0.8\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\RELEASE\HIS\His.Bhyt.InsuranceExpertise\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Serialization" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Base\BhytCardADO.cs" />
+    <Compile Include="Base\Checker\TreatmentChecker.cs" />
+    <Compile Include="Base\ConfigHeinMediOrg.cs" />
+    <Compile Include="Base\HisConfigKey.cs" />
+    <Compile Include="Base\InputGroupADO.cs" />
+    <Compile Include="Base\CheckInInputADO.cs" />
+    <Compile Include="Base\CheckInResultADO.cs" />
+    <Compile Include="Base\LoginResultLDO.cs" />
+    <Compile Include="Base\ServerInfo.cs" />
+    <Compile Include="Base\SyncResultADO.cs" />
+    <Compile Include="Base\TokenLDO.cs" />
+    <Compile Include="CheckIn\Processor\CheckInProcessor.cs" />
+    <Compile Include="CheckIn\XML\Body.cs" />
+    <Compile Include="CheckIn\XML\Qd130CheckIn.cs" />
+    <Compile Include="CheckIn\XML\CheckIn.cs" />
+    <Compile Include="CheckIn\XML\DataCheckIn.cs" />
+    <Compile Include="CheckIn\XML\DataQd130CheckIn.cs" />
+    <Compile Include="CheckIn\XML\Header.cs" />
+    <Compile Include="CheckIn\XML\Security.cs" />
+    <Compile Include="CreateXmlMain.cs" />
+    <Compile Include="CV2076\ADO\XmlCt03ADO.cs" />
+    <Compile Include="CV2076\ADO\XmlCt04ADO.cs" />
+    <Compile Include="CV2076\ADO\XmlCt05ADO.cs" />
+    <Compile Include="CV2076\ADO\XmlCt06ADO.cs" />
+    <Compile Include="CV2076\ADO\XmlCt07ADO.cs" />
+    <Compile Include="CV2076\Processor\HoSoChungTuProcessor.cs" />
+    <Compile Include="CV2076\Processor\XmlCt03Processor.cs" />
+    <Compile Include="CV2076\Processor\XmlCt04Processor.cs" />
+    <Compile Include="CV2076\Processor\XmlCt05Processor.cs" />
+    <Compile Include="CV2076\Processor\XmlCt06Processor.cs" />
+    <Compile Include="CV2076\Processor\XmlCt07Processor.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="CV2076\HoSo\DanhSachHoSo.cs" />
+    <Compile Include="CV2076\HoSo\FileHoSo.cs" />
+    <Compile Include="CV2076\HoSo\HoSo.cs" />
+    <Compile Include="CV2076\HoSo\HoSoChungTu.cs" />
+    <Compile Include="CV2076\HoSo\ThongTinDonVi.cs" />
+    <Compile Include="CV2076\HoSo\ThongTinHoSo.cs" />
+    <Compile Include="QD4210\ADO\Xml1ADO.cs" />
+    <Compile Include="QD4210\ADO\Xml2ADO.cs" />
+    <Compile Include="QD4210\ADO\Xml3ADO.cs" />
+    <Compile Include="QD4210\ADO\Xml4ADO.cs" />
+    <Compile Include="QD4210\ADO\Xml5ADO.cs" />
+    <Compile Include="QD4210\Processor\HoSoGroupProcessor.cs" />
+    <Compile Include="QD4210\Processor\HoSoProcessor.cs" />
+    <Compile Include="QD4210\Processor\Xml1Processor.cs" />
+    <Compile Include="QD4210\Processor\Xml2Processor.cs" />
+    <Compile Include="QD4210\Processor\Xml3Processor.cs" />
+    <Compile Include="QD4210\Processor\Xml4Processor.cs" />
+    <Compile Include="QD4210\Processor\Xml5Processor.cs" />
+    <Compile Include="QD4210\XML\HoSo\DanhSachHoSo.cs" />
+    <Compile Include="QD4210\XML\HoSo\FileHoSo.cs" />
+    <Compile Include="QD4210\XML\HoSo\GiamDinhHoSo.cs" />
+    <Compile Include="QD4210\XML\HoSo\HoSo.cs" />
+    <Compile Include="QD4210\XML\HoSo\ThongTinDonVi.cs" />
+    <Compile Include="QD4210\XML\HoSo\ThongTinHoSo.cs" />
+    <Compile Include="QD4210\XML\XML1\XML1Data.cs" />
+    <Compile Include="QD4210\XML\XML1\XML1DataPlus.cs" />
+    <Compile Include="QD4210\XML\XML2\XML2Data.cs" />
+    <Compile Include="QD4210\XML\XML2\XML2DetailData.cs" />
+    <Compile Include="QD4210\XML\XML3\XML3Data.cs" />
+    <Compile Include="QD4210\XML\XML3\XML3DetailData.cs" />
+    <Compile Include="Base\InputADO.cs" />
+    <Compile Include="Base\ResultADO.cs" />
+    <Compile Include="QD4210\XML\XML4\XML4Data.cs" />
+    <Compile Include="QD4210\XML\XML4\XML4DetailData.cs" />
+    <Compile Include="QD4210\XML\XML5\XML5Data.cs" />
+    <Compile Include="QD4210\XML\XML5\XML5DetailData.cs" />
+    <Compile Include="QD917\ADO\Xml1ADO.cs" />
+    <Compile Include="QD917\ADO\Xml2ADO.cs" />
+    <Compile Include="QD917\ADO\Xml3ADO.cs" />
+    <Compile Include="Base\GlobalConfigStore.cs" />
+    <Compile Include="Base\TreatmentEndTypeBhytCFG.cs" />
+    <Compile Include="Base\TreatmentResultBhytCFG.cs" />
+    <Compile Include="Base\TreatmentTypeBhytCFG.cs" />
+    <Compile Include="Base\XmlType.cs" />
+    <Compile Include="QD917\Processor\HoSoProcessor.cs" />
+    <Compile Include="QD917\Processor\Xml1Processor.cs" />
+    <Compile Include="QD917\Processor\Xml2Processor.cs" />
+    <Compile Include="QD917\Processor\Xml3Processor.cs" />
+    <Compile Include="QD917\XML\HoSo\DanhSachHoSo.cs" />
+    <Compile Include="QD917\XML\HoSo\FileHoSo.cs" />
+    <Compile Include="QD917\XML\HoSo\GiamDinhHoSo.cs" />
+    <Compile Include="QD917\XML\HoSo\HoSo.cs" />
+    <Compile Include="QD917\XML\HoSo\ThongTinDonVi.cs" />
+    <Compile Include="QD917\XML\HoSo\ThongTinHoSo.cs" />
+    <Compile Include="QD917\XML\XML1\XML1Data.cs" />
+    <Compile Include="QD917\XML\XML2\XML2DetailData.cs" />
+    <Compile Include="QD917\XML\XML2\XML2ListDetailData.cs" />
+    <Compile Include="QD917\XML\XML3\XML3DetailData.cs" />
+    <Compile Include="QD917\XML\XML3\XML3ListDetailData.cs" />
+    <Compile Include="Base\XmlProcessorBase.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="CV2076\XML\" />
+    <Folder Include="QD917\Config\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
