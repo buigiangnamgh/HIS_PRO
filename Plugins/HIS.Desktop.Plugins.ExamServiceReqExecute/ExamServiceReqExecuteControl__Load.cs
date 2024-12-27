@@ -1,8 +1,24 @@
-﻿using DevExpress.XtraEditors;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using DevExpress.XtraEditors;
 using DevExpress.XtraEditors.Controls;
 using HIS.Desktop.ApiConsumer;
 using HIS.Desktop.Plugins.ExamServiceReqExecute.ADO;
-using HIS.Desktop.Plugins.ExamServiceReqExecute.Config;
 using HIS.Desktop.Utility;
 using Inventec.Common.Adapter;
 using Inventec.Core;
@@ -189,116 +205,138 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
             }
         }
 
-        private void LoadDataToControlFromTemp(HIS_EXAM_SERVICE_TEMP examServiceTemp)
+        private bool IsCheckLockInfor(string input, bool status)
+        {
+            return !status || (status && string.IsNullOrEmpty(input.Trim()));
+        }
+
+        private bool IsCheckLockInfor(bool input, bool status)
+        {
+            return !status || (status && !input);
+        }
+
+        private void LoadDataToControlFromTemp(HIS_EXAM_SERVICE_TEMP examServiceTemp, bool status)
         {
             try
             {
                 if (examServiceTemp != null)
                 {
-                    txtHospitalizationReason.Text = examServiceTemp.HOSPITALIZATION_REASON;
-                    txtPathologicalProcess.Text = examServiceTemp.PATHOLOGICAL_PROCESS;
-                    txtPathologicalHistory.Text = examServiceTemp.PATHOLOGICAL_HISTORY;
-                    txtPathologicalHistoryFamily.Text = examServiceTemp.PATHOLOGICAL_HISTORY_FAMILY;
-                    txtKhamToanThan.Text = examServiceTemp.FULL_EXAM;
-                    txtKhamBoPhan.Text = examServiceTemp.PART_EXAM;
-                    txtTuanHoan.Text = examServiceTemp.PART_EXAM_CIRCULATION;
-                    txtHoHap.Text = examServiceTemp.PART_EXAM_RESPIRATORY;
-                    txtTieuHoa.Text = examServiceTemp.PART_EXAM_DIGESTION;
-                    txtThanTietNieu.Text = examServiceTemp.PART_EXAM_KIDNEY_UROLOGY;
-                    txtPartExamMental.Text = examServiceTemp.PART_EXAM_MENTAL;
-                    txtPartExamNutrition.Text = examServiceTemp.PART_EXAM_NUTRITION;
-                    txtPartExamMotion.Text = examServiceTemp.PART_EXAM_MOTION;
-                    txtPartExanObstetric.Text = examServiceTemp.PART_EXAM_OBSTETRIC;
-                    txtThanKinh.Text = examServiceTemp.PART_EXAM_NEUROLOGICAL;
-                    txtCoXuongKhop.Text = examServiceTemp.PART_EXAM_MUSCLE_BONE;
-                    txtRHM.Text = examServiceTemp.PART_EXAM_STOMATOLOGY;
-                    txtMat.Text = examServiceTemp.PART_EXAM_EYE;
+                    txtHospitalizationReason.Text = IsCheckLockInfor(txtHospitalizationReason.Text, status) ? examServiceTemp.HOSPITALIZATION_REASON : txtHospitalizationReason.Text;
+                    txtPathologicalProcess.Text = IsCheckLockInfor(txtPathologicalProcess.Text, status) ? examServiceTemp.PATHOLOGICAL_PROCESS : txtPathologicalProcess.Text;
+                    txtPathologicalHistory.Text = IsCheckLockInfor(txtPathologicalHistory.Text, status) ? examServiceTemp.PATHOLOGICAL_HISTORY : txtPathologicalHistory.Text;
+                    txtPathologicalHistoryFamily.Text = IsCheckLockInfor(txtPathologicalHistoryFamily.Text, status) ? examServiceTemp.PATHOLOGICAL_HISTORY_FAMILY : txtPathologicalHistoryFamily.Text;
+                    txtKhamToanThan.Text = IsCheckLockInfor(txtKhamToanThan.Text, status) ? examServiceTemp.FULL_EXAM : txtKhamToanThan.Text;
+                    txtKhamBoPhan.Text = IsCheckLockInfor(txtKhamBoPhan.Text, status) ? examServiceTemp.PART_EXAM : txtKhamBoPhan.Text;
+                    txtTuanHoan.Text = IsCheckLockInfor(txtTuanHoan.Text, status) ? examServiceTemp.PART_EXAM_CIRCULATION : txtTuanHoan.Text;
+                    txtHoHap.Text = IsCheckLockInfor(txtHoHap.Text, status) ? examServiceTemp.PART_EXAM_RESPIRATORY : txtHoHap.Text;
+                    txtTieuHoa.Text = IsCheckLockInfor(txtTieuHoa.Text, status) ? examServiceTemp.PART_EXAM_DIGESTION : txtTieuHoa.Text;
+                    txtThanTietNieu.Text = IsCheckLockInfor(txtThanTietNieu.Text, status) ? examServiceTemp.PART_EXAM_KIDNEY_UROLOGY : txtThanTietNieu.Text;
+                    txtPartExamMental.Text = IsCheckLockInfor(txtPartExamMental.Text, status) ? examServiceTemp.PART_EXAM_MENTAL : txtPartExamMental.Text;
+                    txtPartExamNutrition.Text = IsCheckLockInfor(txtPartExamNutrition.Text, status) ? examServiceTemp.PART_EXAM_NUTRITION : txtPartExamNutrition.Text;
+                    txtPartExamMotion.Text = IsCheckLockInfor(txtPartExamMotion.Text, status) ? examServiceTemp.PART_EXAM_MOTION : txtPartExamMotion.Text;
+                    txtPartExanObstetric.Text = IsCheckLockInfor(txtPartExanObstetric.Text, status) ? examServiceTemp.PART_EXAM_OBSTETRIC : txtPartExanObstetric.Text;
+                    txtThanKinh.Text = IsCheckLockInfor(txtThanKinh.Text, status) ? examServiceTemp.PART_EXAM_NEUROLOGICAL : txtThanKinh.Text;
+                    txtCoXuongKhop.Text = IsCheckLockInfor(txtCoXuongKhop.Text, status) ? examServiceTemp.PART_EXAM_MUSCLE_BONE : txtCoXuongKhop.Text;
+                    txtRHM.Text = IsCheckLockInfor(txtRHM.Text, status) ? examServiceTemp.PART_EXAM_STOMATOLOGY : txtRHM.Text;
+                    txtMat.Text = IsCheckLockInfor(txtMat.Text, status) ? examServiceTemp.PART_EXAM_EYE : txtMat.Text;
 
-                    txtNoiTiet.Text = examServiceTemp.PART_EXAM_OEND;
-                    txtSubclinical.Text = examServiceTemp.DESCRIPTION;
-                    txtTreatmentInstruction.Text = examServiceTemp.CONCLUDE;
+                    txtNoiTiet.Text = IsCheckLockInfor(txtNoiTiet.Text, status) ? examServiceTemp.PART_EXAM_OEND : txtNoiTiet.Text;
+                    txtSubclinical.Text = IsCheckLockInfor(txtSubclinical.Text, status) ? examServiceTemp.DESCRIPTION : txtSubclinical.Text;
+                    txtTreatmentInstruction.Text = IsCheckLockInfor(txtTreatmentInstruction.Text, status) ? examServiceTemp.CONCLUDE : txtTreatmentInstruction.Text;
                     //txtNextTreatmentInstruction.Text = examServiceTemp.NOTE;
-                    txtTai.Text = examServiceTemp.PART_EXAM_EAR;
-                    txtMui.Text = examServiceTemp.PART_EXAM_NOSE;
-                    txtHong.Text = examServiceTemp.PART_EXAM_THROAT;
-                    txtPART_EXAM_EAR_RIGHT_NORMAL.Text = examServiceTemp.PART_EXAM_EAR_RIGHT_NORMAL;
-                    txtPART_EXAM_EAR_RIGHT_WHISPER.Text = examServiceTemp.PART_EXAM_EAR_RIGHT_WHISPER;
-                    txtPART_EXAM_EAR_LEFT_NORMAL.Text = examServiceTemp.PART_EXAM_EAR_LEFT_NORMAL;
-                    txtPART_EXAM_EAR_LEFT_WHISPER.Text = examServiceTemp.PART_EXAM_EAR_LEFT_WHISPER;
-                    txtPART_EXAM_UPPER_JAW.Text = examServiceTemp.PART_EXAM_UPPER_JAW;
-                    txtPART_EXAM_LOWER_JAW.Text = examServiceTemp.PART_EXAM_LOWER_JAW;
+                    txtTai.Text = IsCheckLockInfor(txtTai.Text, status) ? examServiceTemp.PART_EXAM_EAR : txtTai.Text;
+                    txtMui.Text = IsCheckLockInfor(txtMui.Text, status) ? examServiceTemp.PART_EXAM_NOSE : txtMui.Text;
+                    txtHong.Text = IsCheckLockInfor(txtHong.Text, status) ? examServiceTemp.PART_EXAM_THROAT : txtHong.Text;
+                    txtPART_EXAM_EAR_RIGHT_NORMAL.Text = IsCheckLockInfor(txtPART_EXAM_EAR_RIGHT_NORMAL.Text, status) ? examServiceTemp.PART_EXAM_EAR_RIGHT_NORMAL : txtPART_EXAM_EAR_RIGHT_NORMAL.Text;
+                    txtPART_EXAM_EAR_RIGHT_WHISPER.Text = IsCheckLockInfor(txtPART_EXAM_EAR_RIGHT_WHISPER.Text, status) ? examServiceTemp.PART_EXAM_EAR_RIGHT_WHISPER : txtPART_EXAM_EAR_RIGHT_WHISPER.Text;
+                    txtPART_EXAM_EAR_LEFT_NORMAL.Text = IsCheckLockInfor(txtPART_EXAM_EAR_LEFT_NORMAL.Text, status) ? examServiceTemp.PART_EXAM_EAR_LEFT_NORMAL : txtPART_EXAM_EAR_LEFT_NORMAL.Text;
+                    txtPART_EXAM_EAR_LEFT_WHISPER.Text = IsCheckLockInfor(txtPART_EXAM_EAR_LEFT_WHISPER.Text, status) ? examServiceTemp.PART_EXAM_EAR_LEFT_WHISPER : txtPART_EXAM_EAR_LEFT_WHISPER.Text;
+                    txtPART_EXAM_UPPER_JAW.Text = IsCheckLockInfor(txtPART_EXAM_UPPER_JAW.Text, status) ? examServiceTemp.PART_EXAM_UPPER_JAW : txtPART_EXAM_UPPER_JAW.Text;
+                    txtPART_EXAM_LOWER_JAW.Text = IsCheckLockInfor(txtPART_EXAM_LOWER_JAW.Text, status) ? examServiceTemp.PART_EXAM_LOWER_JAW : txtPART_EXAM_LOWER_JAW.Text;
 
-                    txtNhanApTrai.Text = examServiceTemp.PART_EXAM_EYE_TENSION_LEFT;
-                    txtNhanApPhai.Text = examServiceTemp.PART_EXAM_EYE_TENSION_RIGHT;
-                    txtThiLucKhongKinhTrai.Text = examServiceTemp.PART_EXAM_EYESIGHT_LEFT;
-                    txtThiLucKhongKinhPhai.Text = examServiceTemp.PART_EXAM_EYESIGHT_RIGHT;
-                    txtKinhLoTrai.Text = examServiceTemp.PART_EXAM_HOLE_GLASS_LEFT;
-                    txtKinhLoPhai.Text = examServiceTemp.PART_EXAM_HOLE_GLASS_RIGHT;
-                    if (examServiceTemp.PART_EXAM_HORIZONTAL_SIGHT == 1)
-                        chkPART_EXAM_HORIZONTAL_SIGHT__BT.Checked = true;
-                    else if (examServiceTemp.PART_EXAM_HORIZONTAL_SIGHT == 2)
-                        chkPART_EXAM_HORIZONTAL_SIGHT__HC.Checked = true;
-                    else
+                    txtNhanApTrai.Text = IsCheckLockInfor(txtNhanApTrai.Text, status) ? examServiceTemp.PART_EXAM_EYE_TENSION_LEFT : txtNhanApTrai.Text;
+                    txtNhanApPhai.Text = IsCheckLockInfor(txtNhanApPhai.Text, status) ? examServiceTemp.PART_EXAM_EYE_TENSION_RIGHT : txtNhanApPhai.Text;
+                    txtThiLucKhongKinhTrai.Text = IsCheckLockInfor(txtThiLucKhongKinhTrai.Text, status) ? examServiceTemp.PART_EXAM_EYESIGHT_LEFT : txtThiLucKhongKinhTrai.Text;
+                    txtThiLucKhongKinhPhai.Text = IsCheckLockInfor(txtThiLucKhongKinhPhai.Text, status) ? examServiceTemp.PART_EXAM_EYESIGHT_RIGHT : txtThiLucKhongKinhPhai.Text;
+                    txtKinhLoTrai.Text = IsCheckLockInfor(txtKinhLoTrai.Text, status) ? examServiceTemp.PART_EXAM_HOLE_GLASS_LEFT : txtKinhLoTrai.Text;
+                    txtKinhLoPhai.Text = IsCheckLockInfor(txtKinhLoPhai.Text, status) ? examServiceTemp.PART_EXAM_HOLE_GLASS_RIGHT : txtKinhLoPhai.Text;
+
+                    if (!status || (status && !chkPART_EXAM_HORIZONTAL_SIGHT__BT.Checked && !chkPART_EXAM_HORIZONTAL_SIGHT__HC.Checked))
                     {
-                        chkPART_EXAM_HORIZONTAL_SIGHT__BT.Checked = false;
-                        chkPART_EXAM_HORIZONTAL_SIGHT__HC.Checked = false;
+                        if (examServiceTemp.PART_EXAM_HORIZONTAL_SIGHT == 1)
+                            chkPART_EXAM_HORIZONTAL_SIGHT__BT.Checked = IsCheckLockInfor(chkPART_EXAM_HORIZONTAL_SIGHT__BT.Checked, status) ? true : chkPART_EXAM_HORIZONTAL_SIGHT__BT.Checked;
+                        else if (examServiceTemp.PART_EXAM_HORIZONTAL_SIGHT == 2)
+                            chkPART_EXAM_HORIZONTAL_SIGHT__HC.Checked = IsCheckLockInfor(chkPART_EXAM_HORIZONTAL_SIGHT__HC.Checked, status) ? true : chkPART_EXAM_HORIZONTAL_SIGHT__HC.Checked;
+                        else
+                        {
+                            chkPART_EXAM_HORIZONTAL_SIGHT__BT.Checked = IsCheckLockInfor(chkPART_EXAM_HORIZONTAL_SIGHT__BT.Checked, status) ? false : chkPART_EXAM_HORIZONTAL_SIGHT__BT.Checked;
+                            chkPART_EXAM_HORIZONTAL_SIGHT__HC.Checked = IsCheckLockInfor(chkPART_EXAM_HORIZONTAL_SIGHT__HC.Checked, status) ? false : chkPART_EXAM_HORIZONTAL_SIGHT__HC.Checked;
+                        }
                     }
-
-                    if (examServiceTemp.PART_EXAM_VERTICAL_SIGHT == 1)
-                        chkPART_EXAM_VERTICAL_SIGHT__BT.Checked = true;
-                    else if (examServiceTemp.PART_EXAM_VERTICAL_SIGHT == 2)
-                        chkPART_EXAM_VERTICAL_SIGHT__HC.Checked = true;
-                    else
+                    if (!status || (status && !chkPART_EXAM_VERTICAL_SIGHT__BT.Checked && !chkPART_EXAM_VERTICAL_SIGHT__HC.Checked))
                     {
-                        chkPART_EXAM_VERTICAL_SIGHT__BT.Checked = false;
-                        chkPART_EXAM_VERTICAL_SIGHT__HC.Checked = false;
+                        if (examServiceTemp.PART_EXAM_VERTICAL_SIGHT == 1)
+                            chkPART_EXAM_VERTICAL_SIGHT__BT.Checked = IsCheckLockInfor(chkPART_EXAM_VERTICAL_SIGHT__BT.Checked, status) ? true : chkPART_EXAM_VERTICAL_SIGHT__BT.Checked;
+                        else if (examServiceTemp.PART_EXAM_VERTICAL_SIGHT == 2)
+                            chkPART_EXAM_VERTICAL_SIGHT__HC.Checked = IsCheckLockInfor(chkPART_EXAM_VERTICAL_SIGHT__HC.Checked, status) ? true : chkPART_EXAM_VERTICAL_SIGHT__HC.Checked;
+                        else
+                        {
+                            chkPART_EXAM_VERTICAL_SIGHT__BT.Checked = IsCheckLockInfor(chkPART_EXAM_VERTICAL_SIGHT__BT.Checked, status) ? false : chkPART_EXAM_VERTICAL_SIGHT__BT.Checked;
+                            chkPART_EXAM_VERTICAL_SIGHT__HC.Checked = IsCheckLockInfor(chkPART_EXAM_VERTICAL_SIGHT__HC.Checked, status) ? false : chkPART_EXAM_VERTICAL_SIGHT__HC.Checked;
+                        }
                     }
-
                     //- Sắc giác: PART_EXAM_EYE_BLIND_COLOR lưu vào HIS_SERVICE_REQ: 1-bình thường, 2- mù màu tòan bộ , 3- mù màu đỏ, 4- mù màu xanh lá, 5- mù màu vàng, 6- mù màu đỏ +xanh lá, 7 - mù màu đỏ + vàng, 8- mù màu xanh lá + vàng, 9- mù màu đỏ + xanh lá + vàng
                     //* nếu tích bình thường --->không được tính mù màu + mù màu 1 phần.
                     //* nếu tích mù toàn bộ--->cũng không được tính mù 1 phần + bình thường
                     //* nếu k tích 2 TH bình thường và mù màu toàn bộ - >thì 3 cái mù ở dưới cho phép chọn nhiều
 
-                    chkPART_EXAM_EYE_BLIND_COLOR__BT.Checked = (examServiceTemp.PART_EXAM_EYE_BLIND_COLOR == 1);
-                    chkPART_EXAM_EYE_BLIND_COLOR__MMTB.Checked = (examServiceTemp.PART_EXAM_EYE_BLIND_COLOR == 2);
+                    if (!status || (status && (!chkPART_EXAM_EYE_BLIND_COLOR__BT.Checked && !chkPART_EXAM_EYE_BLIND_COLOR__MMTB.Checked && !chkPART_EXAM_EYE_BLIND_COLOR__MMD.Checked && !chkPART_EXAM_EYE_BLIND_COLOR__MMXLC.Checked && !chkPART_EXAM_EYE_BLIND_COLOR__MMV.Checked)))
+                    {
+                        chkPART_EXAM_EYE_BLIND_COLOR__BT.Checked = IsCheckLockInfor(chkPART_EXAM_EYE_BLIND_COLOR__BT.Checked, status) ? (examServiceTemp.PART_EXAM_EYE_BLIND_COLOR == 1) : chkPART_EXAM_EYE_BLIND_COLOR__BT.Checked;
+                        chkPART_EXAM_EYE_BLIND_COLOR__MMTB.Checked = IsCheckLockInfor(chkPART_EXAM_EYE_BLIND_COLOR__MMTB.Checked, status) ? (examServiceTemp.PART_EXAM_EYE_BLIND_COLOR == 2) : chkPART_EXAM_EYE_BLIND_COLOR__MMTB.Checked;
 
-                    chkPART_EXAM_EYE_BLIND_COLOR__MMD.Checked = (examServiceTemp.PART_EXAM_EYE_BLIND_COLOR == 3 || examServiceTemp.PART_EXAM_EYE_BLIND_COLOR == 6 || examServiceTemp.PART_EXAM_EYE_BLIND_COLOR == 7 || examServiceTemp.PART_EXAM_EYE_BLIND_COLOR == 9);
-                    chkPART_EXAM_EYE_BLIND_COLOR__MMXLC.Checked = (examServiceTemp.PART_EXAM_EYE_BLIND_COLOR == 4 || examServiceTemp.PART_EXAM_EYE_BLIND_COLOR == 6 || examServiceTemp.PART_EXAM_EYE_BLIND_COLOR == 8 || examServiceTemp.PART_EXAM_EYE_BLIND_COLOR == 9);
-                    chkPART_EXAM_EYE_BLIND_COLOR__MMV.Checked = (examServiceTemp.PART_EXAM_EYE_BLIND_COLOR == 5 || examServiceTemp.PART_EXAM_EYE_BLIND_COLOR == 7 || examServiceTemp.PART_EXAM_EYE_BLIND_COLOR == 8 || examServiceTemp.PART_EXAM_EYE_BLIND_COLOR == 9);
+                        chkPART_EXAM_EYE_BLIND_COLOR__MMD.Checked = IsCheckLockInfor(chkPART_EXAM_EYE_BLIND_COLOR__MMD.Checked, status) ? (examServiceTemp.PART_EXAM_EYE_BLIND_COLOR == 3 || examServiceTemp.PART_EXAM_EYE_BLIND_COLOR == 6 || examServiceTemp.PART_EXAM_EYE_BLIND_COLOR == 7 || examServiceTemp.PART_EXAM_EYE_BLIND_COLOR == 9) : chkPART_EXAM_EYE_BLIND_COLOR__MMD.Checked;
+                        chkPART_EXAM_EYE_BLIND_COLOR__MMXLC.Checked = IsCheckLockInfor(chkPART_EXAM_EYE_BLIND_COLOR__MMXLC.Checked, status) ? (examServiceTemp.PART_EXAM_EYE_BLIND_COLOR == 4 || examServiceTemp.PART_EXAM_EYE_BLIND_COLOR == 6 || examServiceTemp.PART_EXAM_EYE_BLIND_COLOR == 8 || examServiceTemp.PART_EXAM_EYE_BLIND_COLOR == 9) : chkPART_EXAM_EYE_BLIND_COLOR__MMXLC.Checked;
+                        chkPART_EXAM_EYE_BLIND_COLOR__MMV.Checked = IsCheckLockInfor(chkPART_EXAM_EYE_BLIND_COLOR__MMV.Checked, status) ? (examServiceTemp.PART_EXAM_EYE_BLIND_COLOR == 5 || examServiceTemp.PART_EXAM_EYE_BLIND_COLOR == 7 || examServiceTemp.PART_EXAM_EYE_BLIND_COLOR == 8 || examServiceTemp.PART_EXAM_EYE_BLIND_COLOR == 9) : chkPART_EXAM_EYE_BLIND_COLOR__MMV.Checked;
+                    }
 
-                    chkPartExamEyeStPlus.Checked = examServiceTemp.PART_EXAM_EYE_ST_PLUS == 1;
-                    chkPartExamEyeStMinus.Checked = examServiceTemp.PART_EXAM_EYE_ST_MINUS == 1;
-                    cboPartExamEyeTension.EditValue = examServiceTemp.PART_EXAM_EYE_TENSION;
-                    txtPartExamEyeCountFinger.Text = examServiceTemp.PART_EXAM_EYE_COUNT_FINGER != null ? examServiceTemp.PART_EXAM_EYE_COUNT_FINGER.ToString() : null;
+                    if (!status || (status && !chkPartExamEyeStPlus.Checked && !chkPartExamEyeStMinus.Checked))
+                    {
+                        chkPartExamEyeStPlus.Checked = IsCheckLockInfor(chkPartExamEyeStPlus.Checked, status) ? examServiceTemp.PART_EXAM_EYE_ST_PLUS == 1 : chkPartExamEyeStPlus.Checked;
+                        chkPartExamEyeStMinus.Checked = IsCheckLockInfor(chkPartExamEyeStMinus.Checked, status) ? examServiceTemp.PART_EXAM_EYE_ST_MINUS == 1 : chkPartExamEyeStMinus.Checked;
+                    }
 
-                    txtPartEyeGlassOldSphRight.Text = examServiceTemp.PART_EYE_GLASS_OLD_SPH_RIGHT != null ? examServiceTemp.PART_EYE_GLASS_OLD_SPH_RIGHT.ToString() : null;
-                    txtPartEyeGlassOldCylRight.Text = examServiceTemp.PART_EYE_GLASS_OLD_CYL_RIGHT != null ? examServiceTemp.PART_EYE_GLASS_OLD_CYL_RIGHT.ToString() : null;
-                    txtPartEyeGlassOldAxeRight.Text = examServiceTemp.PART_EYE_GLASS_OLD_AXE_RIGHT != null ? examServiceTemp.PART_EYE_GLASS_OLD_AXE_RIGHT.ToString() : null;
-                    txtPartEyesightGlassOldRight.Text = examServiceTemp.PART_EYESIGHT_GLASS_OLD_RIGHT != null ? examServiceTemp.PART_EYESIGHT_GLASS_OLD_RIGHT.ToString() : null;
-                    txtPartEyeGlassOldKcdtRight.Text = examServiceTemp.PART_EYE_GLASS_OLD_KCDT_RIGHT != null ? examServiceTemp.PART_EYE_GLASS_OLD_KCDT_RIGHT.ToString() : null;
-                    txtPartEyeGlassOldAddRight.Text = examServiceTemp.PART_EYE_GLASS_OLD_ADD_RIGHT != null ? examServiceTemp.PART_EYE_GLASS_OLD_ADD_RIGHT.ToString() : null;
+                    cboPartExamEyeTension.EditValue = IsCheckLockInfor(cboPartExamEyeTension.EditValue != null ? (string)cboPartExamEyeTension.EditValue : "", status) ? examServiceTemp.PART_EXAM_EYE_TENSION : cboPartExamEyeTension.Text;
+                    txtPartExamEyeCountFinger.Text = IsCheckLockInfor(txtPartExamEyeCountFinger.Text, status) ? examServiceTemp.PART_EXAM_EYE_COUNT_FINGER != null ? examServiceTemp.PART_EXAM_EYE_COUNT_FINGER.ToString() : null : txtPartExamEyeCountFinger.Text;
 
-                    txtPartEyeGlassOldSphLeft.Text = examServiceTemp.PART_EYE_GLASS_OLD_SPH_LEFT != null ? examServiceTemp.PART_EYE_GLASS_OLD_SPH_LEFT.ToString() : null;
-                    txtPartEyeGlassOldCylLeft.Text = examServiceTemp.PART_EYE_GLASS_OLD_CYL_LEFT != null ? examServiceTemp.PART_EYE_GLASS_OLD_CYL_LEFT.ToString() : null;
-                    txtPartEyeGlassOldAxeLeft.Text = examServiceTemp.PART_EYE_GLASS_OLD_AXE_LEFT != null ? examServiceTemp.PART_EYE_GLASS_OLD_AXE_LEFT.ToString() : null;
-                    txtPartEyesightGlassOldLeft.Text = examServiceTemp.PART_EYESIGHT_GLASS_OLD_LEFT != null ? examServiceTemp.PART_EYESIGHT_GLASS_OLD_LEFT.ToString() : null;
-                    txtPartEyeGlassOldKcdtLeft.Text = examServiceTemp.PART_EYE_GLASS_OLD_KCDT_LEFT != null ? examServiceTemp.PART_EYE_GLASS_OLD_KCDT_LEFT.ToString() : null;
-                    txtPartEyeGlassOldAddLeft.Text = examServiceTemp.PART_EYE_GLASS_OLD_ADD_LEFT != null ? examServiceTemp.PART_EYE_GLASS_OLD_ADD_LEFT.ToString() : null;
+                    txtPartEyeGlassOldSphRight.Text = IsCheckLockInfor(txtPartEyeGlassOldSphRight.Text, status) ? examServiceTemp.PART_EYE_GLASS_OLD_SPH_RIGHT != null ? examServiceTemp.PART_EYE_GLASS_OLD_SPH_RIGHT.ToString() : null : txtPartEyeGlassOldSphRight.Text;
+                    txtPartEyeGlassOldCylRight.Text = IsCheckLockInfor(txtPartEyeGlassOldCylRight.Text, status) ? examServiceTemp.PART_EYE_GLASS_OLD_CYL_RIGHT != null ? examServiceTemp.PART_EYE_GLASS_OLD_CYL_RIGHT.ToString() : null : txtPartEyeGlassOldCylRight.Text;
+                    txtPartEyeGlassOldAxeRight.Text = IsCheckLockInfor(txtPartEyeGlassOldAxeRight.Text, status) ? examServiceTemp.PART_EYE_GLASS_OLD_AXE_RIGHT != null ? examServiceTemp.PART_EYE_GLASS_OLD_AXE_RIGHT.ToString() : null : txtPartEyeGlassOldAxeRight.Text;
+                    txtPartEyesightGlassOldRight.Text = IsCheckLockInfor(txtPartEyesightGlassOldRight.Text, status) ? examServiceTemp.PART_EYESIGHT_GLASS_OLD_RIGHT != null ? examServiceTemp.PART_EYESIGHT_GLASS_OLD_RIGHT.ToString() : null : txtPartEyesightGlassOldRight.Text;
+                    txtPartEyeGlassOldKcdtRight.Text = IsCheckLockInfor(txtPartEyeGlassOldKcdtRight.Text, status) ? examServiceTemp.PART_EYE_GLASS_OLD_KCDT_RIGHT != null ? examServiceTemp.PART_EYE_GLASS_OLD_KCDT_RIGHT.ToString() : null : txtPartEyeGlassOldKcdtRight.Text;
+                    txtPartEyeGlassOldAddRight.Text = IsCheckLockInfor(txtPartEyeGlassOldAddRight.Text, status) ? examServiceTemp.PART_EYE_GLASS_OLD_ADD_RIGHT != null ? examServiceTemp.PART_EYE_GLASS_OLD_ADD_RIGHT.ToString() : null : txtPartEyeGlassOldAddRight.Text;
 
-                    txtPartEyeGlassSphRight.Text = examServiceTemp.PART_EYE_GLASS_SPH_RIGHT != null ? examServiceTemp.PART_EYE_GLASS_SPH_RIGHT.ToString() : null;
-                    txtPartEyeGlassCylRight.Text = examServiceTemp.PART_EYE_GLASS_CYL_RIGHT != null ? examServiceTemp.PART_EYE_GLASS_CYL_RIGHT.ToString() : null;
-                    txtPartEyeGlassAxeRight.Text = examServiceTemp.PART_EYE_GLASS_AXE_RIGHT != null ? examServiceTemp.PART_EYE_GLASS_AXE_RIGHT.ToString() : null;
-                    txtPartExamEyeSightGlassRight.Text = examServiceTemp.PART_EXAM_EYESIGHT_GLASS_RIGHT != null ? examServiceTemp.PART_EXAM_EYESIGHT_GLASS_RIGHT.ToString() : null;
-                    txtPartEyeGlassKcdtRight.Text = examServiceTemp.PART_EYE_GLASS_KCDT_RIGHT != null ? examServiceTemp.PART_EYE_GLASS_KCDT_RIGHT.ToString() : null;
-                    txtPartEyeGlassAddRight.Text = examServiceTemp.PART_EYE_GLASS_ADD_RIGHT != null ? examServiceTemp.PART_EYE_GLASS_ADD_RIGHT.ToString() : null;
+                    txtPartEyeGlassOldSphLeft.Text = IsCheckLockInfor(txtPartEyeGlassOldSphLeft.Text, status) ? examServiceTemp.PART_EYE_GLASS_OLD_SPH_LEFT != null ? examServiceTemp.PART_EYE_GLASS_OLD_SPH_LEFT.ToString() : null : txtPartEyeGlassOldSphLeft.Text;
+                    txtPartEyeGlassOldCylLeft.Text = IsCheckLockInfor(txtPartEyeGlassOldCylLeft.Text, status) ? examServiceTemp.PART_EYE_GLASS_OLD_CYL_LEFT != null ? examServiceTemp.PART_EYE_GLASS_OLD_CYL_LEFT.ToString() : null : txtPartEyeGlassOldCylLeft.Text;
+                    txtPartEyeGlassOldAxeLeft.Text = IsCheckLockInfor(txtPartEyeGlassOldAxeLeft.Text, status) ? examServiceTemp.PART_EYE_GLASS_OLD_AXE_LEFT != null ? examServiceTemp.PART_EYE_GLASS_OLD_AXE_LEFT.ToString() : null : txtPartEyeGlassOldAxeLeft.Text;
+                    txtPartEyesightGlassOldLeft.Text = IsCheckLockInfor(txtPartEyesightGlassOldLeft.Text, status) ? examServiceTemp.PART_EYESIGHT_GLASS_OLD_LEFT != null ? examServiceTemp.PART_EYESIGHT_GLASS_OLD_LEFT.ToString() : null : txtPartEyesightGlassOldLeft.Text;
+                    txtPartEyeGlassOldKcdtLeft.Text = IsCheckLockInfor(txtPartEyeGlassOldKcdtLeft.Text, status) ? examServiceTemp.PART_EYE_GLASS_OLD_KCDT_LEFT != null ? examServiceTemp.PART_EYE_GLASS_OLD_KCDT_LEFT.ToString() : null : txtPartEyeGlassOldKcdtLeft.Text;
+                    txtPartEyeGlassOldAddLeft.Text = IsCheckLockInfor(txtPartEyeGlassOldAddLeft.Text, status) ? examServiceTemp.PART_EYE_GLASS_OLD_ADD_LEFT != null ? examServiceTemp.PART_EYE_GLASS_OLD_ADD_LEFT.ToString() : null : txtPartEyeGlassOldAddLeft.Text;
 
-                    txtPartEyeGlassSphLeft.Text = examServiceTemp.PART_EYE_GLASS_SPH_LEFT != null ? examServiceTemp.PART_EYE_GLASS_SPH_LEFT.ToString() : null;
-                    txtPartEyeGlassCylLeft.Text = examServiceTemp.PART_EYE_GLASS_CYL_LEFT != null ? examServiceTemp.PART_EYE_GLASS_CYL_LEFT.ToString() : null;
-                    txtPartEyeGlassAxeLeft.Text = examServiceTemp.PART_EYE_GLASS_AXE_LEFT != null ? examServiceTemp.PART_EYE_GLASS_AXE_LEFT.ToString() : null;
-                    txtPartExamEyeSightGlassLeft.Text = examServiceTemp.PART_EXAM_EYESIGHT_GLASS_LEFT != null ? examServiceTemp.PART_EXAM_EYESIGHT_GLASS_LEFT.ToString() : null;
-                    txtPartEyeGlassKcdtLeft.Text = examServiceTemp.PART_EYE_GLASS_KCDT_LEFT != null ? examServiceTemp.PART_EYE_GLASS_KCDT_LEFT.ToString() : null;
-                    txtPartEyeGlassAddLeft.Text = examServiceTemp.PART_EYE_GLASS_ADD_LEFT != null ? examServiceTemp.PART_EYE_GLASS_ADD_LEFT.ToString() : null;
-                    txtDaLieu.Text = examServiceTemp.PART_EXAM_DERMATOLOGY;
+                    txtPartEyeGlassSphRight.Text = IsCheckLockInfor(txtPartEyeGlassSphRight.Text, status) ? examServiceTemp.PART_EYE_GLASS_SPH_RIGHT != null ? examServiceTemp.PART_EYE_GLASS_SPH_RIGHT.ToString() : null : txtPartEyeGlassSphRight.Text;
+                    txtPartEyeGlassCylRight.Text = IsCheckLockInfor(txtPartEyeGlassCylRight.Text, status) ? examServiceTemp.PART_EYE_GLASS_CYL_RIGHT != null ? examServiceTemp.PART_EYE_GLASS_CYL_RIGHT.ToString() : null : txtPartEyeGlassCylRight.Text;
+                    txtPartEyeGlassAxeRight.Text = IsCheckLockInfor(txtPartEyeGlassAxeRight.Text, status) ? examServiceTemp.PART_EYE_GLASS_AXE_RIGHT != null ? examServiceTemp.PART_EYE_GLASS_AXE_RIGHT.ToString() : null : txtPartEyeGlassAxeRight.Text;
+                    txtPartExamEyeSightGlassRight.Text = IsCheckLockInfor(txtPartExamEyeSightGlassRight.Text, status) ? examServiceTemp.PART_EXAM_EYESIGHT_GLASS_RIGHT != null ? examServiceTemp.PART_EXAM_EYESIGHT_GLASS_RIGHT.ToString() : null : txtPartExamEyeSightGlassRight.Text;
+                    txtPartEyeGlassKcdtRight.Text = IsCheckLockInfor(txtPartEyeGlassKcdtRight.Text, status) ? examServiceTemp.PART_EYE_GLASS_KCDT_RIGHT != null ? examServiceTemp.PART_EYE_GLASS_KCDT_RIGHT.ToString() : null : txtPartEyeGlassKcdtRight.Text;
+                    txtPartEyeGlassAddRight.Text = IsCheckLockInfor(txtPartEyeGlassAddRight.Text, status) ? examServiceTemp.PART_EYE_GLASS_ADD_RIGHT != null ? examServiceTemp.PART_EYE_GLASS_ADD_RIGHT.ToString() : null : txtPartEyeGlassAddRight.Text;
+
+                    txtPartEyeGlassSphLeft.Text = IsCheckLockInfor(txtPartEyeGlassSphLeft.Text, status) ? examServiceTemp.PART_EYE_GLASS_SPH_LEFT != null ? examServiceTemp.PART_EYE_GLASS_SPH_LEFT.ToString() : null : txtPartEyeGlassSphLeft.Text;
+                    txtPartEyeGlassCylLeft.Text = IsCheckLockInfor(txtPartEyeGlassCylLeft.Text, status) ? examServiceTemp.PART_EYE_GLASS_CYL_LEFT != null ? examServiceTemp.PART_EYE_GLASS_CYL_LEFT.ToString() : null : txtPartEyeGlassCylLeft.Text;
+                    txtPartEyeGlassAxeLeft.Text = IsCheckLockInfor(txtPartEyeGlassAxeLeft.Text, status) ? examServiceTemp.PART_EYE_GLASS_AXE_LEFT != null ? examServiceTemp.PART_EYE_GLASS_AXE_LEFT.ToString() : null : txtPartEyeGlassAxeLeft.Text;
+                    txtPartExamEyeSightGlassLeft.Text = IsCheckLockInfor(txtPartExamEyeSightGlassLeft.Text, status) ? examServiceTemp.PART_EXAM_EYESIGHT_GLASS_LEFT != null ? examServiceTemp.PART_EXAM_EYESIGHT_GLASS_LEFT.ToString() : null : txtPartExamEyeSightGlassLeft.Text;
+                    txtPartEyeGlassKcdtLeft.Text = IsCheckLockInfor(txtPartEyeGlassKcdtLeft.Text, status) ? examServiceTemp.PART_EYE_GLASS_KCDT_LEFT != null ? examServiceTemp.PART_EYE_GLASS_KCDT_LEFT.ToString() : null : txtPartEyeGlassKcdtLeft.Text;
+                    txtPartEyeGlassAddLeft.Text = IsCheckLockInfor(txtPartEyeGlassAddLeft.Text, status) ? examServiceTemp.PART_EYE_GLASS_ADD_LEFT != null ? examServiceTemp.PART_EYE_GLASS_ADD_LEFT.ToString() : null : txtPartEyeGlassAddLeft.Text;
+                    txtDaLieu.Text = IsCheckLockInfor(txtDaLieu.Text, status) ? examServiceTemp.PART_EXAM_DERMATOLOGY : txtDaLieu.Text;
                     if (!String.IsNullOrWhiteSpace(txtKhamBoPhan.Text.Trim()))
                         xtraTabPageChung.PageVisible = true;
 
@@ -364,6 +402,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                     .Get<List<MOS.EFMODEL.DataModels.HIS_TREATMENT>>("api/HisTreatment/Get", ApiConsumers.MosConsumer, treatment, param).FirstOrDefault();
                 if (this.treatment != null)
                 {
+                    
                     UpdateNeedSickLeaveCertControl(this.treatment.NEED_SICK_LEAVE_CERT);
                     this.icdDefaultFinish.ICD_CODE = this.treatment.ICD_CODE;
                     this.icdDefaultFinish.ICD_NAME = this.treatment.ICD_NAME;
@@ -923,76 +962,57 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                 Inventec.Common.Logging.LogSystem.Warn(ex);
             }
         }
+        private decimal? HeightBeforeCallApi { get; set; }
+        private decimal? WeightBeforeCallApi { get; set; }
+        public async Task LoadDHSTByPatient()
+        {
+            try
+            {
+                HIS_DHST currentDhst = new HIS_DHST();
+                if (IsCheckedGetLastDHSTByPatient)
+                {
+                    WaitingManager.Show();
+                    CommonParam param = new CommonParam();
+                    var Dhst = await new BackendAdapter(param)
+                .GetAsync<MOS.EFMODEL.DataModels.V_HIS_DHST_1>("api/HisDhst/GetLastByPatient", ApiConsumers.MosConsumer, this.HisServiceReqView.TDL_PATIENT_ID, param);
+                    WaitingManager.Hide();
+                    Inventec.Common.Mapper.DataObjectMapper.Map<HIS_DHST>(currentDhst, Dhst);
+                    HeightBeforeCallApi = spinHeight.EditValue != null ? (decimal?)spinHeight.Value : null;
+                    WeightBeforeCallApi = spinWeight.EditValue != null ? (decimal?)spinWeight.Value : null;
+                    DHSTSetValueHeightWeight(currentDhst);
+                    Inventec.Common.Logging.LogSystem.Debug("Get dhst from LoadDHSTByPatient");
+                }
+                else
+                {
+                    currentDhst.HEIGHT = HeightBeforeCallApi;
+                    currentDhst.WEIGHT = WeightBeforeCallApi;
+                    this.DHSTSetValueHeightWeight(currentDhst);
+                }
+            }
+            catch (Exception ex)
+            {
 
+                throw;
+            }
+        }
         public async Task LoadDHSTFromServiceReq()
         {
             try
             {
-                // ưu tiên cấu hình hệ thống
-                if (HisConfigCFG.IsShowLatestDHST)
-                {
-                    if (this.HisServiceReqView.DHST_ID.HasValue)
-                    {
-                        WaitingManager.Show();
-                        HisDhstFilter dhstFilter = new HisDhstFilter();
-                        dhstFilter.ID = this.HisServiceReqView.DHST_ID;
-                        dhstFilter.ORDER_FIELD = "EXECUTE_TIME";
-                        dhstFilter.ORDER_DIRECTION = "DESC";
-                        HIS_DHST currentDhst = new HIS_DHST();
-                        CommonParam param = new CommonParam();
-                        var listDHST = await new BackendAdapter(param)
-                    .GetAsync<List<MOS.EFMODEL.DataModels.HIS_DHST>>("api/HisDHST/Get", ApiConsumers.MosConsumer, dhstFilter, param);
-                        currentDhst = listDHST != null ? listDHST.FirstOrDefault() : null;
-                        WaitingManager.Hide();
-                        //dhstProcessor.SetValue(ucDHST, currentDhst);
-                        this.DHSTSetValue(currentDhst, false);
-                        Inventec.Common.Logging.LogSystem.Debug("Get dhst from HisServiceReq");
-                    }
-                    else
-                    {
-                        // get patient
-                        HisTreatmentFilter treatFilter = new HisTreatmentFilter();
-                        treatFilter.PATIENT_ID = this.HisServiceReqView.TDL_PATIENT_ID;
-                        var treatments = await new BackendAdapter(param)
-                   .GetAsync<List<MOS.EFMODEL.DataModels.HIS_TREATMENT>>("api/HisTreatment/Get", ApiConsumers.MosConsumer, treatFilter, param);
-                        if (treatments != null && treatments.Count > 0)
-                        {
-                            param = new CommonParam();
-                            HisDhstViewFilter dhstFilter = new HisDhstViewFilter();
-                            dhstFilter.TREATMENT_IDs = treatments.Select(o => o.ID).Distinct().ToList();
-                            dhstFilter.ORDER_FIELD = "EXECUTE_TIME";
-                            dhstFilter.ORDER_DIRECTION = "DESC";
-                            HIS_DHST currentDhst = new HIS_DHST();
+                List<MOS.EFMODEL.DataModels.HIS_DHST> listDHST = null;
 
-                            var listDHST = await new BackendAdapter(param)
-                        .GetAsync<List<MOS.EFMODEL.DataModels.V_HIS_DHST>>("api/HisDHST/GetView", ApiConsumers.MosConsumer, dhstFilter, param);
-                            if (listDHST != null && listDHST.Count > 0)
-                            {
-                                AutoMapper.Mapper.CreateMap<V_HIS_DHST, HIS_DHST>();
-                                currentDhst = AutoMapper.Mapper.Map<V_HIS_DHST, HIS_DHST>(listDHST.FirstOrDefault(o => o.HEIGHT != null && o.WEIGHT != null && o.HEIGHT > 0 && o.WEIGHT > 0));
-                                Inventec.Common.Logging.LogSystem.Debug("currentDhst HisConfigCFG.IsShowLatestDHST == 1");
-                                Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => currentDhst), currentDhst));
-                            }
-                            //dhstProcessor.SetValue(ucDHST, currentDhst);
-                            this.DHSTSetValue(currentDhst,true);
-                        }
-                    }
-                }
-                else if (this.HisServiceReqView.DHST_ID.HasValue)
+                HIS_DHST currentDhst = new HIS_DHST();
+                if (this.HisServiceReqView.DHST_ID.HasValue)
                 {
                     WaitingManager.Show();
                     HisDhstFilter dhstFilter = new HisDhstFilter();
                     dhstFilter.ID = this.HisServiceReqView.DHST_ID;
                     dhstFilter.ORDER_FIELD = "EXECUTE_TIME";
                     dhstFilter.ORDER_DIRECTION = "DESC";
-                    HIS_DHST currentDhst = new HIS_DHST();
                     CommonParam param = new CommonParam();
-                    var listDHST = await new BackendAdapter(param)
+                    listDHST = await new BackendAdapter(param)
                 .GetAsync<List<MOS.EFMODEL.DataModels.HIS_DHST>>("api/HisDHST/Get", ApiConsumers.MosConsumer, dhstFilter, param);
-                    currentDhst = listDHST != null ? listDHST.FirstOrDefault() : null;
                     WaitingManager.Hide();
-                    //dhstProcessor.SetValue(ucDHST, currentDhst);
-                    this.DHSTSetValue(currentDhst,false);
                     Inventec.Common.Logging.LogSystem.Debug("Get dhst from HisServiceReq");
                 }
                 else if (this.treatment != null)
@@ -1002,15 +1022,49 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                     dhstFilter.TREATMENT_ID = this.treatment.ID;
                     dhstFilter.ORDER_FIELD = "EXECUTE_TIME";
                     dhstFilter.ORDER_DIRECTION = "DESC";
-                    HIS_DHST currentDhst = new HIS_DHST();
                     CommonParam param = new CommonParam();
-                    var listDHST = await new BackendAdapter(param)
+                    listDHST = await new BackendAdapter(param)
                 .GetAsync<List<MOS.EFMODEL.DataModels.HIS_DHST>>("api/HisDHST/Get", ApiConsumers.MosConsumer, dhstFilter, param);
-                    currentDhst = listDHST != null ? listDHST.FirstOrDefault() : null;
                     WaitingManager.Hide();
-                    //dhstProcessor.SetValue(ucDHST, currentDhst);
-                    this.DHSTSetValue(currentDhst,false);
                     Inventec.Common.Logging.LogSystem.Debug("Get dhst from treatment");
+                }
+                if (listDHST != null && listDHST.Count > 0)
+                {
+                    listDHST = listDHST.OrderByDescending(o => o.EXECUTE_TIME).ThenByDescending(o => o.ID).ToList();
+                    var firstDhst = listDHST[0];
+                    if (firstDhst.WEIGHT.HasValue && firstDhst.HEIGHT.HasValue && firstDhst.TEMPERATURE.HasValue && firstDhst.BREATH_RATE.HasValue && firstDhst.CHEST.HasValue && firstDhst.BELLY.HasValue && firstDhst.BLOOD_PRESSURE_MAX.HasValue && firstDhst.BLOOD_PRESSURE_MIN.HasValue && firstDhst.PULSE.HasValue && firstDhst.SPO2.HasValue)
+                    {
+                        currentDhst = firstDhst;
+                    }
+                    else
+                    {
+                        currentDhst = firstDhst;
+                        foreach (var item in listDHST)
+                        {
+                            if (currentDhst != null && currentDhst.WEIGHT.HasValue && !currentDhst.HEIGHT.HasValue && item.HEIGHT.HasValue)
+                            {
+                                currentDhst.HEIGHT = item.HEIGHT;
+                            }
+                            else if (currentDhst != null && currentDhst.HEIGHT.HasValue && !currentDhst.WEIGHT.HasValue && item.WEIGHT.HasValue)
+                            {
+                                currentDhst.WEIGHT = item.WEIGHT;
+                            }
+                            else if (currentDhst != null && !currentDhst.HEIGHT.HasValue && !currentDhst.WEIGHT.HasValue)
+                            {
+                                currentDhst.WEIGHT = item.WEIGHT;
+                                currentDhst.HEIGHT = item.HEIGHT;
+                            }
+                            MapInformationDhstEmpty(ref currentDhst, item);                         
+                        }
+                    }
+                }
+                else
+                    currentDhst = null;
+
+                this.DHSTSetValue(currentDhst);
+                if (IsCheckedGetLastDHSTByPatient)
+                {
+                    LoadDHSTByPatient();
                 }
             }
             catch (Exception ex)
@@ -1019,7 +1073,34 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
             }
         }
 
-
+        private void MapInformationDhstEmpty(ref HIS_DHST currentDhst, HIS_DHST item)
+        {
+            try
+            {
+                if (!currentDhst.TEMPERATURE.HasValue && item.TEMPERATURE.HasValue)
+                    currentDhst.TEMPERATURE = item.TEMPERATURE;
+                if (!currentDhst.BREATH_RATE.HasValue && item.BREATH_RATE.HasValue)
+                    currentDhst.BREATH_RATE = item.BREATH_RATE;
+                if (!currentDhst.CHEST.HasValue && item.CHEST.HasValue)
+                    currentDhst.CHEST = item.CHEST;
+                if (!currentDhst.BELLY.HasValue && item.BELLY.HasValue)
+                    currentDhst.BELLY = item.BELLY;
+                if (!currentDhst.BLOOD_PRESSURE_MAX.HasValue && item.BLOOD_PRESSURE_MAX.HasValue)
+                    currentDhst.BLOOD_PRESSURE_MAX = item.BLOOD_PRESSURE_MAX;
+                if (!currentDhst.BLOOD_PRESSURE_MIN.HasValue && item.BLOOD_PRESSURE_MIN.HasValue)
+                    currentDhst.BLOOD_PRESSURE_MIN = item.BLOOD_PRESSURE_MIN;
+                if (!currentDhst.PULSE.HasValue && item.PULSE.HasValue)
+                    currentDhst.PULSE = item.PULSE;
+                if (!currentDhst.SPO2.HasValue && item.SPO2.HasValue)
+                    currentDhst.SPO2 = item.SPO2;
+                if (!currentDhst.URINE.HasValue && item.URINE.HasValue)
+                    currentDhst.URINE = item.URINE;
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+        }
         private void LoadNextTreatmentIntructionToControl(string nextTreaIntrCode, string nextTreaIntrName)
         {
             try

@@ -1,4 +1,21 @@
-﻿using DevExpress.XtraTab;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using DevExpress.XtraTab;
 using HIS.Desktop.ADO;
 using HIS.Desktop.ApiConsumer;
 using HIS.Desktop.Controls.Session;
@@ -12,6 +29,8 @@ using HIS.Desktop.Plugins.ExamServiceReqExecute.Config;
 using HIS.Desktop.Plugins.ExamServiceReqExecute.ConnectCOM;
 using HIS.Desktop.Plugins.ExamServiceReqExecute.Resources;
 using HIS.Desktop.Plugins.ExamServiceReqExecute.Sda.SdaEventLogCreate;
+using HIS.Desktop.Plugins.Library.ElectronicBill;
+using HIS.Desktop.Plugins.Library.ElectronicBill.Base;
 using HIS.Desktop.Plugins.Library.PrintPrescription;
 using HIS.Desktop.Plugins.Library.PrintTreatmentFinish;
 using HIS.Desktop.Utility;
@@ -29,6 +48,7 @@ using MOS.Filter;
 using MOS.SDO;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -56,7 +76,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
             {
                 Inventec.Common.Logging.LogSystem.Debug("onClickSaveFormAsyncForOtherButtonClick.1");
                 HisServiceReqExamUpdateSDO hisServiceReqSDO = new HisServiceReqExamUpdateSDO();
-
+                GetUcIcdYHCT();
                 ProcessExamServiceReqDTO(ref hisServiceReqSDO);
                 ProcessExamSereIcdDTO(ref hisServiceReqSDO);
                 ProcessExamSereNextTreatmentIntructionDTO(ref hisServiceReqSDO);
@@ -309,14 +329,14 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                 Inventec.Common.Logging.LogSystem.Warn(ex);
             }
         }
-        void DataSelectReuslt(object data)
+        void DataSelectReuslt(object data, bool status)
         {
             try
             {
                 MOS.EFMODEL.DataModels.HIS_EXAM_SERVICE_TEMP examServiceTemp = data as MOS.EFMODEL.DataModels.HIS_EXAM_SERVICE_TEMP;
                 if (examServiceTemp != null)
                 {
-                    LoadDataToControlFromTemp(examServiceTemp);
+                    LoadDataToControlFromTemp(examServiceTemp, status);
                 }
             }
             catch (Exception ex)
@@ -487,7 +507,8 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
             try
             {
                 long hospitalizationReasonRequired = Inventec.Common.TypeConvert.Parse.ToInt64(HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(SdaConfigKeys.HOSPITALIZATION_REASON__REQUIRED));
-                if (hospitalizationReasonRequired == 1 && String.IsNullOrEmpty(txtHospitalizationReason.Text.Trim()))
+                var PatientTypeCode = BackendDataWorker.Get<HIS_PATIENT_TYPE>().FirstOrDefault(o => o.ID == this.treatment.TDL_PATIENT_TYPE_ID).PATIENT_TYPE_CODE;
+                if ((hospitalizationReasonRequired == 1 && String.IsNullOrEmpty(txtHospitalizationReason.Text.Trim())) || (String.IsNullOrEmpty(txtHospitalizationReason.Text.Trim()) && !string.IsNullOrEmpty(HisConfigCFG.HospitalizationReasonRequiredByPatientCode) && HisConfigCFG.HospitalizationReasonRequiredByPatientCode.Split(',').ToList().Contains(PatientTypeCode)))
                 {
                     if (MessageBox.Show("Bắt buộc nhập lý do khám", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning) == DialogResult.OK)
                     {
@@ -504,6 +525,53 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
             }
             catch (Exception ex)
             {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+            return valid;
+        }
+        public bool isWarning = true;
+        private bool ValidIcd(bool isSave)
+        {
+            bool valid = true;
+            try
+            {
+                int icd_code = txtIcdCode.Text.Length;
+                Inventec.Common.Logging.LogSystem.Debug("Do dai ma cd chinh: " + icd_code);
+                int icd_name = Inventec.Common.String.CountVi.Count(cboIcds.Text)??0;
+                Inventec.Common.Logging.LogSystem.Debug("Do dai ten cd chinh: " + icd_name);
+                int icd_code_sub = txtIcdSubCode.Text.Length;
+                Inventec.Common.Logging.LogSystem.Debug("Do dai ma cd phu: " + icd_code_sub);
+                int icd_text = Inventec.Common.String.CountVi.Count(txtIcdText.Text) ?? 0;
+                Inventec.Common.Logging.LogSystem.Debug("Do dai ten cd phu: " + icd_text);
+                int yhct_code = this.IcdCodeYHCT != null ? this.IcdCodeYHCT.Length : 0;
+                Inventec.Common.Logging.LogSystem.Debug("Do dai ma cd yhct phu: " + yhct_code);
+                int yhct_sub_code = this.IcdSubCodeYHCT != null ? this.IcdSubCodeYHCT.Length : 0;
+                Inventec.Common.Logging.LogSystem.Debug("Do dai ten cd yhct phu: " + yhct_sub_code);
+                string errror_string = "";
+                if(icd_code + icd_code_sub > 100)
+                {
+                    errror_string = "Mã chẩn đoán phụ nhập quá 100 ký tự";
+                }
+                else if(icd_name + icd_text > 1500)
+                {
+                    errror_string = "Tên chẩn đoán phụ nhập quá 1500 ký tự";
+                }
+                else if(yhct_code + yhct_sub_code > 255)
+                {
+                    errror_string = "Mã chẩn đoán YHCT phụ nhập quá 255 ký tự";
+                }
+                if (!string.IsNullOrEmpty(errror_string))
+                {
+                    if(isSave) MessageBox.Show(this, errror_string, "Thông báo", MessageBoxButtons.OK);
+                    isWarning = true;
+                    valid = false;
+                }
+                
+
+            }
+            catch (Exception ex)
+            {
+                valid = false;
                 Inventec.Common.Logging.LogSystem.Warn(ex);
             }
             return valid;
@@ -586,7 +654,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                 if (!String.IsNullOrEmpty(this.txtIcdCode.Text.Trim()))
                 {
                     Inventec.Common.Logging.LogSystem.Debug("ValidForSave 2");
-                    var listData = this.currentIcds.FirstOrDefault(o => o.ICD_CODE.Contains(this.txtIcdCode.Text.Trim()));
+                    var listData = this.currentIcds.FirstOrDefault(o => o.ICD_CODE.Equals(this.txtIcdCode.Text.Trim()));
                     var result = listData != null ? listData : null;
                     if (result == null)
                     {
@@ -662,23 +730,23 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                             isNotCheckValidateIcdUC = true;
                         }
                     }
-                    string messErr = null;
-                    if (!checkIcdManager.ProcessCheckIcd(icdCode, icdSubCode, ref messErr, HisConfigCFG.CheckIcdWhenSave == "1" || HisConfigCFG.CheckIcdWhenSave == "2"))
-                    {
-                        if (HisConfigCFG.CheckIcdWhenSave == "1")
-                        {
-                            if (DevExpress.XtraEditors.XtraMessageBox.Show(messErr + ". Bạn có muốn tiếp tục?",
-                         HIS.Desktop.LibraryMessage.MessageUtil.GetMessage(LibraryMessage.Message.Enum.TieuDeCuaSoThongBaoLaCanhBao),
-                         MessageBoxButtons.YesNo) == DialogResult.No) valid = false;
-                        }
-                        else
-                        {
-                            DevExpress.XtraEditors.XtraMessageBox.Show(messErr,
-                         HIS.Desktop.LibraryMessage.MessageUtil.GetMessage(LibraryMessage.Message.Enum.TieuDeCuaSoThongBaoLaCanhBao),
-                         MessageBoxButtons.OK);
-                            valid = false;
-                        }
-                    }
+                    //string messErr = null;
+                    //if (!checkIcdManager.ProcessCheckIcd(icdCode, icdSubCode, ref messErr, HisConfigCFG.CheckIcdWhenSave == "1" || HisConfigCFG.CheckIcdWhenSave == "2"))
+                    //{
+                    //    if (HisConfigCFG.CheckIcdWhenSave == "1")
+                    //    {
+                    //        if (DevExpress.XtraEditors.XtraMessageBox.Show(messErr + ". Bạn có muốn tiếp tục?",
+                    //     HIS.Desktop.LibraryMessage.MessageUtil.GetMessage(LibraryMessage.Message.Enum.TieuDeCuaSoThongBaoLaCanhBao),
+                    //     MessageBoxButtons.YesNo) == DialogResult.No) valid = false;
+                    //    }
+                    //    else
+                    //    {
+                    //        DevExpress.XtraEditors.XtraMessageBox.Show(messErr,
+                    //     HIS.Desktop.LibraryMessage.MessageUtil.GetMessage(LibraryMessage.Message.Enum.TieuDeCuaSoThongBaoLaCanhBao),
+                    //     MessageBoxButtons.OK);
+                    //        valid = false;
+                    //    }
+                    //}
                 }
 
                 Inventec.Common.Logging.LogSystem.Debug("ValidForSave 5");
@@ -1026,7 +1094,9 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                 if (chkTreatmentFinish.Checked && this.ucTreatmentFinish != null)
                 {
                     result = this.treatmentFinishProcessor.Validate(this.ucTreatmentFinish, isNotCheckValidateIcdUC);
+                    result = result && ValidIcdLen();
                 }
+                
             }
             catch (Exception ex)
             {
@@ -1247,9 +1317,16 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                 Inventec.Common.Logging.LogSystem.Warn(ex);
             }
         }
-
-        void ProcessExamServiceReqExecute(MOS.EFMODEL.DataModels.V_HIS_SERVICE_REQ HisServiceReqWithOrderSDO, HisServiceReqExamUpdateSDO examServiceReqUpdateSDO)
+        /// <summary>
+        /// 181809
+        /// sửa lại để khi có lỗi hoặc trường dữ liệu bị thiếu thì không gọi api
+        /// </summary>
+        /// <param name="HisServiceReqWithOrderSDO"></param>
+        /// <param name="examServiceReqUpdateSDO"></param>
+        /// <returns>valid</returns>
+        bool ProcessExamServiceReqExecute(MOS.EFMODEL.DataModels.V_HIS_SERVICE_REQ HisServiceReqWithOrderSDO, HisServiceReqExamUpdateSDO examServiceReqUpdateSDO)
         {
+            bool valid = true;
             try
             {
                 bool success = true;
@@ -1304,26 +1381,44 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                         }
                     }
                 }
+                valid = success;
                 if (success)
                 {
                     if (HisServiceReqWithOrderSDO != null && examServiceReqUpdateSDO != null)
                     {
                         ProcessExamServiceReqDTO(ref examServiceReqUpdateSDO);
-                        ProcessExamAddition(ref examServiceReqUpdateSDO, HisServiceReqWithOrderSDO);
+                        valid = valid && ProcessExamAddition(ref examServiceReqUpdateSDO, HisServiceReqWithOrderSDO);
                         ProcessHospitalize(ref examServiceReqUpdateSDO);
-                        ProcessTreatmentFinish(ref examServiceReqUpdateSDO);
+                        valid = valid && ProcessTreatmentFinish(ref examServiceReqUpdateSDO);
                         ProcessExamFinish(ref examServiceReqUpdateSDO);
                         ProcessExamSereIcdDTO(ref examServiceReqUpdateSDO);
                         ProcessExamSereNextTreatmentIntructionDTO(ref examServiceReqUpdateSDO);
                         ProcessExamSereDHST(ref examServiceReqUpdateSDO);
+                        try
+                        {
+                            if (this.treatment != null && !string.IsNullOrEmpty(this.treatment.HOSPITALIZE_REASON_NAME) && examServiceReqUpdateSDO.TreatmentFinishSDO != null)
+                            {
+                                examServiceReqUpdateSDO.TreatmentFinishSDO.HospitalizeReasonCode = this.treatment.HOSPITALIZE_REASON_CODE??null;
+                                examServiceReqUpdateSDO.TreatmentFinishSDO.HospitalizeReasonName = this.treatment.HOSPITALIZE_REASON_NAME;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Inventec.Common.Logging.LogSystem.Debug("Loi khi map du lieu vao TreatmentFinishSDO.HospitalizeReasonCode");
+                            Inventec.Common.Logging.LogSystem.Warn(ex);
+                        }
+                        
+                        
                     }
                 }
 
             }
             catch (Exception ex)
             {
+                valid = false;
                 Inventec.Common.Logging.LogSystem.Warn(ex);
             }
+            return valid;
         }
 
         void ProcessExamServiceReqDTO(ref HisServiceReqExamUpdateSDO examServiceReqUpdateSDO)
@@ -1475,6 +1570,12 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                 examServiceReqUpdateSDO.PartExamEyeSightGlassLeft = txtPartExamEyeSightGlassLeft.EditValue != null ? txtPartExamEyeSightGlassLeft.Text.Trim().ToString() : null;
                 examServiceReqUpdateSDO.PartEyeGlassKcdtLeft = txtPartEyeGlassKcdtLeft.EditValue != null ? txtPartEyeGlassKcdtLeft.Text.Trim().ToString() : null;
                 examServiceReqUpdateSDO.PartEyeGlassAddLeft = txtPartEyeGlassAddLeft.EditValue != null ? txtPartEyeGlassAddLeft.Text.Trim().ToString() : null;
+
+                examServiceReqUpdateSDO.TraditionalIcdCode = IcdCodeYHCT;
+                examServiceReqUpdateSDO.TraditionalIcdName = IcdNameYHCT;
+                examServiceReqUpdateSDO.TraditionalIcdSubCode = IcdSubCodeYHCT;
+                examServiceReqUpdateSDO.TraditionalIcdText = IcdTextYHCT;
+
             }
             catch (Exception ex)
             {
@@ -1482,8 +1583,9 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
             }
         }
 
-        void ProcessExamAddition(ref HisServiceReqExamUpdateSDO serviceReqUpdateSDO, MOS.EFMODEL.DataModels.V_HIS_SERVICE_REQ HisServiceReqWithOrderSDO)
+        bool ProcessExamAddition(ref HisServiceReqExamUpdateSDO serviceReqUpdateSDO, MOS.EFMODEL.DataModels.V_HIS_SERVICE_REQ HisServiceReqWithOrderSDO)
         {
+            
             try
             {
                 if (chkExamServiceAdd.Checked && this.ucExamAddition != null)
@@ -1509,7 +1611,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                             if (MessageBox.Show(string.Format("Các dịch vụ sau có thời gian chỉ định nằm trong khoảng thời gian không cho phép: {0} .Bạn có muốn tiếp tục?", sereServMinDurationStr), "Thông báo", MessageBoxButtons.YesNo) == DialogResult.No)
                             {
                                 serviceReqUpdateSDO.ExamAdditionSDO = null;
-                                return;
+                                return false;
                             }
                         }
 
@@ -1558,8 +1660,11 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
             }
             catch (Exception ex)
             {
+                
                 Inventec.Common.Logging.LogSystem.Warn(ex);
+                return false;
             }
+            return true;
         }
 
         void ProcessHospitalize(ref HisServiceReqExamUpdateSDO serviceReqUpdateSDO)
@@ -1593,7 +1698,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                         this.isPrintHospitalizeExam = hisDepartmentTranHospitalizeSDO.IsPrintHospitalizeExam;
                         this.isSign = hisDepartmentTranHospitalizeSDO.IsSign;
                         this.isPrintSign = hisDepartmentTranHospitalizeSDO.IsPrintSign;
-
+                        this.IsPrintMps178 = hisDepartmentTranHospitalizeSDO.IsPrintMps178;
 
 
                         if (hisDepartmentTranHospitalizeSDO.icdADOInTreatment != null && !String.IsNullOrWhiteSpace(hisDepartmentTranHospitalizeSDO.icdADOInTreatment.ICD_CODE))
@@ -1637,8 +1742,9 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
             }
         }
 
-        void ProcessTreatmentFinish(ref HisServiceReqExamUpdateSDO serviceReqUpdateSDO)
+        bool ProcessTreatmentFinish(ref HisServiceReqExamUpdateSDO serviceReqUpdateSDO)
         {
+            bool valid = true;
             try
             {
 
@@ -1647,7 +1753,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                     string str1 = null;
                     string str2 = null;
                     ExamTreatmentFinishResult treatmentFinish = this.treatmentFinishProcessor.GetValue(this.ucTreatmentFinish) as ExamTreatmentFinishResult;
-
+                    serviceReqUpdateSDO.TreatmentFinishSDO = new HisTreatmentFinishSDO();
                     if (treatmentFinish != null && treatmentFinish.TreatmentFinishSDO != null)
                     {
                         var cboThongTinBoSung = treatmentFinish.TreatmentFinishSDO.TreatmentEndTypeExtId;
@@ -1656,7 +1762,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                             if (treatmentFinish.TreatmentFinishSDO.SickLeaveDay == null || treatmentFinish.TreatmentFinishSDO.SickLeaveDay <= 0)
                             {
                                 MessageBox.Show("Thông tin nghỉ hưởng BHXH thiếu số ngày nghỉ. Vui lòng kiểm tra lại!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                return;
+                                return false;
                             }
                             //HIS_PATIENT patient = GetPatientByID(treatment.PATIENT_ID);
                             if (treatment != null)
@@ -1665,7 +1771,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                                 if (age < 7 && (String.IsNullOrWhiteSpace(treatmentFinish.TreatmentFinishSDO.PatientRelativeName) || String.IsNullOrWhiteSpace(treatmentFinish.TreatmentFinishSDO.PatientRelativeType)))
                                 {
                                     MessageBox.Show("Thông tin nghỉ hưởng BHXH thiếu thông tin bố mẹ. Vui lòng kiểm tra lại!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                    return;
+                                    return false;
                                 }
                             }
                         }
@@ -1674,7 +1780,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                             if (treatmentFinish.TreatmentFinishSDO.SickLeaveDay == null || treatmentFinish.TreatmentFinishSDO.SickLeaveDay <= 0)
                             {
                                 MessageBox.Show("Thông tin nghỉ dưỡng thai thiếu số ngày nghỉ. Vui lòng kiểm tra lại!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                return;
+                                return false;
                             }
                         }
                         var treatmentEndTypeId = treatmentFinish.TreatmentFinishSDO.TreatmentEndTypeId;
@@ -1685,7 +1791,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                             if (String.IsNullOrEmpty(txtTreatmentInstruction.Text.Trim()))
                             {
                                 DevExpress.XtraEditors.XtraMessageBox.Show("Bạn chưa nhập \"Phương pháp điều trị\".", ResourceMessage.ThongBao);
-                                return;
+                                return false;
                             }
                         }
                         else if (HisConfigCFG.RequiredTreatmentMethodOption == "2" && ((cboThongTinBoSung != null && cboThongTinBoSung == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE_EXT.ID__NGHI_OM) || ((this.treatment != null && (this.treatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNOITRU || this.treatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNGOAITRU || this.treatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTBANNGAY)) && (treatmentEndTypeId == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__CHUYEN
@@ -1695,11 +1801,24 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                             if (String.IsNullOrEmpty(txtTreatmentInstruction.Text.Trim()))
                             {
                                 DevExpress.XtraEditors.XtraMessageBox.Show("Bạn chưa nhập \"Phương pháp điều trị\".", ResourceMessage.ThongBao);
-                                return;
+                                return false;
                             }
                         }
-                        serviceReqUpdateSDO.TreatmentFinishSDO = new HisTreatmentFinishSDO();
+
+                        if ((HisConfigCFG.OptionTreatmentEndTypeIsTransfer == "1" || HisConfigCFG.OptionTreatmentEndTypeIsTransfer == "2") && treatmentEndTypeId == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__CHUYEN)
+                        {
+                            HisExpMestFilter filter = new HisExpMestFilter();
+                            filter.TDL_TREATMENT_ID = treatment.ID;
+                            filter.EXP_MEST_TYPE_ID = IMSys.DbConfig.HIS_RS.HIS_EXP_MEST_TYPE.ID__DPK;
+                            var expMestPK = new Inventec.Common.Adapter.BackendAdapter(new CommonParam()).Get<List<MOS.EFMODEL.DataModels.HIS_EXP_MEST>>("api/HisExpMest/Get", ApiConsumers.MosConsumer, filter, null);
+                            if (expMestPK != null && expMestPK.Count > 0 && DevExpress.XtraEditors.XtraMessageBox.Show(string.Format("Bệnh nhân tồn tại đơn phòng khám, {0}", HisConfigCFG.OptionTreatmentEndTypeIsTransfer == "1" ? "không cho phép chuyển viện" : "bạn có muốn cho bệnh nhân chuyển viện không?"), "Thông báo", HisConfigCFG.OptionTreatmentEndTypeIsTransfer == "1" ? MessageBoxButtons.OK : MessageBoxButtons.YesNo) == (HisConfigCFG.OptionTreatmentEndTypeIsTransfer == "1" ? DialogResult.OK : DialogResult.No))
+                            {
+                                return false;
+                            }
+                        }
+
                         serviceReqUpdateSDO.TreatmentFinishSDO.TreatmentEndTypeExtId = treatmentFinish.TreatmentFinishSDO.TreatmentEndTypeExtId;
+
                         if (this.treatment != null
                             && this.treatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__KHAM
                             && treatmentFinish.TreatmentFinishSDO.TreatmentEndTypeExtId == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE_EXT.ID__NGHI_OM)
@@ -1725,7 +1844,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                                 MessageBox.Show("Số ngày nghỉ không được vượt quá 30 ngày", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                                 treatmentFinishProcessor.FocusControl(ucTreatmentFinish);
                                 IsReturn = true;
-                                return;
+                                return false;
                             }
 
                             CommonParam param = new CommonParam();
@@ -1748,7 +1867,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                                             Inventec.Common.DateTime.Convert.TimeNumberToDateString(treatmentCheck.SICK_LEAVE_TO ?? 0)), "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                                     treatmentFinishProcessor.FocusControl(ucTreatmentFinish);
                                     IsReturn = true;
-                                    return;
+                                    return false;
                                 }
                             }
 
@@ -1789,17 +1908,18 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                         serviceReqUpdateSDO.TreatmentFinishSDO.TransferOutMediOrgName = treatmentFinish.TreatmentFinishSDO.TransferOutMediOrgName;
                         serviceReqUpdateSDO.TreatmentFinishSDO.Transporter = treatmentFinish.TreatmentFinishSDO.Transporter;
                         serviceReqUpdateSDO.TreatmentFinishSDO.TransportVehicle = treatmentFinish.TreatmentFinishSDO.TransportVehicle;
+                        serviceReqUpdateSDO.TreatmentFinishSDO.TransporterLoginnames = treatmentFinish.TreatmentFinishSDO.TransporterLoginnames;
                         serviceReqUpdateSDO.TreatmentFinishSDO.TreatmentDirection = treatmentFinish.TreatmentFinishSDO.TreatmentDirection;
                         serviceReqUpdateSDO.TreatmentFinishSDO.TreatmentEndTypeId = treatmentFinish.TreatmentFinishSDO.TreatmentEndTypeId;
                         serviceReqUpdateSDO.TreatmentFinishSDO.TreatmentFinishTime = treatmentFinish.TreatmentFinishSDO.TreatmentFinishTime;
                         serviceReqUpdateSDO.TreatmentFinishSDO.TreatmentId = treatmentFinish.TreatmentFinishSDO.TreatmentId;
-                        if (!string.IsNullOrEmpty(treatmentFinish.TreatmentFinishSDO.TreatmentMethod))
+                        if (!string.IsNullOrEmpty(txtTreatmentInstruction.Text.Trim()))
                         {
-                            serviceReqUpdateSDO.TreatmentFinishSDO.TreatmentMethod = treatmentFinish.TreatmentFinishSDO.TreatmentMethod;
+                            serviceReqUpdateSDO.TreatmentFinishSDO.TreatmentMethod = txtTreatmentInstruction.Text.Trim();
                         }
                         else
                         {
-                            serviceReqUpdateSDO.TreatmentFinishSDO.TreatmentMethod = txtTreatmentInstruction.Text.Trim();
+                            serviceReqUpdateSDO.TreatmentFinishSDO.TreatmentMethod = treatmentFinish.TreatmentFinishSDO.TreatmentMethod;
                         }
                         serviceReqUpdateSDO.TreatmentFinishSDO.TreatmentResultId = treatmentFinish.TreatmentFinishSDO.TreatmentResultId;
                         serviceReqUpdateSDO.TreatmentFinishSDO.UsedMedicine = treatmentFinish.TreatmentFinishSDO.UsedMedicine;
@@ -1828,9 +1948,9 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                         serviceReqUpdateSDO.TreatmentFinishSDO.SocialInsuranceNumber = treatmentFinish.TreatmentFinishSDO.SocialInsuranceNumber;
                         serviceReqUpdateSDO.TreatmentFinishSDO.NumOrderBlockId = treatmentFinish.TreatmentFinishSDO.NumOrderBlockId;
                         //serviceReqUpdateSDO.TreatmentFinishSDO.TreatmentMethod = txtTreatmentInstruction.Text.Trim();
-                        str1 = treatmentFinish.TreatmentFinishSDO.TreatmentMethod;
+                        //str1 = treatmentFinish.TreatmentFinishSDO.TreatmentMethod;
                         str2 = treatmentFinish.TreatmentFinishSDO.SubclinicalResult;
-                        if (!string.IsNullOrEmpty(str1)) serviceReqUpdateSDO.TreatmentInstruction = str1;
+                        //if (!string.IsNullOrEmpty(str1)) serviceReqUpdateSDO.TreatmentInstruction = str1;
                         if (!string.IsNullOrEmpty(str2)) serviceReqUpdateSDO.Subclinical = str2;
                         if (treatmentFinish != null && treatmentFinish.icdADOInTreatment != null && !String.IsNullOrWhiteSpace(treatmentFinish.icdADOInTreatment.ICD_CODE))
                         {
@@ -1887,7 +2007,6 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                         serviceReqUpdateSDO.TreatmentFinishSDO.EndTypeExtNote = treatmentFinish.TreatmentFinishSDO.EndTypeExtNote;
                         serviceReqUpdateSDO.TreatmentFinishSDO.DeathCertBookFirstId = treatmentFinish.TreatmentFinishSDO.DeathCertBookFirstId;
                         serviceReqUpdateSDO.TreatmentFinishSDO.DeathCertNumFirst = treatmentFinish.TreatmentFinishSDO.DeathCertNumFirst;
-                        serviceReqUpdateSDO.TreatmentFinishSDO.TreatmentMethod = treatmentFinish.TreatmentFinishSDO.TreatmentMethod;
                         serviceReqUpdateSDO.TreatmentFinishSDO.PregnancyTerminationReason = treatmentFinish.TreatmentFinishSDO.PregnancyTerminationReason;
                         serviceReqUpdateSDO.TreatmentFinishSDO.IsPregnancyTermination = treatmentFinish.TreatmentFinishSDO.IsPregnancyTermination;
                         serviceReqUpdateSDO.TreatmentFinishSDO.GestationalAge = treatmentFinish.TreatmentFinishSDO.GestationalAge;
@@ -1915,6 +2034,38 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                         isPrintHosTransfer = treatmentFinish.IsPrintHosTransfer;
                         IsSignExam = treatmentFinish.IsSignExam;
                         IsPrintExam = treatmentFinish.IsPrintExam;
+
+                    }
+
+                    if (serviceReqUpdateSDO.TreatmentFinishSDO.TreatmentEndTypeId != IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__CHUYEN)
+                    {
+                        if (currentTreatmentExt == null || string.IsNullOrEmpty(this.currentTreatmentExt.CLINICAL_NOTE))
+                        {
+                            serviceReqUpdateSDO.TreatmentFinishSDO.ClinicalNote = txtPathologicalProcess.Text.Trim();
+                        }
+                        else
+                        {
+                            serviceReqUpdateSDO.TreatmentFinishSDO.ClinicalNote = this.currentTreatmentExt.CLINICAL_NOTE;
+                        }
+
+                        if (currentTreatmentExt == null || string.IsNullOrEmpty(this.currentTreatmentExt.SUBCLINICAL_RESULT))
+                        {
+                            serviceReqUpdateSDO.TreatmentFinishSDO.SubclinicalResult = txtSubclinical.Text.Trim();
+
+                        }
+                        else
+                        {
+                            serviceReqUpdateSDO.TreatmentFinishSDO.SubclinicalResult = this.currentTreatmentExt.SUBCLINICAL_RESULT;
+                        }
+
+                        if (string.IsNullOrEmpty(treatment.TREATMENT_METHOD))
+                        {
+                            serviceReqUpdateSDO.TreatmentFinishSDO.TreatmentMethod = txtTreatmentInstruction.Text.Trim();
+                        }
+                        else
+                        {
+                            serviceReqUpdateSDO.TreatmentFinishSDO.TreatmentMethod = treatment.TREATMENT_METHOD;
+                        }
                     }
                 }
                 //else
@@ -1932,6 +2083,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
             {
                 Inventec.Common.Logging.LogSystem.Warn(ex);
             }
+            return valid;
         }
 
         private void CallApiSevereIllnessInfo()
@@ -2130,9 +2282,168 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                 Inventec.Common.Logging.LogSystem.Error(ex);
             }
         }
+        private void UpdateDictionaryNumOrderAccountBook()
+        {
+            try
+            {
+                var accountBook = ListAcountBook.FirstOrDefault(o => o.ID == (Room.BILL_ACCOUNT_BOOK_ID ?? 0));
+
+                if (accountBook != null && HIS.Desktop.LocalStorage.LocalData.GlobalVariables.dicNumOrderInAccountBook != null && HIS.Desktop.LocalStorage.LocalData.GlobalVariables.dicNumOrderInAccountBook.Count > 0 && HIS.Desktop.LocalStorage.LocalData.GlobalVariables.dicNumOrderInAccountBook.ContainsKey(accountBook.ID))
+                {
+                    CommonParam param = new CommonParam();
+                    HisAccountBookFilter filter = new HisAccountBookFilter();
+                    filter.ID = accountBook.ID;
+                    var apiResult = new BackendAdapter(param).Get<List<V_HIS_TRANSACTION>>("api/HisAccountBook/Get", ApiConsumers.MosConsumer, filter, param);
+                    if (apiResult != null && apiResult.Count > 0)
+                    {
+                        HIS.Desktop.LocalStorage.LocalData.GlobalVariables.dicNumOrderInAccountBook[accountBook.ID] = apiResult.First().NUM_ORDER;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+        }
+        private decimal setDataToDicNumOrderInAccountBook(V_HIS_ACCOUNT_BOOK accountBook)
+        {
+            decimal result = (accountBook.CURRENT_NUM_ORDER ?? 0) + 1;
+            try
+            {
+                if (accountBook != null)
+                {
+                    if (HIS.Desktop.LocalStorage.LocalData.GlobalVariables.dicNumOrderInAccountBook == null || HIS.Desktop.LocalStorage.LocalData.GlobalVariables.dicNumOrderInAccountBook.Count == 0 || (HIS.Desktop.LocalStorage.LocalData.GlobalVariables.dicNumOrderInAccountBook != null && HIS.Desktop.LocalStorage.LocalData.GlobalVariables.dicNumOrderInAccountBook.Count > 0 && !HIS.Desktop.LocalStorage.LocalData.GlobalVariables.dicNumOrderInAccountBook.ContainsKey(accountBook.ID)))
+                    {
+                        if (HIS.Desktop.LocalStorage.LocalData.GlobalVariables.dicNumOrderInAccountBook == null)
+                        {
+                            HIS.Desktop.LocalStorage.LocalData.GlobalVariables.dicNumOrderInAccountBook = new Dictionary<long, decimal>();
+                        }
+
+                        CommonParam param = new CommonParam();
+                        MOS.Filter.HisAccountBookViewFilter hisAccountBookViewFilter = new MOS.Filter.HisAccountBookViewFilter();
+                        hisAccountBookViewFilter.ID = accountBook.ID;
+                        var accountBooks = new Inventec.Common.Adapter.BackendAdapter(param).Get<List<MOS.EFMODEL.DataModels.V_HIS_ACCOUNT_BOOK>>(ApiConsumer.HisRequestUriStore.HIS_ACCOUNT_BOOK_GETVIEW, ApiConsumer.ApiConsumers.MosConsumer, hisAccountBookViewFilter, param);
+                        if (accountBooks != null && accountBooks.Count > 0)
+                        {
+                            var accountBookNew = accountBooks.FirstOrDefault();
+                            decimal num = 0;
+                            if ((accountBookNew.CURRENT_NUM_ORDER ?? 0) > 0)
+                            {
+                                num = (accountBookNew.CURRENT_NUM_ORDER ?? 0);
+                            }
+                            else
+                            {
+                                num = (decimal)accountBookNew.FROM_NUM_ORDER - 1;
+                            }
+
+                            HIS.Desktop.LocalStorage.LocalData.GlobalVariables.dicNumOrderInAccountBook.Add(accountBookNew.ID, num);
+                            result = (HIS.Desktop.LocalStorage.LocalData.GlobalVariables.dicNumOrderInAccountBook[accountBook.ID]) + 1;
+                        }
+                    }
+                    else
+                    {
+                        result = (HIS.Desktop.LocalStorage.LocalData.GlobalVariables.dicNumOrderInAccountBook[accountBook.ID]) + 1;
+                    }
+                }
+                else
+                {
+                    result = (accountBook.CURRENT_NUM_ORDER ?? 0) + 1;
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+            return result;
+        }
+
+        private List<V_HIS_ACCOUNT_BOOK> LoadAccountBookList(long cashierRoomId)
+        {
+            var ListAccountBook = new List<V_HIS_ACCOUNT_BOOK>();
+            try
+            {
+                string loginName = Inventec.UC.Login.Base.ClientTokenManagerStore.ClientTokenManager.GetLoginName();
+                HisAccountBookViewFilter acFilter = new HisAccountBookViewFilter();
+                acFilter.CASHIER_ROOM_ID = cashierRoomId;//Kiểm tra sổ còn hay k
+                acFilter.LOGINNAME = loginName;//Kiểm tra sổ còn hay k
+                acFilter.IS_ACTIVE = IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE;
+                acFilter.FOR_BILL = true;
+                acFilter.IS_OUT_OF_BILL = false;
+                acFilter.ORDER_DIRECTION = "DESC";
+                acFilter.ORDER_FIELD = "ID";
+                ListAccountBook = new BackendAdapter(new CommonParam()).Get<List<V_HIS_ACCOUNT_BOOK>>("api/HisAccountBook/GetView", ApiConsumers.MosConsumer, acFilter, null);
+                if (ListAccountBook != null && ListAccountBook.Count > 0)
+                {
+                    if (WorkPlace.WorkInfoSDO != null && WorkPlace.WorkInfoSDO.WorkingShiftId.HasValue)
+                    {
+                        ListAccountBook = ListAccountBook.Where(o => !o.WORKING_SHIFT_ID.HasValue || o.WORKING_SHIFT_ID == WorkPlace.WorkInfoSDO.WorkingShiftId.Value).ToList();
+                    }
+                    else
+                    {
+                        ListAccountBook = ListAccountBook.Where(o => !o.WORKING_SHIFT_ID.HasValue).ToList();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+            return ListAccountBook;
+        }
+        List<V_HIS_ACCOUNT_BOOK> ListAcountBook { get; set; }
+        V_HIS_ROOM Room { get; set; }
+        private ElectronicBillResult TaoHoaDonDienTuBenThu3CungCap(V_HIS_TREATMENT_FEE row, V_HIS_TRANSACTION transaction, List<HIS_SERE_SERV_BILL> sereServs)
+        {
+            ElectronicBillResult result = new ElectronicBillResult();
+            try
+            {
+                if (sereServs == null)
+                {
+                    result.Success = false;
+                    Inventec.Common.Logging.LogSystem.Debug("Khong co dich vu thanh toan nao duoc chon!");
+                    return result;
+                }
+
+                HIS_TRANSACTION tran = new HIS_TRANSACTION();
+                Inventec.Common.Mapper.DataObjectMapper.Map<HIS_TRANSACTION>(tran, transaction);
+
+
+                ElectronicBillDataInput dataInput = new ElectronicBillDataInput();
+                dataInput.Amount = transaction.AMOUNT;
+                dataInput.Branch = HIS.Desktop.LocalStorage.BackendData.BackendDataWorker.Get<HIS_BRANCH>().FirstOrDefault(o => o.ID == HIS.Desktop.LocalStorage.LocalData.WorkPlace.GetBranchId());
+                if (transaction.EXEMPTION.HasValue)
+                {
+                    dataInput.Discount = transaction.EXEMPTION;
+                    dataInput.DiscountRatio = Math.Round(transaction.EXEMPTION.Value / transaction.AMOUNT, 2);
+                }
+                dataInput.PaymentMethod = transaction.PAY_FORM_NAME;
+                dataInput.SereServBill = sereServs;
+                dataInput.Treatment = row;
+                dataInput.Currency = "VND";
+                dataInput.Transaction = tran;
+                dataInput.TransactionTime = transaction.TRANSACTION_TIME;
+                dataInput.SymbolCode = transaction.SYMBOL_CODE;
+                dataInput.TemplateCode = transaction.TEMPLATE_CODE;
+                dataInput.EinvoiceTypeId = transaction.EINVOICE_TYPE_ID;
+
+                WaitingManager.Show();
+                ElectronicBillProcessor electronicBillProcessor = new ElectronicBillProcessor(dataInput);
+                result = electronicBillProcessor.Run(ElectronicBillType.ENUM.CREATE_INVOICE);
+                WaitingManager.Hide();
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+            return result;
+        }
+
 
         void SaveExamServiceReq(HisServiceReqExamUpdateSDO serviceReqExamUpdateSDO)
         {
+            Thread threadCreateInvoice = null;
+            paramCreateVoice = new CommonParam();
             CommonParam param = new CommonParam();
             bool success = false;
             try
@@ -2148,8 +2459,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
 
                     CreateThreadPostApi();
 
-                    Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData("HisServiceReqResult", HisServiceReqResult));
-
+                    Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData("HisServiceReqResult", HisServiceReqResult));    
                     success = true;
                     this.HisServiceReqView = new V_HIS_SERVICE_REQ();
                     Inventec.Common.Mapper.DataObjectMapper.Map<V_HIS_SERVICE_REQ>(this.HisServiceReqView, HisServiceReqResult.ServiceReq);
@@ -2181,6 +2491,18 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                         {
                             btnAggrExam.Enabled = false;
                         }
+                        Room = BackendDataWorker.Get<V_HIS_ROOM>().FirstOrDefault(o => o.ID == this.moduleData.RoomId);
+                        if (Room.DEFAULT_CASHIER_ROOM_ID.HasValue && Room.BILL_ACCOUNT_BOOK_ID.HasValue && this.treatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__KHAM && !string.IsNullOrEmpty(HisConfigCFG.AutoCreatePaymentTransactions))
+                        {
+                            var PatientTypes = BackendDataWorker.Get<HIS_PATIENT_TYPE>().Where(o => HisConfigCFG.AutoCreatePaymentTransactions.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList().Contains(o.PATIENT_TYPE_CODE)).ToList();
+                            ListAcountBook = LoadAccountBookList(Room.DEFAULT_CASHIER_ROOM_ID ?? 0);
+                            if (PatientTypes != null && PatientTypes.Count > 0 && ListAcountBook != null && ListAcountBook.Count > 0)
+                            {
+                                threadCreateInvoice = new Thread(CreateInvoice);
+                                threadCreateInvoice.Start();
+
+                            }
+                        }
                     }
 
                     //Reload executeRoom
@@ -2190,7 +2512,8 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                         reLoadServiceReq(HisServiceReqResult.ServiceReq);
 
                     }
-
+                    //ucIcdYHCT.Enabled = false;
+                    //ucSecondaryIcdYHCT.Enabled = false;
                     btnPrint_ExamService.Enabled = true;
 
                     if (HisServiceReqResult.HospitalizeResult != null && HisServiceReqResult.HospitalizeResult.Treatment != null)
@@ -2282,8 +2605,9 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                             {
                                 this.LoadProcessAndPrintBHXH();
                             }
+                            ucIcdYHCT.Enabled = false;
+                            ucSecondaryIcdYHCT.Enabled = false;
                         }
-
                         if (this.isPrintBANT)
                         {
                             PrintTreatmentFinishProcessor printTreatmentFinishProcessor = new PrintTreatmentFinishProcessor(this.treatment, currentModuleBase != null ? currentModuleBase.RoomId : 0);
@@ -2334,6 +2658,10 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                     {
                         PrintProcess(PrintType.IN_GIAY_CHUYEN_VIEN);
                     }
+                    if (this.IsPrintMps178)
+                    {
+                        PrintMps000178();
+                    }
                     //if ((IsAppointment_ExamServiceAdd && IsPrintAppointment_ExamServiceAdd) || (IsAppointment_ExamFinish && IsPrintAppointment_ExamFinish))
                     if (IsAppointment_ExamServiceAdd || IsAppointment_ExamFinish)
                     {
@@ -2358,7 +2686,6 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                     {
                         btnVoBenhAn.Enabled = false;
                     }
-
                     // đóng tab sau khi lưu
                     if (success
                         && HisConfigCFG.IsAutoExitAfterFinish
@@ -2371,7 +2698,6 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                     }
                 }
                 WaitingManager.Hide();
-                MessageManager.Show(this.ParentForm, param, success);
                 if (success)
                 {
                     long WarningOption = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<long>(SdaConfigKeys.WARNING_OPTION);
@@ -2384,6 +2710,20 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                         }
                     }
                 }
+                if (threadCreateInvoice != null)
+                {
+                    threadCreateInvoice.Join();
+                    if (paramCreateVoice.Messages != null && paramCreateVoice.Messages.Count > 0)
+                    {
+                        param.Messages.AddRange(paramCreateVoice.Messages);
+                    }
+                    else
+                    {
+                        UpdateDictionaryNumOrderAccountBook();
+                    }
+                }
+                MessageManager.Show(this.ParentForm, param, success);
+
             }
             catch (Exception ex)
             {
@@ -2392,11 +2732,92 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
             }
         }
 
+        CommonParam paramCreateVoice = new CommonParam();
+        private void CreateInvoice()
+        {
+            try
+            {
+                V_HIS_TREATMENT_FEE treatmentFees = LoadTreatmentFee().FirstOrDefault();
+                var accountBook = ListAcountBook.FirstOrDefault(o => o.ID == (Room.BILL_ACCOUNT_BOOK_ID ?? 0));
+
+                Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => accountBook), accountBook));
+                if (accountBook != null && treatmentFees != null && (treatmentFees.TOTAL_PATIENT_PRICE ?? 0) - (treatmentFees.TOTAL_DEPOSIT_AMOUNT ?? 0) - (treatmentFees.TOTAL_BILL_AMOUNT ?? 0) + (treatmentFees.TOTAL_BILL_TRANSFER_AMOUNT ?? 0) - (treatmentFees.TOTAL_BILL_TRANSFER_AMOUNT ?? 0) + (treatmentFees.TOTAL_REPAY_AMOUNT ?? 0) - (treatmentFees.TOTAL_BILL_EXEMPTION ?? 0) + (treatmentFees.LOCKING_AMOUNT ?? 0) == 0)
+                {
+
+                    Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => "StartBillByDeposit"), "StartBillByDeposit"));
+                    HisTransactionBillByDepositSDO sdo = new HisTransactionBillByDepositSDO();
+                    sdo.AccountBookId = Room.BILL_ACCOUNT_BOOK_ID ?? 0;
+                    sdo.NumOrder = (long?)setDataToDicNumOrderInAccountBook(accountBook);
+                    sdo.PayformId = IMSys.DbConfig.HIS_RS.HIS_PAY_FORM.ID__TMCK;
+                    sdo.TransactionTime = Inventec.Common.DateTime.Get.Now() ?? 0;
+                    sdo.TreatmentId = this.treatment.ID;
+                    sdo.WorkingRoomId = Room.ID;
+                    sdo.CashierRoomId = Room.DEFAULT_CASHIER_ROOM_ID;
+                    sdo.IsSplitByCashierDeposit = true;
+                    var apiResult = new BackendAdapter(paramCreateVoice).Post<List<HisTransactionBillResultSDO>>("api/HisTransaction/BillByDeposit", ApiConsumers.MosConsumer, sdo, paramCreateVoice);
+
+                    Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => "EndBillByDeposit"), "EndBillByDeposit"));
+                    if (apiResult != null && apiResult.Count > 0)
+                    {
+                        Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => "StartGetSSBill"), "StartGetSSBill"));
+                        HisSereServBillFilter ssbFilter = new HisSereServBillFilter();
+                        ssbFilter.BILL_IDs = apiResult.Select(s => s.TransactionBill.ID).ToList();
+                        var apiSsbResult = new BackendAdapter(paramCreateVoice).Get<List<HIS_SERE_SERV_BILL>>("api/HisSereServBill/Get", ApiConsumers.MosConsumer, ssbFilter, paramCreateVoice);
+                        foreach (var item in apiResult)
+                        {
+                            Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => "StartCreateInvoice"), "StartCreateInvoice"));
+                            ElectronicBillResult electronicBillResult = TaoHoaDonDienTuBenThu3CungCap(treatmentFees, item.TransactionBill, apiSsbResult.Where(o => o.BILL_ID == item.TransactionBill.ID).ToList());
+
+                            Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => electronicBillResult), electronicBillResult));
+                            if (electronicBillResult == null || !electronicBillResult.Success)
+                            {
+                                if (electronicBillResult.Messages != null && electronicBillResult.Messages.Count > 0)
+                                {
+                                    paramCreateVoice.Messages.AddRange(electronicBillResult.Messages.Distinct().ToList());
+                                }
+                                else
+                                {
+                                    paramCreateVoice.Messages.Add("Tạo hóa đơn điện tử thất bại.");
+                                }
+                            }
+                            else
+                            {
+                                HisTransactionInvoiceInfoSDO tsdo = new HisTransactionInvoiceInfoSDO();
+                                tsdo.EinvoiceLoginname = electronicBillResult.InvoiceLoginname;
+                                tsdo.InvoiceCode = electronicBillResult.InvoiceCode;
+                                tsdo.InvoiceSys = electronicBillResult.InvoiceSys;
+                                tsdo.EinvoiceNumOrder = electronicBillResult.InvoiceNumOrder;
+                                tsdo.EInvoiceTime = electronicBillResult.InvoiceTime ?? (Inventec.Common.DateTime.Get.Now() ?? 0);
+                                tsdo.Id = item.TransactionBill.ID;
+                                tsdo.InvoiceLookupCode = electronicBillResult.InvoiceLookupCode;
+                                var apiResultUpdate = new BackendAdapter(paramCreateVoice).Post<bool>("api/HisTransaction/UpdateInvoiceInfo", ApiConsumers.MosConsumer, tsdo, paramCreateVoice);
+                                if (apiResultUpdate)
+                                {
+                                    Inventec.Common.Logging.LogSystem.Info("UpdateInvoiceInfo Success");
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+
+                        Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => apiResult), apiResult));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+
+        }
+
         bool SaveExamExecute()
         {
             bool result = true;
             try
             {
+                GetUcIcdYHCT();
                 this.positionHandleControlLeft = -1;
                 if (!dxValidationProviderForLeftPanel.Validate())
                     return false;
