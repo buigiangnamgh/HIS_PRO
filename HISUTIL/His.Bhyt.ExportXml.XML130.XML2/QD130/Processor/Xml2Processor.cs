@@ -1,6 +1,7 @@
 ﻿using His.Bhyt.ExportXml.XML130.XML2.Base;
 using His.Bhyt.ExportXml.XML130.XML2.QD130.ADO;
 using His.Bhyt.ExportXml.XML130.XML2.QD130.XML;
+using HIS.Desktop.LocalStorage.HisConfig;
 using Inventec.Common.Logging;
 using MOS.EFMODEL.DataModels;
 using System;
@@ -105,10 +106,17 @@ namespace His.Bhyt.ExportXml.XML130.XML2.QD130.Processor
                             xml2.LIEU_DUNG = ProcessDataTutorial(SereServ.TUTORIAL, Config_TutorialFormat);
                             System.DateTime? dateBefore = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTimeUTC(SereServ.TDL_INTRUCTION_DATE);
                             System.DateTime? dateAfter = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTimeUTC(SereServ.USE_TIME_TO ?? 0);
-                            if (dateBefore != null && dateAfter != null)
+                            if(SereServ.USE_TIME != null && dateAfter != null)
+                            {
+                                System.DateTime? dateUseTime = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTimeUTC(SereServ.USE_TIME ?? 0);
+                                int SoNgay = (int)((TimeSpan)(dateAfter.Value.Date - dateUseTime.Value.Date)).TotalDays + 1;
+                                decimal TongSoThuoc = Math.Round(SereServ.AMOUNT / SoNgay, 3, MidpointRounding.AwayFromZero);
+                                xml2.LIEU_DUNG += " * " + SoNgay + " ngày [" + TongSoThuoc + " " + SereServ.SERVICE_UNIT_NAME + "/ngày]";
+                            }
+                            else if (dateBefore != null && dateAfter != null)
                             {
                                 int SoNgay = (int)((TimeSpan)(dateAfter.Value.Date - dateBefore.Value.Date)).TotalDays + 1;
-                                decimal TongSoThuoc = SereServ.AMOUNT / SoNgay;
+                                decimal TongSoThuoc = Math.Round(SereServ.AMOUNT / SoNgay, 1, MidpointRounding.AwayFromZero);
                                 xml2.LIEU_DUNG += " * " + SoNgay + " ngày [" + TongSoThuoc + " " + SereServ.SERVICE_UNIT_NAME + "/ngày]";
                             }
                         }
@@ -121,38 +129,43 @@ namespace His.Bhyt.ExportXml.XML130.XML2.QD130.Processor
                     {
                         xml2.LIEU_DUNG = "";
                     }
-                    xml2.CACH_DUNG = (SereServ.ADVISE ?? "");
+                    xml2.CACH_DUNG = SereServ.ADVISE ?? "";
                     if (xml2.CACH_DUNG.Length > 1024)
                         xml2.CACH_DUNG = xml2.CACH_DUNG.Substring(0, 1024);
                     while (Encoding.UTF8.GetByteCount(xml2.CACH_DUNG) > 1023)
                     {
-                        xml2.CACH_DUNG = xml2.CACH_DUNG.Substring(0, xml2.CACH_DUNG.Length-2);
+                        xml2.CACH_DUNG = xml2.CACH_DUNG.Substring(0, xml2.CACH_DUNG.Length - 2);
                     }
                     xml2.SO_DANG_KY = SereServ.MEDICINE_REGISTER_NUMBER ?? "";
 
-                    List<string> ttThau = new List<string>();
-                    if (!string.IsNullOrEmpty(SereServ.MEDICINE_BID_EXTRA_CODE)) ttThau.Add(SereServ.MEDICINE_BID_EXTRA_CODE);
-
-                    if (!string.IsNullOrEmpty(SereServ.MEDICINE_BID_PACKAGE_CODE)) ttThau.Add(SereServ.MEDICINE_BID_PACKAGE_CODE);
-
-                    if (!string.IsNullOrEmpty(SereServ.MEDICINE_BID_GROUP_CODE)) ttThau.Add(SereServ.MEDICINE_BID_GROUP_CODE);
-
-                    if (!string.IsNullOrEmpty(SereServ.MEDICINE_BID_YEAR)) ttThau.Add(SereServ.MEDICINE_BID_YEAR);
-
-                    if (ttThau.Count > 0)
+                    if (SereServ.MEDICINE_TT_THAU != null)
                     {
-                        var thau = String.Join(";", ttThau);
-                        if (thau.EndsWith(";"))
-                        {
-                            thau = thau.Substring(0, thau.Length - 1);
-                        }
-                        xml2.TT_THAU = thau ?? "";
+                        xml2.TT_THAU = SereServ.MEDICINE_TT_THAU;
                     }
                     else
-                        xml2.TT_THAU = "";
+                    {
+                        List<string> ttThau = new List<string>();
+                        if (!string.IsNullOrEmpty(SereServ.MEDICINE_BID_EXTRA_CODE)) ttThau.Add(SereServ.MEDICINE_BID_EXTRA_CODE);
 
-                    if (xml2.MA_THUOC == "40.17") xml2.TT_THAU = ""; //nếu thuốc có mã thuốc 40.17 thì để trống TT_THAU
+                        if (!string.IsNullOrEmpty(SereServ.MEDICINE_BID_PACKAGE_CODE)) ttThau.Add(SereServ.MEDICINE_BID_PACKAGE_CODE);
 
+                        if (!string.IsNullOrEmpty(SereServ.MEDICINE_BID_GROUP_CODE)) ttThau.Add(SereServ.MEDICINE_BID_GROUP_CODE);
+                        //string thau = string.Format("{0};{1};{2}")
+                        if (!string.IsNullOrEmpty(SereServ.MEDICINE_BID_YEAR)) ttThau.Add(SereServ.MEDICINE_BID_YEAR);
+
+                        if (ttThau.Count > 0)
+                        {
+                            var thau = String.Join(";", ttThau.Where(s => !string.IsNullOrWhiteSpace(s)));
+                            if (thau.EndsWith(";"))
+                            {
+                                thau = thau.Substring(0, thau.Length - 1);
+                            }
+                            xml2.TT_THAU = thau ?? "";
+                        }
+                        else
+                            xml2.TT_THAU = "";
+                        if (xml2.MA_THUOC == "40.17") xml2.TT_THAU = ""; //nếu thuốc có mã thuốc 40.17 thì để trống TT_THAU
+                    }
 
                     decimal TyleTTBH = 0;
                     if (patientType.PATIENT_TYPE_CODE == Config_PatientTypeCodeBHYTOption)
@@ -199,22 +212,22 @@ namespace His.Bhyt.ExportXml.XML130.XML2.QD130.Processor
 
                     if (SereServ.OTHER_SOURCE_PRICE != null)
                     {
-                        NguonKhac = Math.Round((SereServ.OTHER_SOURCE_PRICE ?? 0) * SereServ.AMOUNT, 2, MidpointRounding.AwayFromZero);
+                        NguonKhac = Math.Round(Math.Round((SereServ.OTHER_SOURCE_PRICE ?? 0), 3, MidpointRounding.AwayFromZero) * Math.Round(SereServ.AMOUNT, 3, MidpointRounding.AwayFromZero), 2, MidpointRounding.AwayFromZero);
                     }
 
-                    if (tBHTT > 0)
+                    if (TyleTTBH > 0)
                     {
-                    //    if (!String.IsNullOrEmpty(SereServ.HEIN_CARD_NUMBER) &&
-                    //(SereServ.HEIN_CARD_NUMBER.Substring(0, 2).Equals("CA") ||
-                    //SereServ.HEIN_CARD_NUMBER.Substring(0, 2).Equals("CY") ||
-                    //SereServ.HEIN_CARD_NUMBER.Substring(0, 2).Equals("QN")))
-                    //    {
-                    //        xml2.PHAM_VI = "3";
-                    //    }
-                    //    else
-                         xml2.PHAM_VI = "1";
+                        //    if (!String.IsNullOrEmpty(SereServ.HEIN_CARD_NUMBER) &&
+                        //(SereServ.HEIN_CARD_NUMBER.Substring(0, 2).Equals("CA") ||
+                        //SereServ.HEIN_CARD_NUMBER.Substring(0, 2).Equals("CY") ||
+                        //SereServ.HEIN_CARD_NUMBER.Substring(0, 2).Equals("QN")))
+                        //    {
+                        //        xml2.PHAM_VI = "3";
+                        //    }
+                        //    else
+                        xml2.PHAM_VI = "1";
                     }
-                    else if (tBHTT == 0)
+                    else if (TyleTTBH == 0)
                     {
                         xml2.PHAM_VI = "2";
                     }
@@ -227,6 +240,7 @@ namespace His.Bhyt.ExportXml.XML130.XML2.QD130.Processor
 
                     xml2.THANH_TIEN_BV = TienBV.ToString("G27", CultureInfo.InvariantCulture);
                     xml2.THANH_TIEN_BH = TienBH.ToString("G27", CultureInfo.InvariantCulture);
+
                     if (SereServ.HEIN_PAY_SOURCE_TYPE_ID == 1)
                     {
                         xml2.T_NGUONKHAC_NSNN = NguonKhac.ToString("G27", CultureInfo.InvariantCulture);
@@ -248,30 +262,18 @@ namespace His.Bhyt.ExportXml.XML130.XML2.QD130.Processor
                     else
                         xml2.T_NGUONKHAC_VTTN = "0";
 
-                    if (SereServ.HEIN_PAY_SOURCE_TYPE_ID != 1 || SereServ.HEIN_PAY_SOURCE_TYPE_ID != 2 || SereServ.HEIN_PAY_SOURCE_TYPE_ID != 3)
+                    if (SereServ.HEIN_PAY_SOURCE_TYPE_ID != 1 && SereServ.HEIN_PAY_SOURCE_TYPE_ID != 2 && SereServ.HEIN_PAY_SOURCE_TYPE_ID != 3)
                     {
                         xml2.T_NGUONKHAC_CL = NguonKhac.ToString("G27", CultureInfo.InvariantCulture);
                     }
                     else
-                        xml2.T_NGUONKHAC_CL = "";
+                        xml2.T_NGUONKHAC_CL = "0";
 
                     xml2.T_NGUONKHAC = NguonKhac.ToString("G27", CultureInfo.InvariantCulture);
                     xml2.MUC_HUONG = SereServ.HEIN_RATIO != null ? (SereServ.HEIN_RATIO.Value * 100).ToString("G27", CultureInfo.InvariantCulture) : "0";
                     xml2.T_BHTT = tBHTT.ToString("G27", CultureInfo.InvariantCulture);
-                    var tbntt = TienBV - TienBH - NguonKhac;
-                    if (tbntt < 0)
-                    {
-                        xml2.T_BNCCT = (TienBH - tBHTT + tbntt).ToString("G27", CultureInfo.InvariantCulture);
-                        xml2.T_BNTT = (0).ToString("G27", CultureInfo.InvariantCulture);
-
-                    }
-                    else
-                    {
-                        xml2.T_BNCCT = (TienBH - tBHTT).ToString("G27", CultureInfo.InvariantCulture);
-                        xml2.T_BNTT = (tbntt).ToString("G27", CultureInfo.InvariantCulture);
-
-                    }
-                    
+                    xml2.T_BNCCT = ((TienBH - tBHTT - NguonKhac) < 0 ? 0 : (TienBH - tBHTT - NguonKhac)).ToString("G27", CultureInfo.InvariantCulture);
+                    xml2.T_BNTT = ((TienBV - TienBH - NguonKhac) <= 0 ? 0 : (TienBV - TienBH)).ToString("G27", CultureInfo.InvariantCulture);
                     xml2.MA_KHOA = SereServ.REQUEST_BHYT_CODE ?? "";
                     if (data.HisEmployee != null && data.HisEmployee.Count > 0)
                     {
@@ -300,7 +302,61 @@ namespace His.Bhyt.ExportXml.XML130.XML2.QD130.Processor
                     }
 
                     xml2.NGAY_YL = SereServ.INTRUCTION_TIME.ToString().Substring(0, 12);
-                    xml2.NGAY_TH_YL = xml2.NGAY_YL;// SereServ.START_TIME != null && SereServ.START_TIME > 0 ? SereServ.START_TIME.ToString().Substring(0, 12) : xml2.NGAY_YL; tam thoi xu ly ngay y lenh = ngay thyl vi thuoc chua co cho de nhap NGAY_TH_YL
+
+                    string str6 = HisConfigs.Get<string>("HIS.QD_130_BYT.XML2.NGAY_TH_YL_OPTION");
+
+                    if (!string.IsNullOrEmpty(str6))
+                    {
+                        // Convert USE_TIME_TO to DateTime or set to MinValue if null
+                        DateTime dateTime1 = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(SereServ.USE_TIME_TO.GetValueOrDefault()) ?? DateTime.MinValue;
+
+                        // Convert TDL_INTRUCTION_DATE and INTRUCTION_TIME to DateTime or set to MinValue if null
+                        DateTime dateTime2 = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(SereServ.TDL_INTRUCTION_DATE) ?? DateTime.MinValue;
+                        DateTime dateTime3 = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(SereServ.INTRUCTION_TIME) ?? DateTime.MinValue;
+
+                        DateTime resultDateTime;
+
+                        // Determine if we should use dateTime1 with dateTime3's time or add minutes from str6 to dateTime3
+                        if (new DateTime(dateTime1.Year, dateTime1.Month, dateTime1.Day) > dateTime2)
+                        {
+                            resultDateTime = new DateTime(dateTime1.Year, dateTime1.Month, dateTime1.Day, dateTime3.Hour, dateTime3.Minute, dateTime3.Second);
+                        }
+                        else
+                        {
+                            try
+                            {
+                                resultDateTime = dateTime3.AddMinutes(Convert.ToDouble(str6));
+                            }
+                            catch (Exception ex)
+                            {
+                                resultDateTime = DateTime.MinValue;
+                                LogSystem.Warn("Configuration value (HIS.QD_130_BYT.XML2.NGAY_TH_YL_OPTION) must represent a number of minutes to add.");
+                                LogSystem.Error($"Error converting config value to minutes: (HIS.QD_130_BYT.XML2.NGAY_TH_YL_OPTION): {str6}, Error: {ex}");
+                            }
+                        }
+
+
+                        xml2.NGAY_TH_YL = resultDateTime != DateTime.MinValue ? resultDateTime.ToString("yyyyMMddHHmm") : "";
+                    }
+                    else
+                    {
+                        // If str6 is empty, use START_TIME or default to NGAY_YL
+                        DateTime? startTime = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(SereServ.START_TIME ?? 0);
+                        string resultDate;
+
+                        if (startTime.HasValue)
+                        {
+                            resultDate = startTime.Value.ToString("yyyyMMddHHmm").Substring(0, 12);
+                        }
+                        else
+                        {
+                            resultDate = xml2.NGAY_YL;
+                        }
+
+                        xml2.NGAY_TH_YL = resultDate;
+                    }
+
+                    //xml2.NGAY_TH_YL = SereServ.START_TIME != null && SereServ.START_TIME > 0 ? SereServ.START_TIME.ToString().Substring(0, 12) : xml2.NGAY_YL;
                     xml2.MA_PTTT = "1";
 
                     if (tBHTT > 0)
@@ -322,7 +378,31 @@ namespace His.Bhyt.ExportXml.XML130.XML2.QD130.Processor
 
                     xml2.VET_THUONG_TP = "";
                     xml2.DU_PHONG = "";
-
+                    if (data.IS_3176)
+                    {
+                        xml2.T_NGUONKHAC_NSNN = xml2.T_NGUONKHAC_VTNN = xml2.T_NGUONKHAC_VTTN = "";
+                        xml2.T_NGUONKHAC = Math.Round((SereServ.OTHER_SOURCE_PRICE ?? 0) * (SereServ.AMOUNT), 2).ToString("G27", CultureInfo.InvariantCulture);
+                        if (SereServ.HEIN_PAY_SOURCE_TYPE_ID == 1)
+                        {
+                            xml2.T_NGUONKHAC_NSNN = xml2.T_NGUONKHAC;
+                        }
+                        else if (SereServ.HEIN_PAY_SOURCE_TYPE_ID == 2)
+                        {
+                            xml2.T_NGUONKHAC_VTNN = xml2.T_NGUONKHAC;
+                        }
+                        else if (SereServ.HEIN_PAY_SOURCE_TYPE_ID == 3)
+                        {
+                            xml2.T_NGUONKHAC_VTTN = xml2.T_NGUONKHAC;
+                        }
+                        else
+                        {
+                            xml2.T_NGUONKHAC_CL = xml2.T_NGUONKHAC;
+                        }
+                        xml2.T_BHTT = Math.Round(SereServ.VIR_TOTAL_HEIN_PRICE ?? 0, 2).ToString("G27", CultureInfo.InvariantCulture);
+                        xml2.T_BNCCT = Math.Round(SereServ.VIR_TOTAL_PATIENT_PRICE_BHYT ?? 0, 2).ToString("G27", CultureInfo.InvariantCulture);
+                        var price = TienBV - (SereServ.VIR_TOTAL_HEIN_PRICE ?? 0) - (SereServ.VIR_TOTAL_PATIENT_PRICE_BHYT ?? 0) - Math.Round((SereServ.OTHER_SOURCE_PRICE ?? 0) * (SereServ.AMOUNT), 2);
+                        xml2.T_BNTT = Math.Round(price < 0 ? 0 : price, 2).ToString("G27", CultureInfo.InvariantCulture);
+                    }
                     listXml2Ado.Add(xml2);
                     stt++;
                 }

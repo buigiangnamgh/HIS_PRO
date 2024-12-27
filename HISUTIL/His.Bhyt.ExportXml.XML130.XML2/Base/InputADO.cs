@@ -16,5 +16,6 @@ namespace His.Bhyt.ExportXml.XML130.XML2.Base
         public List<HIS_EMPLOYEE> HisEmployee { get; set; }
         public List<HIS_CONFIG> HisConfig { get; set; }
         public List<HIS_PATIENT_TYPE> HisPatientTypes { get; set; }
+        public bool IS_3176 { get; set; }
     }
 }
