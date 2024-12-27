@@ -8,12 +8,9 @@ namespace His.Bhyt.ExportXml.XML130.XML3
     class HisConfigKey
     {
         internal const string PatientTypeCodeBHYTCFG = "MOS.HIS_PATIENT_TYPE.PATIENT_TYPE_CODE.BHYT";
-        internal const string MA_BAC_SI_HEIN_SERVICE_TYPE = "XML.EXPORT.4210.XML3.MA_BAC_SI_HEIN_SERVICE_TYPE";
-
-        internal const string MaBacSiOption = "XML.EXPORT.4210.XML3.MA_BAC_SI_EXAM_OPTION";
-
-        internal const string NgayYlenhOption = "XML.EXPORT.4210.XML3.NGAY_YL_OPTION ";
-        internal const string XML__4210__XML3__NGAY_KQ_OPTION = "XML.EXPORT.4210.XML3.NGAY_KQ_OPTION";
+        internal const string MAMAYOPTION = "XML.EXPORT.130.XML3.MA_MAY_OPTION";
+        internal const string BedTimeOption = "HIS.QD_130_BYT.BED_TIME_OPTION";
+        internal const string NguoiThucHienOption = "HIS.QD_130_BYT.NGUOI_THUC_HIEN_OPTION";
 
         internal static string GetConfigData(List<HIS_CONFIG> datas, string key)
         {

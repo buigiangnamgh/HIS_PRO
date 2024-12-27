@@ -64,5 +64,6 @@ namespace His.Bhyt.ExportXml.XML130.XML3
         /// </summary>
         public List<HIS_PATIENT_TYPE> PatientTypes { get; set; }
         public List<V_HIS_SERE_SERV_TEIN> vHisSereServTeins { get; set; }
+        public bool IS_3176 { get; set; }
     }
 }

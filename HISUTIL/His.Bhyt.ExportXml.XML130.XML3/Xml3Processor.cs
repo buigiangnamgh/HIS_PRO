@@ -133,17 +133,22 @@ namespace His.Bhyt.ExportXml.XML130.XML3
             try
             {
                 string Config_PatientTypeCodeBHYTOption = "";
-                string NgayYLenhOption = "";
-                string MaBacSiHeinServiceType = "";
-                string NgayKetQuaOption = "";
-                string MaBacSiOption = "";
+
                 if (data.ConfigData != null && data.ConfigData.Count > 0)
                 {
                     Config_PatientTypeCodeBHYTOption = HisConfigKey.GetConfigData(data.ConfigData, HisConfigKey.PatientTypeCodeBHYTCFG);
-                    NgayYLenhOption = HisConfigKey.GetConfigData(data.ConfigData, HisConfigKey.NgayYlenhOption);
-                    MaBacSiHeinServiceType = HisConfigKey.GetConfigData(data.ConfigData, HisConfigKey.MA_BAC_SI_HEIN_SERVICE_TYPE);
-                    MaBacSiOption = HisConfigKey.GetConfigData(data.ConfigData, HisConfigKey.MaBacSiOption);
-                    NgayKetQuaOption = HisConfigKey.GetConfigData(data.ConfigData, HisConfigKey.XML__4210__XML3__NGAY_KQ_OPTION);
+
+                }
+                bool Config_BedTimeOption = false;
+                string ConfigNguoiThucHienOption = "0";
+                if (data.ConfigData != null && data.ConfigData.Count > 0)
+                {
+                    Config_BedTimeOption = HisConfigKey.GetConfigData(data.ConfigData, HisConfigKey.BedTimeOption) == "1";
+                    ConfigNguoiThucHienOption = HisConfigKey.GetConfigData(data.ConfigData, HisConfigKey.NguoiThucHienOption);
+                    if (string.IsNullOrEmpty(ConfigNguoiThucHienOption))
+                    {
+                        ConfigNguoiThucHienOption = "0";
+                    }
                 }
 
                 result = new List<XML3ADO>();
@@ -170,9 +175,17 @@ namespace His.Bhyt.ExportXml.XML130.XML3
                     IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__VT_TL,
                     IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__VT_TT
                 };
+
+                var listHeinServiceTypeMaterialGiuong = new List<long>
+                {
+                    IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__GI_L,
+                    IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__GI_NGT,
+                    IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__GI_NT,
+                    IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__GI_BN
+                };
                 //lấy các dịch vụ không phải là thuốc, máu và có tỷ lệ chi trả tiền, các dịch vụ được hưởng BHYT
                 if (data.ListSereServ == null) return result;
-                var listServeservs = data.ListSereServ.Where(s => s != null && (listHeinServiceType.Contains(s.TDL_HEIN_SERVICE_TYPE_ID.Value) || listHeinServiceTypeMaterial.Contains(s.TDL_HEIN_SERVICE_TYPE_ID.Value))).OrderBy(b => b.INTRUCTION_TIME).ToList();
+                var listServeservs = data.ListSereServ.Where(s => s != null && (s.TDL_HEIN_SERVICE_TYPE_ID.HasValue && listHeinServiceType.Contains(s.TDL_HEIN_SERVICE_TYPE_ID.Value) || listHeinServiceTypeMaterial.Contains(s.TDL_HEIN_SERVICE_TYPE_ID.Value))).OrderBy(b => b.INTRUCTION_TIME).ToList();
                 if (listServeservs == null) return result;
                 Dictionary<long, List<V_HIS_SERE_SERV_2>> dicChildSereServ = new Dictionary<long, List<V_HIS_SERE_SERV_2>>();
                 foreach (var hisSereServ in listServeservs)
@@ -215,7 +228,7 @@ namespace His.Bhyt.ExportXml.XML130.XML3
                     decimal? tNguonKhacNsnn = null;
                     decimal? tNguonKhacVtnn = null;
                     decimal? tNguonKhacVttn = null;
-                    decimal? tNguonKhacCl = null;
+                    decimal? tNguonKhacCl = 0;
                     decimal tNguonKhac = 0;
                     decimal tBhtt = 0;
                     decimal tBntt = 0;
@@ -250,46 +263,45 @@ namespace His.Bhyt.ExportXml.XML130.XML3
                     {
                         maNhom = hisSereServ.OLD_HST_BHYT_CODE ?? (hisSereServ.HST_BHYT_CODE ?? "");
                     }
-                    if (NgayKetQuaOption == "1" && hisSereServ.FINISH_TIME.HasValue)
-                    {
-                        ngayKQ = hisSereServ.FINISH_TIME < hisSereServ.INTRUCTION_TIME ? hisSereServ.INTRUCTION_TIME.ToString().Substring(0, 12) : hisSereServ.FINISH_TIME.ToString().Substring(0, 12);
-                    }
-                    else if (NgayKetQuaOption == "2")
-                    {
-                        ngayKQ = hisSereServ.FINISH_TIME.HasValue ? hisSereServ.FINISH_TIME.ToString().Substring(0, 12) : "";
-                    }
-                    if (listHeinServiceTypeMaterial.Contains(hisSereServ.TDL_HEIN_SERVICE_TYPE_ID.Value))
+                    if (hisSereServ.TDL_HEIN_SERVICE_TYPE_ID.HasValue && listHeinServiceTypeMaterial.Contains(hisSereServ.TDL_HEIN_SERVICE_TYPE_ID.Value))
                     {
                         xml3.IsMaterial = true;
                         maVatTu = hisSereServ.TDL_HEIN_SERVICE_BHYT_CODE ?? "";
                         tenVatTu = hisSereServ.TDL_HEIN_SERVICE_BHYT_NAME ?? "";
                         tTranTT = hisSereServ.HEIN_LIMIT_PRICE;
-                        maHieuSp = hisSereServ.MODEL_CODE ?? "";
                         if (!String.IsNullOrEmpty(hisSereServ.MATERIAL_SERIAL_NUMBER))
+                        {
                             taiSuDung = "1";
-                        if (string.IsNullOrWhiteSpace(hisSereServ.MATERIAL_BID_GROUP_CODE) || !hisSereServ.MATERIAL_BID_GROUP_CODE.StartsWith("N"))
-                        {
-                            hisSereServ.MATERIAL_BID_GROUP_CODE = "N0";
-                        }
-                        if (hisSereServ.MATERIAL_INFORMATION_BID == 2)
-                        {
-                            ttThau = string.Format("{0};{1};{2};{3}", hisSereServ.MATERIAL_BID_EXTRA_CODE, hisSereServ.MATERIAL_BID_PACKAGE_CODE, hisSereServ.MATERIAL_BID_GROUP_CODE, hisSereServ.MATERIAL_BID_YEAR);
-                        }
-                        else if (hisSereServ.MATERIAL_INFORMATION_BID == 3)
-                        {
-                            ttThau = string.Format("{0};{1}", hisSereServ.MATERIAL_BID_EXTRA_CODE, hisSereServ.MATERIAL_BID_YEAR);
-                        }
-                        else if (hisSereServ.MATERIAL_INFORMATION_BID == 4)
-                        {
-                            ttThau = string.Format("{0};{1};{2}", hisSereServ.MATERIAL_BID_EXTRA_CODE, hisSereServ.MATERIAL_BID_PACKAGE_CODE, hisSereServ.MATERIAL_BID_YEAR);
+                            maHieuSp = hisSereServ.MATERIAL_SERIAL_NUMBER;
                         }
                         else
                         {
-                            ttThau = string.Format("{0};{1};{2};{3}", hisSereServ.MATERIAL_BID_EXTRA_CODE, hisSereServ.MATERIAL_BID_PACKAGE_CODE, hisSereServ.MATERIAL_BID_GROUP_CODE, hisSereServ.MATERIAL_BID_YEAR);
+                            maHieuSp = hisSereServ.MODEL_CODE ?? "";
+                        }
+
+                        if (hisSereServ.MATERIAL_TT_THAU != null)
+                        {
+                            ttThau = hisSereServ.MATERIAL_TT_THAU;
+                        }
+                        else
+                        {
+                            if (hisSereServ.MATERIAL_INFORMATION_BID == 3)
+                            {
+                                ttThau = string.Format("{0}{1}", !string.IsNullOrEmpty(hisSereServ.MATERIAL_BID_EXTRA_CODE) ? hisSereServ.MATERIAL_BID_EXTRA_CODE + ";" : null, !string.IsNullOrEmpty(hisSereServ.MATERIAL_BID_YEAR) ? hisSereServ.MATERIAL_BID_YEAR : null);
+                            }
+                            else if (hisSereServ.MATERIAL_INFORMATION_BID == 4)
+                            {
+                                ttThau = string.Format("{0}{1}{2}", !string.IsNullOrEmpty(hisSereServ.MATERIAL_BID_EXTRA_CODE) ? hisSereServ.MATERIAL_BID_EXTRA_CODE + ";" : null, !string.IsNullOrEmpty(hisSereServ.MATERIAL_BID_PACKAGE_CODE) ? hisSereServ.MATERIAL_BID_PACKAGE_CODE + ";" : null, !string.IsNullOrEmpty(hisSereServ.MATERIAL_BID_YEAR) ? hisSereServ.MATERIAL_BID_YEAR : null);
+                            }
+                            else
+                            {
+                                ttThau = string.Format("{0}{1}{2}{3}", !string.IsNullOrEmpty(hisSereServ.MATERIAL_BID_EXTRA_CODE) ? hisSereServ.MATERIAL_BID_EXTRA_CODE + ";" : null, !string.IsNullOrEmpty(hisSereServ.MATERIAL_BID_PACKAGE_CODE) ? hisSereServ.MATERIAL_BID_PACKAGE_CODE + ";" : null, !string.IsNullOrEmpty(hisSereServ.MATERIAL_BID_GROUP_CODE) ? hisSereServ.MATERIAL_BID_GROUP_CODE + ";" : null, !string.IsNullOrEmpty(hisSereServ.MATERIAL_BID_YEAR) ? hisSereServ.MATERIAL_BID_YEAR : null);
+                            }
+
                         }
 
                         maKhoa = hisSereServ.REQUEST_BHYT_CODE ?? "";
-                        tenDichVu = hisSereServ.TDL_HEIN_SERVICE_BHYT_NAME ?? "";
+                        //tenDichVu = hisSereServ.TDL_HEIN_SERVICE_BHYT_NAME ?? "";
 
                         if (hisSereServ.PARENT_ID.HasValue)
                         {
@@ -298,7 +310,7 @@ namespace His.Bhyt.ExportXml.XML130.XML3
                             {
                                 maKhoa = parent.REQUEST_BHYT_CODE ?? "";
                                 maDichVu = parent.TDL_HEIN_SERVICE_BHYT_CODE ?? "";
-                                tenDichVu = parent.TDL_HEIN_SERVICE_BHYT_NAME ?? "";
+                                //tenDichVu = parent.TDL_HEIN_SERVICE_BHYT_NAME ?? "";
                                 if (!dicHighTech.ContainsKey(hisSereServ.PARENT_ID.Value))
                                 {
                                     dicHighTech[hisSereServ.PARENT_ID.Value] = "G" + (dicHighTech.Count + 1);
@@ -340,29 +352,8 @@ namespace His.Bhyt.ExportXml.XML130.XML3
                                     List<string> bedCodes = bedlog.Select(s => s.BED_CODE).Distinct().ToList();
                                     maGiuong = String.Join(";", bedCodes);
                                 }
-                                var bed = data.BedLogs != null && data.BedLogs.Count > 0 ? data.BedLogs.FirstOrDefault(o => o.ID == hisSereServ.BED_LOG_ID) : null;
-                                ngayKQ = bed != null && bed.FINISH_TIME.HasValue ? bed.FINISH_TIME.ToString().Substring(0, 12) : ngayKQ;
-                                if (hisSereServ.BED_LOG_ID.HasValue)
-                                {
-                                    var sereServs = data.ListSereServ.Where(o => hisSereServ.BED_LOG_ID.Value == o.BED_LOG_ID).ToList();
-                                    if (sereServs != null && sereServs.Count > 1)
-                                    {
-                                        var sere = sereServs.Where(o => o.TDL_INTRUCTION_TIME > hisSereServ.TDL_INTRUCTION_TIME).ToList();
-                                        var betterIntructionTime = sere != null && sere.Count > 0 ? sere.Min(o => o.TDL_INTRUCTION_TIME) : 0;
-
-                                        if (betterIntructionTime > 0)
-                                        {
-                                            ngayKQ = betterIntructionTime.ToString().Substring(0, 12);
-                                        }
-                                    }
-                                }
                             }
                         }
-                    }
-                    // vật tư có ngày kết quả < ngày y lệnh thì để trống ngày kết quả
-                    if (listHeinServiceTypeMaterial.Contains(hisSereServ.TDL_HEIN_SERVICE_TYPE_ID.Value) && hisSereServ.FINISH_TIME > 0 && hisSereServ.FINISH_TIME < hisSereServ.INTRUCTION_TIME)
-                    {
-                        ngayKQ = "";
                     }
                     if (!String.IsNullOrEmpty(maDichVu) && hisSereServ.IS_NO_EXECUTE == 1)
                         maDichVu = maDichVu + "_TB";
@@ -396,18 +387,35 @@ namespace His.Bhyt.ExportXml.XML130.XML3
                     if (donGiaBV_TamTinh > 0)
                         donGiaBV = Math.Round(donGiaBV_TamTinh.Value * (1 + hisSereServ.VAT_RATIO), 3, MidpointRounding.AwayFromZero);
                     else
-                        donGiaBV = Math.Round(hisSereServ.VIR_PRICE ?? 0, 3, MidpointRounding.AwayFromZero);
-                    tyLeThanhToanDV = 100;
+                        donGiaBV = hisSereServ.VIR_PRICE ?? 0;
 
-                    thanhTienBV = Math.Round((hisSereServ.VIR_TOTAL_PRICE ?? 0), 2, MidpointRounding.AwayFromZero);
-                    if (donGiaBV > 0 && donGiaBV > (hisSereServ.VIR_PRICE ?? 0))
+                    donGiaBH = Math.Round(hisSereServ.ORIGINAL_PRICE * (1 + hisSereServ.VAT_RATIO), 3, MidpointRounding.AwayFromZero);
+
+                    decimal tyle = 0;
+                    if (hisSereServ.ORIGINAL_PRICE > 0)
                     {
-                        tyLeThanhToanDV = Math.Round((hisSereServ.VIR_PRICE ?? 0) / donGiaBV * 100, 0);
+                        tyle = hisSereServ.HEIN_LIMIT_PRICE.HasValue ? (hisSereServ.HEIN_LIMIT_PRICE.Value / (hisSereServ.ORIGINAL_PRICE * (1 + hisSereServ.VAT_RATIO))) * 100 : (hisSereServ.PRICE / hisSereServ.ORIGINAL_PRICE) * 100;
                     }
+                    tyLeThanhToanDV = Math.Round(tyle, 0);
+                    if (patientType.PATIENT_TYPE_CODE == Config_PatientTypeCodeBHYTOption)
+                    {
+                        if (hisSereServ.HEIN_LIMIT_RATIO.HasValue)
+                            tyLeThanhToanBH = Math.Round(hisSereServ.HEIN_LIMIT_RATIO.Value, 0);
+                        else
+                            tyLeThanhToanBH = 100;
+                    }
+                    if (hisSereServ.TDL_HEIN_SERVICE_TYPE_ID.HasValue && listHeinServiceTypeMaterial.Contains(hisSereServ.TDL_HEIN_SERVICE_TYPE_ID.Value) && tyLeThanhToanDV != 100)
+                    {
+                        decimal tmp = tyLeThanhToanDV;
+                        tyLeThanhToanDV = tyLeThanhToanBH;
+                        tyLeThanhToanBH = tmp;
+                    }
+                    thanhTienBV = Math.Round(soLuong * donGiaBV * (tyLeThanhToanDV / 100), 2, MidpointRounding.AwayFromZero);
+                    thanhTienBH = Math.Round(soLuong * donGiaBH * (tyLeThanhToanDV / 100) * (tyLeThanhToanBH / 100), 2, MidpointRounding.AwayFromZero);
 
                     mucHuong = hisSereServ.HEIN_RATIO.HasValue ? (int)(hisSereServ.HEIN_RATIO.Value * 100) : 0;
 
-                    tNguonKhac = Math.Round(soLuong * (hisSereServ.OTHER_SOURCE_PRICE ?? 0), 2, MidpointRounding.AwayFromZero);
+                    tNguonKhac = Math.Round(Math.Round(soLuong, 3, MidpointRounding.AwayFromZero) * Math.Round((hisSereServ.OTHER_SOURCE_PRICE ?? 0), 3, MidpointRounding.AwayFromZero), 2, MidpointRounding.AwayFromZero);
                     switch (hisSereServ.HEIN_PAY_SOURCE_TYPE_ID)
                     {
                         case 1:
@@ -423,33 +431,24 @@ namespace His.Bhyt.ExportXml.XML130.XML3
                             tNguonKhacCl = tNguonKhac;
                             break;
                     }
-                    donGiaBH = Math.Round(hisSereServ.ORIGINAL_PRICE * (1 + hisSereServ.VAT_RATIO), 3, MidpointRounding.AwayFromZero);
 
-                    tBhtt = Math.Round((hisSereServ.VIR_TOTAL_HEIN_PRICE ?? 0), 2, MidpointRounding.AwayFromZero);
-                    tBncct = Math.Round((hisSereServ.VIR_TOTAL_PATIENT_PRICE_BHYT ?? 0), 2, MidpointRounding.AwayFromZero);
-                    tBntt = Math.Round((hisSereServ.VIR_TOTAL_PATIENT_PRICE ?? 0) - (hisSereServ.VIR_TOTAL_PATIENT_PRICE_BHYT ?? 0) - tNguonKhac, 2, MidpointRounding.AwayFromZero);
-                    thanhTienBH = Math.Round((hisSereServ.VIR_TOTAL_HEIN_PRICE ?? 0) + (hisSereServ.VIR_TOTAL_PATIENT_PRICE_BHYT ?? 0), 2, MidpointRounding.AwayFromZero);
-
-                    decimal tyle = 0;
-                    if (hisSereServ.ORIGINAL_PRICE > 0)
+                    tBhtt = Math.Round(thanhTienBH * (hisSereServ.HEIN_RATIO ?? 0), 2, MidpointRounding.AwayFromZero);
+                    if (hisSereServ.TDL_HEIN_SERVICE_TYPE_ID.HasValue && listHeinServiceTypeMaterial.Contains(hisSereServ.TDL_HEIN_SERVICE_TYPE_ID ?? 0) && Math.Abs(tBhtt - Math.Round((hisSereServ.VIR_TOTAL_HEIN_PRICE ?? 0), 2, MidpointRounding.AwayFromZero)) > 1)
                     {
-                        tyle = ((hisSereServ.VIR_TOTAL_HEIN_PRICE ?? 0) + (hisSereServ.VIR_TOTAL_PATIENT_PRICE_BHYT ?? 0)) / (hisSereServ.AMOUNT * (hisSereServ.ORIGINAL_PRICE * (1 + hisSereServ.VAT_RATIO))) * 100;
-                    }
-
-                    if (patientType.PATIENT_TYPE_CODE == Config_PatientTypeCodeBHYTOption)
-                    {
-                        tyLeThanhToanBH = Math.Round(tyle, 0);
+                        tBhtt = Math.Round((hisSereServ.VIR_TOTAL_HEIN_PRICE ?? 0), 2, MidpointRounding.AwayFromZero);
+                        tBncct = Math.Round((hisSereServ.VIR_TOTAL_PATIENT_PRICE_BHYT ?? 0), 2, MidpointRounding.AwayFromZero);
+                        tBntt = Math.Round(thanhTienBV - tBhtt - tBncct - tNguonKhac, 2, MidpointRounding.AwayFromZero);
                     }
                     else
                     {
-                        tyLeThanhToanBH = 0;
+                        tBhtt = Math.Round(thanhTienBH * (hisSereServ.HEIN_RATIO ?? 0), 2, MidpointRounding.AwayFromZero);
+                        tBncct = Math.Round((thanhTienBH - tBhtt - tNguonKhac) < 0 ? 0 : (thanhTienBH - tBhtt - tNguonKhac), 2, MidpointRounding.AwayFromZero);
+                        tBntt = Math.Round((thanhTienBV - thanhTienBH - tNguonKhac) <= 0 ? 0 : (thanhTienBV - thanhTienBH), 2, MidpointRounding.AwayFromZero);
                     }
                     if (tBntt < 0)
-                    {
-                        tBncct += tBntt;
                         tBntt = 0;
-                    }
-                    if (tBhtt > 0)
+
+                    if (tyLeThanhToanBH > 0)
                     {
                         //    if (!String.IsNullOrEmpty(hisSereServ.HEIN_CARD_NUMBER) &&
                         //(hisSereServ.HEIN_CARD_NUMBER.Substring(0, 2).Equals("CA") ||
@@ -461,55 +460,193 @@ namespace His.Bhyt.ExportXml.XML130.XML3
                         //    else
                         phamVi = "1";
                     }
-                    else if (tBhtt == 0)
+                    else if (tyLeThanhToanBH == 0)
                     {
                         phamVi = "2";
                     }
 
-                    if (String.IsNullOrEmpty(MaBacSiHeinServiceType) || (!String.IsNullOrEmpty(MaBacSiHeinServiceType) && data.Services != null && data.Services.Count > 0 && hisSereServ.TDL_HEIN_SERVICE_TYPE_ID.HasValue && data.Services.FirstOrDefault(o => o.ID == hisSereServ.SERVICE_ID) != null && data.Services.FirstOrDefault(o => o.ID == hisSereServ.SERVICE_ID).HEIN_SERVICE_TYPE_CODE != MaBacSiHeinServiceType))
-                    {
-                        List<String> lstMaBacSi = ProcessorGetMaBacSi(hisSereServ, MaBacSiOption, data.EkipUsers, listHeinServiceTypeMaterial, data.Employees);
-
-                        if (MaBacSiOption == "4")
-                            maBacSi = string.Join(";", lstMaBacSi.ToList());
-                        else
-                            maBacSi = string.Join(";", lstMaBacSi.Distinct().ToList());
-                    }
+                    List<string> lstMaBacSi = new List<string>();
                     List<string> lstNguoiThucHien = new List<string>();
-                    if (!String.IsNullOrEmpty(hisSereServ.SAMPLER_LOGINNAME))
-                        lstNguoiThucHien.Add(GetMaBacSi(hisSereServ.SAMPLER_LOGINNAME, data.Employees));
-
-                    if (!String.IsNullOrWhiteSpace(hisSereServ.SUBCLINICAL_RESULT_LOGINNAME))
+                    List<string> lstNguoiThucHien3176 = new List<string>();
+                    if (hisSereServ.TDL_HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__KH)
                     {
-                        string[] loginname = hisSereServ.SUBCLINICAL_RESULT_LOGINNAME.Split(';');
-                        var lstTmp = new List<string>();
-                        foreach (var item in loginname)
+                        if (!String.IsNullOrEmpty(hisSereServ.EXECUTE_LOGINNAME))
+                            lstMaBacSi.Add(GetMaBacSi(hisSereServ.EXECUTE_LOGINNAME, data.Employees));
+                    }
+                    else
+                    {
+                        if (!String.IsNullOrEmpty(hisSereServ.REQUEST_LOGINNAME))
+                            lstMaBacSi.Add(GetMaBacSi(hisSereServ.REQUEST_LOGINNAME, data.Employees));
+
+                    }
+
+                    string[] lstNguoiThucHiencf = ConfigNguoiThucHienOption.Split(',');
+                    long configNguoiThucHien;
+                    List<long> lstconfigNguoiThucHien = new List<long>();
+
+                    if (lstNguoiThucHiencf.Length > 1)
+                    {
+                        foreach (string item in lstNguoiThucHiencf)
                         {
-                            string cchn = GetMaBacSi(item, data.Employees);
+                             configNguoiThucHien = long.Parse(item);
+                             lstconfigNguoiThucHien.Add(configNguoiThucHien);
+                        }
+                    }
+                  //  long configNguoiThucHien = long.Parse(ConfigNguoiThucHienOption);
+                    
+                    // danh sach HIS_HEIN_SERVICE_TYPE
+                    long[] lstServiceType = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22 };
+                    bool IsNguoiThucHien = false;
+
+                    foreach (long item in lstServiceType)
+                    {
+                        if (lstconfigNguoiThucHien != null && lstconfigNguoiThucHien.Count > 0)
+                        {
+                            foreach(long i in lstconfigNguoiThucHien)
+                            {
+                                if (item == i)
+                                {
+                                    IsNguoiThucHien = true;
+                                    break;
+                                }
+                            }
+                        }
+                       
+                    }
+                    if (IsNguoiThucHien == true)
+                    {
+                        if (hisSereServ.EKIP_ID.HasValue && data.EkipUsers != null && data.EkipUsers.Count > 0)
+                        {
+                            //có kíp add theo kíp
+                            var dataEkip = data.EkipUsers.Where(o => o.EKIP_ID == hisSereServ.EKIP_ID.Value).ToList();
+                            if (dataEkip != null && dataEkip.Count > 0)
+                            {
+                                foreach (var item in dataEkip)
+                                {
+                                    string cchn = GetMaBacSi(item.LOGINNAME, data.Employees);
+                                    if (!String.IsNullOrWhiteSpace(cchn))
+                                    {
+                                        lstNguoiThucHien.Add(cchn);
+                                        lstNguoiThucHien3176.Add(cchn);
+                                    }
+                                    else
+                                    {
+                                        cchn = GetCCCD(item.LOGINNAME,data.Employees);
+                                        if (!String.IsNullOrWhiteSpace(cchn))
+                                            lstNguoiThucHien3176.Add(cchn);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (hisSereServ.TDL_HEIN_SERVICE_TYPE_ID != IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__KH)
+                    {
+                        if ((hisSereServ.TDL_HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__PTTT || hisSereServ.TDL_HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__TT) && hisSereServ.EKIP_ID.HasValue)
+                        {
+                            goto Ekip;
+                        }
+                        else
+                        {
+                            if (!String.IsNullOrEmpty(hisSereServ.SAMPLER_LOGINNAME))
+                            {
+                                string cchn = GetMaBacSi(hisSereServ.SAMPLER_LOGINNAME, data.Employees);
+                                if (!String.IsNullOrWhiteSpace(cchn))
+                                {
+                                    lstNguoiThucHien.Add(cchn);
+                                    lstNguoiThucHien3176.Add(cchn);
+                                }
+                                else
+                                {
+                                    cchn = GetCCCD(hisSereServ.SAMPLER_LOGINNAME, data.Employees);
+                                    if (!String.IsNullOrWhiteSpace(cchn))
+                                        lstNguoiThucHien3176.Add(cchn);
+                                }
+                            }
+                            if (!String.IsNullOrWhiteSpace(hisSereServ.SUBCLINICAL_RESULT_LOGINNAME))
+                            {
+                                string[] loginname = hisSereServ.SUBCLINICAL_RESULT_LOGINNAME.Split(';');
+                                var lstTmp = new List<string>();
+                                foreach (var item in loginname)
+                                {
+                                    string cchn = GetMaBacSi(item, data.Employees);
+                                    if (!String.IsNullOrWhiteSpace(cchn))
+                                    {
+                                        lstTmp.Add(cchn);
+                                        lstNguoiThucHien3176.Add(cchn);
+                                    }
+                                    else
+                                    {
+                                        cchn = GetCCCD(item, data.Employees);
+                                        if (!String.IsNullOrWhiteSpace(cchn))
+                                            lstNguoiThucHien3176.Add(cchn);
+                                    }
+                                }
+                                lstNguoiThucHien.AddRange(lstTmp.Distinct().ToList());
+                            }
+                            if (!String.IsNullOrEmpty(hisSereServ.EXECUTE_LOGINNAME))
+                            {
+                                string cchn = GetMaBacSi(hisSereServ.EXECUTE_LOGINNAME, data.Employees);
+                                if (!String.IsNullOrWhiteSpace(cchn))
+                                {
+                                    lstNguoiThucHien.Add(cchn);
+                                    lstNguoiThucHien3176.Add(cchn);
+                                }
+                                else
+                                {
+                                    cchn = GetCCCD(hisSereServ.EXECUTE_LOGINNAME, data.Employees);
+                                    if (!String.IsNullOrWhiteSpace(cchn))
+                                        lstNguoiThucHien3176.Add(cchn);
+                                }
+                            }
+                            goto Ekip;
+                        }
+                    Ekip:
+                        if (hisSereServ.EKIP_ID.HasValue && data.EkipUsers != null && data.EkipUsers.Count > 0)
+                        {
+                            //có kíp add theo kíp
+                            var dataEkip = data.EkipUsers.Where(o => o.EKIP_ID == hisSereServ.EKIP_ID.Value).ToList();
+                            if (dataEkip != null && dataEkip.Count > 0)
+                            {
+                                foreach (var item in dataEkip)
+                                {
+                                    string cchn = GetMaBacSi(item.LOGINNAME, data.Employees);
+                                    if (!String.IsNullOrWhiteSpace(cchn))
+                                    {
+                                        lstNguoiThucHien.Add(cchn);
+                                        lstNguoiThucHien3176.Add(cchn);
+                                    }
+                                    else
+                                    {
+                                        cchn = GetCCCD(item.LOGINNAME, data.Employees);
+                                        if (!String.IsNullOrWhiteSpace(cchn))
+                                            lstNguoiThucHien3176.Add(cchn);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (hisSereServ != null && (lstNguoiThucHien == null || lstNguoiThucHien.Count == 0))
+                    {
+                        if (hisSereServ.START_TIME == null && !string.IsNullOrEmpty(hisSereServ.REQUEST_LOGINNAME))
+                        {
+                            string cchn = GetMaBacSi(hisSereServ.REQUEST_LOGINNAME, data.Employees);
                             if (!String.IsNullOrWhiteSpace(cchn))
                             {
-                                lstTmp.Add(cchn);
+                                lstNguoiThucHien.Add(cchn);
+                                lstNguoiThucHien3176.Add(cchn);
                             }
-                        }
-                        lstNguoiThucHien.AddRange(lstTmp.Distinct().ToList());
-                    }
-                    if (!String.IsNullOrEmpty(hisSereServ.EXECUTE_LOGINNAME))
-                        lstNguoiThucHien.Add(GetMaBacSi(hisSereServ.EXECUTE_LOGINNAME, data.Employees));
-
-                    if (hisSereServ.EKIP_ID.HasValue && data.EkipUsers != null && data.EkipUsers.Count > 0)
-                    {
-                        //có kíp add theo kíp
-                        var dataEkip = data.EkipUsers.Where(o => o.EKIP_ID == hisSereServ.EKIP_ID.Value).ToList();
-                        if (dataEkip != null && dataEkip.Count > 0)
-                        {
-                            foreach (var item in dataEkip)
+                            else
                             {
-                                string cchn = GetMaBacSi(item.LOGINNAME, data.Employees);
+                                cchn = GetCCCD(hisSereServ.REQUEST_LOGINNAME, data.Employees);
                                 if (!String.IsNullOrWhiteSpace(cchn))
-                                    lstNguoiThucHien.Add(cchn);
+                                    lstNguoiThucHien3176.Add(cchn);
                             }
                         }
                     }
+
+                    maBacSi = string.Join(";", lstMaBacSi.Where(o => !String.IsNullOrWhiteSpace(o)).Distinct());
                     nguoiThucHien = string.Join(";", lstNguoiThucHien.Where(o => !String.IsNullOrWhiteSpace(o)).Distinct());
 
                     List<string> lstMaBenh = new List<string>();
@@ -524,18 +661,29 @@ namespace His.Bhyt.ExportXml.XML130.XML3
                     }
                     if (!String.IsNullOrWhiteSpace(data.Treatment.ICD_CODE))
                     {
-                        lstMaBenh.Add(data.Treatment.ICD_CODE);
+                        lstMaBenh = lstMaBenh.Where(o => o != data.Treatment.ICD_CODE).ToList();
                     }
-                    if (!String.IsNullOrWhiteSpace(data.Treatment.ICD_SUB_CODE))
+                    //if (!String.IsNullOrWhiteSpace(data.Treatment.ICD_SUB_CODE))
+                    //{
+                    //    var benh = data.Treatment.ICD_SUB_CODE.Trim(';').Split(';').ToList();
+                    //    lstMaBenh.AddRange(benh);
+                    //}
+                    if (lstMaBenh == null || lstMaBenh.Count == 0)
                     {
-                        var benh = data.Treatment.ICD_SUB_CODE.Trim(';').Split(';').ToList();
-                        lstMaBenh.AddRange(benh);
+                        if (!String.IsNullOrWhiteSpace(data.Treatment.ICD_CODE))
+                        {
+                            lstMaBenh.Add(data.Treatment.ICD_CODE);
+                        }
                     }
-                    maBenh = string.Join(";", lstMaBenh.Where(o => !String.IsNullOrWhiteSpace(o)).Distinct());
-                    if (Encoding.UTF8.GetByteCount(maBenh) > 100)
+                    if (lstMaBenh != null && lstMaBenh.Count == 1)
                     {
-                        maBenh = SubStringWithSeparate(maBenh);
+                        maBenh = lstMaBenh.First();
                     }
+                    else if (lstMaBenh != null && lstMaBenh.Count > 1)
+                    {
+                        maBenh = string.Join(";", lstMaBenh.Where(o => !String.IsNullOrWhiteSpace(o)).Distinct());
+                    }
+
                     List<string> lstMaBenhYHCT = new List<string>();
                     if (!String.IsNullOrWhiteSpace(hisSereServ.TRADITIONAL_ICD_CODE))
                     {
@@ -546,59 +694,274 @@ namespace His.Bhyt.ExportXml.XML130.XML3
                         var benh = hisSereServ.TRADITIONAL_ICD_SUB_CODE.Trim(';').Split(';').ToList();
                         lstMaBenhYHCT.AddRange(benh);
                     }
-                    if (!String.IsNullOrWhiteSpace(data.Treatment.TRADITIONAL_ICD_CODE))
+                    if (!String.IsNullOrWhiteSpace(data.Treatment.ICD_CODE))
                     {
-                        lstMaBenhYHCT.Add(data.Treatment.TRADITIONAL_ICD_CODE);
+                        lstMaBenhYHCT = lstMaBenhYHCT.Where(o => o != data.Treatment.ICD_CODE).ToList();
                     }
-                    if (!String.IsNullOrWhiteSpace(data.Treatment.TRADITIONAL_ICD_SUB_CODE))
+                    //if (!String.IsNullOrWhiteSpace(data.Treatment.TRADITIONAL_ICD_CODE))
+                    //{
+                    //    lstMaBenhYHCT.Add(data.Treatment.TRADITIONAL_ICD_CODE);
+                    //}
+                    //if (!String.IsNullOrWhiteSpace(data.Treatment.TRADITIONAL_ICD_SUB_CODE))
+                    //{
+                    //    var benh = data.Treatment.TRADITIONAL_ICD_SUB_CODE.Trim(';').Split(';').ToList();
+                    //    lstMaBenhYHCT.AddRange(benh);
+                    //}
+                    //if (lstMaBenhYHCT == null || lstMaBenhYHCT.Count == 0)
+                    //{
+                    //    if (!String.IsNullOrWhiteSpace(data.Treatment.ICD_CODE))
+                    //   {
+                    //       lstMaBenhYHCT.Add(data.Treatment.ICD_CODE);
+                    //   }
+                    //}
+                    if (lstMaBenhYHCT != null && lstMaBenhYHCT.Count == 1)
                     {
-                        var benh = data.Treatment.TRADITIONAL_ICD_SUB_CODE.Trim(';').Split(';').ToList();
-                        lstMaBenhYHCT.AddRange(benh);
+                        maBenhYHCT = lstMaBenhYHCT.First();
                     }
-                    maBenhYHCT = string.Join(";", lstMaBenhYHCT.Where(o => !String.IsNullOrWhiteSpace(o)).Distinct());
+                    else if (lstMaBenhYHCT != null && lstMaBenhYHCT.Count > 1)
+                    {
+                        maBenhYHCT = string.Join(";", lstMaBenhYHCT.Where(o => !String.IsNullOrWhiteSpace(o)).Distinct());
+                    }
 
-                    ngayYL = hisSereServ.INTRUCTION_TIME.ToString().Substring(0, 12);
-                    ngayTHYL = hisSereServ.START_TIME.HasValue && hisSereServ.FINISH_TIME.HasValue ? hisSereServ.START_TIME.ToString().Substring(0, 12) : "";
-                    if (NgayYLenhOption == "3")
+                    if (hisSereServ.TDL_HEIN_SERVICE_TYPE_ID.HasValue && hisSereServ.TDL_HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__KH)
                     {
-                        ngayYL = ngayTHYL;
+                        if (hisSereServ.START_TIME.HasValue)
+                        {
+                            ngayYL = hisSereServ.START_TIME.ToString().Substring(0, 12);
+                        }
+                        else
+                        {
+                            ngayYL = hisSereServ.INTRUCTION_TIME.ToString().Substring(0, 12);
+                        }
                     }
-                    else if (hisSereServ.TDL_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__KH && NgayYLenhOption == "2")
+                    else
+                        ngayYL = hisSereServ.INTRUCTION_TIME.ToString().Substring(0, 12);
+
+                    decimal TimeExecute = hisSereServ.BEGIN_TIME ?? hisSereServ.START_TIME ?? hisSereServ.INTRUCTION_TIME;
+                    ngayTHYL = TimeExecute.ToString().Substring(0, 12);
+
+                    if (hisSereServ.END_TIME.HasValue)
                     {
-                        ngayYL = ngayTHYL;
+                        ngayKQ = hisSereServ.END_TIME.ToString().Substring(0, 12);
                     }
-                    else if (hisSereServ.TDL_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__PT ||
-                       hisSereServ.TDL_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__TT)
+                    else
                     {
-                        ngayYL = hisSereServ.BEGIN_TIME.HasValue ? hisSereServ.BEGIN_TIME.ToString().Substring(0, 12) : ngayYL;
-                        ngayKQ = hisSereServ.END_TIME.HasValue ? hisSereServ.END_TIME.ToString().Substring(0, 12) : ngayKQ;
+                        if (hisSereServ.FINISH_TIME.HasValue)
+                        {
+                            ngayKQ = hisSereServ.FINISH_TIME.ToString().Substring(0, 12);
+                        }
+                        else
+                        {
+                            ngayKQ = ngayTHYL;
+                        }
                     }
 
-                    //ngayKQ = hisSereServ.END_TIME.HasValue ? hisSereServ.END_TIME.ToString().Substring(0, 12) : hisSereServ.FINISH_TIME.HasValue ? hisSereServ.FINISH_TIME.ToString().Substring(0, 12) : hisSereServ.INTRUCTION_TIME.ToString().Substring(0, 12);
-                    //if (Convert.ToInt64(ngayKQ) < Convert.ToInt64(ngayTHYL))
-                    //    ngayKQ = ngayTHYL;
-
-                    if ((hisSereServ.TDL_HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__PTTT || hisSereServ.TDL_HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__TT))
+                    if (!Config_BedTimeOption)
                     {
-                        ppVoCam = sereServPttt != null && !String.IsNullOrEmpty(sereServPttt.EMME_HEIN_CODE) ? sereServPttt.EMME_HEIN_CODE : (sereServPttt != null && !String.IsNullOrEmpty(sereServPttt.EMME_SECOND_HEIN_CODE) ? sereServPttt.EMME_SECOND_HEIN_CODE : "4");
+                        if (listHeinServiceTypeMaterialGiuong.Contains(hisSereServ.TDL_HEIN_SERVICE_TYPE_ID ?? 0))
+                        {
+                            if (data.Treatment.OUT_TIME.HasValue)
+                            {
+                                ngayKQ = data.Treatment.OUT_TIME.ToString().Substring(0, 12);
+                            }
+                            var SereServBed = listServeservs.Where(o => listHeinServiceTypeMaterialGiuong.Contains(o.TDL_HEIN_SERVICE_TYPE_ID ?? 0) && o.ID != hisSereServ.ID).ToList();
+                            if (SereServBed != null && SereServBed.Count > 0)
+                            {
+                                SereServBed = SereServBed.Where(o => o.TDL_INTRUCTION_TIME > hisSereServ.TDL_INTRUCTION_TIME).ToList();
+                                if (SereServBed.Count > 0)
+                                {
+                                    var SsIntructionTime = SereServBed.OrderBy(o => o.TDL_INTRUCTION_TIME).ToList()[0];
+                                    ngayKQ = SsIntructionTime.TDL_INTRUCTION_TIME.ToString().Substring(0, 12);
+                                }
+                            }
+
+                            long ngayKqC = Int64.Parse(ngayKQ + "00");
+                            long ngayThylC = !string.IsNullOrWhiteSpace(ngayTHYL) ? Int64.Parse(ngayTHYL + "00") : 0;
+                            System.DateTime? in_t = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(ngayKqC);
+                            System.DateTime? out_t = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(ngayThylC);
+                            TimeSpan tdiff = in_t.Value - out_t.Value;
+                            if (hisSereServ.AMOUNT >= 1)
+                            {
+                                if (tdiff.TotalHours > (double)(hisSereServ.AMOUNT * 24))
+                                    in_t = out_t.Value.AddHours((double)hisSereServ.AMOUNT * 24);
+                            }
+                            else if (tdiff.TotalHours > 4)
+                                in_t = out_t.Value.AddHours(4);
+                            ngayKQ = Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(in_t).Value.ToString().Substring(0, 12);
+                        }
+                        else
+                        {
+                            if (!string.IsNullOrWhiteSpace(ngayKQ))
+                            {
+                                long ngayKq = Int64.Parse(ngayKQ);
+                                long ngayThyl = !string.IsNullOrWhiteSpace(ngayTHYL) ? Int64.Parse(ngayTHYL) : 0;
+                                //thinhdt2
+                                //sua thoi gian kq 179141
+                                Inventec.Common.Logging.LogSystem.Debug("ngayKq: " + ngayKq + " ngayThyl: " + ngayThyl);
+                                if (ngayKq <= ngayThyl)
+                                {
+                                    if (hisSereServ.TDL_HEIN_SERVICE_TYPE_ID.HasValue && listHeinServiceTypeMaterial.Contains(hisSereServ.TDL_HEIN_SERVICE_TYPE_ID.Value))
+                                    {
+                                        DateTime ngayThylTime = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(ngayThyl * 100) ?? DateTime.MinValue;
+                                        if (ngayThylTime != DateTime.MinValue)
+                                        {
+                                            DateTime ngayKQTime = ngayThylTime.AddMinutes(5);
+                                            ngayKQ = ((Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(ngayKQTime) ?? 0) / 100).ToString();
+
+                                        }
+                                    }
+                                    else
+                                        ngayKQ = ngayTHYL;
+                                    Inventec.Common.Logging.LogSystem.Debug("co ngayKq <= ngayThyl.ngayKQ = " + ngayKQ);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+
+                        if (data.BedLogs != null && data.BedLogs.Count > 0 && data.BedLogs.Exists(o => o.ID == (hisSereServ.BED_LOG_ID ?? 0)))
+                        {
+                            if (hisSereServ.TDL_HEIN_SERVICE_TYPE_ID.HasValue && (hisSereServ.TDL_HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__GI_NGT ||
+                                hisSereServ.TDL_HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__GI_NT ||
+                                hisSereServ.TDL_HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__GI_BN ||
+                                hisSereServ.TDL_HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__GI_L))
+                            {
+                                var bed = data.BedLogs != null && data.BedLogs.Count > 0 ? data.BedLogs.FirstOrDefault(o => o.ID == hisSereServ.BED_LOG_ID) : null;
+                                ngayKQ = bed != null && bed.FINISH_TIME.HasValue ? bed.FINISH_TIME.ToString().Substring(0, 12) : ngayKQ;
+                                if (hisSereServ.BED_LOG_ID.HasValue)
+                                {
+                                    var sereServs = data.ListSereServ.Where(o => hisSereServ.BED_LOG_ID.Value == o.BED_LOG_ID).ToList();
+                                    if (sereServs != null && sereServs.Count > 1)
+                                    {
+                                        var sere = sereServs.Where(o => o.TDL_INTRUCTION_TIME > hisSereServ.TDL_INTRUCTION_TIME).ToList();
+                                        var betterIntructionTime = sere != null && sere.Count > 0 ? sere.Min(o => o.TDL_INTRUCTION_TIME) : 0;
+
+                                        if (betterIntructionTime > 0)
+                                        {
+                                            ngayKQ = betterIntructionTime.ToString().Substring(0, 12);
+                                        }
+                                    }
+                                }
+
+                                long ngayKqC = Int64.Parse(ngayKQ + "00");
+                                long ngayThylC = !string.IsNullOrWhiteSpace(ngayTHYL) ? Int64.Parse(ngayTHYL + "00") : 0;
+                                System.DateTime? in_t = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(ngayKqC);
+                                System.DateTime? out_t = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(ngayThylC);
+                                TimeSpan tdiff = in_t.Value - out_t.Value;
+                                if (hisSereServ.AMOUNT >= 1)
+                                {
+                                    if (tdiff.TotalHours > (double)(hisSereServ.AMOUNT * 24))
+                                        in_t = out_t.Value.AddHours((double)hisSereServ.AMOUNT * 24);
+                                }
+                                else if (tdiff.TotalHours > 4)
+                                    in_t = out_t.Value.AddHours(4);
+                                ngayKQ = Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(in_t).Value.ToString().Substring(0, 12);
+                            }
+
+                        }
+                        else
+                        {
+                            if (!string.IsNullOrWhiteSpace(ngayKQ))
+                            {
+                                long ngayKq = Int64.Parse(ngayKQ);
+                                long ngayThyl = !string.IsNullOrWhiteSpace(ngayTHYL) ? Int64.Parse(ngayTHYL) : 0;
+                                //thinhdt2
+                                //sua thoi gian kq 179141
+                                Inventec.Common.Logging.LogSystem.Debug("ngayKq: " + ngayKq + " ngayThyl: " + ngayThyl);
+                                if (ngayKq <= ngayThyl)
+                                {
+                                    if (hisSereServ.TDL_HEIN_SERVICE_TYPE_ID.HasValue && listHeinServiceTypeMaterial.Contains(hisSereServ.TDL_HEIN_SERVICE_TYPE_ID.Value))
+                                    {
+                                        DateTime ngayThylTime = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(ngayThyl*100) ?? DateTime.MinValue;
+                                        if (ngayThylTime != DateTime.MinValue)
+                                        {
+                                            DateTime ngayKQTime = ngayThylTime.AddMinutes(5);
+                                            ngayKQ = ((Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(ngayKQTime)??0)/100).ToString();
+
+                                        }
+                                    }
+                                    else
+                                        ngayKQ = ngayTHYL;
+                                    Inventec.Common.Logging.LogSystem.Debug("co ngayKq <= ngayThyl.ngayKQ = " + ngayKQ);
+                                }
+                            }
+                        }
+                    }
+
+
+
+                    if (hisSereServ.TDL_HEIN_SERVICE_TYPE_ID.HasValue && hisSereServ.TDL_HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__PTTT && sereServPttt != null)
+                    {
+                        ppVoCam = !String.IsNullOrEmpty(sereServPttt.EMME_HEIN_CODE) ? sereServPttt.EMME_HEIN_CODE : (!String.IsNullOrEmpty(sereServPttt.EMME_SECOND_HEIN_CODE) ? sereServPttt.EMME_SECOND_HEIN_CODE : "4");
                     }
                     string serialNum = "";
+
                     if (hisSereServTein != null && hisSereServTein.Count > 0)
                     {
-                        var ssTeinHasMachines = hisSereServTein.Where(o => o.MACHINE_ID != null && !String.IsNullOrEmpty(o.SERIAL_NUMBER)).ToList();
-                        if (ssTeinHasMachines != null && ssTeinHasMachines.Count > 0)
+                        string Config_MaMayOption = "";
+                        Config_MaMayOption = HisConfigKey.GetConfigData(data.ConfigData, HisConfigKey.MAMAYOPTION);
+                        if (Config_MaMayOption == "1")
                         {
-                            serialNum = String.Join(";", ssTeinHasMachines.Select(o => o.SERIAL_NUMBER).Distinct());
-                            var ssTein = ssTeinHasMachines.First();
-                            maMay = String.Format("{0}.{1}.{2}.{3}", ssTein.MACHINE_GROUP_CODE, ssTein.SOURCE_CODE, data.Treatment.HEIN_MEDI_ORG_CODE, serialNum);
-                        }
 
+                            List<string> lstkq = new List<string>();
+                            foreach (var item in hisSereServTein)
+                            {
+                                string kq = string.Format("{0}.{1}.{2}.{3}", item.MACHINE_GROUP_CODE, item.SOURCE_CODE, data.Treatment.HEIN_MEDI_ORG_CODE, item.SERIAL_NUMBER);
+                                lstkq.Add(kq);
+                            }
+                            maMay = String.Join(";", lstkq.Distinct());
+                        }
+                        else
+                        {
+                            var ssTeinHasMachines = hisSereServTein.Where(o => o.MACHINE_ID != null && !String.IsNullOrEmpty(o.SERIAL_NUMBER)).ToList();
+                            if (ssTeinHasMachines != null && ssTeinHasMachines.Count > 0)
+                            {
+                                serialNum = String.Join(";", ssTeinHasMachines.Select(o => o.SERIAL_NUMBER).Distinct());
+                                var ssTein = ssTeinHasMachines.First();
+                                maMay = String.Format("{0}.{1}.{2}.{3}", ssTein.MACHINE_GROUP_CODE, ssTein.SOURCE_CODE, data.Treatment.HEIN_MEDI_ORG_CODE, serialNum);
+                            }
+                        }
                     }
-                    else if (String.IsNullOrEmpty(maMay) && hisSereServ.MACHINE_ID != null && !String.IsNullOrEmpty(hisSereServ.SERIAL_NUMBER))
+                    else if (String.IsNullOrEmpty(maMay) && hisSereServ.MACHINE_ID != null)
                     {
                         maMay = String.Format("{0}.{1}.{2}.{3}", hisSereServ.MACHINE_GROUP_CODE, hisSereServ.SOURCE_CODE, data.Treatment.HEIN_MEDI_ORG_CODE, hisSereServ.SERIAL_NUMBER);
                     }
-
+                    if (data.IS_3176)
+                    {
+                        donGiaBV = Math.Round(hisSereServ.VIR_PRICE ?? 0, 3, MidpointRounding.AwayFromZero);
+                        donGiaBH = Math.Round(((hisSereServ.VIR_TOTAL_HEIN_PRICE ?? 0) + (hisSereServ.VIR_TOTAL_PATIENT_PRICE_BHYT ?? 0)) / hisSereServ.AMOUNT, 3, MidpointRounding.AwayFromZero);
+                        if (!string.IsNullOrEmpty(hisSereServ.MATERIAL_SERIAL_NUMBER))
+                            donGiaBV = donGiaBH;
+                        thanhTienBV = Math.Round(hisSereServ.VIR_TOTAL_PRICE ?? 0, 2);
+                        thanhTienBH = Math.Round((hisSereServ.VIR_TOTAL_HEIN_PRICE ?? 0) + (hisSereServ.VIR_TOTAL_PATIENT_PRICE_BHYT ?? 0), 2);
+                        tNguonKhacNsnn = tNguonKhacVtnn = tNguonKhacVttn = null;
+                        tNguonKhac = Math.Round((hisSereServ.OTHER_SOURCE_PRICE ?? 0) * (hisSereServ.AMOUNT), 2);
+                        if (hisSereServ.HEIN_PAY_SOURCE_TYPE_ID == 1)
+                        {
+                            tNguonKhacNsnn = tNguonKhac;
+                        }
+                        else if (hisSereServ.HEIN_PAY_SOURCE_TYPE_ID == 2)
+                        {
+                            tNguonKhacVtnn = tNguonKhac;
+                        }
+                        else if (hisSereServ.HEIN_PAY_SOURCE_TYPE_ID == 3)
+                        {
+                            tNguonKhacVttn = tNguonKhac;
+                        }
+                        else
+                        {
+                            tNguonKhacCl = tNguonKhac;
+                        }
+                        tBhtt = Math.Round((hisSereServ.VIR_TOTAL_HEIN_PRICE ?? 0), 2);
+                        tBncct = Math.Round((hisSereServ.VIR_TOTAL_PATIENT_PRICE_BHYT ?? 0),2);
+                        var price = thanhTienBV - tBhtt - tBncct - tNguonKhac;
+                        tBntt = Math.Round(price < 0 ? 0 : price, 2);
+                        maMay = String.Format("{0}{1}{2}{3}", !string.IsNullOrEmpty(hisSereServ.MACHINE_GROUP_CODE) ? hisSereServ.MACHINE_GROUP_CODE + "." : "", !string.IsNullOrEmpty(hisSereServ.SOURCE_CODE) ? hisSereServ.SOURCE_CODE : "", !string.IsNullOrEmpty(hisSereServ.SOURCE_NAME) ? hisSereServ.SOURCE_NAME + "." : ".", hisSereServ.SERIAL_NUMBER);
+                        if (maMay == ".")
+                            maMay = "";
+                        nguoiThucHien = string.Join(";", lstNguoiThucHien3176.Where(o => !string.IsNullOrEmpty(o)).ToList());
+                    }
                     xml3.maLienKet = maLienKet;
                     xml3.stt = stt;
                     xml3.maDichVu = maDichVu;
@@ -633,7 +996,6 @@ namespace His.Bhyt.ExportXml.XML130.XML3
                     xml3.maGiuong = maGiuong;
                     xml3.maBacSi = maBacSi;
                     xml3.nguoiThucHien = nguoiThucHien;
-                    Inventec.Common.Logging.LogSystem.Info("Xml3Processor Ma benh " + maBenh);
                     xml3.maBenh = maBenh;
                     xml3.maBenhYHCT = maBenhYHCT;
                     xml3.ngayYL = ngayYL;
@@ -658,232 +1020,6 @@ namespace His.Bhyt.ExportXml.XML130.XML3
             }
             return result;
         }
-
-        private string SubStringWithSeparate(string multiCharString)
-        {
-            string result = "";
-            try
-            {
-                Encoding utf8 = Encoding.UTF8;
-                int leng = utf8.GetByteCount(multiCharString);
-                if (leng > 100)
-                {
-                    int index = multiCharString.LastIndexOf(";");
-                    while (utf8.GetByteCount(multiCharString) > 100)
-                    {
-                        index = multiCharString.LastIndexOf(";");
-                        multiCharString = multiCharString.Substring(0, index);
-                        result = multiCharString;
-                    }
-                }
-                else
-                {
-                    result = multiCharString;
-                }
-            }
-            catch (Exception ex)
-            {
-                result = null;
-                Inventec.Common.Logging.LogSystem.Error(ex);
-            }
-            return result;
-        }
-
-        private List<string> ProcessorGetMaBacSi(V_HIS_SERE_SERV_2 hisSereServ, string MaBacSiOption, List<HIS_EKIP_USER> ekipUsers, List<long> listHeinServiceTypeMaterial, List<HIS_EMPLOYEE> employees)
-        {
-            List<string> lstMaBacSi = new List<string>();
-            try
-            {
-                string executeName = null;
-                string reqName = null;
-                string samplerLoginName = null;
-                List<string> resultName = new List<string>();
-                if (MaBacSiOption == "4")
-                {
-                    if (hisSereServ.TDL_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__G || hisSereServ.TDL_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__VT)
-                    {
-                        string cchn = GetMaBacSi(hisSereServ.REQUEST_LOGINNAME, employees);
-                        if (!String.IsNullOrWhiteSpace(cchn))
-                        {
-                            lstMaBacSi.Add(cchn);
-                        }
-                    }
-                    else
-                    {
-                        string cchnA = GetMaBacSi(hisSereServ.REQUEST_LOGINNAME, employees);
-                        if (!String.IsNullOrWhiteSpace(cchnA))
-                        {
-                            lstMaBacSi.Add(cchnA);
-                        }
-                        if (hisSereServ.EKIP_ID.HasValue && ekipUsers != null && ekipUsers.Count > 0)
-                        {
-                            //có kíp add theo kíp
-                            var dataEkip = ekipUsers.Where(o => o.EKIP_ID == hisSereServ.EKIP_ID.Value).ToList();
-                            if (dataEkip != null && dataEkip.Count > 0)
-                            {
-                                foreach (var item in dataEkip)
-                                {
-                                    string cchn = GetMaBacSi(item.LOGINNAME, employees);
-                                    if (!String.IsNullOrWhiteSpace(cchn))
-                                    {
-                                        lstMaBacSi.Add(cchn);
-                                    }
-                                }
-                            }
-                        }
-                        else if (!String.IsNullOrWhiteSpace(hisSereServ.SUBCLINICAL_RESULT_LOGINNAME))
-                        {
-                            string[] loginname = hisSereServ.SUBCLINICAL_RESULT_LOGINNAME.Split(';');
-                            var lstTmp = new List<string>();
-                            foreach (var item in loginname)
-                            {
-                                string cchn = GetMaBacSi(item, employees);
-                                if (!String.IsNullOrWhiteSpace(cchn))
-                                {
-                                    lstTmp.Add(cchn);
-                                }
-                            }
-                            lstMaBacSi.AddRange(lstTmp.Distinct().ToList());
-                        }
-                        else
-                        {
-                            string cchnB = GetMaBacSi(hisSereServ.EXECUTE_LOGINNAME, employees);
-                            if (!String.IsNullOrWhiteSpace(cchnB))
-                            {
-                                lstMaBacSi.Add(cchnB);
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    executeName = GetMaBacSi(hisSereServ.EXECUTE_LOGINNAME, employees);
-                    reqName = GetMaBacSi(hisSereServ.REQUEST_LOGINNAME, employees);
-                    samplerLoginName = GetMaBacSi(hisSereServ.SAMPLER_LOGINNAME, employees);  //Người lấy mẫu
-                    resultName = new List<string>();
-                    if (MaBacSiOption == "5"
-                        && hisSereServ.TDL_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__XN
-                        && !String.IsNullOrWhiteSpace(hisSereServ.RECEIVE_SAMPLE_LOGINNAME))
-                    {
-                        samplerLoginName = GetMaBacSi(hisSereServ.RECEIVE_SAMPLE_LOGINNAME, employees);
-                    }
-                    else
-                        if (!String.IsNullOrWhiteSpace(hisSereServ.SUBCLINICAL_RESULT_LOGINNAME))
-                        {
-                            string[] loginname = hisSereServ.SUBCLINICAL_RESULT_LOGINNAME.Split(';');
-                            foreach (var item in loginname)
-                            {
-                                string cchn = GetMaBacSi(item, employees);
-                                if (!String.IsNullOrWhiteSpace(cchn))
-                                {
-                                    resultName.Add(cchn);
-                                }
-                            }
-                        }
-
-                    if (!String.IsNullOrWhiteSpace(executeName) || resultName.Count > 0)
-                    {
-                        if (resultName.Count > 0)
-                        {
-                            lstMaBacSi.AddRange(resultName);
-                        }
-                        else
-                        {
-                            lstMaBacSi.Add(executeName);
-                        }
-                    }
-                    else if (!String.IsNullOrWhiteSpace(reqName))
-                    {
-                        lstMaBacSi.Add(reqName);
-                    }
-
-                    if (hisSereServ.EKIP_ID.HasValue && ekipUsers != null && ekipUsers.Count > 0)
-                    {
-                        //có kíp add theo kíp
-                        var dataEkip = ekipUsers.Where(o => o.EKIP_ID == hisSereServ.EKIP_ID.Value).Distinct().ToList();
-                        if (dataEkip != null && dataEkip.Count > 0)
-                        {
-                            lstMaBacSi = new List<string>();
-                            //thêm nã bác sĩ yêu cầu.
-                            if (!String.IsNullOrWhiteSpace(reqName))
-                            {
-                                lstMaBacSi.Add(reqName);
-                            }
-
-                            foreach (var item in dataEkip)
-                            {
-                                string cchn = GetMaBacSi(item.LOGINNAME, employees);
-                                if (!String.IsNullOrWhiteSpace(cchn))
-                                {
-                                    lstMaBacSi.Add(cchn);
-                                }
-                            }
-                        }
-                    }
-                    else if (listHeinServiceTypeMaterial.Contains(hisSereServ.TDL_HEIN_SERVICE_TYPE_ID ?? 0))
-                    {
-                        lstMaBacSi = new List<string>();
-                        if (!String.IsNullOrWhiteSpace(reqName))
-                        {
-                            lstMaBacSi.Add(reqName);
-                        }
-                        else if (!String.IsNullOrWhiteSpace(executeName))
-                        {
-                            lstMaBacSi.Add(executeName);
-                        }
-                    }
-                    else if (MaBacSiOption == "2")
-                    {
-                        //key giá trị 2 add cả 2
-                        lstMaBacSi = new List<string>();
-                    }
-                    else if ((MaBacSiOption == "3" || MaBacSiOption == "5") &&
-                        (hisSereServ.TDL_HEIN_SERVICE_TYPE_ID != IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__KH
-                        && hisSereServ.TDL_HEIN_SERVICE_TYPE_ID != IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__GI_BN
-                        && hisSereServ.TDL_HEIN_SERVICE_TYPE_ID != IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__GI_L
-                        && hisSereServ.TDL_HEIN_SERVICE_TYPE_ID != IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__GI_NGT
-                        && hisSereServ.TDL_HEIN_SERVICE_TYPE_ID != IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__GI_NT))
-                    {
-                        // key giá trị 3 thì ngoài thuốc, vật tư, giường. tất cả sẽ add 2 cái nếu có
-                        lstMaBacSi = new List<string>();
-                    }
-                    if (hisSereServ.TDL_HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__KH && hisSereServ.TDL_IS_MAIN_EXAM != 1 && (MaBacSiOption == "1" || MaBacSiOption == "3" || MaBacSiOption == "5"))
-                    {
-                        //ko phải khám chính thì add cả 2 nếu có cấu hình
-                        lstMaBacSi = new List<string>();
-                    }
-                }
-                if (lstMaBacSi.Count == 0)
-                {
-                    if (!String.IsNullOrWhiteSpace(reqName))
-                    {
-                        lstMaBacSi.Add(reqName);
-                    }
-                    if (!String.IsNullOrWhiteSpace(samplerLoginName) && (MaBacSiOption == "1" || MaBacSiOption == "2" || MaBacSiOption == "3" || MaBacSiOption == "5"))
-                    {
-                        lstMaBacSi.Add(samplerLoginName);    //Người lấy mẫu
-                    }
-
-                    if (!String.IsNullOrWhiteSpace(executeName) || resultName.Count > 0)
-                    {
-                        if (resultName.Count > 0)
-                        {
-                            lstMaBacSi.AddRange(resultName);
-                        }
-                        else
-                        {
-                            lstMaBacSi.Add(executeName);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Inventec.Common.Logging.LogSystem.Error(ex);
-            }
-            return lstMaBacSi;
-        }
-
 
         private string GetMaBacSi(string loginName, List<HIS_EMPLOYEE> listEmployees)
         {
@@ -912,7 +1048,33 @@ namespace His.Bhyt.ExportXml.XML130.XML3
             }
             return result;
         }
-
+        private string GetCCCD(string loginName, List<HIS_EMPLOYEE> listEmployees)
+        {
+            string result = "";
+            try
+            {
+                if (String.IsNullOrEmpty(loginName))
+                    return result;
+                if (listEmployees != null)
+                {
+                    var dataEmployee = listEmployees.FirstOrDefault(p => p.LOGINNAME == loginName);
+                    if (dataEmployee != null)
+                    {
+                        result = dataEmployee.IDENTIFICATION_NUMBER ?? "";
+                    }
+                }
+                else
+                {
+                    Inventec.Common.Logging.LogSystem.Info("ListEmployees null");
+                }
+            }
+            catch (Exception ex)
+            {
+                result = "";
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+            return result;
+        }
         internal XmlCDataSection ConvertStringToXmlDocument(string data)
         {
             XmlCDataSection result;
