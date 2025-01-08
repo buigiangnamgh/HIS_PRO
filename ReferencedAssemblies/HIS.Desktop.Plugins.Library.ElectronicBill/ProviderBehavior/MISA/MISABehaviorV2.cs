@@ -112,7 +112,7 @@ namespace HIS.Desktop.Plugins.Library.ElectronicBill.ProviderBehavior.MISA
                     {
                         downloadUrl = configArr[6];
                     }
-                    
+
                     if (configArr.Count() > 8)
                     {
                         this.InChuyenDoi = configArr[8].Trim() == "1";
@@ -577,23 +577,23 @@ namespace HIS.Desktop.Plugins.Library.ElectronicBill.ProviderBehavior.MISA
 
                     if (detail != null && detail.Count > 0)
                     {
-                        decimal totalAmount = detail.Sum(s => s.Amount + s.VatAmount);
+                        decimal totalAmountWithoutVAT = detail.Sum(s => s.AmountWithoutVATOC ?? 0);
                         decimal amount = detail.Sum(s => s.Amount);
                         decimal vatAmount = detail.Sum(s => s.VatAmount);
 
                         // tiền nguyên tệ
                         result.TotalSaleAmountOC = amount;
                         result.TotalVATAmountOC = vatAmount;
-                        result.TotalAmountOC = totalAmount;
+                        result.TotalAmountOC = amount;
                         result.PaymentMethodName = "TM/CK";
-                        result.TotalAmountInWords = Inventec.Common.String.Convert.CurrencyToVneseString(String.Format("{0:0.##}", totalAmount)) + "đồng";
+                        result.TotalAmountInWords = Inventec.Common.String.Convert.CurrencyToVneseString(String.Format("{0:0.##}", amount)) + "đồng";
                         // thông tin tổng tiền quy đổi
                         result.TotalSaleAmount = amount;
                         result.TotalVATAmount = vatAmount;
-                        result.TotalAmount = totalAmount;
+                        result.TotalAmount = amount;
 
-                        result.TotalAmountWithoutVAT = amount;
-                        result.TotalAmountWithoutVATOC = amount;
+                        result.TotalAmountWithoutVAT = totalAmountWithoutVAT;
+                        result.TotalAmountWithoutVATOC = totalAmountWithoutVAT;
 
 
                         var groupByVat = detail.GroupBy(o => o.VATRateName).ToList();
@@ -638,6 +638,20 @@ namespace HIS.Desktop.Plugins.Library.ElectronicBill.ProviderBehavior.MISA
 
         private List<InvoiceDetailV2> GetProductElectronicBill()
         {
+            string serviceConfig = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(HisConfigCFG.ELECTRONIC_BILL__CONFIG);
+            bool checkMisaConfig = serviceConfig.StartsWith("MISA");
+            bool continueElectBill = false;
+            if (checkMisaConfig == true)
+            {
+                string[] configParts = serviceConfig.Split('|');
+                if (configParts.Length >= 9)
+                {
+                    if (configParts[7] == "1")
+                    {
+                        continueElectBill = true;
+                    }
+                }
+            }
             List<InvoiceDetailV2> result = new List<InvoiceDetailV2>();
             IRunTemplate iRunTemplate = TemplateFactory.MakeIRun(this.TempType, ElectronicBillDataInput);
             var listProduct = iRunTemplate.Run();
@@ -678,6 +692,62 @@ namespace HIS.Desktop.Plugins.Library.ElectronicBill.ProviderBehavior.MISA
                         product.AmountWithoutVATOC = 0;
                     }
                     product.VATAmountOC = 0;
+                    product.SortOrder = count;
+
+                    result.Add(product);
+                    count++;
+                }
+            }
+            else if (continueElectBill == true && listProduct.GetType() == typeof(List<ProductBasePlus>))
+            {
+                List<ProductBasePlus> listProductBasePlus = (List<ProductBasePlus>)listProduct;
+
+                if (listProductBasePlus == null || listProductBasePlus.Count == 0)
+                {
+                    throw new Exception("Không có thông tin chi tiết dịch vụ.");
+                }
+
+                int count = 1;
+                string VATRate = "";
+                foreach (var item in listProductBasePlus)
+                {
+                    InvoiceDetailV2 product = new InvoiceDetailV2();
+                    product.ItemType = 1;
+                    product.LineNumber = count;
+                    product.ItemCode = item.ProdCode;//GetFirstWord(item.ProdName) ?? " ";
+                    product.ItemName = item.ProdName;
+                    product.UnitName = item.ProdUnit;
+                    product.Quantity = item.ProdQuantity ?? 0;
+                    product.UnitPrice = item.ProdPrice ?? 0;
+                    product.VatAmount = item.TaxAmount ?? 0;
+                    product.VATAmountOC = item.TaxAmount ?? 0;
+                    if (item.TaxPercentage != null)
+                    {
+                        switch (item.TaxPercentage)
+                        {
+                            case 0:
+                                VATRate = "0%";
+                                break;
+                            case 1:
+                                VATRate = "5%";
+                                break;
+                            case 2:
+                                VATRate = "10%";
+                                break;
+                            case 3:
+                                VATRate = "8%";
+                                break;
+                            default:
+                                VATRate = item.TaxPercentage + "%";
+                                break;
+                        }
+
+                    }
+                    product.VATRateName = VATRate;
+                    product.AmountWithoutVATOC = item.AmountWithoutTax ?? 0;
+                    product.Amount = item.Amount;
+                    product.AmountOC = item.Amount;
+                    product.AmountAfterTax = item.Amount;
                     product.SortOrder = count;
 
                     result.Add(product);
