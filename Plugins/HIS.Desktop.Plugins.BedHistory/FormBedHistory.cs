@@ -74,8 +74,7 @@ namespace HIS.Desktop.Plugins.BedHistory
         long oldPrimaryTypeId;
         bool IsFromTreatment;
         bool IsDisableDelete;
-        HIS_SERE_SERV currentBedServiceReq;
-        List<HIS_SERE_SERV> currentBedSereServs { get; set; }
+        List<HisSereServADO> currentBedSereServs { get; set; }
         private List<V_HIS_BED_LOG> listCurrentBedLog { get; set; }
 
         long keyIsSetPrimaryPatientType = Convert.ToInt16(HisConfigs.Get<string>(HisConfigKeys.CONFIG_KEY__MOS_HIS_SERE_SERV_IS_SET_PRIMARY_PATIENT_TYPE));
@@ -454,9 +453,9 @@ namespace HIS.Desktop.Plugins.BedHistory
                 InitCboRequestUser();
                 InitDataCboOtherPaySource();
 
-                LoadDataGridServiceReq();
-
                 GetAllBedLog();
+
+                LoadDataGridServiceReq();
 
                 FillDataToGridBedLog();
 
@@ -836,6 +835,10 @@ namespace HIS.Desktop.Plugins.BedHistory
                     {
                         finishTimeFilter = Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(bedHistory.finishTime) ?? 0;
                     }
+                    else if (bedHistory.startTime != null && bedHistory.startTime != DateTime.MinValue)
+                    {
+                        finishTimeFilter = Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(bedHistory.startTime.Date) + 235959;
+                    }
 
                     List<long> bedIds = datas.Select(p => p.ID).Distinct().ToList();
 
@@ -1143,7 +1146,7 @@ namespace HIS.Desktop.Plugins.BedHistory
         {
             try
             {
-                currentBedSereServs = new List<HIS_SERE_SERV>();
+                currentBedSereServs = new List<HisSereServADO>();
                 CommonParam param = new CommonParam();
                 MOS.Filter.HisServiceReqFilter filter = new MOS.Filter.HisServiceReqFilter();
                 filter.TREATMENT_ID = _TreatmentBedRoom.TREATMENT_ID;
@@ -1156,20 +1159,31 @@ namespace HIS.Desktop.Plugins.BedHistory
                 {
                     ListServiceReqForSereServs = ListServiceReqForSereServs.OrderBy(p => p.INTRUCTION_TIME).ToList();
 
-                    MOS.Filter.HisSereServFilter ssFilter = new MOS.Filter.HisSereServFilter();
+                    MOS.Filter.HisSereServView2Filter ssFilter = new MOS.Filter.HisSereServView2Filter();
                     ssFilter.SERVICE_REQ_IDs = ListServiceReqForSereServs.Select(s => s.ID).ToList();
-                    var data = new Inventec.Common.Adapter.BackendAdapter(param).Get<List<HIS_SERE_SERV>>("api/HisSereServ/Get", ApiConsumer.ApiConsumers.MosConsumer, ssFilter, param);
+                    var data = new Inventec.Common.Adapter.BackendAdapter(param).Get<List<V_HIS_SERE_SERV_2>>("api/HisSereServ/GetView2", ApiConsumer.ApiConsumers.MosConsumer, ssFilter, param);
 
                     if (data != null && data.Count > 0)
                     {
                         foreach (var item in data)
                         {
-                            HIS_SERE_SERV ss = new HIS_SERE_SERV();
-                            Inventec.Common.Mapper.DataObjectMapper.Map<HIS_SERE_SERV>(ss, item);
+                            HisSereServADO ss = new HisSereServADO();
+                            Inventec.Common.Mapper.DataObjectMapper.Map<HisSereServADO>(ss, item);
+                            if (listCurrentBedLog != null && listCurrentBedLog.Count() > 0)
+                            {
+                                var ado = listCurrentBedLog.FirstOrDefault(o => o.ID == item.BED_LOG_ID);
+                                if (ado != null)
+                                {
+                                    ss.START_TIME_STR = Inventec.Common.DateTime.Convert.TimeNumberToTimeStringWithoutSecond(ado.START_TIME);
+                                    ss.FINISH_TIME_STR = Inventec.Common.DateTime.Convert.TimeNumberToTimeStringWithoutSecond(ado.FINISH_TIME ?? 0);
+                                }
+                            }
+                           
                             currentBedSereServs.Add(ss);
                         }
                         data = data.OrderBy(o => o.TDL_INTRUCTION_TIME).ToList();
-                        gridControlBedServiceReq.DataSource = data;
+                        currentBedSereServs = currentBedSereServs.OrderBy(o => o.TDL_INTRUCTION_TIME).ToList();
+                        gridControlBedServiceReq.DataSource = currentBedSereServs;
                     }
 
 
@@ -1359,18 +1373,18 @@ namespace HIS.Desktop.Plugins.BedHistory
                         }
                     }
 
-                    if (e.Column.FieldName == "IsChecked")
-                    {
-                        if (this.gridViewBedHistory.GetFocusedDisplayText() == "Unchecked")
-                            DeleteBedLog(ado);
-                    }
-                    else
-                    {
-                        if (isChange && !ado.Error && !ado.IsChecked)
-                        {
-                            DeleteBedLog(ado);
-                        }
-                    }
+                    //if (e.Column.FieldName == "IsChecked")
+                    //{
+                    //    if (this.gridViewBedHistory.GetFocusedDisplayText() == "Unchecked")
+                    //        DeleteBedLog(ado);
+                    //}
+                    //else
+                    //{
+                    //    if (this.gridViewBedHistory.GetFocusedRowCellDisplayText("IsChecked") == "Unchecked" && isChange && !ado.Error && !ado.IsChecked)
+                    //    {
+                    //        DeleteBedLog(ado);
+                    //    }
+                    //}
 
                     gridControlBedHistory.RefreshDataSource();
                 }
@@ -1395,7 +1409,7 @@ namespace HIS.Desktop.Plugins.BedHistory
                     FillDataToGridBedLog();
                 }
 
-                
+
                 if ((param.BugCodes != null && param.BugCodes.Count > 0) || (param.Messages != null && param.Messages.Count > 0))
                 {
                     #region Show message
@@ -2172,9 +2186,9 @@ namespace HIS.Desktop.Plugins.BedHistory
                     if (outPut)
                     {
                         success = true;
-                       
-                            listCurrentBedLog.RemoveAll(o => o.ID == row.ID);
-                            LoadDataGridServiceReq();
+
+                        listCurrentBedLog.RemoveAll(o => o.ID == row.ID);
+                        LoadDataGridServiceReq();
                     }
                 }
             }
@@ -3674,7 +3688,7 @@ namespace HIS.Desktop.Plugins.BedHistory
             {
                 if (e.IsGetData && e.Column.UnboundType != DevExpress.Data.UnboundColumnType.Bound)
                 {
-                    HIS_SERE_SERV data = (HIS_SERE_SERV)((IList)((BaseView)sender).DataSource)[e.ListSourceRowIndex];
+                    HisSereServADO data = (HisSereServADO)((IList)((BaseView)sender).DataSource)[e.ListSourceRowIndex];
                     if (data != null)
                     {
                         if (e.Column.FieldName == "STT")
@@ -3701,7 +3715,7 @@ namespace HIS.Desktop.Plugins.BedHistory
                 if (e.RowHandle >= 0)
                 {
                     DevExpress.XtraGrid.Views.Grid.GridView view = sender as DevExpress.XtraGrid.Views.Grid.GridView;
-                    HIS_SERE_SERV data = (HIS_SERE_SERV)((IList)((BaseView)sender).DataSource)[e.RowHandle];
+                    HisSereServADO data = (HisSereServADO)((IList)((BaseView)sender).DataSource)[e.RowHandle];
 
                     if (e.Column.FieldName == "SERVICE_REQ_DELETE")
                     {
@@ -3945,7 +3959,7 @@ namespace HIS.Desktop.Plugins.BedHistory
                     decimal amountBed = 0;
                     if (gridControlBedServiceReq.DataSource != null)
                     {
-                        List<HIS_SERE_SERV> lstSereServ = gridControlBedServiceReq.DataSource as List<HIS_SERE_SERV>;
+                        List<HisSereServADO> lstSereServ = gridControlBedServiceReq.DataSource as List<HisSereServADO>;
                         if (lstSereServ != null && lstSereServ.Count > 0)
                         {
                             amountBed += lstSereServ.Sum(s => s.AMOUNT);
@@ -4515,7 +4529,7 @@ namespace HIS.Desktop.Plugins.BedHistory
                 {
                     CommonParam param = new CommonParam();
                     bool success = false;
-                    var data = (HIS_SERE_SERV)gridViewBedServiceReq.GetFocusedRow();
+                    var data = (HisSereServADO)gridViewBedServiceReq.GetFocusedRow();
                     if (data == null)
                     {
                         //Inventec.Common.Logging.LogSystem.Info("Data thuc hien huy yeu cau dich vu null: " + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => data), data));
@@ -4863,7 +4877,7 @@ namespace HIS.Desktop.Plugins.BedHistory
         {
             try
             {
-                var row = (HIS_SERE_SERV)gridViewBedServiceReq.GetFocusedRow();
+                var row = (HisSereServADO)gridViewBedServiceReq.GetFocusedRow();
                 SpinEdit spn = sender as SpinEdit;
                 if (row != null)
                 {
@@ -4893,7 +4907,7 @@ namespace HIS.Desktop.Plugins.BedHistory
         {
             try
             {
-                var row = (HIS_SERE_SERV)gridViewBedServiceReq.GetFocusedRow();
+                var row = (HisSereServADO)gridViewBedServiceReq.GetFocusedRow();
                 SpinEdit spn = sender as SpinEdit;
                 if (row != null)
                 {

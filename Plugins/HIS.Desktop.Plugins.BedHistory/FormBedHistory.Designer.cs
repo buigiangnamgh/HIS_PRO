@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormBedHistory));
             DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject1 = new DevExpress.Utils.SerializableAppearanceObject();
             DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject2 = new DevExpress.Utils.SerializableAppearanceObject();
@@ -72,7 +71,7 @@
             DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject40 = new DevExpress.Utils.SerializableAppearanceObject();
             this.layoutControl1 = new DevExpress.XtraLayout.LayoutControl();
             this.chkBedAll = new DevExpress.XtraEditors.CheckEdit();
-            this.barManager1 = new DevExpress.XtraBars.BarManager(this.components);
+            this.barManager1 = new DevExpress.XtraBars.BarManager();
             this.bar1 = new DevExpress.XtraBars.Bar();
             this.barButtonAssign = new DevExpress.XtraBars.BarButtonItem();
             this.barBtnSaveBedLog = new DevExpress.XtraBars.BarButtonItem();
@@ -104,6 +103,8 @@
             this.Gv_BedServiceReq__Gc_Delete = new DevExpress.XtraGrid.Columns.GridColumn();
             this.Gv_BedServiceReq__Gc_ServiceReqCode = new DevExpress.XtraGrid.Columns.GridColumn();
             this.Gv_BedServiceReq__Gc_IntructionTime = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn5 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn6 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.Gv_BedServiceReq__Gc_ServiceName = new DevExpress.XtraGrid.Columns.GridColumn();
             this.Gv_BedServiceReq__Gc_Amount = new DevExpress.XtraGrid.Columns.GridColumn();
             this.repositoryItemSpinEditAmountDis = new DevExpress.XtraEditors.Repository.RepositoryItemSpinEdit();
@@ -190,6 +191,7 @@
             this.colPATIENT_TYPE_IDUnb = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colPRIMARY_PATIENT_TYPE_IDUnb = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colPRICE_STRUnb = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn4 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.ButtonEdit = new DevExpress.XtraEditors.Repository.RepositoryItemButtonEdit();
             this.ButtonEditDisable = new DevExpress.XtraEditors.Repository.RepositoryItemButtonEdit();
             this.ButtonDelete = new DevExpress.XtraEditors.Repository.RepositoryItemButtonEdit();
@@ -221,13 +223,14 @@
             this.layoutControlItem7 = new DevExpress.XtraLayout.LayoutControlItem();
             this.LciTreatmentResult = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem9 = new DevExpress.XtraLayout.LayoutControlItem();
-            this.LciSplitDay = new DevExpress.XtraLayout.LayoutControlItem();
             this.LciNotCountHours = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem5 = new DevExpress.XtraLayout.LayoutControlItem();
             this.lciBedRoom = new DevExpress.XtraLayout.LayoutControlItem();
             this.emptySpaceItem1 = new DevExpress.XtraLayout.EmptySpaceItem();
             this.layoutControlItem8 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem10 = new DevExpress.XtraLayout.LayoutControlItem();
+            this.emptySpaceItem3 = new DevExpress.XtraLayout.EmptySpaceItem();
+            this.LciSplitDay = new DevExpress.XtraLayout.LayoutControlItem();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).BeginInit();
             this.layoutControl1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chkBedAll.Properties)).BeginInit();
@@ -318,13 +321,14 @@
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem7)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.LciTreatmentResult)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem9)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.LciSplitDay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.LciNotCountHours)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem5)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.lciBedRoom)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.emptySpaceItem1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem8)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem10)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.emptySpaceItem3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.LciSplitDay)).BeginInit();
             this.SuspendLayout();
             // 
             // layoutControl1
@@ -352,6 +356,7 @@
             this.layoutControl1.Location = new System.Drawing.Point(0, 38);
             this.layoutControl1.Margin = new System.Windows.Forms.Padding(4);
             this.layoutControl1.Name = "layoutControl1";
+            this.layoutControl1.OptionsCustomizationForm.DesignTimeCustomizationFormPositionAndSize = new System.Drawing.Rectangle(160, 386, 312, 437);
             this.layoutControl1.Root = this.layoutControlGroup1;
             this.layoutControl1.Size = new System.Drawing.Size(1760, 654);
             this.layoutControl1.TabIndex = 0;
@@ -453,12 +458,12 @@
             // 
             // chkSplitByResult
             // 
-            this.chkSplitByResult.Location = new System.Drawing.Point(1628, 624);
+            this.chkSplitByResult.Location = new System.Drawing.Point(1496, 624);
             this.chkSplitByResult.Margin = new System.Windows.Forms.Padding(4);
             this.chkSplitByResult.MenuManager = this.barManager1;
             this.chkSplitByResult.Name = "chkSplitByResult";
             this.chkSplitByResult.Properties.Caption = "";
-            this.chkSplitByResult.Size = new System.Drawing.Size(30, 19);
+            this.chkSplitByResult.Size = new System.Drawing.Size(66, 19);
             this.chkSplitByResult.StyleController = this.layoutControl1;
             this.chkSplitByResult.TabIndex = 23;
             this.chkSplitByResult.CheckedChanged += new System.EventHandler(this.chkSplitByResult_CheckedChanged);
@@ -490,7 +495,7 @@
             // LblInTime
             // 
             this.LblInTime.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
-            this.LblInTime.Location = new System.Drawing.Point(128, 258);
+            this.LblInTime.Location = new System.Drawing.Point(128, 249);
             this.LblInTime.Margin = new System.Windows.Forms.Padding(4);
             this.LblInTime.Name = "LblInTime";
             this.LblInTime.Size = new System.Drawing.Size(309, 20);
@@ -500,7 +505,7 @@
             // LblTreatmentDayCount
             // 
             this.LblTreatmentDayCount.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
-            this.LblTreatmentDayCount.Location = new System.Drawing.Point(1088, 291);
+            this.LblTreatmentDayCount.Location = new System.Drawing.Point(1088, 282);
             this.LblTreatmentDayCount.Margin = new System.Windows.Forms.Padding(4);
             this.LblTreatmentDayCount.Name = "LblTreatmentDayCount";
             this.LblTreatmentDayCount.Size = new System.Drawing.Size(669, 20);
@@ -509,12 +514,12 @@
             // 
             // ChkSplitDay
             // 
-            this.ChkSplitDay.Location = new System.Drawing.Point(1430, 624);
+            this.ChkSplitDay.Location = new System.Drawing.Point(1205, 624);
             this.ChkSplitDay.Margin = new System.Windows.Forms.Padding(4);
             this.ChkSplitDay.MenuManager = this.barManager1;
             this.ChkSplitDay.Name = "ChkSplitDay";
             this.ChkSplitDay.Properties.Caption = "";
-            this.ChkSplitDay.Size = new System.Drawing.Size(56, 19);
+            this.ChkSplitDay.Size = new System.Drawing.Size(19, 19);
             this.ChkSplitDay.StyleController = this.layoutControl1;
             this.ChkSplitDay.TabIndex = 19;
             this.ChkSplitDay.CheckedChanged += new System.EventHandler(this.ChkSplitDay_CheckedChanged);
@@ -523,7 +528,7 @@
             // 
             this.DtOutTime.EditValue = null;
             this.DtOutTime.EnterMoveNextControl = true;
-            this.DtOutTime.Location = new System.Drawing.Point(568, 258);
+            this.DtOutTime.Location = new System.Drawing.Point(568, 249);
             this.DtOutTime.Margin = new System.Windows.Forms.Padding(4);
             this.DtOutTime.MenuManager = this.barManager1;
             this.DtOutTime.Name = "DtOutTime";
@@ -543,7 +548,7 @@
             // 
             // CboTreatmentResult
             // 
-            this.CboTreatmentResult.Location = new System.Drawing.Point(676, 290);
+            this.CboTreatmentResult.Location = new System.Drawing.Point(676, 281);
             this.CboTreatmentResult.Margin = new System.Windows.Forms.Padding(4);
             this.CboTreatmentResult.MenuManager = this.barManager1;
             this.CboTreatmentResult.Name = "CboTreatmentResult";
@@ -568,7 +573,7 @@
             // 
             // TxtTreatmentResultCode
             // 
-            this.TxtTreatmentResultCode.Location = new System.Drawing.Point(567, 290);
+            this.TxtTreatmentResultCode.Location = new System.Drawing.Point(567, 281);
             this.TxtTreatmentResultCode.Margin = new System.Windows.Forms.Padding(4);
             this.TxtTreatmentResultCode.MenuManager = this.barManager1;
             this.TxtTreatmentResultCode.Name = "TxtTreatmentResultCode";
@@ -579,7 +584,7 @@
             // 
             // CboTreatmentEndType
             // 
-            this.CboTreatmentEndType.Location = new System.Drawing.Point(236, 290);
+            this.CboTreatmentEndType.Location = new System.Drawing.Point(236, 281);
             this.CboTreatmentEndType.Margin = new System.Windows.Forms.Padding(4);
             this.CboTreatmentEndType.MenuManager = this.barManager1;
             this.CboTreatmentEndType.Name = "CboTreatmentEndType";
@@ -604,7 +609,7 @@
             // 
             // TxtTreatmentEndTypeCode
             // 
-            this.TxtTreatmentEndTypeCode.Location = new System.Drawing.Point(127, 290);
+            this.TxtTreatmentEndTypeCode.Location = new System.Drawing.Point(127, 281);
             this.TxtTreatmentEndTypeCode.Margin = new System.Windows.Forms.Padding(4);
             this.TxtTreatmentEndTypeCode.MenuManager = this.barManager1;
             this.TxtTreatmentEndTypeCode.Name = "TxtTreatmentEndTypeCode";
@@ -615,7 +620,7 @@
             // 
             // BtnSaveBedLog
             // 
-            this.BtnSaveBedLog.Location = new System.Drawing.Point(1616, 258);
+            this.BtnSaveBedLog.Location = new System.Drawing.Point(1616, 249);
             this.BtnSaveBedLog.Margin = new System.Windows.Forms.Padding(4);
             this.BtnSaveBedLog.Name = "BtnSaveBedLog";
             this.BtnSaveBedLog.Size = new System.Drawing.Size(141, 27);
@@ -626,12 +631,12 @@
             // 
             // ChkNotCountHours
             // 
-            this.ChkNotCountHours.Location = new System.Drawing.Point(1205, 624);
+            this.ChkNotCountHours.Location = new System.Drawing.Point(1325, 624);
             this.ChkNotCountHours.Margin = new System.Windows.Forms.Padding(4);
             this.ChkNotCountHours.MenuManager = this.barManager1;
             this.ChkNotCountHours.Name = "ChkNotCountHours";
             this.ChkNotCountHours.Properties.Caption = "";
-            this.ChkNotCountHours.Size = new System.Drawing.Size(124, 19);
+            this.ChkNotCountHours.Size = new System.Drawing.Size(19, 19);
             this.ChkNotCountHours.StyleController = this.layoutControl1;
             this.ChkNotCountHours.TabIndex = 11;
             this.ChkNotCountHours.CheckedChanged += new System.EventHandler(this.ChkNotCountHours_CheckedChanged);
@@ -649,10 +654,12 @@
             // btnAssigns
             // 
             this.btnAssigns.Enabled = false;
-            this.btnAssigns.Location = new System.Drawing.Point(1664, 624);
+            this.btnAssigns.Location = new System.Drawing.Point(1568, 624);
             this.btnAssigns.Margin = new System.Windows.Forms.Padding(4);
+            this.btnAssigns.MaximumSize = new System.Drawing.Size(189, 27);
+            this.btnAssigns.MinimumSize = new System.Drawing.Size(189, 27);
             this.btnAssigns.Name = "btnAssigns";
-            this.btnAssigns.Size = new System.Drawing.Size(93, 27);
+            this.btnAssigns.Size = new System.Drawing.Size(189, 27);
             this.btnAssigns.StyleController = this.layoutControl1;
             this.btnAssigns.TabIndex = 9;
             this.btnAssigns.Text = "Chỉ định (F9)";
@@ -661,7 +668,7 @@
             // gridControlBedServiceReq
             // 
             this.gridControlBedServiceReq.EmbeddedNavigator.Margin = new System.Windows.Forms.Padding(4);
-            this.gridControlBedServiceReq.Location = new System.Drawing.Point(1110, 317);
+            this.gridControlBedServiceReq.Location = new System.Drawing.Point(1110, 308);
             this.gridControlBedServiceReq.MainView = this.gridViewBedServiceReq;
             this.gridControlBedServiceReq.Margin = new System.Windows.Forms.Padding(4);
             this.gridControlBedServiceReq.Name = "gridControlBedServiceReq";
@@ -672,7 +679,7 @@
             this.repositoryItemSpinEditAmountTemp,
             this.repositoryItemSpinEditAmountDis,
             this.repositoryItemSpinEditAmountTempDis});
-            this.gridControlBedServiceReq.Size = new System.Drawing.Size(647, 301);
+            this.gridControlBedServiceReq.Size = new System.Drawing.Size(647, 310);
             this.gridControlBedServiceReq.TabIndex = 6;
             this.gridControlBedServiceReq.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gridViewBedServiceReq});
@@ -684,6 +691,8 @@
             this.Gv_BedServiceReq__Gc_Delete,
             this.Gv_BedServiceReq__Gc_ServiceReqCode,
             this.Gv_BedServiceReq__Gc_IntructionTime,
+            this.gridColumn5,
+            this.gridColumn6,
             this.Gv_BedServiceReq__Gc_ServiceName,
             this.Gv_BedServiceReq__Gc_Amount,
             this.Gv_BedServiceReq__Gc_Amount_Temp,
@@ -734,7 +743,7 @@
             this.Gv_BedServiceReq__Gc_IntructionTime.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
             this.Gv_BedServiceReq__Gc_IntructionTime.AppearanceHeader.Options.UseTextOptions = true;
             this.Gv_BedServiceReq__Gc_IntructionTime.AppearanceHeader.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
-            this.Gv_BedServiceReq__Gc_IntructionTime.Caption = "Thời gian";
+            this.Gv_BedServiceReq__Gc_IntructionTime.Caption = "Thời gian y lệnh";
             this.Gv_BedServiceReq__Gc_IntructionTime.FieldName = "INTRUCTION_TIME_DISPLAY";
             this.Gv_BedServiceReq__Gc_IntructionTime.Name = "Gv_BedServiceReq__Gc_IntructionTime";
             this.Gv_BedServiceReq__Gc_IntructionTime.OptionsColumn.AllowEdit = false;
@@ -743,13 +752,33 @@
             this.Gv_BedServiceReq__Gc_IntructionTime.VisibleIndex = 3;
             this.Gv_BedServiceReq__Gc_IntructionTime.Width = 120;
             // 
+            // gridColumn5
+            // 
+            this.gridColumn5.Caption = "Thời gian bắt đầu";
+            this.gridColumn5.FieldName = "START_TIME_STR";
+            this.gridColumn5.Name = "gridColumn5";
+            this.gridColumn5.OptionsColumn.AllowEdit = false;
+            this.gridColumn5.Visible = true;
+            this.gridColumn5.VisibleIndex = 4;
+            this.gridColumn5.Width = 120;
+            // 
+            // gridColumn6
+            // 
+            this.gridColumn6.Caption = "Thời gian kết thúc";
+            this.gridColumn6.FieldName = "FINISH_TIME_STR";
+            this.gridColumn6.Name = "gridColumn6";
+            this.gridColumn6.OptionsColumn.AllowEdit = false;
+            this.gridColumn6.Visible = true;
+            this.gridColumn6.VisibleIndex = 5;
+            this.gridColumn6.Width = 120;
+            // 
             // Gv_BedServiceReq__Gc_ServiceName
             // 
             this.Gv_BedServiceReq__Gc_ServiceName.Caption = "Tên dịch vụ";
             this.Gv_BedServiceReq__Gc_ServiceName.FieldName = "TDL_SERVICE_NAME";
             this.Gv_BedServiceReq__Gc_ServiceName.Name = "Gv_BedServiceReq__Gc_ServiceName";
             this.Gv_BedServiceReq__Gc_ServiceName.Visible = true;
-            this.Gv_BedServiceReq__Gc_ServiceName.VisibleIndex = 4;
+            this.Gv_BedServiceReq__Gc_ServiceName.VisibleIndex = 6;
             this.Gv_BedServiceReq__Gc_ServiceName.Width = 273;
             // 
             // Gv_BedServiceReq__Gc_Amount
@@ -759,7 +788,7 @@
             this.Gv_BedServiceReq__Gc_Amount.FieldName = "AMOUNT";
             this.Gv_BedServiceReq__Gc_Amount.Name = "Gv_BedServiceReq__Gc_Amount";
             this.Gv_BedServiceReq__Gc_Amount.Visible = true;
-            this.Gv_BedServiceReq__Gc_Amount.VisibleIndex = 5;
+            this.Gv_BedServiceReq__Gc_Amount.VisibleIndex = 7;
             // 
             // repositoryItemSpinEditAmountDis
             // 
@@ -776,7 +805,7 @@
             this.Gv_BedServiceReq__Gc_Amount_Temp.FieldName = "AMOUNT_TEMP";
             this.Gv_BedServiceReq__Gc_Amount_Temp.Name = "Gv_BedServiceReq__Gc_Amount_Temp";
             this.Gv_BedServiceReq__Gc_Amount_Temp.Visible = true;
-            this.Gv_BedServiceReq__Gc_Amount_Temp.VisibleIndex = 6;
+            this.Gv_BedServiceReq__Gc_Amount_Temp.VisibleIndex = 8;
             this.Gv_BedServiceReq__Gc_Amount_Temp.Width = 100;
             // 
             // repositoryItemSpinEditAmountTempDis
@@ -793,7 +822,7 @@
             this.Gv_BedServiceReq__Gc_ShareCount.FieldName = "SHARE_COUNT";
             this.Gv_BedServiceReq__Gc_ShareCount.Name = "Gv_BedServiceReq__Gc_ShareCount";
             this.Gv_BedServiceReq__Gc_ShareCount.Visible = true;
-            this.Gv_BedServiceReq__Gc_ShareCount.VisibleIndex = 7;
+            this.Gv_BedServiceReq__Gc_ShareCount.VisibleIndex = 9;
             // 
             // Gv_BedServiceReq__Gc_Price
             // 
@@ -801,7 +830,7 @@
             this.Gv_BedServiceReq__Gc_Price.FieldName = "PRICE";
             this.Gv_BedServiceReq__Gc_Price.Name = "Gv_BedServiceReq__Gc_Price";
             this.Gv_BedServiceReq__Gc_Price.Visible = true;
-            this.Gv_BedServiceReq__Gc_Price.VisibleIndex = 8;
+            this.Gv_BedServiceReq__Gc_Price.VisibleIndex = 10;
             // 
             // repositoryItemBtnDeleteServiceReq
             // 
@@ -839,7 +868,7 @@
             // gridControlBedServiceType
             // 
             this.gridControlBedServiceType.EmbeddedNavigator.Margin = new System.Windows.Forms.Padding(4);
-            this.gridControlBedServiceType.Location = new System.Drawing.Point(3, 317);
+            this.gridControlBedServiceType.Location = new System.Drawing.Point(3, 308);
             this.gridControlBedServiceType.MainView = this.gridViewBedServiceType;
             this.gridControlBedServiceType.Margin = new System.Windows.Forms.Padding(4);
             this.gridControlBedServiceType.Name = "gridControlBedServiceType";
@@ -854,7 +883,7 @@
             this.repositoryItemDtIntructionTime,
             this.repositoryItemCboOtherPaySource,
             this.repositoryItemCboRequestUser});
-            this.gridControlBedServiceType.Size = new System.Drawing.Size(1101, 301);
+            this.gridControlBedServiceType.Size = new System.Drawing.Size(1101, 310);
             this.gridControlBedServiceType.TabIndex = 5;
             this.gridControlBedServiceType.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gridViewBedServiceType});
@@ -915,7 +944,6 @@
             this.Gv_BedServiceType__Gc_IntructionTime.ColumnEdit = this.repositoryItemDtIntructionTime;
             this.Gv_BedServiceType__Gc_IntructionTime.FieldName = "IntructionTime";
             this.Gv_BedServiceType__Gc_IntructionTime.Name = "Gv_BedServiceType__Gc_IntructionTime";
-            this.Gv_BedServiceType__Gc_IntructionTime.OptionsColumn.AllowEdit = false;
             this.Gv_BedServiceType__Gc_IntructionTime.Visible = true;
             this.Gv_BedServiceType__Gc_IntructionTime.VisibleIndex = 2;
             this.Gv_BedServiceType__Gc_IntructionTime.Width = 100;
@@ -1216,7 +1244,7 @@
             this.repositoryItemBtnAddDisable,
             this.repositoryItemCboBedPatientType,
             this.repositoryItemCboBedPrimaryPatientType});
-            this.gridControlBedHistory.Size = new System.Drawing.Size(1754, 221);
+            this.gridControlBedHistory.Size = new System.Drawing.Size(1754, 212);
             this.gridControlBedHistory.TabIndex = 4;
             this.gridControlBedHistory.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gridViewBedHistory});
@@ -1256,7 +1284,8 @@
             this.colUnb,
             this.colPATIENT_TYPE_IDUnb,
             this.colPRIMARY_PATIENT_TYPE_IDUnb,
-            this.colPRICE_STRUnb});
+            this.colPRICE_STRUnb,
+            this.gridColumn4});
             this.gridViewBedHistory.GridControl = this.gridControlBedHistory;
             this.gridViewBedHistory.Name = "gridViewBedHistory";
             this.gridViewBedHistory.OptionsView.ShowGroupPanel = false;
@@ -1693,6 +1722,11 @@
             this.colPRICE_STRUnb.Name = "colPRICE_STRUnb";
             this.colPRICE_STRUnb.UnboundType = DevExpress.Data.UnboundColumnType.String;
             // 
+            // gridColumn4
+            // 
+            this.gridColumn4.Caption = "gridColumn4";
+            this.gridColumn4.Name = "gridColumn4";
+            // 
             // ButtonEdit
             // 
             this.ButtonEdit.AutoHeight = false;
@@ -1866,15 +1900,16 @@
             this.layoutControlItem7,
             this.LciTreatmentResult,
             this.layoutControlItem9,
-            this.LciSplitDay,
             this.LciNotCountHours,
             this.layoutControlItem5,
             this.lciBedRoom,
             this.emptySpaceItem1,
             this.layoutControlItem8,
-            this.layoutControlItem10});
+            this.layoutControlItem10,
+            this.emptySpaceItem3,
+            this.LciSplitDay});
             this.layoutControlGroup1.Location = new System.Drawing.Point(0, 0);
-            this.layoutControlGroup1.Name = "layoutControlGroup1";
+            this.layoutControlGroup1.Name = "Root";
             this.layoutControlGroup1.Padding = new DevExpress.XtraLayout.Utils.Padding(0, 0, 0, 0);
             this.layoutControlGroup1.Size = new System.Drawing.Size(1760, 654);
             this.layoutControlGroup1.TextVisible = false;
@@ -1884,34 +1919,34 @@
             this.layoutControlItem1.Control = this.gridControlBedHistory;
             this.layoutControlItem1.Location = new System.Drawing.Point(0, 28);
             this.layoutControlItem1.Name = "layoutControlItem1";
-            this.layoutControlItem1.Size = new System.Drawing.Size(1760, 227);
+            this.layoutControlItem1.Size = new System.Drawing.Size(1760, 218);
             this.layoutControlItem1.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem1.TextVisible = false;
             // 
             // layoutControlItem2
             // 
             this.layoutControlItem2.Control = this.gridControlBedServiceType;
-            this.layoutControlItem2.Location = new System.Drawing.Point(0, 314);
+            this.layoutControlItem2.Location = new System.Drawing.Point(0, 305);
             this.layoutControlItem2.Name = "layoutControlItem2";
-            this.layoutControlItem2.Size = new System.Drawing.Size(1107, 307);
+            this.layoutControlItem2.Size = new System.Drawing.Size(1107, 316);
             this.layoutControlItem2.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem2.TextVisible = false;
             // 
             // layoutControlItem3
             // 
             this.layoutControlItem3.Control = this.gridControlBedServiceReq;
-            this.layoutControlItem3.Location = new System.Drawing.Point(1107, 314);
+            this.layoutControlItem3.Location = new System.Drawing.Point(1107, 305);
             this.layoutControlItem3.Name = "layoutControlItem3";
-            this.layoutControlItem3.Size = new System.Drawing.Size(653, 307);
+            this.layoutControlItem3.Size = new System.Drawing.Size(653, 316);
             this.layoutControlItem3.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem3.TextVisible = false;
             // 
             // layoutControlItem6
             // 
             this.layoutControlItem6.Control = this.btnAssigns;
-            this.layoutControlItem6.Location = new System.Drawing.Point(1661, 621);
+            this.layoutControlItem6.Location = new System.Drawing.Point(1565, 621);
             this.layoutControlItem6.Name = "layoutControlItem6";
-            this.layoutControlItem6.Size = new System.Drawing.Size(99, 33);
+            this.layoutControlItem6.Size = new System.Drawing.Size(195, 33);
             this.layoutControlItem6.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem6.TextVisible = false;
             // 
@@ -1931,7 +1966,7 @@
             // layoutControlItem4
             // 
             this.layoutControlItem4.Control = this.BtnSaveBedLog;
-            this.layoutControlItem4.Location = new System.Drawing.Point(1613, 255);
+            this.layoutControlItem4.Location = new System.Drawing.Point(1613, 246);
             this.layoutControlItem4.Name = "layoutControlItem4";
             this.layoutControlItem4.Size = new System.Drawing.Size(147, 33);
             this.layoutControlItem4.TextSize = new System.Drawing.Size(0, 0);
@@ -1940,7 +1975,7 @@
             // emptySpaceItem2
             // 
             this.emptySpaceItem2.AllowHotTrack = false;
-            this.emptySpaceItem2.Location = new System.Drawing.Point(880, 255);
+            this.emptySpaceItem2.Location = new System.Drawing.Point(880, 246);
             this.emptySpaceItem2.Name = "emptySpaceItem2";
             this.emptySpaceItem2.Size = new System.Drawing.Size(733, 33);
             this.emptySpaceItem2.TextSize = new System.Drawing.Size(0, 0);
@@ -1950,7 +1985,7 @@
             this.LciEndTime.AppearanceItemCaption.Options.UseTextOptions = true;
             this.LciEndTime.AppearanceItemCaption.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.LciEndTime.Control = this.DtOutTime;
-            this.LciEndTime.Location = new System.Drawing.Point(440, 255);
+            this.LciEndTime.Location = new System.Drawing.Point(440, 246);
             this.LciEndTime.Name = "LciEndTime";
             this.LciEndTime.OptionsToolTip.ToolTip = "Thời gian ra viện dự kiến";
             this.LciEndTime.Size = new System.Drawing.Size(440, 33);
@@ -1964,7 +1999,7 @@
             this.LciTreatmentDayCount.AppearanceItemCaption.Options.UseTextOptions = true;
             this.LciTreatmentDayCount.AppearanceItemCaption.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.LciTreatmentDayCount.Control = this.LblTreatmentDayCount;
-            this.LciTreatmentDayCount.Location = new System.Drawing.Point(880, 288);
+            this.LciTreatmentDayCount.Location = new System.Drawing.Point(880, 279);
             this.LciTreatmentDayCount.Name = "LciTreatmentDayCount";
             this.LciTreatmentDayCount.OptionsToolTip.ToolTip = "Tổng số ngày điều trị dự kiến tính theo thông tư 39/2018/TT-BYT";
             this.LciTreatmentDayCount.Size = new System.Drawing.Size(880, 26);
@@ -1978,7 +2013,7 @@
             this.LciInTime.AppearanceItemCaption.Options.UseTextOptions = true;
             this.LciInTime.AppearanceItemCaption.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.LciInTime.Control = this.LblInTime;
-            this.LciInTime.Location = new System.Drawing.Point(0, 255);
+            this.LciInTime.Location = new System.Drawing.Point(0, 246);
             this.LciInTime.Name = "LciInTime";
             this.LciInTime.Size = new System.Drawing.Size(440, 33);
             this.LciInTime.Text = "Thời gian vào viện:";
@@ -1991,7 +2026,7 @@
             this.LciEndType.AppearanceItemCaption.Options.UseTextOptions = true;
             this.LciEndType.AppearanceItemCaption.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.LciEndType.Control = this.TxtTreatmentEndTypeCode;
-            this.LciEndType.Location = new System.Drawing.Point(0, 288);
+            this.LciEndType.Location = new System.Drawing.Point(0, 279);
             this.LciEndType.Name = "LciEndType";
             this.LciEndType.Padding = new DevExpress.XtraLayout.Utils.Padding(2, 0, 2, 2);
             this.LciEndType.Size = new System.Drawing.Size(236, 26);
@@ -2003,7 +2038,7 @@
             // layoutControlItem7
             // 
             this.layoutControlItem7.Control = this.CboTreatmentEndType;
-            this.layoutControlItem7.Location = new System.Drawing.Point(236, 288);
+            this.layoutControlItem7.Location = new System.Drawing.Point(236, 279);
             this.layoutControlItem7.Name = "layoutControlItem7";
             this.layoutControlItem7.Padding = new DevExpress.XtraLayout.Utils.Padding(0, 2, 2, 2);
             this.layoutControlItem7.Size = new System.Drawing.Size(204, 26);
@@ -2015,7 +2050,7 @@
             this.LciTreatmentResult.AppearanceItemCaption.Options.UseTextOptions = true;
             this.LciTreatmentResult.AppearanceItemCaption.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.LciTreatmentResult.Control = this.TxtTreatmentResultCode;
-            this.LciTreatmentResult.Location = new System.Drawing.Point(440, 288);
+            this.LciTreatmentResult.Location = new System.Drawing.Point(440, 279);
             this.LciTreatmentResult.Name = "LciTreatmentResult";
             this.LciTreatmentResult.Padding = new DevExpress.XtraLayout.Utils.Padding(2, 0, 2, 2);
             this.LciTreatmentResult.Size = new System.Drawing.Size(236, 26);
@@ -2027,48 +2062,37 @@
             // layoutControlItem9
             // 
             this.layoutControlItem9.Control = this.CboTreatmentResult;
-            this.layoutControlItem9.Location = new System.Drawing.Point(676, 288);
+            this.layoutControlItem9.Location = new System.Drawing.Point(676, 279);
             this.layoutControlItem9.Name = "layoutControlItem9";
             this.layoutControlItem9.Padding = new DevExpress.XtraLayout.Utils.Padding(0, 2, 2, 2);
             this.layoutControlItem9.Size = new System.Drawing.Size(204, 26);
             this.layoutControlItem9.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem9.TextVisible = false;
             // 
-            // LciSplitDay
-            // 
-            this.LciSplitDay.AppearanceItemCaption.Options.UseTextOptions = true;
-            this.LciSplitDay.AppearanceItemCaption.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
-            this.LciSplitDay.Control = this.ChkSplitDay;
-            this.LciSplitDay.Location = new System.Drawing.Point(1332, 621);
-            this.LciSplitDay.Name = "LciSplitDay";
-            this.LciSplitDay.Size = new System.Drawing.Size(157, 33);
-            this.LciSplitDay.Text = "Tách theo ngày:";
-            this.LciSplitDay.TextAlignMode = DevExpress.XtraLayout.TextAlignModeItem.CustomSize;
-            this.LciSplitDay.TextSize = new System.Drawing.Size(90, 20);
-            this.LciSplitDay.TextToControlDistance = 5;
-            // 
             // LciNotCountHours
             // 
             this.LciNotCountHours.AppearanceItemCaption.Options.UseTextOptions = true;
             this.LciNotCountHours.AppearanceItemCaption.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.LciNotCountHours.Control = this.ChkNotCountHours;
-            this.LciNotCountHours.Location = new System.Drawing.Point(1107, 621);
+            this.LciNotCountHours.Location = new System.Drawing.Point(1227, 621);
             this.LciNotCountHours.Name = "LciNotCountHours";
-            this.LciNotCountHours.Size = new System.Drawing.Size(225, 33);
+            this.LciNotCountHours.Size = new System.Drawing.Size(120, 33);
             this.LciNotCountHours.Text = "Tính theo ngày:";
             this.LciNotCountHours.TextAlignMode = DevExpress.XtraLayout.TextAlignModeItem.CustomSize;
             this.LciNotCountHours.TextSize = new System.Drawing.Size(90, 20);
             this.LciNotCountHours.TextToControlDistance = 5;
+            this.LciNotCountHours.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
             // 
             // layoutControlItem5
             // 
             this.layoutControlItem5.Control = this.chkSplitByResult;
-            this.layoutControlItem5.Location = new System.Drawing.Point(1489, 621);
+            this.layoutControlItem5.Location = new System.Drawing.Point(1357, 621);
             this.layoutControlItem5.Name = "layoutControlItem5";
             this.layoutControlItem5.OptionsToolTip.ToolTip = "Tách theo thông tư 39 dựa trên kết quả ra viện dự kiến";
-            this.layoutControlItem5.Size = new System.Drawing.Size(172, 33);
+            this.layoutControlItem5.Size = new System.Drawing.Size(208, 33);
             this.layoutControlItem5.Text = "Tách theo KQ dự kiến";
             this.layoutControlItem5.TextSize = new System.Drawing.Size(133, 17);
+            this.layoutControlItem5.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
             // 
             // lciBedRoom
             // 
@@ -2119,6 +2143,27 @@
             this.layoutControlItem10.TextAlignMode = DevExpress.XtraLayout.TextAlignModeItem.CustomSize;
             this.layoutControlItem10.TextSize = new System.Drawing.Size(200, 20);
             this.layoutControlItem10.TextToControlDistance = 5;
+            // 
+            // emptySpaceItem3
+            // 
+            this.emptySpaceItem3.AllowHotTrack = false;
+            this.emptySpaceItem3.Location = new System.Drawing.Point(1347, 621);
+            this.emptySpaceItem3.Name = "emptySpaceItem3";
+            this.emptySpaceItem3.Size = new System.Drawing.Size(10, 33);
+            this.emptySpaceItem3.TextSize = new System.Drawing.Size(0, 0);
+            // 
+            // LciSplitDay
+            // 
+            this.LciSplitDay.AppearanceItemCaption.Options.UseTextOptions = true;
+            this.LciSplitDay.AppearanceItemCaption.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
+            this.LciSplitDay.Control = this.ChkSplitDay;
+            this.LciSplitDay.Location = new System.Drawing.Point(1107, 621);
+            this.LciSplitDay.Name = "LciSplitDay";
+            this.LciSplitDay.Size = new System.Drawing.Size(120, 33);
+            this.LciSplitDay.Text = "Tách theo ngày:";
+            this.LciSplitDay.TextAlignMode = DevExpress.XtraLayout.TextAlignModeItem.CustomSize;
+            this.LciSplitDay.TextSize = new System.Drawing.Size(90, 20);
+            this.LciSplitDay.TextToControlDistance = 5;
             // 
             // FormBedHistory
             // 
@@ -2232,13 +2277,14 @@
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem7)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.LciTreatmentResult)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem9)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.LciSplitDay)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.LciNotCountHours)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem5)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.lciBedRoom)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.emptySpaceItem1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem8)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem10)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.emptySpaceItem3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.LciSplitDay)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -2404,5 +2450,9 @@
         private DevExpress.XtraGrid.Columns.GridColumn Gv_BedServiceType__Gc_RequestLoginname;
         private Inventec.Desktop.CustomControl.RepositoryItemCustomGridLookUpEdit repositoryItemCboRequestUser;
         private Inventec.Desktop.CustomControl.CustomGridViewWithFilterMultiColumn customGridViewWithFilterMultiColumn1;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn4;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn5;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn6;
+        private DevExpress.XtraLayout.EmptySpaceItem emptySpaceItem3;
     }
 }

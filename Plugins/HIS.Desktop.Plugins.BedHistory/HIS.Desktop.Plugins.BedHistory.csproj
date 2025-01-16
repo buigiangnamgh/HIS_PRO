@@ -133,6 +133,7 @@
     <Compile Include="ADO\HisBedADO.cs" />
     <Compile Include="ADO\HisBedHistoryADO.cs" />
     <Compile Include="ADO\HisBedServiceTypeADO.cs" />
+    <Compile Include="ADO\HisSereServADO.cs" />
     <Compile Include="ADO\ShareCountADO.cs" />
     <Compile Include="Base\GlobalStore.cs" />
     <Compile Include="BedHistoryProcessor.cs" />
