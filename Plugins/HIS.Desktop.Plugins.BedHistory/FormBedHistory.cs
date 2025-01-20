@@ -1163,22 +1163,209 @@ namespace HIS.Desktop.Plugins.BedHistory
                     ssFilter.SERVICE_REQ_IDs = ListServiceReqForSereServs.Select(s => s.ID).ToList();
                     var data = new Inventec.Common.Adapter.BackendAdapter(param).Get<List<V_HIS_SERE_SERV_2>>("api/HisSereServ/GetView2", ApiConsumer.ApiConsumers.MosConsumer, ssFilter, param);
 
+
+                    bool Config_BedTimeOption = false;
+                    Config_BedTimeOption = (HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>("HIS.QD_130_BYT.BED_TIME_OPTION") == "1");
+
+                    var listHeinServiceTypeMaterialGiuong = new List<long>
+                {
+                    IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__GI_L,
+                    IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__GI_NGT,
+                    IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__GI_NT,
+                    IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__GI_BN
+                };
+                    var listHeinServiceType = new List<long>
+                {
+                    IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__GI_NGT,
+                    IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__GI_NT,
+                    IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__GI_BN,
+                    IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__GI_L,
+                    IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__CDHA,
+                    IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__KH,
+                    IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__TDCN,
+                    IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__DVKTC,
+                    IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__PTTT,
+                    IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__XN,
+                    IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__VC,
+                    IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__TT
+                };
+
+                    var listHeinServiceTypeMaterial = new List<long>
+                {
+                    IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__VT_NDM,
+                    IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__VT_TDM,
+                    IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__VT_TL,
+                    IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__VT_TT
+                };
+                    var listServeservs = data.Where(s => s != null && (s.TDL_HEIN_SERVICE_TYPE_ID.HasValue && listHeinServiceType.Contains(s.TDL_HEIN_SERVICE_TYPE_ID.Value) || listHeinServiceTypeMaterial.Contains(s.TDL_HEIN_SERVICE_TYPE_ID.Value))).OrderBy(b => b.INTRUCTION_TIME).ToList();
                     if (data != null && data.Count > 0)
                     {
-                        foreach (var item in data)
+                        foreach (var hisSereServ in data)
                         {
+                            string ngayTHYL = "";
+                            string ngayKQ = "";
+
                             HisSereServADO ss = new HisSereServADO();
-                            Inventec.Common.Mapper.DataObjectMapper.Map<HisSereServADO>(ss, item);
+                            Inventec.Common.Mapper.DataObjectMapper.Map<HisSereServADO>(ss, hisSereServ);
                             if (listCurrentBedLog != null && listCurrentBedLog.Count() > 0)
                             {
-                                var ado = listCurrentBedLog.FirstOrDefault(o => o.ID == item.BED_LOG_ID);
-                                if (ado != null)
+                                ss.START_TIME_STR = Inventec.Common.DateTime.Convert.TimeNumberToTimeStringWithoutSecond(ss.TDL_INTRUCTION_TIME);
+
+                                decimal TimeExecute = hisSereServ.BEGIN_TIME ?? hisSereServ.START_TIME ?? hisSereServ.INTRUCTION_TIME;
+                                ngayTHYL = TimeExecute.ToString().Substring(0, 12);
+
+                                if (hisSereServ.END_TIME.HasValue)
                                 {
-                                    ss.START_TIME_STR = Inventec.Common.DateTime.Convert.TimeNumberToTimeStringWithoutSecond(ado.START_TIME);
-                                    ss.FINISH_TIME_STR = Inventec.Common.DateTime.Convert.TimeNumberToTimeStringWithoutSecond(ado.FINISH_TIME ?? 0);
+                                    ngayKQ = hisSereServ.END_TIME.ToString().Substring(0, 12);
                                 }
+                                else
+                                {
+                                    if (hisSereServ.FINISH_TIME.HasValue)
+                                    {
+                                        ngayKQ = hisSereServ.FINISH_TIME.ToString().Substring(0, 12);
+                                    }
+                                    else
+                                    {
+                                        ngayKQ = ngayTHYL;
+                                    }
+                                }
+
+                                if (!Config_BedTimeOption)
+                                {
+                                    if (listHeinServiceTypeMaterialGiuong.Contains(hisSereServ.TDL_HEIN_SERVICE_TYPE_ID ?? 0))
+                                    {
+                                        if (CurrentTreatment.OUT_TIME.HasValue)
+                                        {
+                                            ngayKQ = CurrentTreatment.OUT_TIME.ToString().Substring(0, 12);
+                                        }
+                                        var SereServBed = listServeservs.Where(o => listHeinServiceTypeMaterialGiuong.Contains(o.TDL_HEIN_SERVICE_TYPE_ID ?? 0) && o.ID != hisSereServ.ID).ToList();
+                                        if (SereServBed != null && SereServBed.Count > 0)
+                                        {
+                                            SereServBed = SereServBed.Where(o => o.TDL_INTRUCTION_TIME > hisSereServ.TDL_INTRUCTION_TIME).ToList();
+                                            if (SereServBed.Count > 0)
+                                            {
+                                                var SsIntructionTime = SereServBed.OrderBy(o => o.TDL_INTRUCTION_TIME).ToList()[0];
+                                                ngayKQ = SsIntructionTime.TDL_INTRUCTION_TIME.ToString().Substring(0, 12);
+                                            }
+                                        }
+
+                                        long ngayKqC = Int64.Parse(ngayKQ + "00");
+                                        long ngayThylC = !string.IsNullOrWhiteSpace(ngayTHYL) ? Int64.Parse(ngayTHYL + "00") : 0;
+                                        System.DateTime? in_t = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(ngayKqC);
+                                        System.DateTime? out_t = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(ngayThylC);
+                                        TimeSpan tdiff = in_t.Value - out_t.Value;
+                                        if (hisSereServ.AMOUNT >= 1)
+                                        {
+                                            if (tdiff.TotalHours > (double)(hisSereServ.AMOUNT * 24))
+                                                in_t = out_t.Value.AddHours((double)hisSereServ.AMOUNT * 24);
+                                        }
+                                        else if (tdiff.TotalHours > 4)
+                                            in_t = out_t.Value.AddHours(4);
+                                        ngayKQ = Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(in_t).Value.ToString().Substring(0, 12);
+                                    }
+                                    else
+                                    {
+                                        if (!string.IsNullOrWhiteSpace(ngayKQ))
+                                        {
+                                            long ngayKq = Int64.Parse(ngayKQ);
+                                            long ngayThyl = !string.IsNullOrWhiteSpace(ngayTHYL) ? Int64.Parse(ngayTHYL) : 0;
+                                            //thinhdt2
+                                            //sua thoi gian kq 179141
+                                            Inventec.Common.Logging.LogSystem.Debug("ngayKq: " + ngayKq + " ngayThyl: " + ngayThyl);
+                                            if (ngayKq <= ngayThyl)
+                                            {
+                                                if (hisSereServ.TDL_HEIN_SERVICE_TYPE_ID.HasValue && listHeinServiceTypeMaterial.Contains(hisSereServ.TDL_HEIN_SERVICE_TYPE_ID.Value))
+                                                {
+                                                    DateTime ngayThylTime = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(ngayThyl * 100) ?? DateTime.MinValue;
+                                                    if (ngayThylTime != DateTime.MinValue)
+                                                    {
+                                                        DateTime ngayKQTime = ngayThylTime.AddMinutes(5);
+                                                        ngayKQ = ((Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(ngayKQTime) ?? 0) / 100).ToString();
+
+                                                    }
+                                                }
+                                                else
+                                                    ngayKQ = ngayTHYL;
+                                                Inventec.Common.Logging.LogSystem.Debug("co ngayKq <= ngayThyl.ngayKQ = " + ngayKQ);
+                                            }
+                                        }
+                                    }
+                                }
+                                else
+                                {
+
+                                    if (listCurrentBedLog != null && listCurrentBedLog.Count > 0 && listCurrentBedLog.Exists(o => o.ID == (hisSereServ.BED_LOG_ID ?? 0)))
+                                    {
+                                        if (hisSereServ.TDL_HEIN_SERVICE_TYPE_ID.HasValue && (hisSereServ.TDL_HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__GI_NGT ||
+                                            hisSereServ.TDL_HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__GI_NT ||
+                                            hisSereServ.TDL_HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__GI_BN ||
+                                            hisSereServ.TDL_HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__GI_L))
+                                        {
+                                            var bed = listCurrentBedLog != null && listCurrentBedLog.Count > 0 ? listCurrentBedLog.FirstOrDefault(o => o.ID == hisSereServ.BED_LOG_ID) : null;
+                                            ngayKQ = bed != null && bed.FINISH_TIME.HasValue ? bed.FINISH_TIME.ToString().Substring(0, 12) : ngayKQ;
+                                            if (hisSereServ.BED_LOG_ID.HasValue)
+                                            {
+                                                var sereServs = data.Where(o => hisSereServ.BED_LOG_ID.Value == o.BED_LOG_ID).ToList();
+                                                if (sereServs != null && sereServs.Count > 1)
+                                                {
+                                                    var sere = sereServs.Where(o => o.TDL_INTRUCTION_TIME > hisSereServ.TDL_INTRUCTION_TIME).ToList();
+                                                    var betterIntructionTime = sere != null && sere.Count > 0 ? sere.Min(o => o.TDL_INTRUCTION_TIME) : 0;
+
+                                                    if (betterIntructionTime > 0)
+                                                    {
+                                                        ngayKQ = betterIntructionTime.ToString().Substring(0, 12);
+                                                    }
+                                                }
+                                            }
+
+                                            long ngayKqC = Int64.Parse(ngayKQ + "00");
+                                            long ngayThylC = !string.IsNullOrWhiteSpace(ngayTHYL) ? Int64.Parse(ngayTHYL + "00") : 0;
+                                            System.DateTime? in_t = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(ngayKqC);
+                                            System.DateTime? out_t = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(ngayThylC);
+                                            TimeSpan tdiff = in_t.Value - out_t.Value;
+                                            if (hisSereServ.AMOUNT >= 1)
+                                            {
+                                                if (tdiff.TotalHours > (double)(hisSereServ.AMOUNT * 24))
+                                                    in_t = out_t.Value.AddHours((double)hisSereServ.AMOUNT * 24);
+                                            }
+                                            else if (tdiff.TotalHours > 4)
+                                                in_t = out_t.Value.AddHours(4);
+                                            ngayKQ = Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(in_t).Value.ToString().Substring(0, 12);
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        if (!string.IsNullOrWhiteSpace(ngayKQ))
+                                        {
+                                            long ngayKq = Int64.Parse(ngayKQ);
+                                            long ngayThyl = !string.IsNullOrWhiteSpace(ngayTHYL) ? Int64.Parse(ngayTHYL) : 0;
+                                            //thinhdt2
+                                            //sua thoi gian kq 179141
+                                            Inventec.Common.Logging.LogSystem.Debug("ngayKq: " + ngayKq + " ngayThyl: " + ngayThyl);
+                                            if (ngayKq <= ngayThyl)
+                                            {
+                                                if (hisSereServ.TDL_HEIN_SERVICE_TYPE_ID.HasValue && listHeinServiceTypeMaterial.Contains(hisSereServ.TDL_HEIN_SERVICE_TYPE_ID.Value))
+                                                {
+                                                    DateTime ngayThylTime = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(ngayThyl * 100) ?? DateTime.MinValue;
+                                                    if (ngayThylTime != DateTime.MinValue)
+                                                    {
+                                                        DateTime ngayKQTime = ngayThylTime.AddMinutes(5);
+                                                        ngayKQ = ((Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(ngayKQTime) ?? 0) / 100).ToString();
+
+                                                    }
+                                                }
+                                                else
+                                                    ngayKQ = ngayTHYL;
+                                                Inventec.Common.Logging.LogSystem.Debug("co ngayKq <= ngayThyl.ngayKQ = " + ngayKQ);
+                                            }
+                                        }
+                                    }
+                                }
+
+                                    ss.FINISH_TIME_STR = Inventec.Common.DateTime.Convert.TimeNumberToTimeStringWithoutSecond(Convert.ToInt64(ngayKQ + "00"));
                             }
-                           
+
                             currentBedSereServs.Add(ss);
                         }
                         data = data.OrderBy(o => o.TDL_INTRUCTION_TIME).ToList();
