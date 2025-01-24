@@ -75,6 +75,10 @@
             this.bar1 = new DevExpress.XtraBars.Bar();
             this.barButtonAssign = new DevExpress.XtraBars.BarButtonItem();
             this.barBtnSaveBedLog = new DevExpress.XtraBars.BarButtonItem();
+            this.barDockControlTop = new DevExpress.XtraBars.BarDockControl();
+            this.barDockControlBottom = new DevExpress.XtraBars.BarDockControl();
+            this.barDockControlLeft = new DevExpress.XtraBars.BarDockControl();
+            this.barDockControlRight = new DevExpress.XtraBars.BarDockControl();
             this.chkBHAll = new DevExpress.XtraEditors.CheckEdit();
             this.chkSplitByResult = new DevExpress.XtraEditors.CheckEdit();
             this.cboBedRoom = new DevExpress.XtraEditors.GridLookUpEdit();
@@ -101,9 +105,9 @@
             this.Gv_BedServiceReq__Gc_IntructionTime = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumn5 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumn6 = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.Gv_BedServiceReq__Gc_ServiceName = new DevExpress.XtraGrid.Columns.GridColumn();
             this.Gv_BedServiceReq__Gc_Amount = new DevExpress.XtraGrid.Columns.GridColumn();
             this.repositoryItemSpinEditAmountDis = new DevExpress.XtraEditors.Repository.RepositoryItemSpinEdit();
+            this.Gv_BedServiceReq__Gc_ServiceName = new DevExpress.XtraGrid.Columns.GridColumn();
             this.Gv_BedServiceReq__Gc_Amount_Temp = new DevExpress.XtraGrid.Columns.GridColumn();
             this.repositoryItemSpinEditAmountTempDis = new DevExpress.XtraEditors.Repository.RepositoryItemSpinEdit();
             this.Gv_BedServiceReq__Gc_ShareCount = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -227,10 +231,6 @@
             this.layoutControlItem10 = new DevExpress.XtraLayout.LayoutControlItem();
             this.emptySpaceItem3 = new DevExpress.XtraLayout.EmptySpaceItem();
             this.LciSplitDay = new DevExpress.XtraLayout.LayoutControlItem();
-            this.barDockControlTop = new DevExpress.XtraBars.BarDockControl();
-            this.barDockControlBottom = new DevExpress.XtraBars.BarDockControl();
-            this.barDockControlLeft = new DevExpress.XtraBars.BarDockControl();
-            this.barDockControlRight = new DevExpress.XtraBars.BarDockControl();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).BeginInit();
             this.layoutControl1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chkBedAll.Properties)).BeginInit();
@@ -378,6 +378,10 @@
             // 
             this.barManager1.Bars.AddRange(new DevExpress.XtraBars.Bar[] {
             this.bar1});
+            this.barManager1.DockControls.Add(this.barDockControlTop);
+            this.barManager1.DockControls.Add(this.barDockControlBottom);
+            this.barManager1.DockControls.Add(this.barDockControlLeft);
+            this.barManager1.DockControls.Add(this.barDockControlRight);
             this.barManager1.Form = this;
             this.barManager1.Items.AddRange(new DevExpress.XtraBars.BarItem[] {
             this.barButtonAssign,
@@ -411,6 +415,34 @@
             this.barBtnSaveBedLog.ItemShortcut = new DevExpress.XtraBars.BarShortcut((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S));
             this.barBtnSaveBedLog.Name = "barBtnSaveBedLog";
             this.barBtnSaveBedLog.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.barBtnSaveBedLog_ItemClick);
+            // 
+            // barDockControlTop
+            // 
+            this.barDockControlTop.CausesValidation = false;
+            this.barDockControlTop.Dock = System.Windows.Forms.DockStyle.Top;
+            this.barDockControlTop.Location = new System.Drawing.Point(0, 0);
+            this.barDockControlTop.Size = new System.Drawing.Size(1760, 38);
+            // 
+            // barDockControlBottom
+            // 
+            this.barDockControlBottom.CausesValidation = false;
+            this.barDockControlBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.barDockControlBottom.Location = new System.Drawing.Point(0, 692);
+            this.barDockControlBottom.Size = new System.Drawing.Size(1760, 0);
+            // 
+            // barDockControlLeft
+            // 
+            this.barDockControlLeft.CausesValidation = false;
+            this.barDockControlLeft.Dock = System.Windows.Forms.DockStyle.Left;
+            this.barDockControlLeft.Location = new System.Drawing.Point(0, 38);
+            this.barDockControlLeft.Size = new System.Drawing.Size(0, 654);
+            // 
+            // barDockControlRight
+            // 
+            this.barDockControlRight.CausesValidation = false;
+            this.barDockControlRight.Dock = System.Windows.Forms.DockStyle.Right;
+            this.barDockControlRight.Location = new System.Drawing.Point(1760, 38);
+            this.barDockControlRight.Size = new System.Drawing.Size(0, 654);
             // 
             // chkBHAll
             // 
@@ -740,15 +772,6 @@
             this.gridColumn6.VisibleIndex = 5;
             this.gridColumn6.Width = 120;
             // 
-            // Gv_BedServiceReq__Gc_ServiceName
-            // 
-            this.Gv_BedServiceReq__Gc_ServiceName.Caption = "Tên dịch vụ";
-            this.Gv_BedServiceReq__Gc_ServiceName.FieldName = "TDL_SERVICE_NAME";
-            this.Gv_BedServiceReq__Gc_ServiceName.Name = "Gv_BedServiceReq__Gc_ServiceName";
-            this.Gv_BedServiceReq__Gc_ServiceName.Visible = true;
-            this.Gv_BedServiceReq__Gc_ServiceName.VisibleIndex = 7;
-            this.Gv_BedServiceReq__Gc_ServiceName.Width = 273;
-            // 
             // Gv_BedServiceReq__Gc_Amount
             // 
             this.Gv_BedServiceReq__Gc_Amount.Caption = "Số lượng";
@@ -765,6 +788,15 @@
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
             this.repositoryItemSpinEditAmountDis.Name = "repositoryItemSpinEditAmountDis";
             this.repositoryItemSpinEditAmountDis.ReadOnly = true;
+            // 
+            // Gv_BedServiceReq__Gc_ServiceName
+            // 
+            this.Gv_BedServiceReq__Gc_ServiceName.Caption = "Tên dịch vụ";
+            this.Gv_BedServiceReq__Gc_ServiceName.FieldName = "TDL_SERVICE_NAME";
+            this.Gv_BedServiceReq__Gc_ServiceName.Name = "Gv_BedServiceReq__Gc_ServiceName";
+            this.Gv_BedServiceReq__Gc_ServiceName.Visible = true;
+            this.Gv_BedServiceReq__Gc_ServiceName.VisibleIndex = 7;
+            this.Gv_BedServiceReq__Gc_ServiceName.Width = 273;
             // 
             // Gv_BedServiceReq__Gc_Amount_Temp
             // 
@@ -2132,34 +2164,6 @@
             this.LciSplitDay.TextAlignMode = DevExpress.XtraLayout.TextAlignModeItem.CustomSize;
             this.LciSplitDay.TextSize = new System.Drawing.Size(90, 20);
             this.LciSplitDay.TextToControlDistance = 5;
-            // 
-            // barDockControlTop
-            // 
-            this.barDockControlTop.CausesValidation = false;
-            this.barDockControlTop.Dock = System.Windows.Forms.DockStyle.Top;
-            this.barDockControlTop.Location = new System.Drawing.Point(0, 38);
-            this.barDockControlTop.Size = new System.Drawing.Size(1760, 0);
-            // 
-            // barDockControlBottom
-            // 
-            this.barDockControlBottom.CausesValidation = false;
-            this.barDockControlBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.barDockControlBottom.Location = new System.Drawing.Point(0, 692);
-            this.barDockControlBottom.Size = new System.Drawing.Size(1760, 0);
-            // 
-            // barDockControlLeft
-            // 
-            this.barDockControlLeft.CausesValidation = false;
-            this.barDockControlLeft.Dock = System.Windows.Forms.DockStyle.Left;
-            this.barDockControlLeft.Location = new System.Drawing.Point(0, 38);
-            this.barDockControlLeft.Size = new System.Drawing.Size(0, 654);
-            // 
-            // barDockControlRight
-            // 
-            this.barDockControlRight.CausesValidation = false;
-            this.barDockControlRight.Dock = System.Windows.Forms.DockStyle.Right;
-            this.barDockControlRight.Location = new System.Drawing.Point(1760, 38);
-            this.barDockControlRight.Size = new System.Drawing.Size(0, 654);
             // 
             // FormBedHistory
             // 

@@ -1197,7 +1197,7 @@ namespace HIS.Desktop.Plugins.BedHistory
                     IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__VT_TL,
                     IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__VT_TT
                 };
-                    var listServeservs = data.Where(s => s != null && (s.TDL_HEIN_SERVICE_TYPE_ID.HasValue && listHeinServiceType.Contains(s.TDL_HEIN_SERVICE_TYPE_ID.Value) || listHeinServiceTypeMaterial.Contains(s.TDL_HEIN_SERVICE_TYPE_ID.Value))).OrderBy(b => b.INTRUCTION_TIME).ToList();
+                    var listServeservs = data.Where(s => s != null && (s.TDL_HEIN_SERVICE_TYPE_ID.HasValue && listHeinServiceType.Contains(s.TDL_HEIN_SERVICE_TYPE_ID.Value) || listHeinServiceTypeMaterial.Contains(s.TDL_HEIN_SERVICE_TYPE_ID.Value)));
                     if (data != null && data.Count > 0)
                     {
                         foreach (var hisSereServ in data)
@@ -1238,17 +1238,19 @@ namespace HIS.Desktop.Plugins.BedHistory
                                         {
                                             ngayKQ = CurrentTreatment.OUT_TIME.ToString().Substring(0, 12);
                                         }
-                                        var SereServBed = listServeservs.Where(o => listHeinServiceTypeMaterialGiuong.Contains(o.TDL_HEIN_SERVICE_TYPE_ID ?? 0) && o.ID != hisSereServ.ID).ToList();
-                                        if (SereServBed != null && SereServBed.Count > 0)
+                                        if (listServeservs != null && listServeservs.Count() > 0)
                                         {
-                                            SereServBed = SereServBed.Where(o => o.TDL_INTRUCTION_TIME > hisSereServ.TDL_INTRUCTION_TIME).ToList();
-                                            if (SereServBed.Count > 0)
+                                            var SereServBed = listServeservs.Where(o => listHeinServiceTypeMaterialGiuong.Contains(o.TDL_HEIN_SERVICE_TYPE_ID ?? 0) && o.ID != hisSereServ.ID).ToList();
+                                            if (SereServBed != null && SereServBed.Count > 0)
                                             {
-                                                var SsIntructionTime = SereServBed.OrderBy(o => o.TDL_INTRUCTION_TIME).ToList()[0];
-                                                ngayKQ = SsIntructionTime.TDL_INTRUCTION_TIME.ToString().Substring(0, 12);
+                                                SereServBed = SereServBed.Where(o => o.TDL_INTRUCTION_TIME > hisSereServ.TDL_INTRUCTION_TIME).ToList();
+                                                if (SereServBed.Count > 0)
+                                                {
+                                                    var SsIntructionTime = SereServBed.OrderBy(o => o.TDL_INTRUCTION_TIME).ToList()[0];
+                                                    ngayKQ = SsIntructionTime.TDL_INTRUCTION_TIME.ToString().Substring(0, 12);
+                                                }
                                             }
                                         }
-
                                         long ngayKqC = Int64.Parse(ngayKQ + "00");
                                         long ngayThylC = !string.IsNullOrWhiteSpace(ngayTHYL) ? Int64.Parse(ngayTHYL + "00") : 0;
                                         System.DateTime? in_t = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(ngayKqC);
@@ -1363,7 +1365,7 @@ namespace HIS.Desktop.Plugins.BedHistory
                                     }
                                 }
 
-                                    ss.FINISH_TIME_STR = Inventec.Common.DateTime.Convert.TimeNumberToTimeStringWithoutSecond(Convert.ToInt64(ngayKQ + "00"));
+                                ss.FINISH_TIME_STR = Inventec.Common.DateTime.Convert.TimeNumberToTimeStringWithoutSecond(Convert.ToInt64(ngayKQ + "00"));
                             }
 
                             currentBedSereServs.Add(ss);
