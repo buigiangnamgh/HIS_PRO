@@ -1,4 +1,21 @@
-﻿using HIS.UC.Icd.ADO;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using HIS.UC.Icd.ADO;
 using HIS.UC.SecondaryIcd.ADO;
 using Inventec.Core;
 using MOS.EFMODEL.DataModels;
@@ -72,8 +89,8 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.Save
         {
             try
             {
-                String dt = Form.dtEndTime.DateTime.ToString("yyyyMMddHHmm");
-                this.TreatmentFinishTime = Inventec.Common.TypeConvert.Parse.ToInt64(dt + "00");
+                String dt = Form.dtEndTime.DateTime.ToString("yyyyMMddHHmmss");
+                this.TreatmentFinishTime = Inventec.Common.TypeConvert.Parse.ToInt64(dt);
 
                 var treatmentEndType = Base.GlobalStore.HisTreatmentEndTypes.FirstOrDefault(o => o.ID == Inventec.Common.TypeConvert.Parse.ToInt64((Form.cboTreatmentEndType.EditValue ?? 0).ToString()));
                 if (treatmentEndType != null)
@@ -101,7 +118,6 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.Save
                     if (icdValue != null && icdValue is IcdInputADO)
                     {
                         this.IcdCode = ((IcdInputADO)icdValue).ICD_CODE;
-                        //this.IcdId = ((IcdInputADO)icdValue).ICD_ID;
                         this.IcdName = ((IcdInputADO)icdValue).ICD_NAME;
                     }
                 }
@@ -115,7 +131,7 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.Save
                     }
                 }
 
-                if (Form.lciChkChronic.Visibility == DevExpress.XtraLayout.Utils.LayoutVisibility.Always && Form.chkChronic.Checked)
+                if (Form.chkChronic.Checked)
                 {
                     this.IsChronic = true;
                 }
@@ -123,14 +139,18 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.Save
                 if (Form.lciDoctorName.Visibility == DevExpress.XtraLayout.Utils.LayoutVisibility.Always && !String.IsNullOrEmpty(Form.txtDoctorLogginName.Text.Trim()))
                 {
                     this.DoctorLoginname = Form.txtDoctorLogginName.Text.Trim();
-                    this.DoctorUsernname = Form.cboDoctorUserName.EditValue.ToString();
+                    //this.DoctorUsernname = Form.cboDoctorUserName.EditValue.ToString();
+                    var VhisEmployee = HIS.Desktop.LocalStorage.BackendData.BackendDataWorker.Get<MOS.EFMODEL.DataModels.V_HIS_EMPLOYEE>().FirstOrDefault(o => o.LOGINNAME == Form.txtDoctorLogginName.Text && o.IS_ACTIVE == 1);
+                    if (VhisEmployee != null)
+                    {
+                        this.DoctorUsernname = VhisEmployee.TDL_USERNAME;
+                    }
                 }
 
                 this.Treatment_Method = Form.txtMethod.Text;
                 this.Advised = Form.txtAdvised.Text;
                 this.ClinicalNote = Form.txtDauHieuLamSang.Text;
                 this.Subclinical = Form.txtKetQuaXetNghiem.Text;
-                //this.Surgery = Form.txtSurgery.Text;
             }
             catch (Exception ex)
             {
@@ -171,8 +191,6 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.Save
             {
                 if (hisTreatmentFinishSDO_process != null)
                 {
-                    //if (hisTreatmentFinishSDO_process.SickLeaveDay == null ||
-                    //    hisTreatmentFinishSDO_process.SickLeaveDay <= 0) result = false;
                 }
                 else
                     result = false;

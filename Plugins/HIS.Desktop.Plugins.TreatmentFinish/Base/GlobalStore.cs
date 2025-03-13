@@ -1,4 +1,21 @@
-﻿using DevExpress.XtraGrid.Columns;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using DevExpress.XtraGrid.Columns;
 using HIS.Desktop.ApiConsumer;
 using HIS.Desktop.LocalStorage.BackendData;
 using HIS.Desktop.LocalStorage.HisConfig;
@@ -80,7 +97,7 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.Base
         {
             get
             {
-                return BackendDataWorker.Get<HIS_TRAN_PATI_REASON>().Where(o => o.IS_ACTIVE == 1).OrderByDescending(o => o.TRAN_PATI_REASON_CODE).ToList();
+                return BackendDataWorker.Get<HIS_TRAN_PATI_REASON>().Where(o => o.IS_ACTIVE == 1).OrderBy(o => o.TRAN_PATI_REASON_CODE).ToList();
             }
         }
 
@@ -89,30 +106,6 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.Base
             get
             {
                 return BackendDataWorker.Get<HIS_TRAN_PATI_FORM>().Where(o => o.IS_ACTIVE == 1).OrderByDescending(o => o.TRAN_PATI_FORM_CODE).ToList();
-            }
-        }
-
-        public static List<MOS.EFMODEL.DataModels.HIS_DEATH_CAUSE> HisDeathCauses
-        {
-            get
-            {
-                return BackendDataWorker.Get<HIS_DEATH_CAUSE>().Where(o => o.IS_ACTIVE == 1).OrderByDescending(o => o.DEATH_CAUSE_CODE).ToList();
-            }
-        }
-
-        public static List<MOS.EFMODEL.DataModels.HIS_DEATH_WITHIN> HisDeathWithins
-        {
-            get
-            {
-                return BackendDataWorker.Get<HIS_DEATH_WITHIN>().Where(o => o.IS_ACTIVE == 1).OrderByDescending(o => o.CREATE_TIME).ToList();
-            }
-        }
-
-        public static List<MOS.EFMODEL.DataModels.HIS_EMPLOYEE> HisEmployee
-        {
-            get
-            {
-                return BackendDataWorker.Get<HIS_EMPLOYEE>().Where(o => o.IS_ACTIVE == 1).OrderByDescending(o => o.LOGINNAME).ToList();
             }
         }
 
@@ -137,13 +130,6 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.Base
             get
             {
                 return HisConfigs.Get<string>(END_ORDER);
-            }
-        }
-        public static List<MOS.EFMODEL.DataModels.V_HIS_DEATH_CERT_BOOK> HisDeathCertBook
-        {
-            get
-            {
-                return BackendDataWorker.Get<V_HIS_DEATH_CERT_BOOK>().Where(o => o.IS_ACTIVE == 1 && o.TOTAL > 0 && (o.FROM_NUM_ORDER + o.TOTAL - 1 > o.CURRENT_DEATH_CERT_NUM) && (o.BRANCH_ID == null||o.BRANCH_ID == HIS.Desktop.LocalStorage.LocalData.WorkPlace.GetBranchId())).OrderBy(o => o.ID).ToList();
             }
         }
     }

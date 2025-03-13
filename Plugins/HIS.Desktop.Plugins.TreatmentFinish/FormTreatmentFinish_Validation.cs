@@ -1,4 +1,21 @@
-﻿using System;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +27,7 @@ using DevExpress.XtraEditors;
 using Inventec.Desktop.Common.Controls.ValidationRule;
 using HIS.Desktop.Plugins.TreatmentFinish.Config;
 using System.Drawing;
+using HIS.Desktop.Plugins.TreatmentFinish.Validation;
 
 namespace HIS.Desktop.Plugins.TreatmentFinish
 {
@@ -17,51 +35,89 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
     {
         private void ValidateForm()
         {
-            ValidationTimeFinish();
-            if (lciOutPatientDateFrom.Enabled == true
-                && lciOutPatientDateTo.Enabled == true)
+
+            try
             {
-                ValidationOutPatientDateFrom(ref dxValidationProvider);
-                ValidationOutPatientDateTo(ref dxValidationProvider);
-                ValidationOutPatientDateFrom(ref dxValidationProvider_ForOutPatientDateFromTo);
-                ValidationOutPatientDateTo(ref dxValidationProvider_ForOutPatientDateFromTo);
+                ValidationTimeFinish();
+                if (lciOutPatientDateFrom.Enabled == true
+                    && lciOutPatientDateTo.Enabled == true)
+                {
+                    ValidationOutPatientDateFrom(ref dxValidationProvider);
+                    ValidationOutPatientDateTo(ref dxValidationProvider);
+                    ValidationOutPatientDateFrom(ref dxValidationProvider_ForOutPatientDateFromTo);
+                    ValidationOutPatientDateTo(ref dxValidationProvider_ForOutPatientDateFromTo);
+                }
+                ValidationCboHeadLoginName(ref dxValidationProvider);
+                ValidationHeadLoginName(ref dxValidationProvider);
+                ValidationFinishType();
+                ValidationResult();
+                ValidationMaxLength(txtMethod, 3000);
+                ValidationMaxLength(txtAdvised, 500);
+
+                if (ConfigKey.PathologicalProcessOption == "1" && currentHisTreatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNGOAITRU)
+                {
+                    layoutControlItem25.AppearanceItemCaption.ForeColor = Color.Maroon;
+                    ValidateRequired(txtDauHieuLamSang);
+                }
+                else if (ConfigKey.PathologicalProcessOption == "2" && (currentHisTreatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNOITRU || currentHisTreatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNGOAITRU || currentHisTreatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTBANNGAY))
+                {
+                    layoutControlItem25.AppearanceItemCaption.ForeColor = Color.Maroon;
+                    ValidateRequired(txtDauHieuLamSang);
+                }
+                
+                if ((Config.ConfigKey.SubclinicalResultOption == "2" && (currentHisTreatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNOITRU ||
+        currentHisTreatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNGOAITRU || currentHisTreatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTBANNGAY)) || (Config.ConfigKey.SubclinicalResultOption == "1" && (currentHisTreatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNOITRU ||
+        currentHisTreatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNGOAITRU)))
+                {
+                    lblKetQuaXetNghiem.Appearance.ForeColor = System.Drawing.Color.Maroon;
+                    ValidateRequired(txtKetQuaXetNghiem);
+                }
+                
+                ValidationMaxLength(txtSurgery, 3000);
+                ValidationMaxLength(txtMaBHXH, 10, true);
+                ValidationComboProgram();
+                MOS.EFMODEL.DataModels.HIS_TREATMENT_END_TYPE data = this.hisTreatmentEndTypes.SingleOrDefault(o => o.ID == Inventec.Common.TypeConvert.Parse.ToInt64((cboTreatmentEndType.EditValue ?? 0).ToString()));
+                if ((data != null && data.ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__CHUYEN) || (cboTreatmentEndType.EditValue != null && Int64.Parse(cboTreatmentEndType.EditValue.ToString()) == 2))
+                {
+                    layoutControlItem25.AppearanceItemCaption.ForeColor = Color.Maroon;
+                    ValidateTextEdit(txtDauHieuLamSang);
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
             }
 
-            ValidationFinishType();
-            ValidationResult();
-            ValidationMaxLength(txtMethod, 1500);
-            ValidationMaxLength(txtAdvised, 500);
-
-            if (ConfigKey.PathologicalProcessOption == "1" && currentHisTreatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNGOAITRU)
-            {
-                layoutControlItem25.AppearanceItemCaption.ForeColor = Color.Maroon;
-                ValidationMaxLengthAndRequire(txtDauHieuLamSang, 3000);
-            }
-            else if (ConfigKey.PathologicalProcessOption == "2" && (currentHisTreatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNOITRU || currentHisTreatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNGOAITRU || currentHisTreatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTBANNGAY))
-            {
-                layoutControlItem25.AppearanceItemCaption.ForeColor = Color.Maroon;
-                ValidationMaxLengthAndRequire(txtDauHieuLamSang, 3000);
-            }
-            else
-            {
-                ValidationMaxLength(txtDauHieuLamSang, 3000);
-            }
-            if ((Config.ConfigKey.SubclinicalResultOption == "2" && (currentHisTreatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNOITRU ||
-    currentHisTreatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNGOAITRU || currentHisTreatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTBANNGAY)) || (Config.ConfigKey.SubclinicalResultOption == "1" && (currentHisTreatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNOITRU ||
-    currentHisTreatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNGOAITRU)))
-            {
-                lblKetQuaXetNghiem.Appearance.ForeColor = System.Drawing.Color.Maroon;
-                ValidationMaxLengthAndRequire(txtKetQuaXetNghiem, 3000);
-            }
-            else
-            {
-                ValidationMaxLength(txtKetQuaXetNghiem, 3000);
-            }
-            ValidationMaxLength(txtSurgery, 3000);
-            ValidationMaxLength(txtMaBHXH, 10, true);
-            ValidationComboProgram();
         }
-
+        private void ValidateRequired(BaseEdit memoEdit)
+        {
+            try
+            {
+                Inventec.Desktop.Common.Controls.ValidationRule.ControlEditValidationRule LoginName = new Inventec.Desktop.Common.Controls.ValidationRule.ControlEditValidationRule();
+                LoginName.editor = memoEdit;
+                LoginName.ErrorText = ResourceMessage.TruongDuLieuBatBuoc;
+                LoginName.ErrorType = ErrorType.Warning;
+                dxValidationProvider.SetValidationRule(memoEdit, LoginName);
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+        private void ValidateTextEdit(TextEdit txt)
+        {
+            try
+            {
+                ValidateTxtRule valid = new ValidateTxtRule();
+                valid.textEdit = txt;
+                valid.ErrorType = ErrorType.Warning;
+                this.dxValidationProvider.SetValidationRule(txt, valid);
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
         private void ValidationOutPatientDateFrom(ref DXValidationProvider validationProvider)
         {
             try
@@ -95,6 +151,38 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
                 Inventec.Common.Logging.LogSystem.Warn(ex);
             }
         }
+        private void ValidationHeadLoginName(ref DXValidationProvider validationProvider)
+        {
+            try
+            {
+                Inventec.Desktop.Common.Controls.ValidationRule.ControlEditValidationRule LoginName = new Inventec.Desktop.Common.Controls.ValidationRule.ControlEditValidationRule();
+                LoginName.editor = txtHeadUser;
+                LoginName.ErrorText = ResourceMessage.TruongDuLieuBatBuoc;
+                LoginName.ErrorType = ErrorType.Warning;
+                dxValidationProvider.SetValidationRule(cboTreatmentEndType, LoginName);
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+
+        }
+        private void ValidationCboHeadLoginName(ref DXValidationProvider validationProvider)
+        {
+            try
+            {
+                Inventec.Desktop.Common.Controls.ValidationRule.ControlEditValidationRule headUser = new Inventec.Desktop.Common.Controls.ValidationRule.ControlEditValidationRule();
+                headUser.editor = cboHeadUser;
+                headUser.ErrorText = ResourceMessage.TruongDuLieuBatBuoc;
+                headUser.ErrorType = ErrorType.Warning;
+                dxValidationProvider.SetValidationRule(cboTreatmentEndType, headUser);
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+
+        }
 
         private void ValidationEndOrder()
         {
@@ -102,7 +190,6 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
             {
                 Validation.EndOrderValidationRule endOrderRule = new Validation.EndOrderValidationRule();
                 endOrderRule.txtEndOrder = txtEndOrder;
-                //endOrderRule.ErrorText = ResourceMessage.TruongDuLieuBatBuoc;
                 endOrderRule.ErrorType = ErrorType.Warning;
                 dxValidationProvider.SetValidationRule(txtEndOrder, endOrderRule);
             }
@@ -180,7 +267,6 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
             try
             {
                 Inventec.Desktop.Common.Controls.ValidationRule.ControlEditValidationRule resultRule = new Inventec.Desktop.Common.Controls.ValidationRule.ControlEditValidationRule();
-                //resultRule.txtKetQuaDieuTri = txtResult;
                 resultRule.editor = cboResult;
                 resultRule.ErrorText = ResourceMessage.TruongDuLieuBatBuoc;
                 resultRule.ErrorType = ErrorType.Warning;

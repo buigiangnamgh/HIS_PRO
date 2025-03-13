@@ -1,4 +1,21 @@
-﻿using HIS.Desktop.Common;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using HIS.Desktop.Common;
 using HIS.Desktop.LocalStorage.BackendData;
 using HIS.Desktop.Utility;
 using HIS.UC.Icd;
@@ -8,6 +25,7 @@ using HIS.UC.SecondaryIcd.ADO;
 using Inventec.Core;
 using Inventec.Desktop.Common.LanguageManager;
 using MOS.EFMODEL.DataModels;
+using MOS.UTILITY;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,6 +33,7 @@ using System.Data;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
+using System.Resources;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -45,12 +64,10 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.CloseTreatment
 
         private void FormTTCDHienThiTrenGiayRaVien_Load(object sender, EventArgs e)
         {
-            listIcd = BackendDataWorker.Get<HIS_ICD>().OrderBy(o => o.ICD_CODE).ToList();
+            SetCaptionByLanguageKey();
+            listIcd = BackendDataWorker.Get<HIS_ICD>().Where(a => a.IS_ACTIVE == Constant.IS_TRUE && (a.IS_TRADITIONAL == null || a.IS_TRADITIONAL == Constant.IS_FALSE)).OrderBy(o => o.ICD_CODE).ToList();
             InitUcIcd();
             InitUcSecondaryIcd();
-
-
-
 
             if (!string.IsNullOrEmpty(data.SHOW_ICD_CODE))
             {
@@ -70,6 +87,25 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.CloseTreatment
                 LoaducSecondaryIcd(data.ICD_SUB_CODE, data.ICD_TEXT);
             }
         }
+        private void SetCaptionByLanguageKey()
+        {
+            try
+            {
+                ////Khoi tao doi tuong resource
+                Resources.ResourceLanguageManager.LanguageResource = new ResourceManager("HIS.Desktop.Plugins.TreatmentFinish.Resources.Lang", typeof(FormTTCDHienThiTrenGiayRaVien).Assembly);
+
+                ////Gan gia tri cho cac control editor co Text/Caption/ToolTip/NullText/NullValuePrompt/FindNullPrompt
+                this.layoutControl1.Text = Inventec.Common.Resource.Get.Value("FormTTCDHienThiTrenGiayRaVien.layoutControl1.Text", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
+                this.btnSave.Text = Inventec.Common.Resource.Get.Value("FormTTCDHienThiTrenGiayRaVien.btnSave.Text", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
+                this.bar1.Text = Inventec.Common.Resource.Get.Value("FormTTCDHienThiTrenGiayRaVien.bar1.Text", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
+                this.barButtonItem1.Caption = Inventec.Common.Resource.Get.Value("FormTTCDHienThiTrenGiayRaVien.barButtonItem1.Caption", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
+                this.Text = Inventec.Common.Resource.Get.Value("FormTTCDHienThiTrenGiayRaVien.Text", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
 
         private void InitUcIcd()
         {
@@ -82,7 +118,6 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.CloseTreatment
                 ado.IsUCCause = false;
                 ado.Width = 440;
                 ado.Height = 24;
-                //ado.IsColor = true;
                 ado.DataIcds = listIcd;
                 ado.AutoCheckIcd = AutoCheckIcd == "1";
                 ucIcd = (UserControl)icdProcessor.Run(ado);
@@ -231,7 +266,7 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.CloseTreatment
             {
                 if (!String.IsNullOrEmpty(key))
                 {
-                    result = Inventec.Common.Resource.Get.Value(key, Resources.ResourceLanguageManager.LanguageFormTreatmentFinish, cultureLang);
+                    result = Inventec.Common.Resource.Get.Value(key, Resources.ResourceLanguageManager.LanguageResource, cultureLang);
                 }
             }
             catch (Exception ex)

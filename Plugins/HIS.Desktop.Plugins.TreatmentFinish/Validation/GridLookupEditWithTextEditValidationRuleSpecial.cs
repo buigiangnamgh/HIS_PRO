@@ -15,42 +15,46 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+using DevExpress.XtraEditors;
+using Inventec.Common.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace HIS.Desktop.Plugins.TreatmentFinish.Validation
 {
-    class OutPatientDateValidationRule : DevExpress.XtraEditors.DXErrorProvider.ValidationRule
+    public class GridLookupEditWithTextEditValidationRuleSpecial : DevExpress.XtraEditors.DXErrorProvider.ValidationRule
     {
-        internal DevExpress.XtraEditors.DateEdit dateEditForValidation;
-        internal DevExpress.XtraEditors.DateEdit dateEditRequired;
-        public override bool Validate(System.Windows.Forms.Control control, object value)
+        public TextEdit txtTextEdit;
+
+        public GridLookUpEdit cbo;
+
+        public override bool Validate(Control control, object value)
         {
-            bool valid = false;
+            bool result = false;
             try
             {
-                if (dateEditRequired == null) return true;
-                if (dateEditRequired.EditValue == null)
+                if (txtTextEdit == null || cbo == null)
                 {
-                    valid = true;
+                    return result;
                 }
-                else
+
+                if (string.IsNullOrEmpty(((Control)(object)txtTextEdit).Text.Trim()) && (cbo.EditValue == null || cbo.EditValue == ""))
                 {
-                    if (dateEditForValidation.EditValue != null)
-                        valid = true;
-                    else
-                        valid = false;
+                    return result;
                 }
+
+                result = true;
+                return result;
             }
             catch (Exception ex)
             {
-                valid = false;
-                Inventec.Common.Logging.LogSystem.Error(ex);
+                LogSystem.Error(ex);
+                return result;
             }
-            return valid;
         }
     }
 }

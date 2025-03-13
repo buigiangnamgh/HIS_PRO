@@ -1,4 +1,21 @@
-﻿using System;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -63,12 +80,6 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
                 switch (printType)
                 {
                     case ModuleTypePrint.GIAY_NGHI_OM:
-                        //if (!isLoad)
-                        //{
-                        //    process = new Library.PrintTreatmentFinish.PrintTreatmentFinishProcessor(hisTreatmentResult);
-                        //    isLoad = true;
-                        //}
-                        //DelegateRunPrinter("Mps000269");
                         PrintTreatmentEndTypeExtProcessor printTreatmentEndTypeExtProcessor = new PrintTreatmentEndTypeExtProcessor(this.treatmentId, ReloadMenuTreatmentEndTypeExt, CreateMenu.TYPE.DYNAMIC, this.currentModuleBase != null ? this.currentModuleBase.RoomId : 0);
 
                         printTreatmentEndTypeExtProcessor.Print(HIS.Desktop.Plugins.Library.PrintTreatmentEndTypeExt.Base.PrintTreatmentEndTypeExPrintType.TYPE.NGHI_OM, PrintTreatmentEndTypeExtProcessor.OPTION.PRINT);
@@ -92,7 +103,7 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
                     case ModuleTypePrint.IN_GIAY_CHUYEN_VIEN:
                         if (!isLoad)
                         {
-                            process = new Library.PrintTreatmentFinish.PrintTreatmentFinishProcessor(hisTreatmentResult, this.currentModuleBase != null ? this.currentModuleBase.RoomId : 0);
+                            process = new Library.PrintTreatmentFinish.PrintTreatmentFinishProcessor(hisTreatmentResult, LoadServiceReq(hisTreatmentResult.ID), this.currentModuleBase != null ? this.currentModuleBase.RoomId : 0);
                             isLoad = true;
                         }
                         DelegateRunPrinter(MPS.Processor.Mps000011.PDO.Mps000011PDO.printTypeCode);
@@ -111,8 +122,8 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
                             HIS_BRANCH branch = new HIS_BRANCH();
                             if (this.module != null)
                             {
-                                var currentRoom = HIS.Desktop.LocalStorage.BackendData.BackendDataWorker.Get<V_HIS_ROOM>().FirstOrDefault(o => o.ID == this.module.RoomId && o.ROOM_TYPE_ID == this.module.RoomTypeId);
-                                branch = currentRoom != null ? HIS.Desktop.LocalStorage.BackendData.BackendDataWorker.Get<HIS_BRANCH>().FirstOrDefault(o => o.ID == currentRoom.BRANCH_ID) : null;
+                                var currentRoom = this.hisRooms.FirstOrDefault(o => o.ID == this.module.RoomId && o.ROOM_TYPE_ID == this.module.RoomTypeId);
+                                branch = currentRoom != null ? this.hisBranchs.FirstOrDefault(o => o.ID == currentRoom.BRANCH_ID) : null;
                             }
 
                             process = new Library.PrintTreatmentFinish.PrintTreatmentFinishProcessor(hisTreatmentResult, branch, this.currentModuleBase != null ? this.currentModuleBase.RoomId : 0);
@@ -164,7 +175,26 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
                 Inventec.Common.Logging.LogSystem.Warn(ex);
             }
         }
-
+        private HIS_SERVICE_REQ LoadServiceReq(long id)
+        {
+            HIS_SERVICE_REQ serviceReqExamEndType = null;
+            try
+            {
+                CommonParam param = new CommonParam();
+                HisServiceReqFilter filter = new HisServiceReqFilter();
+                filter.IS_ACTIVE = 1;
+                filter.TREATMENT_ID = id;
+                var dt = new BackendAdapter(param).Get<List<HIS_SERVICE_REQ>>("api/HisServiceReq/Get", ApiConsumers.MosConsumer, filter, param);
+                if (dt != null && dt.Count > 0 && dt.FirstOrDefault(o => o.EXAM_END_TYPE == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ.EXAM_END_TYPE__KET_THUC_DT) != null)
+                    serviceReqExamEndType = dt.FirstOrDefault(o => o.EXAM_END_TYPE == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ.EXAM_END_TYPE__KET_THUC_DT);
+            }
+            catch (Exception ex)
+            {
+                WaitingManager.Hide();
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+            return serviceReqExamEndType;
+        }
         private void PrintMps000485()
         {
             try
@@ -289,7 +319,7 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
                         patientTypeAlter = patientTypeAlterData.OrderByDescending(o=>o.CREATE_TIME).ToList()[0];
                     }
                     HIS_PATIENT patient = GetPatientByID(treatment.PATIENT_ID);
-                    HIS_BRANCH branch = HIS.Desktop.LocalStorage.BackendData.BackendDataWorker.Get<HIS_BRANCH>().FirstOrDefault(o => o.ID == HIS.Desktop.LocalStorage.LocalData.WorkPlace.GetBranchId());
+                    HIS_BRANCH branch = this.hisBranchs.FirstOrDefault(o => o.ID == HIS.Desktop.LocalStorage.LocalData.WorkPlace.GetBranchId());
                     if (SevereIllnessInfo == null)
                         SevereIllnessInfo = new HIS_SEVERE_ILLNESS_INFO();
                     if (lstEvents == null)

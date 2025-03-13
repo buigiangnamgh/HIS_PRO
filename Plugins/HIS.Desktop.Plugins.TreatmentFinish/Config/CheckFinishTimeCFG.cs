@@ -1,4 +1,21 @@
-﻿using HIS.Desktop.LocalStorage.BackendData;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using HIS.Desktop.LocalStorage.BackendData;
 using Inventec.Common.LocalStorage.SdaConfig;
 using MOS.EFMODEL.DataModels;
 using System;
@@ -24,7 +41,6 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.Config
         private const string IS_NOT_SHOW_OUT_MEDI_AND_MATE = "HIS.Desktop.Plugins.TrackingPrint.IsNotShowOutMediAndMate";
 
         internal static bool isCheckBedService;
-        //internal static bool isCheckBedServiceBetterThan;
         internal static bool isCheckSameHein;
         internal static bool mustFinishAllServicesBeforeFinishTreatment;
         internal static bool mustExportBeforeOutOfDepartmentWithStayInPatient;
@@ -38,7 +54,6 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.Config
             try
             {
                 isCheckBedService = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(CHECK_ASSIGN_SERVICE_BED) == IS_CHECK;
-                //isCheckBedServiceBetterThan = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(CHECK_ASSIGN_SERVICE_BED) == IS_CHECK_BETTER_THAN;
                 isCheckSameHein = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(CHECK_SAME_HEIN) == IS_CHECK;
                 mustFinishAllServicesBeforeFinishTreatment = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(MUST_FINISH_ALL_SERVICES_BEFORE_FINISH_TREATMENT_CFG) == IS_CHECK;
                 mustExportBeforeOutOfDepartmentWithStayInPatient = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(MUST_EXPORT_BEFORE_OUT_OF_DEPARTMENT_WITH_STAY_IN_PATIENT_CFG) == IS_CHECK;
@@ -78,90 +93,5 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.Config
             }
             return result;
         }
-
-        //public static bool IsCheckFinishTime
-        //{
-        //    get
-        //    {
-        //        if (!isCheckFinishTime.HasValue)
-        //        {
-        //            isCheckFinishTime = GetBool(SdaConfigs.Get<string>(CONFIG_KEY));
-        //        }
-        //        return isCheckFinishTime.Value;
-        //    }
-        //}
-
-        //public static bool IsCheckBedService
-        //{
-        //    get
-        //    {
-        //        if (!isCheckBedService.HasValue)
-        //        {
-        //            isCheckBedService = GetBool(SdaConfigs.Get<string>(CHECK_ASSIGN_SERVICE_BED));
-        //        }
-        //        return isCheckBedService.Value;
-        //    }
-        //}
-
-        //public static bool MUST_FINISH_ALL_SERVICES_BEFORE_FINISH_TREATMENT
-        //{
-        //    get
-        //    {
-        //        if (!mustFinishAllServicesBeforeFinishTreatment.HasValue)
-        //        {
-        //            mustFinishAllServicesBeforeFinishTreatment = GetBool(SdaConfigs.Get<string>(MUST_FINISH_ALL_SERVICES_BEFORE_FINISH_TREATMENT_CFG));
-        //        }
-        //        return mustFinishAllServicesBeforeFinishTreatment.Value;
-        //    }
-        //    set
-        //    {
-        //        mustFinishAllServicesBeforeFinishTreatment = value;
-        //    }
-        //}
-
-        //public static bool MUST_EXPORT_BEFORE_OUT_OF_DEPARTMENT_WITH_STAY_IN_PATIENT
-        //{
-        //    get
-        //    {
-        //        if (!mustExportBeforeOutOfDepartmentWithStayInPatient.HasValue)
-        //        {
-        //            mustExportBeforeOutOfDepartmentWithStayInPatient = GetBool(SdaConfigs.Get<string>(MUST_FINISH_ALL_SERVICES_BEFORE_FINISH_TREATMENT_CFG));
-        //        }
-        //        return mustExportBeforeOutOfDepartmentWithStayInPatient.Value;
-        //    }
-        //    set
-        //    {
-        //        mustExportBeforeOutOfDepartmentWithStayInPatient = value;
-        //    }
-        //}
-
-        //public static List<long> AUTO_FINISH__SERVICE_IDs
-        //{
-        //    get
-        //    {
-        //        if (autoFinishServiceIds == null)
-        //        {
-        //            autoFinishServiceIds = GetIds(SdaConfigs.Get<List<string>>(SERVICE_CODE__AUTO_FINISH));
-        //        }
-        //        return autoFinishServiceIds;
-        //    }
-        //    set
-        //    {
-        //        autoFinishServiceIds = value;
-        //    }
-        //}
-
-        //private static bool GetBool(string value)
-        //{
-        //    try
-        //    {
-        //        return (value == IS_CHECK);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Inventec.Common.Logging.LogSystem.Error(ex);
-        //        return false;
-        //    }
-        //}
     }
 }

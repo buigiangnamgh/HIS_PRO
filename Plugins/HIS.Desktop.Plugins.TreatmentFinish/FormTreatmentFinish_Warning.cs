@@ -1,4 +1,21 @@
-﻿using DevExpress.XtraEditors;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using DevExpress.XtraEditors;
 using HIS.Desktop.ApiConsumer;
 using HIS.Desktop.LocalStorage.BackendData;
 using HIS.Desktop.Plugins.TreatmentFinish.ADO;
@@ -9,6 +26,7 @@ using Inventec.Desktop.Common.Message;
 using MOS.EFMODEL.DataModels;
 using MOS.Filter;
 using MOS.SDO;
+using MOS.UTILITY;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -417,7 +435,7 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
                 }
                 if (this.currentHisTreatment != null)
                 {
-                    var treatmentType = BackendDataWorker.Get<HIS_TREATMENT_TYPE>().FirstOrDefault(o => o.ID == this.currentHisTreatment.TDL_TREATMENT_TYPE_ID);
+                    var treatmentType = this.hisTreatmentTypes.FirstOrDefault(o => o.ID == this.currentHisTreatment.TDL_TREATMENT_TYPE_ID);
                     //Hồ sơ có diện điều trị được khai báo cảnh báo(UNSIGN_DOC_FINISH_OPTION = 1) hoặc chặn(UNSIGN_DOC_FINISH_OPTION = 2) khi có văn bản chưa hoàn thiện ký
                     if (treatmentType != null && (treatmentType.UNSIGN_DOC_FINISH_OPTION == 1
                                                 || treatmentType.UNSIGN_DOC_FINISH_OPTION == 2))
@@ -608,6 +626,46 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
                                 warning.IsSkippable = true;
                                 warning.Description = message;
                                 listWarningADO.Add(warning);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+                valid = false;
+            }
+            return valid;
+        }
+
+        private bool Check_IsAllowTreatmentFinishDepartmentIsActiveFee_ForSave()
+        {
+            bool valid = true;
+            try
+            {
+                if (this.currentHisTreatment != null)
+                {
+                    if (Config.ConfigKey.IsAllowTreatmentFinishDepartmentIsActiveFee == "1")
+                    {
+                        CommonParam param = new CommonParam();
+                        var departments = BackendDataWorker.Get<HIS_DEPARTMENT>().Where(o => o.IS_CLINICAL == Constant.IS_TRUE).ToList();
+                        if (departments != null && departments.Count > 0)
+                        {
+                            List<long> departmentIds = departments.Select(o => o.ID).ToList();
+                            HisDepartmentTranViewFilter filter = new HisDepartmentTranViewFilter();
+                            filter.TREATMENT_ID = this.currentHisTreatment.ID;
+                            filter.DEPARTMENT_IDs = departmentIds;
+                            filter.IS_ACTIVE = Constant.IS_TRUE;
+                            var departmentTrans = new Inventec.Common.Adapter.BackendAdapter(param).Get<List<MOS.EFMODEL.DataModels.V_HIS_DEPARTMENT_TRAN>>("api/HisDepartmentTran/GetView", ApiConsumers.MosConsumer, filter, param);
+                            if (departmentTrans != null && departmentTrans.Count > 0)
+                            {
+                                List<string> departmentNames = departmentTrans.Select(o => o.DEPARTMENT_NAME).Distinct().ToList();
+                                XtraMessageBox.Show(String.Format("Hồ sơ {0} có khoa {1} chưa được khóa chi phí. Không cho phép kết thúc điều trị", this.currentHisTreatment.TREATMENT_CODE, string.Join(",", departmentNames), ResourceMessage.ThongBao));
+                                if (departmentNames != null && departmentNames.Count > 0)
+                                {
+                                    return false;
+                                }
                             }
                         }
                     }

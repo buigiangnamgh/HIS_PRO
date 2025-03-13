@@ -117,8 +117,17 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="BanBatBuocChonDichVuHenKhamKhiKetThucDieuTri" xml:space="preserve">
+    <value>Bạn bắt buộc chọn dịch vụ hẹn khám khi kết thúc điều trị</value>
+  </data>
   <data name="BanCanNhapCacThongTinSauDePhucVuXuatXmlHoSoChungTu" xml:space="preserve">
     <value>Bạn cần nhập các thông tin sau để phục vụ xuất Xml hồ sơ chứng từ (CV2076): {0}</value>
+  </data>
+  <data name="BanChuaChonPhongKhamLanSau" xml:space="preserve">
+    <value>Bạn chưa chọn phòng khám lần sau</value>
+  </data>
+  <data name="BanChuaChonStt" xml:space="preserve">
+    <value>Bạn chưa chọn số thứ tự</value>
   </data>
   <data name="BanCoMuonThucHienKhong" xml:space="preserve">
     <value>Bạn có muốn thực hiện ký không?</value>
@@ -135,11 +144,11 @@
   <data name="BenhNhanCoThongTinBhytChuaDung" xml:space="preserve">
     <value>Bệnh nhân có thông tin BHYT chưa đúng.</value>
   </data>
+  <data name="BenhNhanDangThieuVienPhi" xml:space="preserve">
+    <value>Bệnh nhân đang thiếu viện phí ({0} đồng)</value>
+  </data>
   <data name="BenhNhanDangThieuVienPhiBanCoMuonTiepTuc" xml:space="preserve">
     <value>Bệnh nhân đang thiếu viện phí ({0} đồng). Bạn có muốn tiếp tục?</value>
-  </data>
-	<data name="BenhNhanDangThieuVienPhi" xml:space="preserve">
-    <value>Bệnh nhân đang thiếu viện phí ({0} đồng)</value>
   </data>
   <data name="BenhNhanNoiTruChuaDuocChiDinhDichVuGiuong" xml:space="preserve">
     <value>Bệnh nhân nội trú chưa được chỉ định dịch vụ giường.</value>
@@ -147,8 +156,20 @@
   <data name="BenhNhanThieuCanNang" xml:space="preserve">
     <value>Bệnh nhân thiếu thông tin cân nặng ở dấu hiệu sinh tồn</value>
   </data>
+  <data name="BNCoDotDieuTriNTCuChuaKetThucKhongChoPhepChuyen" xml:space="preserve">
+    <value>Bệnh nhân có đợt điều trị ngoại trú/nội trú cũ chưa kết thúc không cho phép chuyển viện. (Hồ sơ đã tạo: “{0}”)</value>
+  </data>
+  <data name="BuaAnCoSoLuongLonHonSoNgayDieuTri" xml:space="preserve">
+    <value>Bữa ăn {0} có số lượng lớn hơn số ngày điều trị.</value>
+  </data>
+  <data name="BuaAnCoSoLuongLonHonSoNgayDieuTriBanCoMuonTiepTucKhong" xml:space="preserve">
+    <value>Bữa ăn {0} có số lượng lớn hơn số ngày điều trị. Bạn có muốn tiếp tục không?</value>
+  </data>
   <data name="CacPhieuChiDinhSauChuaKetThucKhongChoPhepKetThuc" xml:space="preserve">
     <value>Các phiếu chỉ định sau chưa kết thúc: {0}</value>
+  </data>
+  <data name="CacVatTuThieuThongTinHoaDonBanCoMuonTiepTuc" xml:space="preserve">
+    <value>Các vật tư {0} thiếu thông tin hóa đơn. Bạn có muốn tiếp tục không?</value>
   </data>
   <data name="CanhBaoNgayHenLaChuNhat" xml:space="preserve">
     <value>Ngày hẹn khám hiện tại là ngày chủ nhật bạn có muốn tiếp tục không</value>
@@ -186,8 +207,14 @@
   <data name="ChucNangDangPhatTrienVuiLongThuLaiSau" xml:space="preserve">
     <value>Chức năng không được hỗ trợ ở phiên bản hiện tại, vui lòng thử lại sau</value>
   </data>
+  <data name="ChuongTrinhBatBuocChonDienDieuTriNgoaiTruHoSoSeDuocTuDongCapNhatSangDienDieuTriNgoaiTru" xml:space="preserve">
+    <value>Chương trình {0} bắt buộc chọn diện điều trị ngoại trú hồ sơ sẽ được tự động cập nhật sang diện điều trị ngoại trú</value>
+  </data>
   <data name="CuaKhoaHienTai" xml:space="preserve">
     <value>của khoa hiện tại</value>
+  </data>
+  <data name="DaCapHetSoKhamVaoNgay" xml:space="preserve">
+    <value>Đã cấp hết số khám vào ngày {0}</value>
   </data>
   <data name="DuLieuKhongHopLe" xml:space="preserve">
     <value>Dữ liệu không hợp lệ</value>
@@ -234,6 +261,9 @@
   <data name="TaiKhoanKhongCoQuyenThucHienChucNang" xml:space="preserve">
     <value>Tài khoản không có quyền thực hiện chức năng</value>
   </data>
+  <data name="TheBHYTCuaBNSeHetHanVaoNgay" xml:space="preserve">
+    <value>Thẻ BHYT của bệnh nhân sẽ hết hạn vào ngày {0}, bạn có chắc muốn hẹn khám vào ngày {1} không? Nếu tiếp tục, phần mềm sẽ tự động đổi sang đối tượng {2}</value>
+  </data>
   <data name="ThoiGianKetThucNhoHoiThoiGianYLenhCuaCacMaYeuCauSau" xml:space="preserve">
     <value>Thời gian kết thúc nhỏ hơn thời gian y lệnh của các mã yêu cầu: {0}</value>
   </data>
@@ -252,6 +282,12 @@
   <data name="ThongBao" xml:space="preserve">
     <value>Thông báo</value>
   </data>
+  <data name="TonTaiLichSuGiuongChuaCoThongTinThoiGianKetThucHoacThoiGianBatDauThoiGianKetThucLonHonThoiGianRaVien" xml:space="preserve">
+    <value>Tồn tại lịch sử giường chưa có thông tin thời gian kết thúc hoặc thời gian bắt đầu/thời gian kết thúc lớn hơn thời gian ra viện.</value>
+  </data>
+  <data name="TonTaiLichSuGiuongChuaCoThongTinThoiGianKetThucHoacThoiGianBatDauThoiGianKetThucLonHonThoiGianRaVienBanCoMuonTiepTuc" xml:space="preserve">
+    <value>Tồn tại lịch sử giường chưa có thông tin thời gian kết thúc hoặc thời gian bắt đầu/thời gian kết thúc lớn hơn thời gian ra viện. Bạn có muốn tiếp tục?</value>
+  </data>
   <data name="TruongDuLieuBatBuoc" xml:space="preserve">
     <value>Chưa nhập trường dữ liệu bắt buộc</value>
   </data>
@@ -267,5 +303,8 @@
   </data>
   <data name="YLenhCoThoiGianChiDinhLonHonThoiGianRaKhoa" xml:space="preserve">
     <value>Các y lệnh {0} có thời gian y lệnh lớn hơn thời gian ra khoa.</value>
+  </data>
+  <data name="YLenhThieuDichVuKhamBanCoMuonTiepTuc" xml:space="preserve">
+    <value>Y lệnh {0} thiếu dịch vụ khám. Bạn có muốn tiếp tục?</value>
   </data>
 </root>

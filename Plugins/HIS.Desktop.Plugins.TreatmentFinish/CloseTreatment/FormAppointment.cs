@@ -1,4 +1,21 @@
-﻿using DevExpress.Data;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using DevExpress.Data;
 using DevExpress.XtraEditors;
 using DevExpress.XtraGrid.Columns;
 using DevExpress.XtraGrid.Views.Base;
@@ -12,6 +29,8 @@ using Inventec.Common.Adapter;
 using Inventec.Common.Controls.EditorLoader;
 using Inventec.Common.Logging;
 using Inventec.Core;
+using Inventec.Desktop.Common.LanguageManager;
+using Inventec.Desktop.Common.Message;
 using MOS.EFMODEL.DataModels;
 using MOS.Filter;
 using MOS.SDO;
@@ -22,6 +41,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Resources;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -45,6 +65,10 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.CloseTreatment
         private bool editdtTimeAppointments = false;
         private bool editcboTimeFrame = false;
         Inventec.Desktop.Common.Modules.Module moduleDataAppointment;
+        HIS.Desktop.Library.CacheClient.ControlStateWorker controlStateWorkerAppointment;
+        List<HIS.Desktop.Library.CacheClient.ControlStateRDO> currentControlStateAppointmentRDO;
+        const string moduleLink = "HIS.Desktop.Plugins.TreatmentFinish.CloseTreatment.FormAppointment";
+        bool isNotLoadWhileChangeControlStateInFirstAppointment;
 
         private List<HisNumOrderBlockSDO> HisNumOrderBlockSDOs;
         ResultChooseNumOrderBlockADO resultChooseNumOrderBlockADO;
@@ -107,7 +131,6 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.CloseTreatment
                     lciTimeFrame.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
                     layoutControlItem5.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
                     InitCboRoomEx();
-                    //setBlock();
                 }
                 else
                 {
@@ -134,8 +157,9 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.CloseTreatment
                         editdtTimeAppointments = false;
                     }
                 }
-
+                InitControlAppointmentState();
                 ValidationTimeAppointments();
+                
                 this.initNumOderBlock = false;
                 this.StartPosition = FormStartPosition.CenterParent;
             }
@@ -264,13 +288,13 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.CloseTreatment
                         Inventec.Common.Logging.LogSystem.Debug("ProcessLoadGetOccupiedStatus.3");
                         List<HisAppointmentPeriodCountByDateSDO> ListTime = new List<HisAppointmentPeriodCountByDateSDO>();
                         NumOrderBlockID = null;
-                        DevExpress.XtraEditors.XtraMessageBox.Show(String.Format("Đã cấp hết số khám vào ngày {0}", dtTimeAppointments.DateTime.ToString("dd/MM")),
+                        DevExpress.XtraEditors.XtraMessageBox.Show(String.Format(ResourceMessage.DaCapHetSoKhamVaoNgay, dtTimeAppointments.DateTime.ToString("dd/MM")),
                              Inventec.Desktop.Common.LibraryMessage.MessageUtil.GetMessage(Inventec.Desktop.Common.LibraryMessage.Message.Enum.TieuDeCuaSoThongBaoLaThongBao));
                     }
                 }
                 else
                 {
-                    DevExpress.XtraEditors.XtraMessageBox.Show(String.Format("Đã cấp hết số khám vào ngày {0}", dtTimeAppointments.DateTime.ToString("dd/MM")),
+                    DevExpress.XtraEditors.XtraMessageBox.Show(String.Format(ResourceMessage.DaCapHetSoKhamVaoNgay, dtTimeAppointments.DateTime.ToString("dd/MM")),
                              Inventec.Desktop.Common.LibraryMessage.MessageUtil.GetMessage(Inventec.Desktop.Common.LibraryMessage.Message.Enum.TieuDeCuaSoThongBaoLaThongBao));
                     NumOrderBlockID = null;
                 }
@@ -368,7 +392,6 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.CloseTreatment
                 {
                     filter.ROOM_ID = _RoomExamADOs.Where(o => o.IsCheck).FirstOrDefault().ID;
                 }
-                //filter.IS_ACTIVE = 1;
                 var HisNumOrderBlockSDOTmps = new Inventec.Common.Adapter.BackendAdapter(new CommonParam()).Get<List<HisNumOrderBlockSDO>>("api/HisNumOrderBlock/GetOccupiedStatus", ApiConsumers.MosConsumer, filter, null);
                 if (HisNumOrderBlockSDOTmps != null && HisNumOrderBlockSDOTmps.Count > 0)
                 {
@@ -393,13 +416,13 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.CloseTreatment
                         Inventec.Common.Logging.LogSystem.Debug("ProcessLoadGetOccupiedStatus.3");
                         ListTime = new List<HisAppointmentPeriodCountByDateSDO>();
                         cboTimeFrame.EditValue = null;
-                        DevExpress.XtraEditors.XtraMessageBox.Show(String.Format("Đã cấp hết số khám vào ngày {0}", dtTimeAppointments.DateTime.ToString("dd/MM")),
+                        DevExpress.XtraEditors.XtraMessageBox.Show(String.Format(ResourceMessage.DaCapHetSoKhamVaoNgay, dtTimeAppointments.DateTime.ToString("dd/MM")),
                              Inventec.Desktop.Common.LibraryMessage.MessageUtil.GetMessage(Inventec.Desktop.Common.LibraryMessage.Message.Enum.TieuDeCuaSoThongBaoLaThongBao));
                     }
                 }
                 else
                 {
-                    DevExpress.XtraEditors.XtraMessageBox.Show(String.Format("Đã cấp hết số khám vào ngày {0}", dtTimeAppointments.DateTime.ToString("dd/MM")),
+                    DevExpress.XtraEditors.XtraMessageBox.Show(String.Format(ResourceMessage.DaCapHetSoKhamVaoNgay, dtTimeAppointments.DateTime.ToString("dd/MM")),
                             Inventec.Desktop.Common.LibraryMessage.MessageUtil.GetMessage(Inventec.Desktop.Common.LibraryMessage.Message.Enum.TieuDeCuaSoThongBaoLaThongBao));
                 }
                 Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => filter), filter)
@@ -537,14 +560,42 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.CloseTreatment
         {
             try
             {
-                //layout
-                this.Text = Form.GetStringFromKey("IVT_LANGUAGE_KEY__FORM_APPOINTMENT__TEXT");
-                this.lciTimeAppointments.Text = Form.GetStringFromKey("IVT_LANGUAGE_KEY__FORM_APPOINTMENT__LCI_APPOINTMENT_TIME");
-                this.btnSave.Text = Form.GetStringFromKey("IVT_LANGUAGE_KEY__FORM_TREATMENT_FINISH__CLOSE_TREATMENT_SAVE");
+                ////Khoi tao doi tuong resource
+                Resources.ResourceLanguageManager.LanguageResource = new ResourceManager("HIS.Desktop.Plugins.TreatmentFinish.Resources.Lang", typeof(FormAppointment).Assembly);
+
+                ////Gan gia tri cho cac control editor co Text/Caption/ToolTip/NullText/NullValuePrompt/FindNullPrompt
+                this.layoutControl1.Text = Inventec.Common.Resource.Get.Value("FormAppointment.layoutControl1.Text", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
+                this.lblStt.Text = Inventec.Common.Resource.Get.Value("FormAppointment.lblStt.Text", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
+                this.cboRoomEx.Properties.NullText = Inventec.Common.Resource.Get.Value("FormAppointment.cboRoomEx.Properties.NullText", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
+                this.bar1.Text = Inventec.Common.Resource.Get.Value("FormAppointment.bar1.Text", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
+                this.barButtonItemSave.Caption = Inventec.Common.Resource.Get.Value("FormAppointment.barButtonItemSave.Caption", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
+                this.bbtnChonKhungGio.ToolTip = Inventec.Common.Resource.Get.Value("FormAppointment.bbtnChonKhungGio.ToolTip", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
+                this.btnAppointmentService.Text = Inventec.Common.Resource.Get.Value("FormAppointment.btnAppointmentService.Text", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
+                this.txtAdvise.Properties.NullValuePrompt = Inventec.Common.Resource.Get.Value("FormAppointment.txtAdvise.Properties.NullValuePrompt", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
+                this.cboTimeFrame.Properties.NullText = Inventec.Common.Resource.Get.Value("FormAppointment.cboTimeFrame.Properties.NullText", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
+                this.txtSearch.Properties.NullValuePrompt = Inventec.Common.Resource.Get.Value("FormAppointment.txtSearch.Properties.NullValuePrompt", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
+                this.gridViewRoomExam.OptionsFind.FindNullPrompt = Inventec.Common.Resource.Get.Value("FormAppointment.gridViewRoomExam.OptionsFind.FindNullPrompt", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
+                this.gridColumn2.Caption = Inventec.Common.Resource.Get.Value("FormAppointment.gridColumn2.Caption", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
+                this.gridColumn3.Caption = Inventec.Common.Resource.Get.Value("FormAppointment.gridColumn3.Caption", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
+                this.btnSave.Text = Inventec.Common.Resource.Get.Value("FormAppointment.btnSave.Text", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
+                this.lciTimeAppointments.OptionsToolTip.ToolTip = Inventec.Common.Resource.Get.Value("FormAppointment.lciTimeAppointments.OptionsToolTip.ToolTip", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
+                this.lciTimeAppointments.Text = Inventec.Common.Resource.Get.Value("FormAppointment.lciTimeAppointments.Text", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
+                this.layoutControlItem4.OptionsToolTip.ToolTip = Inventec.Common.Resource.Get.Value("FormAppointment.layoutControlItem4.OptionsToolTip.ToolTip", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
+                this.layoutControlItem4.Text = Inventec.Common.Resource.Get.Value("FormAppointment.layoutControlItem4.Text", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
+                this.layoutControlItem5.Text = Inventec.Common.Resource.Get.Value("FormAppointment.layoutControlItem5.Text", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
+                this.layoutControlItem1.Text = Inventec.Common.Resource.Get.Value("FormAppointment.layoutControlItem1.Text", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
+                this.lciTimeFrame.Text = Inventec.Common.Resource.Get.Value("FormAppointment.lciTimeFrame.Text", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
+                this.lciAdvise.Text = Inventec.Common.Resource.Get.Value("FormAppointment.lciAdvise.Text", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
+                this.layoutControlItem8.Text = Inventec.Common.Resource.Get.Value("FormAppointment.layoutControlItem8.Text", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
+                this.layoutControlItem9.Text = Inventec.Common.Resource.Get.Value("FormAppointment.layoutControlItem9.Text", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
+                this.layoutControlItem10.Text = Inventec.Common.Resource.Get.Value("FormAppointment.layoutControlItem10.Text", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
+                this.Text = Inventec.Common.Resource.Get.Value("FormAppointment.Text", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
+                this.lblKhongCanhBaoNgayNghi.OptionsToolTip.ToolTip = Inventec.Common.Resource.Get.Value("FormAppointment.lblKhongCanhBaoNgayNghi.OptionsToolTip.ToolTip", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
+                this.lblKhongCanhBaoNgayNghi.Text = Inventec.Common.Resource.Get.Value("FormAppointment.lblKhongCanhBaoNgayNghi.Text", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
             }
             catch (Exception ex)
             {
-                Inventec.Common.Logging.LogSystem.Error(ex);
+                Inventec.Common.Logging.LogSystem.Warn(ex);
             }
         }
 
@@ -626,82 +677,6 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.CloseTreatment
                 gridControlRoomExam.BeginUpdate();
                 gridControlRoomExam.DataSource = _RoomExamADOs;
                 gridControlRoomExam.EndUpdate();
-
-                #region old
-                //DateTime time = new DateTime();
-                //MOS.Filter.HisServiceReqFilter filter = new MOS.Filter.HisServiceReqFilter();
-                //filter.TREATMENT_ID = Form.treatmentId;
-                //filter.SERVICE_REQ_TYPE_ID = IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__DONK;
-                //filter.ORDER_DIRECTION = "DESC";
-                //filter.ORDER_FIELD = "CREATE_TIME";
-                //var prescriptionList = new Inventec.Common.Adapter.BackendAdapter(new Inventec.Core.CommonParam()).Get<List<MOS.EFMODEL.DataModels.HIS_SERVICE_REQ>>(Base.GlobalStore.HIS_SERVICE_REQ_GET, ApiConsumer.ApiConsumers.MosConsumer, filter, HIS.Desktop.Controls.Session.SessionManager.ActionLostToken, null);
-
-                //MOS.EFMODEL.DataModels.HIS_SERVICE_REQ hisPrescription = null;
-                //if (prescriptionList != null && prescriptionList.Count > 0)
-                //{
-                //    hisPrescription = prescriptionList.Where(o => o.USE_TIME_TO.HasValue).OrderByDescending(o => o.USE_TIME_TO).FirstOrDefault();
-                //    if (hisPrescription != null)
-                //    {
-                //        time = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(hisPrescription.USE_TIME_TO.Value) ?? DateTime.MinValue;
-                //    }
-                //}
-
-                //long appointmentTimeDefaultCFG = Config.TreatmentEndCFG.treatmentEndAppointmentTimeDefault;
-
-                //if (Config.TreatmentEndCFG.AppointmentTimeDefault)
-                //{
-                //    if (time != null && time != DateTime.MinValue && hisPrescription != null)
-                //    {
-                //        //if (time.DayOfWeek == DayOfWeek.Saturday)
-                //        //{
-                //        //    dtTimeAppointments.EditValue = time.AddDays(-1);
-                //        //}
-                //        //else if (time.DayOfWeek == DayOfWeek.Sunday)
-                //        //{
-                //        //    dtTimeAppointments.EditValue = time.AddDays(-2);
-                //        //}
-                //        //else
-                //        //Inventec.Common.DateTime.Calculation.
-                //        long timeAdd = Inventec.Common.DateTime.Calculation.Add(hisPrescription.USE_TIME_TO.Value, 1, Inventec.Common.DateTime.Calculation.UnitDifferenceTime.DAY) ?? 0;
-                //        time = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(timeAdd) ?? DateTime.MinValue;
-                //        dtTimeAppointments.EditValue = time;
-                //    }
-                //    else if (appointmentTimeDefaultCFG > 0)
-                //    {
-                //        long appointmentTimeDefault = 0;
-                //        if (dtAppointment > 0)
-                //        {
-                //            appointmentTimeDefault = Inventec.Common.DateTime.Calculation.Add(dtAppointment, appointmentTimeDefaultCFG, Inventec.Common.DateTime.Calculation.UnitDifferenceTime.DAY) ?? 0;
-                //        }
-                //        else
-                //            appointmentTimeDefault = Inventec.Common.DateTime.Calculation.Add(Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(DateTime.Now) ?? 0, appointmentTimeDefaultCFG, Inventec.Common.DateTime.Calculation.UnitDifferenceTime.DAY) ?? 0;
-                //        dtTimeAppointments.EditValue = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(appointmentTimeDefault);
-                //    }
-                //    else
-                //        dtTimeAppointments.EditValue = DateTime.Now.AddDays(1);
-                //}
-                //else
-                //{
-                //    if (appointmentTimeDefaultCFG > 0)
-                //    {
-                //        long appointmentTimeDefault = 0;
-                //        if (dtAppointment > 0)
-                //        {
-                //            appointmentTimeDefault = Inventec.Common.DateTime.Calculation.Add(dtAppointment, appointmentTimeDefaultCFG, Inventec.Common.DateTime.Calculation.UnitDifferenceTime.DAY) ?? 0;
-                //        }
-                //        else
-                //            appointmentTimeDefault = Inventec.Common.DateTime.Calculation.Add(Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(DateTime.Now) ?? 0, appointmentTimeDefaultCFG, Inventec.Common.DateTime.Calculation.UnitDifferenceTime.DAY) ?? 0;
-                //        dtTimeAppointments.EditValue = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(appointmentTimeDefault);
-                //    }
-                //    else if (time != null && time != DateTime.MinValue)
-                //    {
-                //        dtTimeAppointments.EditValue = time;
-                //    }
-                //    else
-                //        dtTimeAppointments.EditValue = DateTime.Now.AddDays(1);
-                //}
-                #endregion
-                //}
                 dtTimeAppointments.Focus();
             }
             catch (Exception ex)
@@ -742,8 +717,8 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.CloseTreatment
 
                 if (IsRoomBlock && NumOrderBlockID == null)
                 {
-                    DevExpress.XtraEditors.XtraMessageBox.Show("Bạn chưa chọn số thứ tự",
-                        "Thông báo");
+                    DevExpress.XtraEditors.XtraMessageBox.Show(ResourceMessage.BanChuaChonStt,
+                        ResourceMessage.ThongBao);
                     return;
                 }
 
@@ -758,7 +733,7 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.CloseTreatment
                 {
                     if (!GetAppoinmentCountTrue())
                     {
-                        DevExpress.XtraEditors.XtraMessageBox.Show("Bạn bắt buộc chọn dịch vụ hẹn khám khi kết thúc điều trị",
+                        DevExpress.XtraEditors.XtraMessageBox.Show(ResourceMessage.BanBatBuocChonDichVuHenKhamKhiKetThucDieuTri,
                         "", MessageBoxButtons.OK);
                         return;
                     }
@@ -774,7 +749,7 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.CloseTreatment
                     string _HanThe = Inventec.Common.DateTime.Convert.TimeNumberToDateString(currentTreatment.TDL_HEIN_CARD_TO_TIME ?? 0);
                     string _TGHenKham = Inventec.Common.DateTime.Convert.SystemDateTimeToDateString(dtTimeAppointments.DateTime);
                     string _DoiTuongBN = BackendDataWorker.Get<HIS_PATIENT_TYPE>().FirstOrDefault(o => o.PATIENT_TYPE_CODE == Config.ConfigKey.patientTypeCodeHospitalFee).PATIENT_TYPE_NAME;
-                    if (MessageBox.Show(string.Format("Thẻ BHYT của bệnh nhân sẽ hết hạn vào ngày {0}, bạn có chắc muốn hẹn khám vào ngày {1} không? Nếu tiếp tục, phần mềm sẽ tự động đổi sang đối tượng {2}", _HanThe, _TGHenKham, _DoiTuongBN), "Thông báo", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                    if (MessageBox.Show(string.Format(ResourceMessage.TheBHYTCuaBNSeHetHanVaoNgay, _HanThe, _TGHenKham, _DoiTuongBN), ResourceMessage.ThongBao, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
                     {
                         dtTimeAppointments.Focus();
                         return;
@@ -799,18 +774,20 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.CloseTreatment
                         MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No) return;
                     }
                 }
-
-                if (dtTimeAppointments.DateTime.DayOfWeek == DayOfWeek.Sunday)
+                if (!chkKhongCanhBaoNgayNghi.Checked)
                 {
-                    if (DevExpress.XtraEditors.XtraMessageBox.Show(ResourceMessage.CanhBaoNgayHenLaChuNhat,
-                    ResourceMessage.ThongBao,
-                    MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No) return;
-                }
-                else if (dtTimeAppointments.DateTime.DayOfWeek == DayOfWeek.Saturday)
-                {
-                    if (DevExpress.XtraEditors.XtraMessageBox.Show(ResourceMessage.CanhBaoNgayHenLaThuBay,
-                    ResourceMessage.ThongBao,
-                    MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No) return;
+                    if (dtTimeAppointments.DateTime.DayOfWeek == DayOfWeek.Sunday)
+                    {
+                        if (DevExpress.XtraEditors.XtraMessageBox.Show(ResourceMessage.CanhBaoNgayHenLaChuNhat,
+                        ResourceMessage.ThongBao,
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No) return;
+                    }
+                    else if (dtTimeAppointments.DateTime.DayOfWeek == DayOfWeek.Saturday)
+                    {
+                        if (DevExpress.XtraEditors.XtraMessageBox.Show(ResourceMessage.CanhBaoNgayHenLaThuBay,
+                        ResourceMessage.ThongBao,
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No) return;
+                    }
                 }
 
                 long dtAppointmentTime = Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(dtTimeAppointments.DateTime) ?? 0;
@@ -871,7 +848,6 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.CloseTreatment
                         if (cboTimeFrame.EditValue != null && Inventec.Common.TypeConvert.Parse.ToInt64(cboTimeFrame.EditValue.ToString()) > 0)
                         {
                             currentTreatmentFinishSDO.NumOrderBlockId = Inventec.Common.TypeConvert.Parse.ToInt64(cboTimeFrame.EditValue.ToString());
-                            //currentTreatmentFinishSDO.NumOrderBlockNumOrder = HisNumOrderBlockSDOs.FirstOrDefault().NUM_ORDER;//TODO
                         }
                     }
                     if (IsBlockOrder)
@@ -1490,61 +1466,6 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.CloseTreatment
             }
         }
 
-        private void dtTimeAppointments_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
-        {
-
-        }
-
-        private void cboTimeFrame_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
-        {
-            try
-            {
-                if (e.KeyCode == Keys.Enter)
-                {
-                    txtSearch.Focus();
-                    txtSearch.SelectAll();
-                }
-            }
-            catch (Exception ex)
-            {
-                Inventec.Common.Logging.LogSystem.Warn(ex);
-            }
-        }
-
-        private void txtSearch_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
-        {
-            try
-            {
-                if (e.KeyCode == Keys.Enter)
-                {
-                    txtAdvise.Focus();
-                    txtAdvise.SelectAll();
-                }
-            }
-            catch (Exception ex)
-            {
-                Inventec.Common.Logging.LogSystem.Warn(ex);
-            }
-        }
-
-        private void dtTimeAppointments_KeyUp(object sender, KeyEventArgs e)
-        {
-            try
-            {
-                if (e.KeyCode == Keys.Enter)
-                {
-                    spDay.Focus();
-                    spDay.SelectAll();
-                    e.Handled = true;
-                }
-            }
-            catch (Exception ex)
-            {
-                Inventec.Common.Logging.LogSystem.Warn(ex);
-            }
-        }
-
-
         private void bbtnChonKhungGio_ButtonClick(object sender, DevExpress.XtraEditors.Controls.ButtonPressedEventArgs e)
         {
             try
@@ -1563,14 +1484,12 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.CloseTreatment
                     }
                     else
                     {
-                        MessageBox.Show("Bạn chưa chọn phòng khám lần sau");
+                        MessageBox.Show(ResourceMessage.BanChuaChonPhongKhamLanSau);
                         Inventec.Common.Logging.LogSystem.Warn("Bạn chưa chọn phòng khám lần sau");
                         return;
                     }
                 }
                 numOrderBlockChooserADO.DefaultDate = Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(dtTimeAppointments.DateTime) ?? 0;
-                //numOrderBlockChooserADO.DisableDate = false;
-                //numOrderBlockChooserADO.DisableRoom = false;
                 numOrderBlockChooserADO.ListRoom = BackendDataWorker.Get<V_HIS_ROOM>().Where(o => datas.Exists(k => k.ID == o.ID)).ToList();
                 numOrderBlockChooserADO.DelegateChooseData = ActChooseDataProcess;//TODO
                 bool IsNeedTime = true;
@@ -1618,8 +1537,6 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.CloseTreatment
 
                 gridControlRoomExam.RefreshDataSource();
                 ProcessLoadGetOccupiedStatus();
-                //gridControlRoomExam.DataSource = null;
-                //gridControlRoomExam.DataSource = _RoomExamADOs;
             }
             catch (Exception ex)
             {
@@ -1797,5 +1714,62 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.CloseTreatment
             }
         }
 
+        private void chkKhongCanhBaoNgayNghi_CheckedChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                if (isNotLoadWhileChangeControlStateInFirstAppointment)
+                {
+                    return;
+                }
+                WaitingManager.Show();
+                HIS.Desktop.Library.CacheClient.ControlStateRDO csAddOrUpdate = (this.currentControlStateAppointmentRDO != null && this.currentControlStateAppointmentRDO.Count > 0) ? this.currentControlStateAppointmentRDO.Where(o => o.KEY == chkKhongCanhBaoNgayNghi.Name && o.MODULE_LINK == moduleLink).FirstOrDefault() : null;
+                Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => csAddOrUpdate), csAddOrUpdate));
+                if (csAddOrUpdate != null)
+                {
+                    csAddOrUpdate.VALUE = (chkKhongCanhBaoNgayNghi.Checked ? "1" : "");
+                }
+                else
+                {
+                    csAddOrUpdate = new HIS.Desktop.Library.CacheClient.ControlStateRDO();
+                    csAddOrUpdate.KEY = chkKhongCanhBaoNgayNghi.Name;
+                    csAddOrUpdate.VALUE = (chkKhongCanhBaoNgayNghi.Checked ? "1" : "");
+                    csAddOrUpdate.MODULE_LINK = moduleLink;
+                    if (this.currentControlStateAppointmentRDO == null)
+                        this.currentControlStateAppointmentRDO = new List<HIS.Desktop.Library.CacheClient.ControlStateRDO>();
+                    this.currentControlStateAppointmentRDO.Add(csAddOrUpdate);
+                }
+                this.controlStateWorkerAppointment.SetData(this.currentControlStateAppointmentRDO);
+                WaitingManager.Hide();
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+        }
+        private void InitControlAppointmentState()
+        {
+            isNotLoadWhileChangeControlStateInFirstAppointment = true;
+            try
+            {
+                this.controlStateWorkerAppointment = new Desktop.Library.CacheClient.ControlStateWorker();
+                this.currentControlStateAppointmentRDO = controlStateWorkerAppointment.GetData(moduleLink);
+                if (this.currentControlStateAppointmentRDO != null && this.currentControlStateAppointmentRDO.Count > 0)
+                {
+                    foreach (var item in this.currentControlStateAppointmentRDO)
+                    {
+                        if (item.KEY == chkKhongCanhBaoNgayNghi.Name)
+                        {
+                            chkKhongCanhBaoNgayNghi.Checked = item.VALUE == "1";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+            isNotLoadWhileChangeControlStateInFirstAppointment = false;
+        }
     }
 }

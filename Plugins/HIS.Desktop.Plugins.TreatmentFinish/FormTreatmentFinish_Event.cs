@@ -1,4 +1,21 @@
-﻿using System;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -277,7 +294,7 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
             {
                 if (!String.IsNullOrEmpty(key))
                 {
-                    result = Inventec.Common.Resource.Get.Value(key, Resources.ResourceLanguageManager.LanguageFormTreatmentFinish, cultureLang);
+                    result = Inventec.Common.Resource.Get.Value(key, Resources.ResourceLanguageManager.LanguageResource, cultureLang);
                 }
             }
             catch (Exception ex)
@@ -347,7 +364,7 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
                         {
                             if (!hisTreatmentFinishSDO_process.AppointmentTime.HasValue || hisTreatmentFinishSDO_process.AppointmentTime.Value <= 0)
                             {
-                                var dataRoom = BackendDataWorker.Get<V_HIS_ROOM>().FirstOrDefault(o => o.ID == this.module.RoomId);
+                                var dataRoom = this.hisRooms.FirstOrDefault(o => o.ID == this.module.RoomId);
 
                                 XtraMessageBox.Show(ResourceMessage.ChuaNhapThoiGianHenKham);
                                 long dtTreatmentEnd = Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(dtEndTime.DateTime) ?? 0;
@@ -438,10 +455,10 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
                     Inventec.Common.Logging.LogSystem.Debug("SET DATA HEIN 1");
                     GetPatientTypeAlter();
                     HeinCardData heinCardDataForCheckGOV = new HeinCardData();
-                    heinCardDataForCheckGOV.PatientName = currentHisTreatment_.TDL_PATIENT_NAME;
-                    heinCardDataForCheckGOV.Address = currentHisTreatment_.TDL_PATIENT_ADDRESS;
-                    heinCardDataForCheckGOV.Dob = currentHisTreatment_.TDL_PATIENT_IS_HAS_NOT_DAY_DOB == 1 ? currentHisTreatment_.TDL_PATIENT_DOB.ToString().Substring(0, 4) : ProcessDate(currentHisTreatment_.TDL_PATIENT_DOB.ToString().Substring(6, 2) + currentHisTreatment_.TDL_PATIENT_DOB.ToString().Substring(4, 2) + currentHisTreatment_.TDL_PATIENT_DOB.ToString().Substring(0, 4));
-                    heinCardDataForCheckGOV.Gender = currentHisTreatment_.TDL_PATIENT_GENDER_NAME;
+                    heinCardDataForCheckGOV.PatientName = currentHisTreatment.TDL_PATIENT_NAME;
+                    heinCardDataForCheckGOV.Address = currentHisTreatment.TDL_PATIENT_ADDRESS;
+                    heinCardDataForCheckGOV.Dob = currentHisTreatment.TDL_PATIENT_IS_HAS_NOT_DAY_DOB == 1 ? currentHisTreatment.TDL_PATIENT_DOB.ToString().Substring(0, 4) : ProcessDate(currentHisTreatment.TDL_PATIENT_DOB.ToString().Substring(6, 2) + currentHisTreatment.TDL_PATIENT_DOB.ToString().Substring(4, 2) + currentHisTreatment.TDL_PATIENT_DOB.ToString().Substring(0, 4));
+                    heinCardDataForCheckGOV.Gender = currentHisTreatment.TDL_PATIENT_GENDER_NAME;
                     if (patientTypeAlter != null)
                     {
                         heinCardDataForCheckGOV.HeinCardNumber = patientTypeAlter.HEIN_CARD_NUMBER;
@@ -463,7 +480,7 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
                     hisTreatmentFinishSDO.HrmKskCode = txtKskCode.Text.Trim();
                 if (this.ucIcdCause != null)
                 {
-                    var icdValue = this.IcdCauseProcessor.GetValue(this.ucIcdCause, HIS.UC.Icd.ADO.Template.NoFocus);
+                    var icdValue = this.IcdCauseProcessor.GetValue(this.ucIcdCause, Template.NoFocus);
                     if (icdValue != null && icdValue is UC.Icd.ADO.IcdInputADO)
                     {
                         hisTreatmentFinishSDO.IcdCauseCode = ((UC.Icd.ADO.IcdInputADO)icdValue).ICD_CODE;
@@ -473,7 +490,7 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
 
                 if (this.ucIcdYhct != null)
                 {
-                    var icdValue = this.icdYhctProcessor.GetValue(this.ucIcdYhct, HIS.UC.Icd.ADO.Template.NoFocus);
+                    var icdValue = this.icdYhctProcessor.GetValue(this.ucIcdYhct, Template.NoFocus);
                     if (icdValue != null && icdValue is UC.Icd.ADO.IcdInputADO)
                     {
                         hisTreatmentFinishSDO.TraditionalIcdCode = ((UC.Icd.ADO.IcdInputADO)icdValue).ICD_CODE;
@@ -566,6 +583,37 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
                     hisTreatmentFinishSDO.HospSubsDirectorLoginname = null;
                     hisTreatmentFinishSDO.HospSubsDirectorUsername = null;
                 }
+                if (cboHosReason.EditValue != null)
+                {
+                    var data = HIS.Desktop.LocalStorage.BackendData.BackendDataWorker.Get<MOS.EFMODEL.DataModels.HIS_HOSPITALIZE_REASON>().Where(o => o.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE).ToList().FirstOrDefault(o => o.ID == Int64.Parse(cboHosReason.EditValue.ToString()));
+                    if (data != null && data.HOSPITALIZE_REASON_NAME == txtHosReasonNt.Text.Trim())
+                    {
+                        hisTreatmentFinishSDO.HospitalizeReasonCode = data.HOSPITALIZE_REASON_CODE;
+                        hisTreatmentFinishSDO.HospitalizeReasonName = data.HOSPITALIZE_REASON_NAME;
+                    }
+                    else
+                    {
+                        hisTreatmentFinishSDO.HospitalizeReasonCode = null;
+                        hisTreatmentFinishSDO.HospitalizeReasonName = txtHosReasonNt.Text.Trim();
+                    }
+                }
+                else
+                {
+                    hisTreatmentFinishSDO.HospitalizeReasonCode = null;
+                    hisTreatmentFinishSDO.HospitalizeReasonName = txtHosReasonNt.Text.Trim();
+                }
+                if (cboCareer.EditValue != null)
+                {
+                    hisTreatmentFinishSDO.CareerId = (long)cboCareer.EditValue;
+                }
+
+                if (currentTreatmentFinishSDO != null)
+                {
+                    hisTreatmentFinishSDO.SurgeryName = currentTreatmentFinishSDO.SurgeryName;
+                    hisTreatmentFinishSDO.SurgeryBeginTime = currentTreatmentFinishSDO.SurgeryBeginTime;
+                    hisTreatmentFinishSDO.SurgeryEndTime = currentTreatmentFinishSDO.SurgeryEndTime;
+                    hisTreatmentFinishSDO.Valid1Year = currentTreatmentFinishSDO.Valid1Year;
+                }
             }
             catch (Exception ex)
             {
@@ -582,7 +630,7 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
                 currentTreatmentFinishSDO = new MOS.SDO.HisTreatmentFinishSDO();
                 currentTreatmentFinishSDO.TreatmentId = data.ID;
                 currentTreatmentFinishSDO.Advise = data.ADVISE;
-                currentTreatmentFinishSDO.ClinicalNote = data.CLINICAL_NOTE;
+                currentTreatmentFinishSDO.ClinicalNote = this.currentTreatmentExt != null ? this.currentTreatmentExt.CLINICAL_NOTE:"";
                 currentTreatmentFinishSDO.DeathCauseId = data.DEATH_CAUSE_ID;
                 currentTreatmentFinishSDO.DeathTime = data.DEATH_TIME;
                 currentTreatmentFinishSDO.DeathWithinId = data.DEATH_WITHIN_ID;
@@ -594,15 +642,15 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
                 currentTreatmentFinishSDO.IcdText = data.ICD_TEXT;
                 currentTreatmentFinishSDO.MainCause = data.MAIN_CAUSE;
                 currentTreatmentFinishSDO.PatientCondition = data.PATIENT_CONDITION;
-                currentTreatmentFinishSDO.SubclinicalResult = data.SUBCLINICAL_RESULT;
+                currentTreatmentFinishSDO.SubclinicalResult = this.currentTreatmentExt != null ? this.currentTreatmentExt.SUBCLINICAL_RESULT:"";
                 currentTreatmentFinishSDO.Surgery = data.SURGERY;
                 currentTreatmentFinishSDO.TranPatiFormId = data.TRAN_PATI_FORM_ID;
                 currentTreatmentFinishSDO.TranPatiReasonId = data.TRAN_PATI_REASON_ID;
                 currentTreatmentFinishSDO.TransferOutMediOrgCode = data.MEDI_ORG_CODE;
                 currentTreatmentFinishSDO.TransferOutMediOrgName = data.MEDI_ORG_NAME;
                 currentTreatmentFinishSDO.Transporter = data.TRANSPORTER;
+                currentTreatmentFinishSDO.TransporterLoginnames = data.TRANSPORTER_LOGINNAMES;
                 currentTreatmentFinishSDO.TransportVehicle = data.TRANSPORT_VEHICLE;
-                //currentTreatmentFinishSDO.TreatmentEndTypeId = data.TREATMENT_END_TYPE_ID ?? 0;
                 currentTreatmentFinishSDO.TreatmentFinishTime = data.OUT_TIME ?? 0;
                 currentTreatmentFinishSDO.TreatmentMethod = data.TREATMENT_METHOD;
                 currentTreatmentFinishSDO.TreatmentResultId = data.TREATMENT_RESULT_ID;
@@ -615,6 +663,8 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
                 currentTreatmentFinishSDO.SickLeaveFrom = data.SICK_LEAVE_FROM;
                 currentTreatmentFinishSDO.SickLeaveTo = data.SICK_LEAVE_TO;
                 currentTreatmentFinishSDO.SickHeinCardNumber = data.SICK_HEIN_CARD_NUMBER;
+                currentTreatmentFinishSDO.MotherName = data.TDL_PATIENT_MOTHER_NAME;
+                currentTreatmentFinishSDO.FatherName = data.TDL_PATIENT_FATHER_NAME;
                 currentTreatmentFinishSDO.PatientRelativeName = data.TDL_PATIENT_RELATIVE_NAME;
                 currentTreatmentFinishSDO.PatientRelativeType = data.TDL_PATIENT_RELATIVE_TYPE;
                 currentTreatmentFinishSDO.PatientWorkPlace = data.TDL_PATIENT_WORK_PLACE;
@@ -670,6 +720,21 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
                     }
                 }
                 currentTreatmentFinishSDO.DeathIssuedDate = data.DEATH_ISSUED_DATE;
+                currentTreatmentFinishSDO.DeathCertIssuerLoginname = data.DEATH_CERT_ISSUER_LOGINNAME;
+                currentTreatmentFinishSDO.DeathCertIssuerUsername = data.DEATH_CERT_ISSUER_USERNAME;
+                currentTreatmentFinishSDO.DeathDocumentTypeCode = data.DEATH_DOCUMENT_TYPE_CODE;              
+                currentTreatmentFinishSDO.DeathStatus = data.DEATH_STATUS;
+                currentTreatmentFinishSDO.SurgeryName = data.SURGERY_NAME;
+                currentTreatmentFinishSDO.SurgeryBeginTime = data.SURGERY_BEGIN_TIME;
+                currentTreatmentFinishSDO.SurgeryEndTime = data.SURGERY_END_TIME;
+                if (data.VALID_1_YEAR == 1)
+                {
+                    currentTreatmentFinishSDO.Valid1Year = true;
+                }
+                else
+                {
+                    currentTreatmentFinishSDO.Valid1Year = false;
+                }
             }
             catch (Exception ex)
             {
@@ -687,7 +752,7 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
             {
                 if (this.currentHisTreatment != null)
                 {
-                    var treatmentType = BackendDataWorker.Get<HIS_TREATMENT_TYPE>().FirstOrDefault(o => o.ID == this.currentHisTreatment.TDL_TREATMENT_TYPE_ID);
+                    var treatmentType = this.hisTreatmentTypes.FirstOrDefault(o => o.ID == this.currentHisTreatment.TDL_TREATMENT_TYPE_ID);
                     if (treatmentType != null && (treatmentType.FEE_DEBT_OPTION == 1
                                                || treatmentType.FEE_DEBT_OPTION == 2))
                     {
@@ -748,15 +813,17 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
         }
 
         #region init
-        private void InitUcIcdTotal()
+        private async Task InitUcIcdTotal()
         {
             try
             {
+                Inventec.Common.Logging.LogSystem.Warn("InitUcIcdTotal 1");
                 InitUcIcd();
                 InitUcSecondaryIcd();
                 InitUcIcdYhct();
                 InitUcSecondaryIcdYhct();
                 InitUcCauseIcd();
+                Inventec.Common.Logging.LogSystem.Warn("InitUcIcdTotal 2");
             }
             catch (Exception ex)
             {
@@ -777,9 +844,9 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
                 ado.Width = 440;
                 ado.Height = 24;
                 ado.IsColor = true;
-                ado.DataIcds = listIcd.Where(o => o.IS_TRADITIONAL.HasValue && o.IS_TRADITIONAL.Value == 1 ? false : true).ToList();
+                ado.DataIcds = listIcd;
                 ado.AutoCheckIcd = AutoCheckIcd == "1";
-                ado.hisTreatment = currentHisTreatment_;
+                ado.hisTreatment = currentHisTreatment;
                 ucIcd = (UserControl)icdProcessor.Run(ado);
 
                 if (ucIcd != null)
@@ -876,19 +943,17 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
         {
             try
             {
-                // bo cac ma YHCT
-                subIcdProcessor = new SecondaryIcdProcessor(new CommonParam(), listIcd.Where(o => o.IS_TRADITIONAL.HasValue && o.IS_TRADITIONAL.Value == 1 ? false : true).ToList());
+                subIcdProcessor = new SecondaryIcdProcessor(new CommonParam(), listIcd);
                 HIS.UC.SecondaryIcd.ADO.SecondaryIcdInitADO ado = new UC.SecondaryIcd.ADO.SecondaryIcdInitADO();
                 ado.DelegateNextFocus = NextForcusOut;
                 ado.DelegateGetIcdMain = GetIcdMainCode;
                 ado.Width = 440;
                 ado.Height = 24;
-                //ado.TextLblIcd = GetStringFromKey("IVT_LANGUAGE_KEY__FORM_TREATMENT_FINISH__LCI_ICD_TEXT");
                 ado.TextLblIcd = "CĐ phụ:";
                 ado.TootiplciIcdSubCode = "Chẩn đoán phụ";
                 ado.TextNullValue = GetStringFromKey("IVT_LANGUAGE_KEY__FORM_TREATMENT_FINISH__TXT_ICD_TEXT__NULL_VALUE");
                 ado.limitDataSource = (int)HIS.Desktop.LocalStorage.ConfigApplication.ConfigApplications.NumPageSize;
-                ado.hisTreatment = currentHisTreatment_;
+                ado.hisTreatment = currentHisTreatment;
                 ucSecondaryIcd = (UserControl)subIcdProcessor.Run(ado);
 
                 if (ucSecondaryIcd != null)
@@ -1118,7 +1183,6 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
                 long autoCheckIcd = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<long>("HIS.Desktop.Plugins.AutoCheckIcd");
                 this.IcdCauseProcessor = new HIS.UC.Icd.IcdProcessor();
                 HIS.UC.Icd.ADO.IcdInitADO ado = new HIS.UC.Icd.ADO.IcdInitADO();
-                ado.DelegateNextFocus = NextForcusSubIcdCause;
                 ado.IsUCCause = true;
                 ado.Width = 440;
                 ado.LblIcdMain = GetStringFromKey("IVT_LANGUAGE_KEY__FORM_TREATMENT_FINISH__TXT_NNN");
@@ -1135,19 +1199,6 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
                     this.panelControlCauseIcd.Controls.Add(this.ucIcdCause);
                     this.ucIcdCause.Dock = DockStyle.Fill;
                 }
-            }
-            catch (Exception ex)
-            {
-                Inventec.Common.Logging.LogSystem.Error(ex);
-            }
-        }
-
-        private void NextForcusSubIcdCause()
-        {
-            try
-            {
-                //txtResult.Focus();
-                //txtResult.SelectAll();
             }
             catch (Exception ex)
             {
@@ -1200,14 +1251,6 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
                     {
                         IcdCauseProcessor.FocusControl(ucIcdCause, Template.NoFocus);
                     }
-                    else
-                    {
-                        NextForcusSubIcdCause();
-                    }
-                }
-                else
-                {
-                    NextForcusSubIcdCause();
                 }
             }
             catch (Exception ex)
@@ -1217,7 +1260,7 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
         }
         #endregion
 
-        private async Task ThreadLoadSereServ()
+        private void ThreadLoadSereServ()
         {
             try
             {
@@ -1226,7 +1269,7 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
                 //Load dịch vụ
                 HisSereServFilter ssFilter = new HisSereServFilter();
                 ssFilter.TREATMENT_ID = this.treatmentId;
-                SereServTreatment = await new BackendAdapter(param).GetAsync<List<HIS_SERE_SERV>>("api/HisSereServ/Get", ApiConsumers.MosConsumer, ssFilter, param);
+                SereServTreatment = new BackendAdapter(param).Get<List<HIS_SERE_SERV>>("api/HisSereServ/Get", ApiConsumers.MosConsumer, ssFilter, param);
                 Inventec.Common.Logging.LogSystem.Debug("ThreadLoadSereServ. 2");
                 SereServCheck = SereServTreatment.Where(o => o.IS_NO_EXECUTE == null || o.IS_NO_EXECUTE == 0).ToList();
             }

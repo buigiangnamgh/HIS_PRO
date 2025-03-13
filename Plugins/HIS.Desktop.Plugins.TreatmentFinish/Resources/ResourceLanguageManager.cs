@@ -9,7 +9,7 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.Resources
 {
     class ResourceLanguageManager
     {
-        public static ResourceManager LanguageFormTreatmentFinish = new ResourceManager(
+        public static ResourceManager LanguageResource = new ResourceManager(
             "HIS.Desktop.Plugins.TreatmentFinish.Resources.Lang",
             typeof(HIS.Desktop.Plugins.TreatmentFinish.FormTreatmentFinish).Assembly);
     }

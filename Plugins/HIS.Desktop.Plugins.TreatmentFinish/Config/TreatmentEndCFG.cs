@@ -1,4 +1,21 @@
-﻿using Inventec.Common.LocalStorage.SdaConfig;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using Inventec.Common.LocalStorage.SdaConfig;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,80 +45,5 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.Config
                 Inventec.Common.Logging.LogSystem.Error(ex);
             }
         }
-
-        //public static long TREATMENT_END___APPOINTMENT_TIME_DEFAULT
-        //{
-        //    get
-        //    {
-        //        if (treatmentEndAppointmentTimeDefault == null || treatmentEndAppointmentTimeDefault == 0)
-        //        {
-        //            treatmentEndAppointmentTimeDefault = Int64.Parse(GetValue(TREATMENT_END___APPOINTMENT_TIME_DEFAULT_KEY));
-        //        }
-        //        return treatmentEndAppointmentTimeDefault;
-        //    }
-        //    set
-        //    {
-        //        treatmentEndAppointmentTimeDefault = value;
-        //    }
-        //}
-
-        //public static bool PRESCRIPTION_TIME_AND_APPOINTMENT_TIME
-        //{
-        //    get
-        //    {
-        //        try
-        //        {
-        //            if (!AppointmentTimeDefault.HasValue)
-        //            {
-        //                AppointmentTimeDefault = GetData(SdaConfigs.Get<string>(PRESCRIPTION_TIME_AND_APPOINTMENT_TIME_KEY));
-        //            }
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            AppointmentTimeDefault = false;
-        //            Inventec.Common.Logging.LogSystem.Error(ex);
-        //        }
-
-        //        return AppointmentTimeDefault.Value;
-        //    }
-        //    set
-        //    {
-        //        AppointmentTimeDefault = value;
-        //    }
-        //}
-
-        //private static string GetValue(string code)
-        //{
-        //    string result = null;
-        //    try
-        //    {
-        //        SDA.EFMODEL.DataModels.SDA_CONFIG config = ConfigLoader.dictionaryConfig[code];
-        //        if (config == null) throw new ArgumentNullException(code);
-        //        result = String.IsNullOrEmpty(config.VALUE) ? (String.IsNullOrEmpty(config.DEFAULT_VALUE) ? "" : config.DEFAULT_VALUE) : config.VALUE;
-        //        if (String.IsNullOrEmpty(result)) throw new ArgumentNullException(code);
-        //        return result;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Inventec.Common.Logging.LogSystem.Error(ex);
-        //        result = null;
-        //    }
-        //    return result;
-        //}
-
-        //private static bool GetData(string code)
-        //{
-        //    bool result = false;
-        //    try
-        //    {
-        //        result = (isPrescription == code);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Inventec.Common.Logging.LogSystem.Error(ex);
-        //        result = false;
-        //    }
-        //    return result;
-        //}
     }
 }

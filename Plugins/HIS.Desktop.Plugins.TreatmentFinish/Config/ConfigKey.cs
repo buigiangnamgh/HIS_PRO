@@ -1,4 +1,21 @@
-﻿using HIS.Desktop.LocalStorage.BackendData;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using HIS.Desktop.LocalStorage.BackendData;
 using HIS.Desktop.LocalStorage.HisConfig;
 using HIS.Desktop.LocalStorage.LocalData;
 using Inventec.Common.Logging;
@@ -53,7 +70,12 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.Config
         private const string KEY__PATHOLOCICAL_PROCESS_OPTION = "HIS.Desktop.Plugins.TreatmentFinish.PathologicalProcessOption";
         private const string KEY__WARNING_UNFINISHED_SERVICE_OPTION = "HIS.Desktop.Plugins.TreatmentFinish.WarningUnfinishedServiceOption";
         private const string KEY__MustChooseSeviceExam = "HIS.Desktop.Plugins.TreatmentFinish.MustChooseSeviceExam.Option";
+        private const string KEY__IsAllowTreatmentFinishDepartmentIsActiveFee = "HIS.Desktop.Plugins.TreatmentFinish.IsAllowTreatmentFinishDepartmentIsActiveFee";
+        private const string KEY_TreatmentEndTypeIsTransfer = "HIS.Desktop.Plugins.TreatmentFinish.TreatmentEndTypeIsTransfer";
+        private const string KEY_IsCheckSubIcdExceedLimit = "HIS.Desktop.Plugins.IsCheckSubIcdExceedLimit";
 
+
+        internal static string OptionTreatmentEndTypeIsTransfer;
         internal static string MustChooseSeviceExamOption;
         internal static string WarningUnfinishedServiceOption;
         internal static string PathologicalProcessOption;
@@ -73,27 +95,32 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.Config
         internal static long? MaxOfAppointmentDays;
         internal static long? WarningOptionWhenExceedingMaxOfAppointmentDays;
         internal static string ExportXml2076Option { get; set; }
-        //internal static List<long> WarningTreatmentTypeIds;
         internal static string MustChooseSeviceInCaseOfAppointment;
 
         internal static long WarningOption { get; set; }
 
-        internal static bool IsRequiredTreatmentMethodOption;
+        internal static string RequiredTreatmentMethodOption;
         internal static string NumOrderIssueOption;
 
         internal static string AutoCreateWhenAppointment;
         internal static string patientTypeCodeHospitalFee;
         internal static string SubclinicalResultOption;
         internal static string AllowManyOpeningOption;
+        internal static string IsAllowTreatmentFinishDepartmentIsActiveFee;
+
+        internal static string IsCheckSubIcdExceedLimit;
+
         internal static void GetConfigKey()
         {
             try
             {
+                IsCheckSubIcdExceedLimit = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(KEY_IsCheckSubIcdExceedLimit);
+                OptionTreatmentEndTypeIsTransfer = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(KEY_TreatmentEndTypeIsTransfer);
                 MustChooseSeviceExamOption = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(KEY__MustChooseSeviceExam);
                 WarningUnfinishedServiceOption = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(KEY__WARNING_UNFINISHED_SERVICE_OPTION);
                 PathologicalProcessOption = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(KEY__PATHOLOCICAL_PROCESS_OPTION);
                 CheckingRationOption = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(CHECKING_RATION_OPTION);
-                NumOrderIssueOption = "1";// HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(KEY__MOS_HIS_SERVICE_REQ_NUM_ORDER_ISSUE_OPTION);
+                NumOrderIssueOption = "1";
                 AutoCreateWhenAppointment = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(KEY__MOS_HIS_TREATMENT_AUTO_CREATE_WHEN_APPOINTMENT);
                 patientTypeCodeHospitalFee = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(KEY__MOS_HIS_PATIENT_TYPE_PATIENT_TYPE_CODE_HOSPITAL_FEE);
                 AllowManyOpeningOption = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(KEY__MOS_TREATMENT_ALLOW_MANY_TREATMENT_OPENING_OPTION);
@@ -112,7 +139,7 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.Config
                 WarningOverTotalPatientPrice = Inventec.Common.TypeConvert.Parse.ToDecimal(GetValue(WARNING_OVER_TOTAL_PATIENT_PRICE));
                 IsMustSetProgramWhenFinishingInPatient = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(MUST_SET_PROGRAM_WHEN_FINISHING_IN_PATIENT) == IS__TRUE;
                 IsNoMaterialInvoiceInfo = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(materialInvoiceInfo) == IS__TRUE;
-                IsRequiredTreatmentMethodOption = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(CONFIG_KEY__IS_REQUIRED_TREATMENT_METHOD_OPTION) == IS__TRUE;
+                RequiredTreatmentMethodOption = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(CONFIG_KEY__IS_REQUIRED_TREATMENT_METHOD_OPTION);
                 string maxDayStr = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(MAX_OF_APPOINTMENT_DAYS);
                 if (!String.IsNullOrWhiteSpace(maxDayStr))
                 {
@@ -135,23 +162,9 @@ namespace HIS.Desktop.Plugins.TreatmentFinish.Config
                 TimeToCreateNewTreatmentInNewMonth = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(KEY__TIME_TO_CREATE_NEW_TREATMENT_IN_NEW_MONTH);
                 SubclinicalResultOption = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(KEY__SUBCLINICAL_RESULT_OPTION);
                 ExportXml2076Option = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(KEY_CONFIG_XML2076_EXPORT_OPTION);
+                IsAllowTreatmentFinishDepartmentIsActiveFee = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(KEY__IsAllowTreatmentFinishDepartmentIsActiveFee);
                 TreatmentEndCFG.GetConfig();
                 CheckFinishTimeCFG.GetConfig();
-
-                //WarningTreatmentTypeIds = new List<long>();
-                //string treatmentTypeWarning = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(WarningOptionIncaseOfHavingUnsignDocument);
-                //if (!String.IsNullOrWhiteSpace(treatmentTypeWarning))
-                //{
-                //    string[] types = treatmentTypeWarning.Split(',');
-                //    foreach (var item in types)
-                //    {
-                //        var treatType = BackendDataWorker.Get<HIS_TREATMENT_TYPE>().FirstOrDefault(o => o.TREATMENT_TYPE_CODE == item);
-                //        if (treatType != null)
-                //        {
-                //            WarningTreatmentTypeIds.Add(treatType.ID);
-                //        }
-                //    }
-                //}
             }
             catch (Exception ex)
             {

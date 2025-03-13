@@ -23,31 +23,24 @@ using System.Threading.Tasks;
 
 namespace HIS.Desktop.Plugins.TreatmentFinish.Validation
 {
-    class OutPatientDateValidationRule : DevExpress.XtraEditors.DXErrorProvider.ValidationRule
+    class ValidateTxtRule : DevExpress.XtraEditors.DXErrorProvider.ValidationRule
     {
-        internal DevExpress.XtraEditors.DateEdit dateEditForValidation;
-        internal DevExpress.XtraEditors.DateEdit dateEditRequired;
+        internal DevExpress.XtraEditors.TextEdit textEdit;
+        internal long maxLength;
         public override bool Validate(System.Windows.Forms.Control control, object value)
         {
             bool valid = false;
             try
             {
-                if (dateEditRequired == null) return true;
-                if (dateEditRequired.EditValue == null)
+                if (string.IsNullOrEmpty(textEdit.Text.Trim()))
                 {
-                    valid = true;
+                    this.ErrorText = HIS.Desktop.LibraryMessage.MessageUtil.GetMessage(HIS.Desktop.LibraryMessage.Message.Enum.TruongDuLieuBatBuoc);
+                    return valid;
                 }
-                else
-                {
-                    if (dateEditForValidation.EditValue != null)
-                        valid = true;
-                    else
-                        valid = false;
-                }
+                valid = true;
             }
             catch (Exception ex)
             {
-                valid = false;
                 Inventec.Common.Logging.LogSystem.Error(ex);
             }
             return valid;

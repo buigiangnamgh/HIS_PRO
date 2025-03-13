@@ -1,4 +1,21 @@
-﻿using System;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,10 +42,6 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
     public partial class FormTreatmentFinish : HIS.Desktop.Utility.FormBase
     {
         int popupHeight = 400;
-        bool isShowContainerMediMaty = false;
-        bool isShowContainerMediMatyForChoose = false;
-        bool isShow = true;
-
         private void SetupPrintConfig()
         {
             try
@@ -190,12 +203,6 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
                             Inventec.Common.Logging.LogSystem.Warn("Nếu hồ sơ không có thông tin bổ sung là \"Nghỉ ốm\" (his_treatment có TREATMENT_END_TYPE_EXT_ID khác IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE_EXT.ID__NGHI_OM) thì không in \"Giấy nghỉ việc hưởng BHXH\" (Mps000269)____" + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => hisTreatmentResult), hisTreatmentResult) + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => itemPrint), itemPrint));
                             continue;
                         }
-                        //else if (hisTreatmentResult.TREATMENT_END_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__TRON
-                        //  && itemPrint.ModuleTypePrint == FormTreatmentFinish.ModuleTypePrint.IN_GIAY_RA_VIEN)
-                        //{
-                        //    Inventec.Common.Logging.LogSystem.Warn("Nếu loại kết thúc là \"trốn viện\" (HIS_TREATMENT có TREATMENT_END_TYPE_ID = IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__TRON), thì không in mẫu \"Giấy ra viện\" (Mps000008)____" + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => hisTreatmentResult), hisTreatmentResult) + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => itemPrint), itemPrint));
-                        //    continue;
-                        //}
 
                         DevExpress.Utils.Menu.DXMenuItem menuItem = new DevExpress.Utils.Menu.DXMenuItem();
                         menuItem.Tag = itemPrint.ModuleTypePrint;
@@ -275,11 +282,6 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
             Rectangle buttonBounds = new Rectangle(btnPrintConfig.Bounds.X + 10, bounds.Y + heightPlus, bounds.Width, bounds.Height);
             Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData("buttonBounds", buttonBounds)
                 + Inventec.Common.Logging.LogUtil.TraceData("heightPlus", heightPlus));
-
-            //this.printConfigADOs = this.printConfigADOs != null ? this.printConfigADOs.OrderByDescending(o => o.IsAutoPrint).ThenBy(o => o.PrintTypeName).ToList() : null;
-            //gridViewContainerPrintConfig.BeginUpdate();
-            //gridViewContainerPrintConfig.GridControl.DataSource = this.printConfigADOs;
-            //gridViewContainerPrintConfig.EndUpdate();
             popupControlContainerPrintConfig.ShowPopup(new Point(buttonBounds.X, buttonBounds.Bottom));
             gridViewContainerPrintConfig.Focus();
             gridViewContainerPrintConfig.FocusedRowHandle = 0;
@@ -358,8 +360,6 @@ namespace HIS.Desktop.Plugins.TreatmentFinish
                 col2.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.False;
                 col2.OptionsFilter.AllowFilter = false;
                 col2.OptionsFilter.AllowAutoFilter = false;
-                //col2.ImageAlignment = StringAlignment.Center;
-                //col2.Image = imageCollection1.Images[0];
                 col2.OptionsColumn.AllowEdit = false;
             }
 
