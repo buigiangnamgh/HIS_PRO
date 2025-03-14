@@ -1,4 +1,21 @@
-﻿using System;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -36,6 +53,7 @@ using HIS.UC.SecondaryIcd.ADO;
 using MOS.Filter;
 using HIS.Desktop.ApiConsumer;
 using IcdADO = HIS.UC.ExamTreatmentFinish.ADO.IcdADO;
+using Inventec.Common.Adapter;
 
 namespace HIS.UC.ExamTreatmentFinish.Run
 {
@@ -67,6 +85,7 @@ namespace HIS.UC.ExamTreatmentFinish.Run
         long RoomId = 0;
 
         TreatmentFinishInitADO ExamTreatmentFinishInitADO;
+        HIS_TREATMENT_EXT _treatmentext;
 
         bool isNotLoadWhileChangeControlStateInFirst;
         HIS.Desktop.Library.CacheClient.ControlStateWorker controlStateWorker;
@@ -87,8 +106,24 @@ namespace HIS.UC.ExamTreatmentFinish.Run
         List<AcsUserADO> lstReAcsUserADO;
         internal SecondaryIcdProcessor subIcdProcessor;
         internal UserControl ucSecondaryIcd;
-        internal SecondaryIcdProcessor subIcdYhctProcessor;
-        internal UserControl ucSecondaryIcdYhct;
+        List<HIS_DEPARTMENT> listDepartment;
+        List<HIS_BRANCH> listBranch;
+        public UCExamTreatmentFinish(TreatmentFinishInitADO _ExamTreatmentFinishInitADO,HIS_TREATMENT_EXT _treatmentExt)
+        {
+            InitializeComponent();
+            try
+            {
+                this.ExamTreatmentFinishInitADO = _ExamTreatmentFinishInitADO;
+                this.treatmentEndTypeExts = _ExamTreatmentFinishInitADO.TreatmentEndTypeExts;
+                this.moduleData = _ExamTreatmentFinishInitADO.moduleData;
+                this.icdSubCodeScreeen = _ExamTreatmentFinishInitADO.dlgGetIcdSubCode();
+                this._treatmentext = _treatmentExt;
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
         public UCExamTreatmentFinish(TreatmentFinishInitADO _ExamTreatmentFinishInitADO)
         {
             InitializeComponent();
@@ -98,13 +133,13 @@ namespace HIS.UC.ExamTreatmentFinish.Run
                 this.treatmentEndTypeExts = _ExamTreatmentFinishInitADO.TreatmentEndTypeExts;
                 this.moduleData = _ExamTreatmentFinishInitADO.moduleData;
                 this.icdSubCodeScreeen = _ExamTreatmentFinishInitADO.dlgGetIcdSubCode();
+                //this._treatmentext = _treatmentExt;
             }
             catch (Exception ex)
             {
                 Inventec.Common.Logging.LogSystem.Warn(ex);
             }
         }
-
         private void UCExamTreatmentFinish_Load(object sender, EventArgs e)
         {
             try
@@ -120,10 +155,10 @@ namespace HIS.UC.ExamTreatmentFinish.Run
                 this.currentTraditionalIcds = BackendDataWorker.Get<HIS_ICD>().Where(p => p.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE && p.IS_TRADITIONAL == 1).OrderBy(o => o.ICD_CODE).ToList();
                 this.isAutoCheckIcd = (this.autoCheckIcd == 1);
                 InitUcSecondaryIcd();
-                InitUcSecondaryIcdYhct();
                 UCIcdInit();
                 SetDefaultConfig();
                 ValidateForm();
+                
                 LoadDataToComboCareer();
                 LoadComboTreatmentEndType();
                 LoadComboTreatmentResult();
@@ -141,6 +176,7 @@ namespace HIS.UC.ExamTreatmentFinish.Run
 
 
                 LoadTraditionalIcdToControl(this.ExamTreatmentFinishInitADO.TraditionalIcdCode, this.ExamTreatmentFinishInitADO.TraditionalIcdName);
+                LoadTraditionalSubIcdToControl(this.ExamTreatmentFinishInitADO.TraditionalIcdSubCode, this.ExamTreatmentFinishInitADO.TraditionalIcdText);
                 //LoadDataToIcdSub(this.ExamTreatmentFinishInitADO.IcdSubCode, this.ExamTreatmentFinishInitADO.IcdText);
                 if (this.ExamTreatmentFinishInitADO != null)
                 {
@@ -159,6 +195,8 @@ namespace HIS.UC.ExamTreatmentFinish.Run
                 userControl.StartTimer(nameModuleLink, this.Name + ".timer1");
                 checkIcdManager = new Desktop.Plugins.Library.CheckIcd.CheckIcdManager(DlgIcdSubCode, this.ExamTreatmentFinishInitADO.Treatment);
                 SetCaptionByLanguageKey();
+                this.listDepartment = BackendDataWorker.Get<HIS_DEPARTMENT>().ToList();
+                this.listBranch = BackendDataWorker.Get<HIS_BRANCH>().ToList();
                 LoadDataTocboUser();
                 if (this.layoutControlItem31.AppearanceItemCaption.ForeColor == Color.Brown) ValidateSignDirect();
                 if (this.layoutControlItem30.AppearanceItemCaption.ForeColor == Color.Brown) ValidateSignHead();
@@ -258,41 +296,6 @@ namespace HIS.UC.ExamTreatmentFinish.Run
                 Inventec.Common.Logging.LogSystem.Error(ex);
             }
         }
-
-        private void InitUcSecondaryIcdYhct()
-        {
-            try
-            {
-                //VisibleLayoutSubIcd(HisConfig.OptionSubIcdWhenFinish == "3");
-                //if (HisConfig.OptionSubIcdWhenFinish != "3")
-                //    return;
-                subIcdYhctProcessor = new SecondaryIcdProcessor(new CommonParam(), currentTraditionalIcds);
-                HIS.UC.SecondaryIcd.ADO.SecondaryIcdInitADO ado = new UC.SecondaryIcd.ADO.SecondaryIcdInitADO();
-                ado.DelegateNextFocus = NextForcusCareer;
-                ado.DelegateGetIcdMain = GetTraditionalIcdMainCode;
-                ado.hisTreatment = this.ExamTreatmentFinishInitADO.Treatment;
-                ado.Width = 440;
-                ado.Height = 24;
-                ado.TextSize = 100;
-                ado.TextLblIcd = "CĐ phụ YHCT:";
-                ado.TootiplciIcdSubCode = "Chẩn đoán phụ YHCT";
-                ado.TextNullValue = GetStringFromKey("IVT_LANGUAGE_KEY__FORM_TREATMENT_FINISH__TXT_ICD_TEXT__NULL_VALUE");
-                ado.limitDataSource = (int)HIS.Desktop.LocalStorage.ConfigApplication.ConfigApplications.NumPageSize;
-                ucSecondaryIcdYhct = (UserControl)subIcdYhctProcessor.Run(ado);
-
-                if (ucSecondaryIcdYhct != null)
-                {
-                    this.panelControlSubIcdYhct.Controls.Add(ucSecondaryIcdYhct);
-                    ucSecondaryIcdYhct.Dock = DockStyle.Fill;
-                    LoaducSecondaryIcdYhct(this.ExamTreatmentFinishInitADO.Treatment.TRADITIONAL_IN_ICD_SUB_CODE, this.ExamTreatmentFinishInitADO.Treatment.TRADITIONAL_IN_ICD_TEXT);
-                }
-            }
-            catch (Exception ex)
-            {
-                Inventec.Common.Logging.LogSystem.Error(ex);
-            }
-        }
-
         private void LoaducSecondaryIcd(string icdCode, string icdName)
         {
             try
@@ -311,42 +314,12 @@ namespace HIS.UC.ExamTreatmentFinish.Run
             }
         }
 
-        private void LoaducSecondaryIcdYhct(string icdCode, string icdName)
-        {
-            try
-            {
-                SecondaryIcdDataADO subIcd = new SecondaryIcdDataADO();
-                subIcd.ICD_SUB_CODE = icdCode;
-                subIcd.ICD_TEXT = icdName;
-                if (ucSecondaryIcdYhct != null)
-                {
-                    subIcdYhctProcessor.Reload(ucSecondaryIcdYhct, subIcd);
-                }
-            }
-            catch (Exception ex)
-            {
-                Inventec.Common.Logging.LogSystem.Warn(ex);
-            }
-        }
-
         private void NextForcusOut()
         {
             try
             {
                 txtTraditionalIcdCode.Focus();
                 txtTraditionalIcdCode.SelectAll();
-            }
-            catch (Exception ex)
-            {
-                Inventec.Common.Logging.LogSystem.Error(ex);
-            }
-        }
-
-        private void NextForcusCareer()
-        {
-            try
-            {
-                cboCareer.Focus();
             }
             catch (Exception ex)
             {
@@ -548,7 +521,7 @@ namespace HIS.UC.ExamTreatmentFinish.Run
             {
                 if (treatment != null)
                 {
-                    if (treatment.TREATMENT_END_TYPE_ID != null && treatment.TREATMENT_END_TYPE_ID > 0)
+                    if (cboTreatmentEndType.EditValue == null && treatment.TREATMENT_END_TYPE_ID != null && treatment.TREATMENT_END_TYPE_ID > 0)
                     {
                         cboTreatmentEndType.EditValue = treatment.TREATMENT_END_TYPE_ID;
                     }
@@ -577,6 +550,10 @@ namespace HIS.UC.ExamTreatmentFinish.Run
                 {
                     foreach (var item in this.currentControlStateRDO)
                     {
+                        if (item.KEY == chkPrintAppoinment.Name)
+                        {
+                            chkPrintAppoinment.Checked = item.VALUE == "1";
+                        }
                         if (item.KEY == chkSignAppoinment.Name)
                         {
                             chkSignAppoinment.Checked = item.VALUE == "1";
@@ -922,6 +899,8 @@ namespace HIS.UC.ExamTreatmentFinish.Run
                 sickInitADO.CurrentHisTreatment.IS_PREGNANCY_TERMINATION = sickSdoResult.IsPregnancyTermination == true ? (short?)1 : null;
                 sickInitADO.CurrentHisTreatment.GESTATIONAL_AGE = sickSdoResult.GestationalAge;
                 sickInitADO.CurrentHisTreatment.PREGNANCY_TERMINATION_TIME = sickSdoResult.PregnancyTerminationTime;
+                sickInitADO.CurrentHisTreatment.TDL_PATIENT_MOTHER_NAME = sickSdoResult.MotherName;
+                sickInitADO.CurrentHisTreatment.TDL_PATIENT_FATHER_NAME = sickSdoResult.FatherName;
             }
             catch (Exception ex)
             {
@@ -1202,11 +1181,11 @@ namespace HIS.UC.ExamTreatmentFinish.Run
                                 treatment.TREATMENT_METHOD = currentTreatmentFinishSDO.TreatmentMethod;
                                 treatment.TREATMENT_DIRECTION = currentTreatmentFinishSDO.TreatmentDirection;
                                 treatment.USED_MEDICINE = currentTreatmentFinishSDO.UsedMedicine;
-                                treatment.CLINICAL_NOTE = currentTreatmentFinishSDO.ClinicalNote;
-                                treatment.SUBCLINICAL_RESULT = currentTreatmentFinishSDO.SubclinicalResult;
+                                this._treatmentext.CLINICAL_NOTE = currentTreatmentFinishSDO.ClinicalNote;
+                                this._treatmentext.SUBCLINICAL_RESULT = currentTreatmentFinishSDO.SubclinicalResult;
                             }
 
-                            EndTypeForm.FormTransfer form = new EndTypeForm.FormTransfer(this.moduleData, treatment, UpdateExamTreatmentFinish);
+                            EndTypeForm.FormTransfer form = new EndTypeForm.FormTransfer(this.moduleData, treatment, UpdateExamTreatmentFinish,this._treatmentext);
                             form.ShowDialog();
                         }
                         else if (data.ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__CHET)
@@ -1369,12 +1348,12 @@ namespace HIS.UC.ExamTreatmentFinish.Run
         {
             try
             {
-                if (treatment.TREATMENT_END_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__HEN)
+                //if (treatment.TREATMENT_END_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__HEN)
                 {
-                    if (isNotLoadWhileChangeControlStateInFirst)
-                    {
-                        return;
-                    }
+                    //if (isNotLoadWhileChangeControlStateInFirst)
+                    //{
+                    //    return;
+                    //}
                     WaitingManager.Show();
                     HIS.Desktop.Library.CacheClient.ControlStateRDO csAddOrUpdate = (this.currentControlStateRDO != null && this.currentControlStateRDO.Count > 0) ? this.currentControlStateRDO.Where(o => o.KEY == chkSignAppoinment.Name && o.MODULE_LINK == moduleLink).FirstOrDefault() : null;
                     Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => csAddOrUpdate), csAddOrUpdate));
@@ -1475,6 +1454,7 @@ namespace HIS.UC.ExamTreatmentFinish.Run
         {
             try
             {
+                //
                 if (isNotLoadWhileChangeControlStateInFirst)
                 {
                     return;
@@ -1744,7 +1724,7 @@ namespace HIS.UC.ExamTreatmentFinish.Run
                 {
                     AcsUserADO ado = new AcsUserADO(item);
 
-                    var VhisEmployee = HIS.Desktop.LocalStorage.BackendData.BackendDataWorker.Get<MOS.EFMODEL.DataModels.V_HIS_EMPLOYEE>().FirstOrDefault(o => o.LOGINNAME == item.LOGINNAME);
+                    var VhisEmployee = HIS.Desktop.LocalStorage.BackendData.BackendDataWorker.Get<MOS.EFMODEL.DataModels.V_HIS_EMPLOYEE>().FirstOrDefault(o => o.LOGINNAME == item.LOGINNAME && o.IS_ACTIVE == 1);
                     if (VhisEmployee != null)
                     {
                         ado.DOB = VhisEmployee.DOB;
@@ -1769,6 +1749,22 @@ namespace HIS.UC.ExamTreatmentFinish.Run
                 {
                     cboEndDeptSubs.EditValue = this.ExamTreatmentFinishInitADO.Treatment.END_DEPT_SUBS_HEAD_LOGINNAME;
                     cboHospSubs.EditValue = this.ExamTreatmentFinishInitADO.Treatment.HOSP_SUBS_DIRECTOR_LOGINNAME;
+                    var department = listDepartment.FirstOrDefault(s => s.ID == (this.ExamTreatmentFinishInitADO.Treatment.LAST_DEPARTMENT_ID ?? 0));
+                    if(department != null)
+                    {
+                        if (CheckNeedSignInstead(department.HEAD_LOGINNAME))
+                        {
+                            this.layoutControlItem30.AppearanceItemCaption.ForeColor = Color.Brown;
+                        }
+                        var branch = this.listBranch.FirstOrDefault(o => o.ID == (department.BRANCH_ID));
+                        if(branch != null)
+                        {
+                            if (CheckNeedSignInstead(branch.DIRECTOR_LOGINNAME))
+                            {
+                                this.layoutControlItem31.AppearanceItemCaption.ForeColor = Color.Brown;
+                            }
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -1776,13 +1772,36 @@ namespace HIS.UC.ExamTreatmentFinish.Run
                 Inventec.Common.Logging.LogSystem.Warn(ex);
             }
         }
-
+        private bool CheckNeedSignInstead(string login_name)
+        {
+            bool isSign = false;
+            try
+            {
+                //var rs = HisEmployees.Where(s => s.LOGINNAME.Equals(login_name)).FirstOrDefault();
+                HisEmployeeFilter emFilter = new HisEmployeeFilter();
+                emFilter.LOGINNAME__EXACT = login_name;
+                var rs = new BackendAdapter(new CommonParam()).Get<List<V_HIS_EMPLOYEE>>("/api/HisEmployee/GetView", ApiConsumers.MosConsumer, emFilter, new CommonParam());
+                if (rs != null)
+                {
+                    if (rs.First().IS_NEED_SIGN_INSTEAD ==  1) isSign = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+            return isSign;
+        }
         private void cboEndDeptSubs_ButtonClick(object sender, ButtonPressedEventArgs e)
         {
             try
             {
                 if (e.Button.Kind == ButtonPredefines.Delete)
+                {
                     cboEndDeptSubs.EditValue = null;
+                    cboEndDeptSubs.Text = "";
+                }
+                    
             }
             catch (Exception ex)
             {
@@ -1795,7 +1814,10 @@ namespace HIS.UC.ExamTreatmentFinish.Run
             try
             {
                 if (e.Button.Kind == ButtonPredefines.Delete)
+                {
                     cboHospSubs.EditValue = null;
+                    cboHospSubs.Text = "";
+                }
             }
             catch (Exception ex)
             {
@@ -1973,7 +1995,7 @@ namespace HIS.UC.ExamTreatmentFinish.Run
                         if (!string.IsNullOrEmpty(item))
                         {
                             string messErr = null;
-                            if (!checkIcdManager.ProcessCheckIcd(null, item, ref messErr))
+                            if (!checkIcdManager.ProcessCheckIcd(null, item, ref messErr,false,false))
                             {
                                 XtraMessageBox.Show(messErr, "Thông báo", MessageBoxButtons.OK);
                                 lstIcdCodeErrr.Add(item);
@@ -2091,6 +2113,70 @@ namespace HIS.UC.ExamTreatmentFinish.Run
                     this.currentControlStateRDO.Add(csAddOrUpdate);
                 }
                 this.controlStateWorker.SetData(this.currentControlStateRDO);
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+
+        private void chkPrintAppoinment_CheckedChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                //if (treatment.TREATMENT_END_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__HEN)
+                {                  
+                    WaitingManager.Show();
+                    HIS.Desktop.Library.CacheClient.ControlStateRDO csAddOrUpdate = (this.currentControlStateRDO != null && this.currentControlStateRDO.Count > 0) ? this.currentControlStateRDO.Where(o => o.KEY == chkPrintAppoinment.Name && o.MODULE_LINK == moduleLink).FirstOrDefault() : null;
+                    if (csAddOrUpdate != null)
+                    {
+                        csAddOrUpdate.VALUE = (chkPrintAppoinment.Checked ? "1" : "");
+                    }
+                    else
+                    {
+                        csAddOrUpdate = new HIS.Desktop.Library.CacheClient.ControlStateRDO();
+                        csAddOrUpdate.KEY = chkPrintAppoinment.Name;
+                        csAddOrUpdate.VALUE = (chkPrintAppoinment.Checked ? "1" : "");
+                        csAddOrUpdate.MODULE_LINK = moduleLink;
+                        if (this.currentControlStateRDO == null)
+                            this.currentControlStateRDO = new List<HIS.Desktop.Library.CacheClient.ControlStateRDO>();
+                        this.currentControlStateRDO.Add(csAddOrUpdate);
+                    }
+                    this.controlStateWorker.SetData(this.currentControlStateRDO);
+                    WaitingManager.Hide();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+        }
+
+        private void cboEndDeptSubs_EditValueChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                if(string.IsNullOrEmpty(cboEndDeptSubs.Text))
+                {
+                    cboEndDeptSubs.EditValue = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+
+        private void cboHospSubs_EditValueChanged(object sender, EventArgs e)
+        {
+
+            try
+            {
+                if (string.IsNullOrEmpty(cboHospSubs.Text))
+                {
+                    cboHospSubs.EditValue = null;
+                }
             }
             catch (Exception ex)
             {

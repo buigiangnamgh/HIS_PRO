@@ -1,4 +1,21 @@
-﻿using DevExpress.XtraEditors;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using DevExpress.XtraEditors;
 using DevExpress.XtraGrid.Views.Grid;
 using DevExpress.XtraGrid.Views.Grid.ViewInfo;
 using HIS.Desktop.LocalStorage.BackendData;
@@ -97,6 +114,7 @@ namespace HIS.UC.ExamTreatmentFinish
         {
             try
             {
+                List<IcdADO> listICD = new List<IcdADO>();
                 gridControlSecondaryDisease.DataSource = null;
                 start = ((CommonParam)param).Start ?? 0;
                 limit = ((CommonParam)param).Limit ?? 0;
@@ -110,13 +128,16 @@ namespace HIS.UC.ExamTreatmentFinish
                         || o.ICD_CODE.ToLower().Contains(keyword)
                         );
                 }
-                query = query.OrderByDescending(o => o.IsChecked).ThenBy(o => o.ICD_CODE);
-                dataTotal = query.Count();
-                var result = query.Skip(start).Take(limit).ToList();
+                listICD.AddRange(query);
+                listICD = listICD.OrderByDescending(o => o.IsChecked).ThenBy(o => o.ICD_CODE).ToList();
+                dataTotal = listICD.Count();
+                var result = listICD.Skip(start).Take(limit).ToList();
                 rowCount = (result == null ? 0 : result.Count);
                 gridControlSecondaryDisease.BeginUpdate();
                 gridControlSecondaryDisease.DataSource = result;
                 gridControlSecondaryDisease.EndUpdate();
+
+
             }
             catch (Exception ex)
             {

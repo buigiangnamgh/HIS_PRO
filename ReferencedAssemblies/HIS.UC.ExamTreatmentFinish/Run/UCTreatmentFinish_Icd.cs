@@ -1,4 +1,21 @@
-﻿using DevExpress.XtraEditors;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using DevExpress.XtraEditors;
 using DevExpress.XtraEditors.Controls;
 using DevExpress.XtraEditors.DXErrorProvider;
 using HIS.UC.ExamTreatmentFinish.Run.Validate;
@@ -147,6 +164,22 @@ namespace HIS.UC.ExamTreatmentFinish.Run
             }
         }
 
+        private void LoadTraditionalSubIcdToControl(string icdCode, string icdName)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(icdCode))
+                {
+                    txtIcdSubCode.Text = icdCode;
+                    txtIcdText.Text = icdName;
+                }
+       
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
         private void DataToComboChuanDoanTD(CustomGridLookUpEditWithFilterMultiColumn cbo, List<HIS_ICD> data)
         {
             try
@@ -336,7 +369,7 @@ namespace HIS.UC.ExamTreatmentFinish.Run
                         icdSubCode = ((SecondaryIcdDataADO)subIcd).ICD_SUB_CODE;
                     }
                 }
-                if (!checkIcdManager.ProcessCheckIcd(txtIcdCode.Text.Trim(), icdSubCode + ";" + icdSubCodeScreeen, ref messErr))
+                if (!checkIcdManager.ProcessCheckIcd(txtIcdCode.Text.Trim(), icdSubCode + ";" + icdSubCodeScreeen, ref messErr,false,false))
                 {
                     XtraMessageBox.Show(messErr, "Thông báo", MessageBoxButtons.OK);
                     if (Desktop.Plugins.Library.CheckIcd.CheckIcdManager.IcdCodeError.Equals(txtIcdCode.Text))
@@ -649,23 +682,15 @@ namespace HIS.UC.ExamTreatmentFinish.Run
             try
             {
                 SecondaryIcdDataADO outPut = new SecondaryIcdDataADO();
-                if (ucSecondaryIcdYhct != null)
+
+                if (!String.IsNullOrEmpty(txtIcdSubCode.Text))
                 {
-                    var subIcd = subIcdYhctProcessor.GetValue(ucSecondaryIcdYhct);
-                    if (subIcd != null && subIcd is SecondaryIcdDataADO)
-                    {
-                        outPut.ICD_SUB_CODE = ((SecondaryIcdDataADO)subIcd).ICD_SUB_CODE;
-                        outPut.ICD_TEXT = ((SecondaryIcdDataADO)subIcd).ICD_TEXT;
-                    }
+                    outPut.ICD_SUB_CODE = txtIcdSubCode.Text;
                 }
-                //if (!String.IsNullOrEmpty(txtIcdSubCode.Text))
-                //{
-                //    outPut.ICD_SUB_CODE = txtIcdSubCode.Text;
-                //}
-                //if (!String.IsNullOrEmpty(txtIcdText.Text))
-                //{
-                //    outPut.ICD_TEXT = txtIcdText.Text;
-                //}
+                if (!String.IsNullOrEmpty(txtIcdText.Text))
+                {
+                    outPut.ICD_TEXT = txtIcdText.Text;
+                }
                 result = outPut;
             }
             catch (Exception ex)
@@ -1060,45 +1085,6 @@ namespace HIS.UC.ExamTreatmentFinish.Run
             }
         }
 
-        public void ValidationICDYhct(int? maxLengthCode, int? maxLengthText, bool isRequired)
-        {
-            try
-            {
-                if (isRequired)
-                {
-                    layoutControlItem3.AppearanceItemCaption.ForeColor = Color.Maroon;
-
-                    IcdYhctValidationRuleControl icdMainRule = new IcdYhctValidationRuleControl();
-                    icdMainRule.txtIcdYhctCode = txtTraditionalIcdCode;
-                    icdMainRule.txtYhctMainText = txtTraditionalIcdMainText;
-                    icdMainRule.maxLengthCode = maxLengthCode;
-                    icdMainRule.maxLengthText = maxLengthText;
-                    icdMainRule.ErrorText = "Trường dữ liệu bắt buộc nhập";
-                    icdMainRule.ErrorType = ErrorType.Warning;
-                    icdMainRule.icdYhcts = currentTraditionalIcds;
-                    dxValidationProvider1.SetValidationRule(txtTraditionalIcdCode, icdMainRule);
-                }
-                else
-                {
-                    layoutControlItem3.AppearanceItemCaption.ForeColor = new System.Drawing.Color();
-                    IcdYhctValidationRuleControl icdMainRule = new IcdYhctValidationRuleControl();
-                    icdMainRule.txtIcdYhctCode = txtTraditionalIcdCode;
-                    icdMainRule.txtYhctMainText = txtTraditionalIcdMainText;
-                    icdMainRule.maxLengthCode = maxLengthCode;
-                    icdMainRule.maxLengthText = maxLengthText;
-                    //icdMainRule.ErrorText = "Trường dữ liệu bắt buộc nhập";
-                    icdMainRule.ErrorType = ErrorType.Warning;
-                    icdMainRule.IsRequired = false;
-                    icdMainRule.icdYhcts = currentTraditionalIcds;
-                    dxValidationProvider1.SetValidationRule(txtTraditionalIcdCode, icdMainRule);
-                }
-            }
-            catch (Exception ex)
-            {
-                Inventec.Common.Logging.LogSystem.Warn(ex);
-            }
-        }
-
         private void txtIcdText_KeyUp(object sender, KeyEventArgs e)
         {
             try
@@ -1322,6 +1308,45 @@ namespace HIS.UC.ExamTreatmentFinish.Run
                         //this.data.DelegateRefeshIcd(hisIcd);
                     }
                     NextForcusSubIcd();
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+
+        public void ValidationICDYhct(int? maxLengthCode, int? maxLengthText, bool isRequired)
+        {
+            try
+            {
+                if (isRequired)
+                {
+                    layoutControlItem3.AppearanceItemCaption.ForeColor = Color.Maroon;
+
+                    IcdYhctValidationRuleControl icdMainRule = new IcdYhctValidationRuleControl();
+                    icdMainRule.txtIcdYhctCode = txtTraditionalIcdCode;
+                    icdMainRule.txtYhctMainText = txtTraditionalIcdMainText;
+                    icdMainRule.maxLengthCode = maxLengthCode;
+                    icdMainRule.maxLengthText = maxLengthText;
+                    icdMainRule.ErrorText = "Trường dữ liệu bắt buộc nhập";
+                    icdMainRule.ErrorType = ErrorType.Warning;
+                    icdMainRule.icdYhcts = currentTraditionalIcds;
+                    dxValidationProvider1.SetValidationRule(txtTraditionalIcdCode, icdMainRule);
+                }
+                else
+                {
+                    layoutControlItem3.AppearanceItemCaption.ForeColor = new System.Drawing.Color();
+                    IcdYhctValidationRuleControl icdMainRule = new IcdYhctValidationRuleControl();
+                    icdMainRule.txtIcdYhctCode = txtTraditionalIcdCode;
+                    icdMainRule.txtYhctMainText = txtTraditionalIcdMainText;
+                    icdMainRule.maxLengthCode = maxLengthCode;
+                    icdMainRule.maxLengthText = maxLengthText;
+                    //icdMainRule.ErrorText = "Trường dữ liệu bắt buộc nhập";
+                    icdMainRule.ErrorType = ErrorType.Warning;
+                    icdMainRule.IsRequired = false;
+                    icdMainRule.icdYhcts = currentTraditionalIcds;
+                    dxValidationProvider1.SetValidationRule(txtTraditionalIcdCode, icdMainRule);
                 }
             }
             catch (Exception ex)

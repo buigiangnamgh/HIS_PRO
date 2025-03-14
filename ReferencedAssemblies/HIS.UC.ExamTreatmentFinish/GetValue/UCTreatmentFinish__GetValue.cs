@@ -1,4 +1,21 @@
-﻿using System;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -35,8 +52,6 @@ namespace HIS.UC.ExamTreatmentFinish.Run
                 var valid = dxValidationProvider1.Validate();
                 if (ucSecondaryIcd != null)
                     valid = valid && (bool)subIcdProcessor.GetValidate(ucSecondaryIcd);
-                if (ucSecondaryIcdYhct != null)
-                    valid = valid && (bool)subIcdYhctProcessor.GetValidate(ucSecondaryIcdYhct);
                 if (!valid)
                     return null;
                 ExamTreatmentFinish = new ExamTreatmentFinishResult();
@@ -75,7 +90,7 @@ namespace HIS.UC.ExamTreatmentFinish.Run
                             treatment = ExamTreatmentFinishInitADO.Treatment;
                         }
 
-                        EndTypeForm.FormTransfer form = new EndTypeForm.FormTransfer(this.moduleData, treatment, UpdateExamTreatmentFinish);
+                        EndTypeForm.FormTransfer form = new EndTypeForm.FormTransfer(this.moduleData, treatment, UpdateExamTreatmentFinish,this._treatmentext);
                         form.ShowDialog();
                         return null;
                     }
@@ -167,7 +182,6 @@ namespace HIS.UC.ExamTreatmentFinish.Run
                     ExamTreatmentFinishSDO.WorkPlaceId = sick.WorkPlaceId;
                     ExamTreatmentFinishSDO.SocialInsuranceNumber = sick.SocialInsuranceNumber;
                     ExamTreatmentFinishSDO.EndTypeExtNote = sick.EndTypeExtNote;
-
                 }
                 else if (ExamTreatmentFinishSDO.TreatmentEndTypeExtId == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE_EXT.ID__HEN_MO)
                 {
@@ -207,6 +221,8 @@ namespace HIS.UC.ExamTreatmentFinish.Run
                     ExamTreatmentFinishSDO.TreatmentMethod = sick.TreatmentMethod;
                     ExamTreatmentFinishSDO.GestationalAge = sick.GestationalAge;
                     ExamTreatmentFinishSDO.PregnancyTerminationTime = sick.PregnancyTerminationTime;
+                    ExamTreatmentFinishSDO.MotherName = sick.MotherName;
+                    ExamTreatmentFinishSDO.FatherName = sick.FatherName;
                 }
 
                 ExamTreatmentFinishSDO.TreatmentFinishTime = Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(dtEndTime.DateTime) ?? 0;
@@ -311,6 +327,7 @@ namespace HIS.UC.ExamTreatmentFinish.Run
                 ExamTreatmentFinish.Advise = txtAdviseNew.Text;
                 ExamTreatmentFinish.Conclusion = txtConclusionNew.Text;
                 ExamTreatmentFinish.Note = memNote.Text.Trim();
+                //ExamTreatmentFinish.TreatmentFinishSDO.ClinicalNote = this._treatmentext.CLINICAL_NOTE;
                 if (ucSecondaryIcd != null)
                 {
                     var subIcd = subIcdProcessor.GetValue(ucSecondaryIcd);

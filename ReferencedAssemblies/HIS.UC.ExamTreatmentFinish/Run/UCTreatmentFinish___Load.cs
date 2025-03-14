@@ -1,4 +1,21 @@
-﻿using System;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -185,20 +202,21 @@ namespace HIS.UC.ExamTreatmentFinish.Run
                 //dtTimeAppointment.Enabled = enable;
                 //spDay.Enabled = enable;
                 chkPrintAppoinment.Enabled = enable;
-                if (enable)
-                {
-                    chkPrintAppoinment.CheckState = CheckState.Unchecked; //CheckState.Checked
-                }
-                else
+               
+                if (!enable)
+                //{
+                //    chkPrintAppoinment.CheckState = CheckState.Checked;
+                //}
+                //else
                 {
                     chkPrintAppoinment.CheckState = CheckState.Unchecked;
                 }
                 chkSignAppoinment.Enabled = enable;
-                if (enable)
-                {
-                    chkSignAppoinment.CheckState = CheckState.Unchecked; //chkSignAppoinment.CheckState = CheckState.Checked;
-                }
-                else
+                if (!enable)
+                //{
+                //    chkSignAppoinment.CheckState = CheckState.Checked;
+                //}
+                //else
                 {
                     chkSignAppoinment.CheckState = CheckState.Unchecked;
                 }
@@ -351,8 +369,8 @@ namespace HIS.UC.ExamTreatmentFinish.Run
         {
             try
             {
-               // if (this.ExamTreatmentFinishInitADO.Treatment.TREATMENT_END_TYPE_ID == null || this.ExamTreatmentFinishInitADO.Treatment.TREATMENT_END_TYPE_ID == 0)
-               // {
+                //if (this.ExamTreatmentFinishInitADO.Treatment.TREATMENT_END_TYPE_ID == null || this.ExamTreatmentFinishInitADO.Treatment.TREATMENT_END_TYPE_ID == 0)
+                //{
                     long treatmentEndTypeSda = Inventec.Common.TypeConvert.Parse.ToInt64(HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(SdaConfig.TREATMENT_END___TREATMENT_END_TYPE_DEFAULT));
                     if (treatmentEndTypeSda == 2)
                     {
@@ -379,15 +397,15 @@ namespace HIS.UC.ExamTreatmentFinish.Run
                             cboTreatmentEndType.EditValue = IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__CTCV;
                         cboTreatmentEndTypeExt.Enabled = true;
                     }
-                else if (treatmentEndTypeSda == 4)
-                {
-                    var lastPatientTypeAlter = new BackendAdapter(new CommonParam()).Get<V_HIS_PATIENT_TYPE_ALTER>("api/HisPatientTypeAlter/GetLastByTreatmentId", ApiConsumers.MosConsumer, this.ExamTreatmentFinishInitADO.Treatment.ID, null);
-                    if ((!string.IsNullOrEmpty(this.ExamTreatmentFinishInitADO.Treatment.TRANSFER_IN_MEDI_ORG_CODE) && lastPatientTypeAlter != null && lastPatientTypeAlter.RIGHT_ROUTE_CODE == MOS.LibraryHein.Bhyt.HeinRightRoute.HeinRightRouteCode.TRUE) || (!string.IsNullOrEmpty(this.ExamTreatmentFinishInitADO.Treatment.TDL_HEIN_CARD_NUMBER) && !string.IsNullOrEmpty(this.ExamTreatmentFinishInitADO.Treatment.TDL_HEIN_MEDI_ORG_CODE) && (string.IsNullOrEmpty(BranchDataWorker.Branch.HEIN_MEDI_ORG_CODE) || BranchDataWorker.Branch.HEIN_MEDI_ORG_CODE != this.ExamTreatmentFinishInitADO.Treatment.TDL_HEIN_MEDI_ORG_CODE) && (string.IsNullOrEmpty(BranchDataWorker.Branch.ACCEPT_HEIN_MEDI_ORG_CODE) || (!BranchDataWorker.Branch.ACCEPT_HEIN_MEDI_ORG_CODE.Split(new string[] { ",", ";" }, StringSplitOptions.RemoveEmptyEntries).ToList().Exists(o => o.Equals(this.ExamTreatmentFinishInitADO.Treatment.TDL_HEIN_MEDI_ORG_CODE)))) && (string.IsNullOrEmpty(BranchDataWorker.Branch.SYS_MEDI_ORG_CODE) || (!BranchDataWorker.Branch.SYS_MEDI_ORG_CODE.Split(new string[] { ",", ";" }, StringSplitOptions.RemoveEmptyEntries).ToList().Exists(o => o.Equals(this.ExamTreatmentFinishInitADO.Treatment.TDL_HEIN_MEDI_ORG_CODE))))))
-                        cboTreatmentEndType.EditValue = IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__HEN;
-                    else
-                        cboTreatmentEndType.EditValue = IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__CTCV;
-                    cboTreatmentEndTypeExt.Enabled = true;
-                }
+                    else if (treatmentEndTypeSda == 4)
+                    {
+                        var lastPatientTypeAlter = new BackendAdapter(new CommonParam()).Get<V_HIS_PATIENT_TYPE_ALTER>("api/HisPatientTypeAlter/GetLastByTreatmentId", ApiConsumers.MosConsumer, this.ExamTreatmentFinishInitADO.Treatment.ID, null);
+                        if ((!string.IsNullOrEmpty(this.ExamTreatmentFinishInitADO.Treatment.TRANSFER_IN_MEDI_ORG_CODE) && lastPatientTypeAlter != null && lastPatientTypeAlter.RIGHT_ROUTE_CODE == MOS.LibraryHein.Bhyt.HeinRightRoute.HeinRightRouteCode.TRUE) || (!string.IsNullOrEmpty(this.ExamTreatmentFinishInitADO.Treatment.TDL_HEIN_CARD_NUMBER) && !string.IsNullOrEmpty(this.ExamTreatmentFinishInitADO.Treatment.TDL_HEIN_MEDI_ORG_CODE) && (string.IsNullOrEmpty(BranchDataWorker.Branch.HEIN_MEDI_ORG_CODE) || BranchDataWorker.Branch.HEIN_MEDI_ORG_CODE != this.ExamTreatmentFinishInitADO.Treatment.TDL_HEIN_MEDI_ORG_CODE) && (string.IsNullOrEmpty(BranchDataWorker.Branch.ACCEPT_HEIN_MEDI_ORG_CODE) || (!BranchDataWorker.Branch.ACCEPT_HEIN_MEDI_ORG_CODE.Split(new string[] { ",", ";" }, StringSplitOptions.RemoveEmptyEntries).ToList().Exists(o => o.Equals(this.ExamTreatmentFinishInitADO.Treatment.TDL_HEIN_MEDI_ORG_CODE)))) && (string.IsNullOrEmpty(BranchDataWorker.Branch.SYS_MEDI_ORG_CODE) || (!BranchDataWorker.Branch.SYS_MEDI_ORG_CODE.Split(new string[] { ",", ";" }, StringSplitOptions.RemoveEmptyEntries).ToList().Exists(o => o.Equals(this.ExamTreatmentFinishInitADO.Treatment.TDL_HEIN_MEDI_ORG_CODE))))))
+                            cboTreatmentEndType.EditValue = IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__HEN;
+                        else
+                            cboTreatmentEndType.EditValue = IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__CTCV;
+                        cboTreatmentEndTypeExt.Enabled = true;
+                    }
                 //}
                 cboTreatmentResult.EditValue = ExamTreatmentFinishInitADO.Treatment.TREATMENT_RESULT_ID;
                 string treatmentResultCode = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(SdaConfig.TREATMENT_RESULT__TREATMENT_RESULT_CODE_DEFAULT);
