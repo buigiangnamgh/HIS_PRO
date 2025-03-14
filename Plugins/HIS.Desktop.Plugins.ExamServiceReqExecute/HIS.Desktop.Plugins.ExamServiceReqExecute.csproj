@@ -74,6 +74,14 @@
     <Reference Include="HIS.Common.Treatment">
       <HintPath>..\..\..\..\..\..\RELEASE\HIS\HIS.Common\HIS.Common.Treatment\HIS.Common.Treatment.dll</HintPath>
     </Reference>
+    <Reference Include="HIS.Desktop.ADO, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\2.276.0\ReferencedAssemblies\HIS.Desktop.ADO.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.Common, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\2.276.0\ReferencedAssemblies\HIS.Desktop.Common.dll</HintPath>
+    </Reference>
     <Reference Include="HIS.Desktop.Plugins.Library.AlertHospitalFeeNotBHYT">
       <HintPath>..\..\..\..\..\..\RELEASE\HIS\HIS.Desktop.Plugins.Library.AlertHospitalFeeNotBHYT\HIS.Desktop.Plugins.Library.AlertHospitalFeeNotBHYT.dll</HintPath>
     </Reference>
@@ -134,6 +142,10 @@
     <Reference Include="HIS.UC.HisExamServiceAdd">
       <HintPath>..\..\..\TEST\HIS\x64\ReferencedAssemblies\HIS.UC.HisExamServiceAdd.dll</HintPath>
     </Reference>
+    <Reference Include="HIS.UC.Hospitalize, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\2.276.0\ReferencedAssemblies\HIS.UC.Hospitalize.dll</HintPath>
+    </Reference>
     <Reference Include="HIS.UC.Icd, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\RELEASE\HIS\His.UC.Icd\HIS.UC.Icd.dll</HintPath>
@@ -156,8 +168,9 @@
     <Reference Include="HIS.UC.UCTransPati">
       <HintPath>..\..\..\UC\HIS.UC\HIS.UC.UCTransPati\obj\Debug\HIS.UC.UCTransPati.dll</HintPath>
     </Reference>
-    <Reference Include="IMSys.DbConfig.HIS_RS">
-      <HintPath>..\..\..\..\..\..\RELEASE\IMSys.DbConfig\IMSys.DbConfig.HIS_RS\IMSys.DbConfig.HIS_RS.dll</HintPath>
+    <Reference Include="IMSys.DbConfig.HIS_RS, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\IMSys.DbConfig.HIS_RS.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Common.Adapter">
       <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Common\Inventec.Common.Adapter\Inventec.Common.Adapter.dll</HintPath>
@@ -272,11 +285,11 @@
     </Reference>
     <Reference Include="MOS.EFMODEL, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\2.276.0\MOS.EFMODEL.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\MOS.EFMODEL.dll</HintPath>
     </Reference>
     <Reference Include="MOS.Filter, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\2.276.0\ReferencedAssemblies\MOS.Filter.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\MOS.Filter.dll</HintPath>
     </Reference>
     <Reference Include="MOS.KskSignData">
       <HintPath>..\..\..\..\..\..\RELEASE\MOS\MOS.KskSignData.dll</HintPath>
@@ -303,7 +316,7 @@
     </Reference>
     <Reference Include="MOS.SDO, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\2.276.0\ReferencedAssemblies\MOS.SDO.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\MOS.SDO.dll</HintPath>
     </Reference>
     <Reference Include="MOS.ServicePaty, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -339,6 +352,9 @@
     </Reference>
     <Reference Include="MPS.Processor.Mps000174.PDO">
       <HintPath>..\..\..\..\..\..\RELEASE\MPSv2\MPS.PDO\MPS.Processor.Mps000174.PDO.dll</HintPath>
+    </Reference>
+    <Reference Include="MPS.Processor.Mps000178.PDO">
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\2.276.0\ReferencedAssemblies\MPS.Processor.Mps000178.PDO.dll</HintPath>
     </Reference>
     <Reference Include="MPS.Processor.Mps000268.PDO">
       <HintPath>..\..\..\..\..\..\RELEASE\MPSv2\MPS.PDO\MPS.Processor.Mps000268.PDO.dll</HintPath>
@@ -490,6 +506,9 @@
     <Compile Include="Print\ExamServiceReqExcuteControl__Print___DonPhongKhamTongHop.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Print\ExamServiceReqExcuteControl__Print___Mps000178.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Print\ExamServiceReqExcuteControl__Print___Mps000478.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -631,21 +650,9 @@
       <Project>{bfbc4f29-fbeb-4ea0-896a-1a7362ae75af}</Project>
       <Name>HIS.UC.ExamTreatmentFinish</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\UC\HIS.UC\HIS.UC.Hospitalize\HIS.UC.Hospitalize.csproj">
-      <Project>{f213257a-dd11-4db9-854d-773d01fe1097}</Project>
-      <Name>HIS.UC.Hospitalize</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\HIS.Desktop.ADO\HIS.Desktop.ADO.csproj">
-      <Project>{808c25cd-0925-417f-bbf9-caf9604da879}</Project>
-      <Name>HIS.Desktop.ADO</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\HIS.Desktop.ApiConsumer\HIS.Desktop.ApiConsumer.csproj">
       <Project>{861bfedb-026f-4b6f-a3cf-32843ae8c03d}</Project>
       <Name>HIS.Desktop.ApiConsumer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\HIS.Desktop.Common\HIS.Desktop.Common.csproj">
-      <Project>{59fdcba7-0f9f-4257-b95a-e37a1ccfe107}</Project>
-      <Name>HIS.Desktop.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\HIS.Desktop.Control.Session\HIS.Desktop.Controls.Session.csproj">
       <Project>{9b4b505c-afa1-4974-8ac8-503f748bd5a2}</Project>
@@ -702,6 +709,10 @@
     <ProjectReference Include="..\HIS.Desktop.Plugins.Library.CheckIcd\HIS.Desktop.Plugins.Library.CheckIcd.csproj">
       <Project>{2e5f2fa1-1b7d-40e4-b0c5-069231fb7746}</Project>
       <Name>HIS.Desktop.Plugins.Library.CheckIcd</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HIS.Desktop.Plugins.Library.ElectronicBill\HIS.Desktop.Plugins.Library.ElectronicBill.csproj">
+      <Project>{c5aecd51-4be8-4937-a6c3-04f25b11b33f}</Project>
+      <Name>HIS.Desktop.Plugins.Library.ElectronicBill</Name>
     </ProjectReference>
     <ProjectReference Include="..\HIS.Desktop.Plugins.Library.PrintServiceReq\HIS.Desktop.Plugins.Library.PrintServiceReq.csproj">
       <Project>{235a5f91-4ddb-4c6f-967f-c2426e11bb28}</Project>
