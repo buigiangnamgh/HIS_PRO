@@ -28,9 +28,10 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130.ADO
     class HisConfigCFG
     {
         internal const string HIS_QD_130_BYT__CONNECTION_INFO = "HIS.QD_130_BYT.CONNECTION_INFO";
-        internal const string MOS_USER_URI = "Inventec.Token.ClientSystem.MosUser.Base.Uri";
+        internal const string MOS_BHXH__XML_SIGN_OPTION = "MOS.BHXH.XML_SIGN.OPTION";
+
         internal static string QD_130_BYT__CONNECTION_INFO;
-        internal static string USER_URI;
+        internal static string BHXH__XML_SIGN_OPTION;
         internal const string ICD_CODE__EXCLUDEs = "HIS.Desktop.Plugins.ExportXmlQD130__IcdCodeExcludes";// danh sach ma icd loai bo khoi xml ngan cach boi dau phay
         internal static string IcdCodeExcludes = "HIS.Desktop.Plugins.ExportXmlQD130__IcdCodeExcludes";
 
@@ -39,7 +40,7 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130.ADO
             try
             {
                 QD_130_BYT__CONNECTION_INFO = GetValue(HIS_QD_130_BYT__CONNECTION_INFO);
-                USER_URI = GetValue(MOS_USER_URI);
+                BHXH__XML_SIGN_OPTION = GetValue(MOS_BHXH__XML_SIGN_OPTION);
                 IcdCodeExcludes = GetValue(ICD_CODE__EXCLUDEs);
             }
             catch (Exception ex)
@@ -62,6 +63,5 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130.ADO
             }
             return result;
         }
-
     }
 }

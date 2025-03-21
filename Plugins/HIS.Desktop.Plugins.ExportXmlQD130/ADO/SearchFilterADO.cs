@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+using MOS.EFMODEL.DataModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,18 +24,13 @@ using System.Threading.Tasks;
 
 namespace HIS.Desktop.Plugins.ExportXmlQD130.ADO
 {
-    public class ConfigSyncADO
+    public class SearchFilterADO
     {
-        public List<long> branchIds { get; set; }
-        public List<long> patientTypeIds { get; set; }
-        public List<long> patientTypeTTIds { get; set; }
-        public List<long> treatmentTypeIds { get; set; }
-        public int? statusId { get; set; }
-        public decimal period { get; set; }
-        public bool isCheckOutTime { get; set; }
-        public bool isCheckCollinearXml { get; set; }
-        public string folderPath { get; set; }
-        public bool dontSend { get; set; }
-        public bool isXML3176 { get; set; }
+        public List<HIS_BRANCH> listBranch { get; set; }
+        public List<HIS_PATIENT_TYPE> listPatientType { get; set; }
+        public List<HIS_TREATMENT_TYPE> listPTreattmentType { get; set; }
+        public FilterTypeADO prfileType { get; set; }
+        public FilterTypeADO statusXml { get; set; }
+        public List<HIS_PATIENT_TYPE> listDTTT { get; set; }
     }
 }

@@ -1,4 +1,21 @@
-﻿using System;
+﻿/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -41,6 +58,12 @@ using Newtonsoft.Json;
 using DevExpress.XtraBars;
 using System.Resources;
 using Inventec.Desktop.Common.LanguageManager;
+using EMR.WCF.DCO;
+using Inventec.Common.SignLibrary.ServiceSign;
+using System.Xml;
+using System.Security.Cryptography.X509Certificates;
+using System.Diagnostics;
+using System.Threading;
 using HIS.Desktop.Plugins.ExportXmlQD130.FormWarning;
 
 namespace HIS.Desktop.Plugins.ExportXmlQD130
@@ -73,7 +96,6 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
         List<V_HIS_BED_LOG> ListBedlog = new List<V_HIS_BED_LOG>();
         List<HIS_DEBATE> ListDebates = new List<HIS_DEBATE>();
         List<TreatmentImportADO> listTreatmentImport;
-        Inventec.Common.WebApiClient.ApiConsumer MosUserConsummer;
 
         internal string filterType__IN = "Trong DS đầu thẻ BHYT sau:";
         internal string filterType__OUT = "Ngoài DS đầu thẻ BHYT sau:";
@@ -89,7 +111,6 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
         List<HIS_PATIENT_TYPE> patientTypeSelecteds;
         List<HIS_PATIENT_TYPE> patientTypeTTSelecteds;
         List<HIS_TREATMENT_TYPE> treatmentTypeSelecteds;
-        List<FilterCheckinTypeADO> checkinTypeSelecteds;
         bool isNotLoadWhileChangeControlStateInFirst;
         HIS.Desktop.Library.CacheClient.ControlStateWorker controlStateWorker;
         List<HIS.Desktop.Library.CacheClient.ControlStateRDO> currentControlStateRDO;
@@ -101,12 +122,19 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
         List<string> listMessageError;
         CommonParam paramUpdateXml130;
         bool callSyncSuccess;
-        bool callCheckinSuccess;
         bool isAutoSync = false;
         public SavePathADO savePathADO;
         bool isExportXml;
         bool isSendCollinearXml;
-
+        bool isNotFileSign;
+        string SerialNumber;
+        bool isXML3176;
+        bool btnExportXML3176 = false;
+        bool isXML130;
+        bool showMessSusscess;
+        bool isAutoSignXML3176 = false;
+        bool btnAutoSyncClick = false;
+        public SearchFilterADO searchFilter = new SearchFilterADO();
         public UCExportXml(Inventec.Desktop.Common.Modules.Module moduleData)
             : base(moduleData)
         {
@@ -218,20 +246,22 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
             try
             {
                 this.SetCaptionByLanguageKey();
+
                 this.AddFilterItem();
                 this.InItCboFeeLockOrEndTreatment();
                 this.GeneratePopupMenu();
                 this.InitComboStatus();
                 this.InitComboXml130Result();
-                this.InitComboCheckinResult();
                 this.SetDefaultValueControl();
-                this.FillDataToGridTreatment();
+
                 this.InitComboTreatmentType();
                 this.InitComboBranch();
                 this.InitComboPatientType();
                 this.InitComboPatientTypeTT();
                 this.InitControlState();
-                this.GetConsumer();
+                this.SetDefaultSearchFilter();
+                this.FillDataToGridTreatment();
+                this.InitCheckUSBToken();
             }
             catch (Exception ex)
             {
@@ -239,12 +269,35 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
             }
         }
 
-        private void GetConsumer()
+        private void InitCheckUSBToken()
         {
-            HisConfigCFG.LoadConfig();
-            MosUserConsummer = new Inventec.Common.WebApiClient.ApiConsumer(HisConfigCFG.MOS_USER_URI, GlobalVariables.APPLICATION_CODE);
-            MosUserConsummer.SetTokenCode(HIS.Desktop.ApiConsumer.ApiConsumers.MosConsumer.GetTokenCode());
+            try
+            {
+                if (HisConfigCFG.BHXH__XML_SIGN_OPTION == "1")
+                {
+                    chkSignFileCertUtil.Checked = true;
+                    chkSignFileCertUtil.Properties.ReadOnly = true;
+                    chkSignFileCertUtil.Enabled = false;
+                }
+                else
+                {
+                    if (!String.IsNullOrWhiteSpace(SerialNumber))
+                    {
+                        chkSignFileCertUtil.Checked = !String.IsNullOrWhiteSpace(SerialNumber);
+                    }
+                    else
+                    {
+                        chkSignFileCertUtil.Checked = false;
+                        chkSignFileCertUtil.Properties.ReadOnly = false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
         }
+
         private void SetCaptionByLanguageKey()
         {
             try
@@ -329,6 +382,7 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                 DevExpress.Utils.Menu.DXPopupMenu menu = new DevExpress.Utils.Menu.DXPopupMenu();
 
                 menu.Items.Add(new DevExpress.Utils.Menu.DXMenuItem("XML 130", new EventHandler(btnSync_Click)));
+                menu.Items.Add(new DevExpress.Utils.Menu.DXMenuItem("XML 3176", new EventHandler(btnXML3176_Send)));
                 menu.Items.Add(new DevExpress.Utils.Menu.DXMenuItem("XML 130 thông tuyến", new EventHandler((u, v) =>
                 {
                     SendXml130Collinear();
@@ -341,11 +395,12 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                 Inventec.Common.Logging.LogSystem.Error(ex);
             }
         }
+        List<FilterTypeADO> ListStatusAll = new List<FilterTypeADO>();
         public void InitComboStatus()
         {
             try
             {
-                List<FilterTypeADO> ListStatusAll = new List<FilterTypeADO>();
+
                 FilterTypeADO tatCa = new FilterTypeADO(0, Resources.ResourceMessageLang.TatCa);
                 ListStatusAll.Add(tatCa);
 
@@ -368,11 +423,12 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                 Inventec.Common.Logging.LogSystem.Warn(ex);
             }
         }
+        List<FilterTypeADO> ListXml130ResultAll = new List<FilterTypeADO>();
         public void InitComboXml130Result()
         {
             try
             {
-                List<FilterTypeADO> ListXml130ResultAll = new List<FilterTypeADO>();
+
                 FilterTypeADO tatCa = new FilterTypeADO(0, Resources.ResourceMessageLang.TatCa);
                 ListXml130ResultAll.Add(tatCa);
 
@@ -398,81 +454,6 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                 Inventec.Common.Logging.LogSystem.Warn(ex);
             }
         }
-        public void InitComboCheckinResult()
-        {
-            try
-            {
-                List<FilterCheckinTypeADO> ListCheckinResultAll = new List<FilterCheckinTypeADO>();
-                FilterCheckinTypeADO valueNull = new FilterCheckinTypeADO(0, "Chưa tạo file Check In");
-                ListCheckinResultAll.Add(valueNull);
-
-                FilterCheckinTypeADO valueOne = new FilterCheckinTypeADO(1, "Tạo file Check In thành công");
-                ListCheckinResultAll.Add(valueOne);
-
-                FilterCheckinTypeADO valueTwo = new FilterCheckinTypeADO(2, "Tạo file Check In thất bại");
-                ListCheckinResultAll.Add(valueTwo);
-
-                FilterCheckinTypeADO valueThree = new FilterCheckinTypeADO(3, "Đẩy cổng thành công");
-                ListCheckinResultAll.Add(valueThree);
-
-                FilterCheckinTypeADO valueFour = new FilterCheckinTypeADO(4, "Đẩy cổng thất bại");
-                ListCheckinResultAll.Add(valueFour);
-
-                InitCheck(cboCheckinResult, SelectionGrid__cboFilterCheckinResult);
-                cboCheckinResult.Properties.DataSource = ListCheckinResultAll;
-                cboCheckinResult.Properties.DisplayMember = "Name";
-                cboCheckinResult.Properties.ValueMember = "id";
-                //DevExpress.XtraGrid.Columns.GridColumn col1 = cboCheckinResult.Properties.View.Columns.AddField("id");
-                //col1.VisibleIndex = 1;
-                //col1.Width = 50;
-                //col1.Caption = " ";
-                DevExpress.XtraGrid.Columns.GridColumn col2 = cboCheckinResult.Properties.View.Columns.AddField("Name");
-                col2.VisibleIndex = 1;
-                col2.Width = 200;
-                col2.Caption = Resources.ResourceMessageLang.TatCa;
-                cboCheckinResult.Properties.PopupFormWidth = 250;
-                cboCheckinResult.Properties.View.OptionsView.ShowColumnHeaders = true;
-                cboCheckinResult.Properties.View.OptionsSelection.MultiSelect = true;
-
-                GridCheckMarksSelection gridCheckMark = cboCheckinResult.Properties.Tag as GridCheckMarksSelection;
-                if (gridCheckMark != null)
-                {
-                    gridCheckMark.ClearSelection(cboCheckinResult.Properties.View);
-                }
-            }
-            catch (Exception ex)
-            {
-                Inventec.Common.Logging.LogSystem.Warn(ex);
-            }
-        }
-        private void SelectionGrid__cboFilterCheckinResult(object sender, EventArgs e)
-        {
-            try
-            {
-                StringBuilder sb = new StringBuilder();
-                GridCheckMarksSelection gridCheckMark = sender as GridCheckMarksSelection;
-                if (gridCheckMark != null)
-                {
-                    List<FilterCheckinTypeADO> sgSelectedNews = new List<FilterCheckinTypeADO>();
-                    foreach (FilterCheckinTypeADO rv in (gridCheckMark).Selection)
-                    {
-                        if (rv != null)
-                        {
-                            if (sb.ToString().Length > 0) { sb.Append(", "); }
-                            sb.Append(rv.Name.ToString());
-                            sgSelectedNews.Add(rv);
-                        }
-                    }
-                    this.checkinTypeSelecteds = new List<FilterCheckinTypeADO>();
-                    this.checkinTypeSelecteds.AddRange(sgSelectedNews);
-                }
-                this.cboFilterTreatmentType.Text = sb.ToString();
-            }
-            catch (Exception ex)
-            {
-                Inventec.Common.Logging.LogSystem.Warn(ex);
-            }
-        }
         private void SetDefaultValueControl()
         {
             try
@@ -482,7 +463,7 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                 dtTimeFrom.DateTime = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(Inventec.Common.DateTime.Get.StartDay() ?? 0) ?? DateTime.MinValue;
                 dtTimeTo.DateTime = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(Inventec.Common.DateTime.Get.EndDay() ?? 0) ?? DateTime.MinValue;
                 dtHeinLockTime.DateTime = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(Inventec.Common.DateTime.Get.Now() ?? 0) ?? DateTime.MinValue;
-                this.lcCheckin.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
+
             }
             catch (Exception ex)
             {
@@ -589,6 +570,8 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                 listTreatmentImport = null;
                 gridControlTreatment.DataSource = null;
                 btnExportXml.Enabled = false;
+                btnXML3176.Enabled = false;
+                btnExportGroupXml.Enabled = false;
                 btnExportCollinearXml.Enabled = false;
                 btnSend.Enabled = false;
                 btnLock.Enabled = false;
@@ -599,7 +582,7 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                 limit = ((CommonParam)param).Limit ?? 0;
                 CommonParam paramCommon = new CommonParam(start, limit);
 
-                HIS.Desktop.Plugins.ExportXmlQD130.ADO.HisTreatmentView1Filter filter = new HIS.Desktop.Plugins.ExportXmlQD130.ADO.HisTreatmentView1Filter();
+                MOS.Filter.HisTreatmentView1Filter filter = new MOS.Filter.HisTreatmentView1Filter();
                 filter.ORDER_DIRECTION = "ACS";
                 filter.ORDER_FIELD = "FEE_LOCK_TIME";
 
@@ -678,10 +661,6 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                     {
                         filter.XML130_RESULT = 2;
                     }
-
-                    //if (this.checkinTypeSelecteds != null && this.checkinTypeSelecteds.Count > 0)
-                    //    filter.XML_CHECKIN_RESULTs = this.checkinTypeSelecteds.Select(o => o.id).ToList();
-
                     if (cboStatusFeeLockOrEndTreatment.Text == this.filterType__FeeLockTime) //Thời gian khóa viện phí
                     {
                         if (dtTimeFrom.EditValue != null && dtTimeFrom.DateTime != DateTime.MinValue)
@@ -746,12 +725,14 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                         }
                     }
                 }
+                //filter.HAS_XML130_RESULT = false;
                 Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData("filter__:", filter));
 
-                var result = new Inventec.Common.Adapter.BackendAdapter(paramCommon).GetRO<List<V_HIS_TREATMENT_1>>("api/HisTreatment/GetView1", ApiConsumer.ApiConsumers.MosConsumer, filter, paramCommon);
+                var result = new Inventec.Common.Adapter.BackendAdapter(paramCommon).GetRO<List<V_HIS_TREATMENT_1>>("api/HisTreatment/GetView1", ApiConsumers.MosConsumer, filter, paramCommon);
                 if (result != null)
                 {
                     listTreatment1 = (List<V_HIS_TREATMENT_1>)result.Data;
+                    listTreatment1 = listTreatment1.Where(o => o.XML130_RESULT != 2).ToList();
                     rowCount = (listTreatment1 == null ? 0 : listTreatment1.Count);
                     dataTotal = (result.Param == null ? 0 : result.Param.Count ?? 0);
                 }
@@ -937,12 +918,16 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                     btnExportXml.Enabled = true;
                     btnExportCollinearXml.Enabled = true;
                     btnSend.Enabled = true;
+                    btnExportGroupXml.Enabled = true;
+                    btnXML3176.Enabled = true;
                 }
                 else
                 {
                     btnExportXml.Enabled = false;
                     btnExportCollinearXml.Enabled = false;
                     btnSend.Enabled = false;
+                    btnExportGroupXml.Enabled = false;
+                    btnXML3176.Enabled = false;
                 }
 
                 gridViewTreatment.BeginDataUpdate();
@@ -979,11 +964,13 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                     return;
                 WaitingManager.Show();
                 FillDataToGridTreatment();
+
                 if (listTreatment1 != null && listTreatment1.Count == 1)
                 {
                     FillDataToSereServTreeByTreatment(listTreatment1.First());
                 }
                 gridControlTreatment.Focus();
+                SaveSearchFilter();
                 WaitingManager.Hide();
             }
             catch (Exception ex)
@@ -1015,6 +1002,19 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                             btnSavePath_Click(null, null);
                     }
                     xuatXml12 = !string.IsNullOrEmpty(this.savePathADO.pathXmlGDYK);
+                    //if (string.IsNullOrEmpty(SerialNumber))
+                    //{
+                    //    MessageBox.Show("Không có thông tin Usb Token ký số");
+                    //    return;
+                    //}
+                    //else
+                    //{
+                    //    WaitingManager.Show();
+                    //    Inventec.Common.Logging.LogSystem.Info("btnExportXml_Click Begin");
+                    //    success = this.GenerateXml(ref param, ref memoryStream, false, false, xuatXml12, listSelection);
+                    //    Inventec.Common.Logging.LogSystem.Info("btnExportXml_Click End");
+                    //    WaitingManager.Hide();
+                    //}
                     WaitingManager.Show();
                     Inventec.Common.Logging.LogSystem.Info("btnExportXml_Click Begin");
                     success = this.GenerateXml(ref param, ref memoryStream, false, false, xuatXml12, listSelection);
@@ -1024,7 +1024,7 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                     {
                         MessageManager.Show(this.ParentForm, param, success);
                     }
-                    else
+                    else if (param.Messages.Count >= 1)
                     {
                         MessageManager.Show(param, success);
                     }
@@ -1073,7 +1073,31 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                         isExportXml = true;
                         CreateThreadGetData(limit);
                         isExportXml = false;
-                        message = ProcessExportXmlDetail(ref result, ref memoryStream, viewXml, xuatXmlTT, xuatXml12, HisTreatments, ListPatientTypeAlter, ListSereServ, ListDhst, HisSereServTeins, HisTrackings, HisSereServPttts, ListEkipUser, ListBedlog, ListDebates, ListBaby, ListMedicalAssessment, ListHivTreatment, HisSereServSuin, ListTuberculosisTreat);
+                        if (chkSignFileCertUtil.Checked == false)
+                        {
+                            isNotFileSign = true;
+                            message = ProcessExportXmlDetail(ref result, ref memoryStream, viewXml, xuatXmlTT, xuatXml12, HisTreatments, ListPatientTypeAlter, ListSereServ, ListDhst, HisSereServTeins, HisTrackings, HisSereServPttts, ListEkipUser, ListBedlog, ListDebates, ListBaby, ListMedicalAssessment, ListHivTreatment, HisSereServSuin, ListTuberculosisTreat);
+                        }
+                        else
+                        {
+                            if (string.IsNullOrEmpty(SerialNumber))
+                            {
+                                if (XtraMessageBox.Show("Không có thông tin Usb Token ký số. Bạn có muốn tiếp tục xuất xml?", Resources.ResourceMessageLang.ThongBao, MessageBoxButtons.YesNo) == DialogResult.No)
+                                {
+                                    message = "";
+                                }
+                                else
+                                {
+                                    isNotFileSign = true;
+                                    message = ProcessExportXmlDetail(ref result, ref memoryStream, viewXml, xuatXmlTT, xuatXml12, HisTreatments, ListPatientTypeAlter, ListSereServ, ListDhst, HisSereServTeins, HisTrackings, HisSereServPttts, ListEkipUser, ListBedlog, ListDebates, ListBaby, ListMedicalAssessment, ListHivTreatment, HisSereServSuin, ListTuberculosisTreat);
+                                }
+                            }
+                            else
+                            {
+                                isNotFileSign = false;
+                                message = ProcessExportXmlDetail(ref result, ref memoryStream, viewXml, xuatXmlTT, xuatXml12, HisTreatments, ListPatientTypeAlter, ListSereServ, ListDhst, HisSereServTeins, HisTrackings, HisSereServPttts, ListEkipUser, ListBedlog, ListDebates, ListBaby, ListMedicalAssessment, ListHivTreatment, HisSereServSuin, ListTuberculosisTreat);
+                            }
+                        }
                         if (!String.IsNullOrEmpty(message))
                         {
                             paramExport.Messages.Add(message);
@@ -1088,6 +1112,60 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
             }
             return result;
         }
+
+        bool GenerateXmlPlus(ref CommonParam paramExport, ref MemoryStream memoryStream, bool xuatXml12, List<V_HIS_TREATMENT_1> listSelection)
+        {
+            bool result = false;
+            try
+            {
+                if (listSelection.Count > 0)
+                {
+                    listSelection = listSelection.GroupBy(o => o.TREATMENT_CODE).Select(s => s.First()).ToList();
+                    this.NewConfig = GetNewConfig();
+                    int skip = 0;
+
+                    ListPatientTypeAlter = new List<V_HIS_PATIENT_TYPE_ALTER>();
+                    ListSereServ = new List<V_HIS_SERE_SERV_2>();
+                    ListEkipUser = new List<HIS_EKIP_USER>();
+                    ListBedlog = new List<V_HIS_BED_LOG>();
+                    HisTreatments = new List<V_HIS_TREATMENT_12>();
+                    ListDhst = new List<HIS_DHST>();
+                    HisTrackings = new List<HIS_TRACKING>();
+                    HisSereServTeins = new List<V_HIS_SERE_SERV_TEIN>();
+                    HisSereServSuin = new List<V_HIS_SERE_SERV_SUIN>();
+                    HisSereServPttts = new List<V_HIS_SERE_SERV_PTTT>();
+                    ListDebates = new List<HIS_DEBATE>();
+                    ListBaby = new List<V_HIS_BABY>();
+                    ListMedicalAssessment = new List<V_HIS_MEDICAL_ASSESSMENT>();
+                    ListHivTreatment = new List<HIS_HIV_TREATMENT>();
+                    ListTuberculosisTreat = new List<HIS_TUBERCULOSIS_TREAT>();
+                    string message = "";
+                    while (listSelection.Count - skip > 0)
+                    {
+                        var limit = listSelection.Skip(skip).Take(GlobalVariables.MAX_REQUEST_LENGTH_PARAM).ToList();
+                        skip = skip + GlobalVariables.MAX_REQUEST_LENGTH_PARAM;
+
+                        isExportXml = true;
+                        CreateThreadGetData(limit);
+                        isExportXml = false;
+
+                    }
+                    message = ProcessExportXmlDetailPlus(ref result, ref memoryStream, xuatXml12);
+                    if (!String.IsNullOrEmpty(message))
+                    {
+                        paramExport.Messages.Add(message);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+                result = false;
+            }
+            return result;
+        }
+
+
 
         string ProcessExportXmlDetail(ref bool isSuccess, ref MemoryStream memoryStream, bool viewXml, bool XuatXmlTT, bool XuatXml12, List<V_HIS_TREATMENT_12> hisTreatments, List<V_HIS_PATIENT_TYPE_ALTER> hisPatientTypeAlters,
             List<V_HIS_SERE_SERV_2> ListSereServ, List<HIS_DHST> listDhst, List<V_HIS_SERE_SERV_TEIN> listSereServTein,
@@ -1271,6 +1349,7 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                 string username = null, password = null, address = null, typeXml = null;
                 string xml130Api = null, xmlGdykApi = null;
                 List<string> connectInfors = new List<string>();
+                int count = 0;
                 if (string.IsNullOrEmpty(connect_infor))
                 {
 
@@ -1377,10 +1456,11 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                     {
                         ado.TuberculosisTreat = dicTuberculosisTreat[treatment.ID];
                     }
-                    //cap nhat icd
-                    if (!string.IsNullOrWhiteSpace(HIS.Desktop.Plugins.ExportXmlQD130.ADO.HisConfigCFG.IcdCodeExcludes))
+                    if (btnExportXML3176 == true)
                     {
-                        if (!CheckIcdCode(ado, HIS.Desktop.Plugins.ExportXmlQD130.ADO.HisConfigCFG.IcdCodeExcludes)) continue;
+                        ado.IS_3176 = true;
+                        Inventec.Common.Logging.LogSystem.Debug("IS_3176 = true");
+                        //btnExportXML3176 = false;
                     }
                     His.Bhyt.ExportXml.XML130.CreateXmlProcessor xmlProcessor = new His.Bhyt.ExportXml.XML130.CreateXmlProcessor(ado);
 
@@ -1391,6 +1471,8 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                     string saveFilePathXml12 = "";
                     string fullFileNameCollinearXml = "";
                     string saveFilePathCollinearXml = "";
+
+
                     if (XuatXmlTT)
                     {
                         fullFileNameCollinearXml = xmlProcessor.GetFileNameCollinear();
@@ -1407,7 +1489,6 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                             rsXmlTT.WriteTo(file);
                             file.Close();
                             rsXmlTT.Close();
-
                             isSuccess = true;
                         }
                         else
@@ -1470,6 +1551,87 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                             rsXml12.Close();
                         }
                     }
+
+                    if (isNotFileSign == false)
+                    {
+                        // Lấy đường dẫn đến thư mục hiện tại của chương trình
+                        string currentDirectory = Directory.GetCurrentDirectory();
+
+                        // Tạo đường dẫn đến thư mục tạm trong thư mục hiện tại
+                        string tempFolderPath = Path.Combine(currentDirectory, "Temp");
+
+                        // Tạo thư mục tạm nếu chưa tồn tại
+                        Directory.CreateDirectory(tempFolderPath);
+                        fullFileName = xmlProcessor.GetFileName();
+                        // Tạo đường dẫn đến file tạm 
+                        string tempFilePath = Path.Combine(tempFolderPath, fullFileName);
+                        File.Create(tempFilePath).Close();
+                        //FileStream file = new FileStream(saveFilePathCollinearXml, FileMode.Create, FileAccess.Write);
+
+                        WcfSignDCO wcfSignDCO = new WcfSignDCO();
+                        wcfSignDCO.SerialNumber = SerialNumber;
+                        wcfSignDCO.OutputFile = tempFilePath;
+                        wcfSignDCO.PIN = "";
+                        if (!string.IsNullOrEmpty(saveFilePathCollinearXml))
+                        {
+                            wcfSignDCO.SourceFile = saveFilePathCollinearXml;//tempFolderPath;
+                        }
+                        else
+                        {
+                            wcfSignDCO.SourceFile = saveFilePath;//tempFolderPath;
+                        }
+
+                        string jsonData = JsonConvert.SerializeObject(wcfSignDCO);
+                        SignProcessorClient signProcessorClient = new SignProcessorClient();
+                        var wcfSignResultDCO = signProcessorClient.SignXml130(jsonData);
+                        string pathAfterFileSign = "";
+                        if (wcfSignResultDCO != null && wcfSignResultDCO.Success)
+                        {
+                            pathAfterFileSign = wcfSignResultDCO.OutputFile;
+                            Inventec.Common.Logging.LogSystem.Debug("wcfSignResultDCO.OutputFile: " + Inventec.Common.Logging.LogUtil.TraceData("output file", wcfSignResultDCO.OutputFile));
+                        }
+
+                        if (this.savePathADO == null || string.IsNullOrEmpty(this.savePathADO.pathCollinearXml))
+                        {
+                            XtraMessageBox.Show("Vui lòng thiết lập thư mục lưu trữ trước khi xuất dữ liệu.", Resources.ResourceMessageLang.ThongBao);
+                            btnSavePath_Click(null, null);
+                        }
+                        if (this.savePathADO != null && !string.IsNullOrEmpty(this.savePathADO.pathXml))
+                        {
+                            string destinationFile = Path.Combine(savePathADO.pathXml, fullFileName);
+                            Inventec.Common.Logging.LogSystem.Debug("destinationFile" + destinationFile);
+                            //File.Create(destinationFile).Close();
+
+                            if (!string.IsNullOrEmpty(pathAfterFileSign))
+                            {
+                                //if (File.Exists(destinationFile))
+                                //{
+                                //    File.Delete(destinationFile);
+                                //}
+                                if (wcfSignDCO.SourceFile.Trim() != pathAfterFileSign.Trim())
+                                {
+                                    if (File.Exists(wcfSignDCO.SourceFile))
+                                    {
+                                        File.Delete(wcfSignDCO.SourceFile);
+                                    }
+                                }
+                                File.Copy(pathAfterFileSign, wcfSignDCO.SourceFile);
+                                //File.Copy(pathAfterFileSign, destinationFile);
+                            }
+                        }
+
+                        //string xmlFilePath = Path.Combine(tempFolderPath, fullFileName);
+                        //if (File.Exists(wcfSignDCO.SourceFile))
+                        //{
+                        //    File.Delete(wcfSignDCO.SourceFile);
+                        //}
+                        // Xóa tất cả các file trong thư mục temp
+                        foreach (string ifile in Directory.GetFiles(tempFolderPath))
+                        {
+                            File.Delete(ifile);
+                        }
+                    }
+                    //count++;
                 }
                 if (DicErrorMess.Count > 0)
                 {
@@ -1478,6 +1640,185 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                         result += String.Format("{0}:{1}. ", item.Key, String.Join(",", item.Value));
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+                result = "";
+            }
+            return result;
+        }
+
+        string ProcessExportXmlDetailPlus(ref bool isSuccess, ref MemoryStream memoryStream, bool XuatXml12)
+        {
+            string result = "";
+            try
+            {
+                string connect_infor = HisConfigCFG.QD_130_BYT__CONNECTION_INFO;
+                string username = null, password = null, address = null, typeXml = null;
+                string xml130Api = null, xmlGdykApi = null;
+                List<string> connectInfors = new List<string>();
+                if (string.IsNullOrEmpty(connect_infor))
+                {
+
+                }
+                else
+                {
+                    connectInfors = connect_infor.Split('|').ToList();
+                }
+                try
+                {
+                    address = connectInfors[0];
+                    username = connectInfors[1];
+                    password = connectInfors[2];
+                    typeXml = connectInfors[3];
+                    xml130Api = connectInfors[4];
+                    xmlGdykApi = connectInfors[5];
+                }
+                catch (Exception ex)
+                {
+                    Inventec.Common.Logging.LogSystem.Error("Key cấu hình hệ thống chỉ thiết lập 3 giá trị");
+                }
+
+                InputADO ado = new InputADO();
+                ado.ListTreatment = HisTreatments;
+                ado.ListPatientTypeAlter = ListPatientTypeAlter;
+                ado.ListSereServ = ListSereServ;
+                ado.ListSereServTein = HisSereServTeins;
+                ado.ListSereServPttt = HisSereServPttts;
+                ado.ListBedLog = ListBedlog;
+                ado.ListTracking = HisTrackings;
+                ado.ListEkipUser = ListEkipUser;
+                ado.ListBaby = ListBaby;
+                ado.ListDebate = ListDebates;
+                ado.ListDhst = ListDhst;
+                ado.ListMedicalAssessment = ListMedicalAssessment;
+                ado.ListHivTreatment = ListHivTreatment;
+                ado.vSereServSuin = HisSereServSuin;
+                ado.ListTuberculosisTreat = ListTuberculosisTreat;
+                ado.TotalMaterialTypeData = BackendDataWorker.Get<HIS_MATERIAL_TYPE>();
+                ado.TotalHeinMediOrgData = BackendDataWorker.Get<HIS_MEDI_ORG>();
+                ado.TotalConfigData = NewConfig;
+                ado.TotalPatientTypeData = BackendDataWorker.Get<HIS_PATIENT_TYPE>();
+                ado.TotalIcdData = BackendDataWorker.Get<HIS_ICD>();
+                ado.TotalSericeData = BackendDataWorker.Get<V_HIS_SERVICE>();
+                ado.TotalEmployeeData = BackendDataWorker.Get<HIS_EMPLOYEE>();
+                ado.serverInfo = new ServerInfo() { Username = username, Password = password, Address = address, TypeXml = typeXml, Xml130Api = xml130Api, XmlGdykApi = xmlGdykApi };
+
+                His.Bhyt.ExportXml.XML130.CreateXmlProcessor xmlProcessor = new His.Bhyt.ExportXml.XML130.CreateXmlProcessor(ado);
+
+                string errorMess = "";
+                string errorMessXml12 = "";
+                string fullFileName = "";
+                string saveFilePath = "";
+                string saveFilePathXml12 = "";
+
+
+                fullFileName = "DATA_XML_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xml";
+                saveFilePath = String.Format("{0}/{1}", this.savePathADO.pathXml, fullFileName);
+                saveFilePathXml12 = String.Format("{0}/{1}{2}", this.savePathADO.pathXmlGDYK, "XML12_", fullFileName);
+
+                var rs = xmlProcessor.RunPlus(saveFilePath, ref errorMess);
+                var rsXml12 = XuatXml12 ? xmlProcessor.RunXml12Plus(saveFilePathXml12, ref errorMessXml12) : null;
+                if (!String.IsNullOrWhiteSpace(errorMess))
+                {
+                    Inventec.Common.Logging.LogSystem.Error("Run130: " + errorMess);
+                }
+                if (!String.IsNullOrWhiteSpace(errorMessXml12))
+                {
+                    Inventec.Common.Logging.LogSystem.Error("Run130_XML12: " + errorMessXml12);
+                }
+                if (rs != null)
+                {
+                    FileStream file = new FileStream(saveFilePath, FileMode.Create, FileAccess.Write);
+                    rs.WriteTo(file);
+                    file.Close();
+                    rs.Close();
+                    isSuccess = true;
+                }
+                if (rsXml12 != null)
+                {
+                    FileStream file12 = new FileStream(saveFilePathXml12, FileMode.Create, FileAccess.Write);
+                    rsXml12.WriteTo(file12);
+                    file12.Close();
+                    rsXml12.Close();
+                    isSuccess = true;
+                }
+
+                if (isNotFileSign == false)
+                {
+
+                    // Lấy đường dẫn đến thư mục hiện tại của chương trình
+                    string currentDirectory = Directory.GetCurrentDirectory();
+
+                    // Tạo đường dẫn đến thư mục tạm trong thư mục hiện tại
+                    string tempFolderPath = Path.Combine(currentDirectory, "Temp");
+
+                    // Tạo thư mục tạm nếu chưa tồn tại
+                    Directory.CreateDirectory(tempFolderPath);
+                    // Tạo đường dẫn đến file tạm 
+                    string tempFilePath = Path.Combine(tempFolderPath, fullFileName);
+                    File.Create(tempFilePath).Close();
+                    //FileStream file = new FileStream(saveFilePathCollinearXml, FileMode.Create, FileAccess.Write);
+
+                    WcfSignDCO wcfSignDCO = new WcfSignDCO();
+                    wcfSignDCO.SerialNumber = SerialNumber;
+                    wcfSignDCO.OutputFile = tempFilePath;
+                    wcfSignDCO.PIN = "";
+                    if (!string.IsNullOrEmpty(saveFilePath))
+                    {
+                        wcfSignDCO.SourceFile = saveFilePath;
+                    }
+                    else
+                    {
+                        wcfSignDCO.SourceFile = saveFilePathXml12;
+                    }
+                    string jsonData = JsonConvert.SerializeObject(wcfSignDCO);
+                    SignProcessorClient signProcessorClient = new SignProcessorClient();
+                    var wcfSignResultDCO = signProcessorClient.SignXml130(jsonData);
+                    string pathAfterFileSign = "";
+                    if (wcfSignResultDCO != null && wcfSignResultDCO.Success)
+                    {
+                        pathAfterFileSign = wcfSignResultDCO.OutputFile;
+                        Inventec.Common.Logging.LogSystem.Debug("wcfSignResultDCO.OutputFile: " + Inventec.Common.Logging.LogUtil.TraceData("output file", wcfSignResultDCO.OutputFile));
+                    }
+
+                    if (this.savePathADO == null || string.IsNullOrEmpty(this.savePathADO.pathCollinearXml))
+                    {
+                        XtraMessageBox.Show("Vui lòng thiết lập thư mục lưu trữ trước khi xuất dữ liệu.", Resources.ResourceMessageLang.ThongBao);
+                        btnSavePath_Click(null, null);
+                    }
+                    if (this.savePathADO != null && !string.IsNullOrEmpty(this.savePathADO.pathXml))
+                    {
+                        //string destinationFile = Path.Combine(savePathADO.pathXml, fullFileName);
+                        //Inventec.Common.Logging.LogSystem.Debug("destinationFile" + destinationFile);
+                        //File.Create(destinationFile).Close();
+
+                        //string destinationFile = Path.Combine(savePathADO.pathXml, fullFileName);
+                        //Inventec.Common.Logging.LogSystem.Debug("destinationFile " + destinationFile);
+                        ////File.Create(destinationFile).Close();
+                        if (wcfSignDCO.SourceFile.Trim() != pathAfterFileSign.Trim())
+                        {
+                            if (File.Exists(wcfSignDCO.SourceFile))
+                            {
+                                File.Delete(wcfSignDCO.SourceFile);
+                            }
+                        }
+                        File.Copy(pathAfterFileSign, wcfSignDCO.SourceFile);
+                    }
+
+                    // string xmlFilePath = Path.Combine(tempFolderPath, fullFileName);
+                    if (File.Exists(wcfSignDCO.SourceFile))
+                    {
+                        File.Delete(wcfSignDCO.SourceFile);
+                    }
+                    // Xóa tất cả các file trong thư mục temp
+                    foreach (string ifile in Directory.GetFiles(tempFolderPath))
+                    {
+                        File.Delete(ifile);
+                    }
+                }
+                result = errorMess;
             }
             catch (Exception ex)
             {
@@ -1804,7 +2145,7 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                     {
                         if (this.configSync != null && this.configSync.patientTypeTTIds != null && this.configSync.patientTypeTTIds.Count > 0)
                         {
-                            ssFilter.PATIENT_TYPE_IDs = this.patientTypeTTSelecteds.Select(o => o.ID).ToList();
+                            ssFilter.PATIENT_TYPE_IDs = this.configSync.patientTypeTTIds.ToList();
                         }
                     }
 
@@ -1816,14 +2157,21 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                         var ekipIds = resultSS.Select(o => o.EKIP_ID ?? 0).Where(o => o != 0).Distinct().ToList();
                         if (ekipIds != null && ekipIds.Count > 0)//null sẽ có 1 id bằng 0
                         {
-                            HisEkipUserFilter ekipFilter = new HisEkipUserFilter();
-                            ekipFilter.EKIP_IDs = ekipIds;
-                            var resultEkip = new Inventec.Common.Adapter.BackendAdapter(param).Get<List<HIS_EKIP_USER>>("api/HisEkipUser/Get", ApiConsumers.MosConsumer, ekipFilter, param);
-                            if (resultEkip != null && resultEkip.Count > 0)
+                            int skipEkip = 0;
+                            while (ekipIds.Count - skipEkip > 0)
                             {
-                                ListEkipUser.AddRange(resultEkip);
+                                var limitLong = ekipIds.Skip(skipEkip).Take(GlobalVariables.MAX_REQUEST_LENGTH_PARAM).ToList();
+                                skipEkip = skipEkip + GlobalVariables.MAX_REQUEST_LENGTH_PARAM;
+                                HisEkipUserFilter ekipFilter = new HisEkipUserFilter();
+                                ekipFilter.EKIP_IDs = limitLong;
+                                var resultEkip = new Inventec.Common.Adapter.BackendAdapter(param).Get<List<HIS_EKIP_USER>>("api/HisEkipUser/Get", ApiConsumers.MosConsumer, ekipFilter, param);
+                                if (resultEkip != null && resultEkip.Count > 0)
+                                {
+                                    ListEkipUser.AddRange(resultEkip);
+                                }
                             }
                         }
+
                     }
 
                     HisBedLogViewFilter bedFilter = new HisBedLogViewFilter();
@@ -1991,7 +2339,7 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                                         MessageManager.Show(Resources.ResourceMessageLang.ChucNangChuaHoTroPhienBanHienTai);
                                     }
                                 }
-                                else
+                                else if (!success && param.Messages.Count > 0)
                                 {
                                     MessageManager.Show(param, success);
                                 }
@@ -2062,27 +2410,40 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
             }
             return rs;
         }
+        /// <summary>
+        /// init combo branch
+        /// </summary>
+        private List<HIS_BRANCH> listBranchDataSource = BackendDataWorker.Get<HIS_BRANCH>().ToList();
         private void InitComboBranch()
         {
             try
             {
                 InitCheck(CboBranch, SelectionGrid__cboBranch);
-                InitCombo(CboBranch, BackendDataWorker.Get<HIS_BRANCH>(), "BRANCH_NAME");
+                InitCombo(CboBranch, listBranchDataSource, "BRANCH_NAME");
             }
             catch (Exception ex)
             {
                 Inventec.Common.Logging.LogSystem.Error(ex);
             }
         }
+        /// <summary>
+        /// init data doi tuong banh nhan
+        /// lay du lieu tu RAM load len danh sach
+        /// </summary>
+        private List<HIS_PATIENT_TYPE> listPatientTypeDataSource = BackendDataWorker.Get<HIS_PATIENT_TYPE>().Where(o => o.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE).ToList();
         private void InitComboPatientType()
         {
             InitCheck(cboPatientType, SelectionGrid__cboPatientType);
-            InitCombo(cboPatientType, BackendDataWorker.Get<HIS_PATIENT_TYPE>().Where(o => o.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE).ToList(), "PATIENT_TYPE_NAME");
+            InitCombo(cboPatientType, listPatientTypeDataSource, "PATIENT_TYPE_NAME");
         }
+        /// <summary>
+        /// init data doi tuong thanh toan
+        /// </summary>
+        private List<HIS_PATIENT_TYPE> listPatientTypeTTDataSource = BackendDataWorker.Get<HIS_PATIENT_TYPE>().Where(o => o.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE).ToList();
         private void InitComboPatientTypeTT()
         {
             InitCheck(cboPatientTypeTT, SelectionGrid__cboPatientTypeTT);
-            InitCombo(cboPatientTypeTT, BackendDataWorker.Get<HIS_PATIENT_TYPE>().Where(o => o.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE).ToList(), "PATIENT_TYPE_NAME");
+            InitCombo(cboPatientTypeTT, listPatientTypeTTDataSource, "PATIENT_TYPE_NAME");
         }
         private void InitCombo(GridLookUpEdit cbo, object data, string DisplayValue)
         {
@@ -2115,15 +2476,19 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
         {
             try
             {
+
                 GridCheckMarksSelection gridCheck = new GridCheckMarksSelection(cbo.Properties);
                 gridCheck.SelectionChanged += new GridCheckMarksSelection.SelectionChangedEventHandler(eventSelect);
                 cbo.Properties.Tag = gridCheck;
                 cbo.Properties.View.OptionsSelection.MultiSelect = true;
                 GridCheckMarksSelection gridCheckMark = cbo.Properties.Tag as GridCheckMarksSelection;
+
                 if (gridCheckMark != null)
                 {
                     gridCheckMark.ClearSelection(cbo.Properties.View);
                 }
+
+
             }
             catch (Exception ex)
             {
@@ -2195,6 +2560,7 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                 GridCheckMarksSelection gridCheckMark = sender as GridCheckMarksSelection;
                 if (gridCheckMark != null)
                 {
+
                     List<HIS_BRANCH> sgSelectedNews = new List<HIS_BRANCH>();
                     foreach (MOS.EFMODEL.DataModels.HIS_BRANCH rv in (gridCheckMark).Selection)
                     {
@@ -2205,6 +2571,7 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                             sgSelectedNews.Add(rv);
                         }
                     }
+
                     this.branchSelecteds = new List<HIS_BRANCH>();
                     this.branchSelecteds.AddRange(sgSelectedNews);
                 }
@@ -2222,10 +2589,13 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                 StringBuilder sb = new StringBuilder();
                 GridCheckMarksSelection gridCheckMark = sender is GridLookUpEdit ? (sender as GridLookUpEdit).Properties.Tag as GridCheckMarksSelection : (sender as RepositoryItemGridLookUpEdit).Tag as GridCheckMarksSelection;
                 if (gridCheckMark == null) return;
+                this.searchFilter.listBranch = new List<HIS_BRANCH>();
                 foreach (MOS.EFMODEL.DataModels.HIS_BRANCH rv in gridCheckMark.Selection)
                 {
                     if (sb.ToString().Length > 0) { sb.Append(", "); }
+                    this.searchFilter.listBranch.Add(rv);
                     sb.Append(rv.BRANCH_NAME.ToString());
+
                 }
                 e.DisplayText = sb.ToString();
             }
@@ -2234,10 +2604,14 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                 Inventec.Common.Logging.LogSystem.Warn(ex);
             }
         }
+        /// <summary>
+        /// init combo doi tuong dieu tri
+        /// </summary>
+        private List<HIS_TREATMENT_TYPE> listTreatmentTypeDataSource = BackendDataWorker.Get<HIS_TREATMENT_TYPE>().ToList();
         private void InitComboTreatmentType()
         {
             InitCheck(cboFilterTreatmentType, SelectionGrid__cboFilterTreatmentType);
-            cboFilterTreatmentType.Properties.DataSource = BackendDataWorker.Get<HIS_TREATMENT_TYPE>();
+            cboFilterTreatmentType.Properties.DataSource = listTreatmentTypeDataSource;
             cboFilterTreatmentType.Properties.DisplayMember = "TREATMENT_TYPE_NAME";
             cboFilterTreatmentType.Properties.ValueMember = "ID";
             DevExpress.XtraGrid.Columns.GridColumn col1 = cboFilterTreatmentType.Properties.View.Columns.AddField("TREATMENT_TYPE_CODE");
@@ -2617,6 +2991,15 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                         {
                             configSync = !String.IsNullOrWhiteSpace(item.VALUE) ? Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigSyncADO>(item.VALUE) : null;
                         }
+                        else if (item.KEY == btnFind.Name)
+                        {
+                            this.searchFilter = !String.IsNullOrWhiteSpace(item.VALUE) ? Newtonsoft.Json.JsonConvert.DeserializeObject<SearchFilterADO>(item.VALUE) : new SearchFilterADO();
+                        }
+                        else if (item.KEY == chkSignFileCertUtil.Name)
+                        {
+                            SerialNumber = item.VALUE;
+                            //chkSignFileCertUtil.Checked = !String.IsNullOrWhiteSpace(SerialNumber);
+                        }
                     }
                 }
                 isNotLoadWhileChangeControlStateInFirst = false;
@@ -2638,10 +3021,11 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                     e.DisplayText = "";
                     return;
                 }
+                this.searchFilter.listPatientType = new List<HIS_PATIENT_TYPE>();
                 foreach (MOS.EFMODEL.DataModels.HIS_PATIENT_TYPE rv in gridCheckMark.Selection)
                 {
                     if (sb.ToString().Length > 0) { sb.Append(", "); }
-
+                    this.searchFilter.listPatientType.Add(rv);
                     sb.Append(rv.PATIENT_TYPE_NAME.ToString());
                 }
                 e.DisplayText = sb.ToString();
@@ -2663,10 +3047,11 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                     e.DisplayText = "";
                     return;
                 }
+                this.searchFilter.listPTreattmentType = new List<HIS_TREATMENT_TYPE>();
                 foreach (MOS.EFMODEL.DataModels.HIS_TREATMENT_TYPE rv in gridCheckMark.Selection)
                 {
                     if (sb.ToString().Length > 0) { sb.Append(", "); }
-
+                    this.searchFilter.listPTreattmentType.Add(rv);
                     sb.Append(rv.TREATMENT_TYPE_NAME.ToString());
                 }
                 e.DisplayText = sb.ToString();
@@ -2781,6 +3166,7 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                     short xmlCheckinResult = Inventec.Common.TypeConvert.Parse.ToInt16((gridViewTreatment.GetRowCellValue(e.RowHandle, "XML_CHECKIN_RESULT") ?? "").ToString());
                     string xmlCheckinDesc = (gridViewTreatment.GetRowCellValue(e.RowHandle, "XML_CHECKIN_DESC") ?? "").ToString();
                     string xmlCheckinUrl = (gridViewTreatment.GetRowCellValue(e.RowHandle, "XML_CHECKIN_URL") ?? "").ToString();
+                    var data = (V_HIS_TREATMENT_1)gridViewTreatment.GetRow(e.RowHandle);
                     if (e.Column.FieldName == "ErrorLine")
                     {
                         if (xml130Result == 1)
@@ -2792,7 +3178,10 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                         }
                         else if (xml130Result == 2)
                         {
-                            e.RepositoryItem = Btn_Success;
+                            if (data.XML130_CHECK_CODE != null)
+                                e.RepositoryItem = Btn_Success;
+                            else
+                                e.RepositoryItem = Btn_SaveSuccess;
                         }
                     }
                     else if (e.Column.FieldName == "VIEW_XML_CHECKIN")
@@ -2839,6 +3228,15 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
         {
             try
             {
+                btnAutoSyncClick = true;
+                if (configSync.isXML3176)
+                {
+                    isXML130 = false;
+                }
+                else
+                {
+                    isXML130 = true;
+                }
                 if (configSync == null)
                 {
                     XtraMessageBox.Show(Resources.ResourceMessageLang.VuiLongThietLapDieuKienGuiHoSoTruocKhiThucHien, Resources.ResourceMessageLang.ThongBao);
@@ -2849,24 +3247,61 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                     tempConfigSync.treatmentTypeIds = this.treatmentTypeSelecteds.Select(o => o.ID).ToList();
                     tempConfigSync.statusId = (int)cboStatus.EditValue;
                     tempConfigSync.period = 10;
+
                     tempConfigSync.isCheckOutTime = false;
                     tempConfigSync.isCheckCollinearXml = false;
+                    tempConfigSync.isXML3176 = false;
                     frmSettingConfigSync frmSettingConfigSync = new frmSettingConfigSync(tempConfigSync, isAutoSync, UpdateConfigSign);
                     frmSettingConfigSync.ShowDialog(this.ParentForm);
                 }
-                if (!isAutoSync && this.configSync != null && this.configSync.period > 0)
+                if (chkSignFileCertUtil.Checked == false)
                 {
-                    isAutoSync = true;
-                    btnAutoSync.Text = Resources.ResourceMessageLang.DangDongBo;
-                    btnAutoSync.ToolTip = Resources.ResourceMessageLang.DangChayTienTrinhDongBoDuLieuXml130LenCongBHYT;
-                    this.StartTimer();
+                    if (!isAutoSync && this.configSync != null && this.configSync.period > 0)
+                    {
+                        isNotFileSign = true;
+                        isAutoSync = true;
+                        btnAutoSync.Text = Resources.ResourceMessageLang.DangDongBo;
+                        btnAutoSync.ToolTip = Resources.ResourceMessageLang.DangChayTienTrinhDongBoDuLieuXml130LenCongBHYT;
+                        this.StartTimer();
+                    }
+                    else
+                    {
+                        isAutoSync = false;
+                        autoSync.Stop();
+                        btnAutoSync.Text = Resources.ResourceMessageLang.DongBoTD;
+                        btnAutoSync.ToolTip = Resources.ResourceMessageLang.DongBoTuDong;
+                    }
                 }
                 else
                 {
-                    isAutoSync = false;
-                    autoSync.Stop();
-                    btnAutoSync.Text = Resources.ResourceMessageLang.DongBoTD;
-                    btnAutoSync.ToolTip = Resources.ResourceMessageLang.DongBoTuDong;
+                    if (string.IsNullOrEmpty(SerialNumber))
+                    {
+                        MessageBox.Show("Không có thông tin Usb Token ký số");
+                        return;
+                    }
+                    else
+                    {
+                        //isNotFileSign = false;
+                        //isAutoSync = true;
+                        //btnAutoSync.Text = Resources.ResourceMessageLang.DangDongBo;
+                        //btnAutoSync.ToolTip = Resources.ResourceMessageLang.DangChayTienTrinhDongBoDuLieuXml130LenCongBHYT;
+                        //this.StartTimer();
+                        if (!isAutoSync && this.configSync != null && this.configSync.period > 0)
+                        {
+                            isNotFileSign = false;
+                            isAutoSync = true;
+                            btnAutoSync.Text = Resources.ResourceMessageLang.DangDongBo;
+                            btnAutoSync.ToolTip = Resources.ResourceMessageLang.DangChayTienTrinhDongBoDuLieuXml130LenCongBHYT;
+                            this.StartTimer();
+                        }
+                        else
+                        {
+                            isAutoSync = false;
+                            autoSync.Stop();
+                            btnAutoSync.Text = Resources.ResourceMessageLang.DongBoTD;
+                            btnAutoSync.ToolTip = Resources.ResourceMessageLang.DongBoTuDong;
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -2888,7 +3323,6 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                 Inventec.Common.Logging.LogSystem.Error(ex);
             }
         }
-
         private void UpdateConfigSign(ConfigSyncADO config)
         {
             try
@@ -2922,7 +3356,6 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                 Inventec.Common.Logging.LogSystem.Error(ex);
             }
         }
-
         private void btnSettingConfigSync_Click(object sender, EventArgs e)
         {
             try
@@ -2938,6 +3371,7 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                     tempConfigSync.period = 10;
                     tempConfigSync.isCheckOutTime = false;
                     tempConfigSync.isCheckCollinearXml = false;
+                    tempConfigSync.isXML3176 = false;
                     frmSettingConfigSync frmSettingConfigSync = new frmSettingConfigSync(tempConfigSync, isAutoSync, UpdateConfigSign);
                     frmSettingConfigSync.ShowDialog(this.ParentForm);
                 }
@@ -2966,9 +3400,29 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
 
                 LogSystem.Info("Begin Run Thread Auto Sync");
 
+                if (this.configSync.isCheckCollinearXml)
+                {
+                    listTreatmentSync = new List<V_HIS_TREATMENT_1>();
+                    //lay ho so khoa bhyt
+                    this.configSync.isCheckOutTime = true;
+                    var listTreatmentLockBHYT = this.GetTreatment();
+                    listTreatmentSync.AddRange(listTreatmentLockBHYT);
+                    //lay ho so ket thuc dieu tri
+                    this.configSync.isCheckOutTime = false;
+                    var listTreatmentEnd = this.GetTreatment();
+                    listTreatmentSync.AddRange(listTreatmentEnd);
+                }
+                else
+                {
+                    listTreatmentSync = this.GetTreatment();
+                }
 
+                if (this.configSync.isXML3176)
+                {
+                    LogSystem.Info("Thread Auto Sync. isXML3176 ");
+                    backgroundWorker1.RunWorkerAsync();
+                }
 
-                listTreatmentSync = this.GetTreatment();
                 if (listTreatmentSync != null && listTreatmentSync.Count > 0)
                 {
                     LogSystem.Info("Thread Auto Sync. TreatmentCount: " + listTreatmentSync.Count);
@@ -2993,14 +3447,13 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
             {
                 if (configSync != null)
                 {
-                    HIS.Desktop.Plugins.ExportXmlQD130.ADO.HisTreatmentView1Filter filter = new HIS.Desktop.Plugins.ExportXmlQD130.ADO.HisTreatmentView1Filter();
+                    MOS.Filter.HisTreatmentView1Filter filter = new MOS.Filter.HisTreatmentView1Filter();
                     if (configSync.branchIds != null && configSync.branchIds.Count > 0)
                         filter.BRANCH_IDs = configSync.branchIds;
                     if (configSync.patientTypeIds != null && configSync.patientTypeIds.Count > 0)
                         filter.TDL_PATIENT_TYPE_IDs = configSync.patientTypeIds;
                     if (configSync.treatmentTypeIds != null && configSync.treatmentTypeIds.Count > 0)
                         filter.TDL_TREATMENT_TYPE_IDs = configSync.treatmentTypeIds;
-                    //filter.HAS_XML130_RESULT = false;
                     if (configSync.statusId != null)
                     {
                         if (configSync.statusId == 1)
@@ -3027,12 +3480,10 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                         filter.FEE_LOCK_TIME_FROM = Inventec.Common.DateTime.Get.StartDay();
                         filter.FEE_LOCK_TIME_TO = Convert.ToInt64(DateTime.Now.ToString("yyyyMMddHHmmss"));
                     }
+
+                    filter.HAS_XML130_RESULT = false;
                     LogSystem.Debug("Treatment Filter: " + LogUtil.TraceData("Filter", filter));
                     result = new BackendAdapter(new CommonParam()).Get<List<V_HIS_TREATMENT_1>>("api/HisTreatment/GetView1", ApiConsumers.MosConsumer, filter, null);
-                    if (result != null)
-                    {
-                        result = result.Where(o => o.XML130_RESULT == null || o.XML130_RESULT == 1).ToList();
-                    }
                 }
             }
             catch (Exception ex)
@@ -3049,6 +3500,13 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
             {
                 List<Task> lst = new List<Task>();
                 lst.Add(ProcessSyncTreatment(listTreatmentSync));
+                if (this.configSync.isXML3176 == true)
+                {
+                    isAutoSignXML3176 = true;
+                    showMessSusscess = false;
+                    isXML3176 = true;
+                    lst.Add(XML130());
+                }
                 Task.WaitAll(lst.ToArray());
             }
             catch (Exception ex)
@@ -3074,21 +3532,66 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
         {
             try
             {
-                if (listSelection == null || listSelection.Count == 0)
+                isXML130 = true;
+                isXML3176 = false;
+                await XML130();
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+        }
+
+        private async Task XML130()
+        {
+            try
+            {
+                if (btnAutoSyncClick == true && configSync.isXML3176 == true)
+                {
+                    listSelection = this.GetTreatment();
+                }
+                if ((listSelection == null || listSelection.Count == 0) && isAutoSignXML3176 == false)
                 {
                     XtraMessageBox.Show(Resources.ResourceMessageLang.BanChuaChonHoSoDeDongBo, Resources.ResourceMessageLang.ThongBao);
                     return;
                 }
                 var listTreatmentSynced = listSelection.Where(o => o.XML130_RESULT == 2).ToList();
-                if (listTreatmentSynced != null && listTreatmentSynced.Count > 0)
+                if (listTreatmentSynced != null && listTreatmentSynced.Count > 0 && showMessSusscess == true)
                 {
                     if (XtraMessageBox.Show(String.Format(Resources.ResourceMessageLang.CacHoSoDaDongBoThanhCongBanCoMuonDongBoLai, String.Join(", ", listTreatmentSynced.Select(o => o.TREATMENT_CODE).ToList())), Resources.ResourceMessageLang.ThongBao, MessageBoxButtons.YesNo) == DialogResult.No)
                         return;
                 }
-                WaitingManager.Show();
-                callSyncSuccess = false;
-                isSendCollinearXml = false;
-                await ProcessSyncTreatment(listSelection);
+
+                var listTreatmentxml3176 = listSelection.Where(o => o.XML130_RESULT == 1).ToList();
+                if (listTreatmentxml3176 != null && listTreatmentxml3176.Count > 0 && showMessSusscess == true && isAutoSignXML3176 == false)
+                {
+                    if (XtraMessageBox.Show(String.Format("Các hồ sơ {0} đã gửi thành công bạn có muốn gửi lại?", String.Join(", ", listTreatmentxml3176.Select(o => o.TREATMENT_CODE).ToList())), Resources.ResourceMessageLang.ThongBao, MessageBoxButtons.YesNo) == DialogResult.No)
+                        return;
+                }
+                //isAutoSignXML3176 = false;
+                //showMessSusscess = true;
+                if (chkSignFileCertUtil.Checked == true)
+                {
+                    if (string.IsNullOrEmpty(SerialNumber))
+                    {
+                        MessageBox.Show("Không có thông tin Usb Token ký số");
+                        return;
+                    }
+                    else
+                    {
+                        WaitingManager.Show();
+                        callSyncSuccess = false;
+                        isSendCollinearXml = false;
+                        await ProcessSyncTreatment(listSelection);
+                    }
+                }
+                else
+                {
+                    WaitingManager.Show();
+                    callSyncSuccess = false;
+                    isSendCollinearXml = false;
+                    await ProcessSyncTreatment(listSelection);
+                }
                 if (callSyncSuccess)
                 {
                     if (listMessageError != null && listMessageError.Count > 0)
@@ -3129,6 +3632,51 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
             }
         }
 
+        private void UpdateTHX(V_HIS_TREATMENT_12 treatment, List<THX_ADO> listAdoThx)
+        {
+            try
+            {
+                string maTinh = "";
+                string maHuyen = "";
+                string maXa = "";
+                List<string> array = treatment.TDL_PATIENT_ADDRESS.ToString().Split(',').ToList();
+                foreach (THX_ADO drHC in listAdoThx)
+                {
+                    foreach (string t in array)
+                    {
+                        if (t.ToUpper().Trim() == drHC.TEN_THANH_PHO.ToUpper().Trim())
+                        {
+                            foreach (string h in array.Where(o => o != t).ToList())
+                            {
+                                if (h.ToUpper().Trim() == drHC.TEN_QUAN_HUYEN.ToString().ToUpper().Trim())
+                                {
+                                    foreach (string x in array.Where(o => o != t && o != h).ToList())
+                                    {
+                                        if (x.ToUpper().Trim() == drHC.TEN_PHUONG_XA.ToString().ToUpper().Trim())
+                                        {
+                                            maXa = drHC.MA_PHUONG_XA.ToString();
+                                            maHuyen = drHC.MA_QUAN_HUYEN.ToString();
+                                            maTinh = drHC.MA_THANH_PHO.ToString();
+                                            goto exit;
+
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                exit:;
+                treatment.TDL_PATIENT_PROVINCE_CODE = maTinh;
+                treatment.TDL_PATIENT_DISTRICT_CODE = maHuyen;
+                treatment.TDL_PATIENT_COMMUNE_CODE = maXa;
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+        }
+
         private async void SendXml130Collinear()
         {
             try
@@ -3138,10 +3686,18 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                     XtraMessageBox.Show(Resources.ResourceMessageLang.BanChuaChonHoSoDeDongBo, Resources.ResourceMessageLang.ThongBao);
                     return;
                 }
+
+                isNotFileSign = false;
                 WaitingManager.Show();
                 callSyncSuccess = false;
                 isSendCollinearXml = true;
+                if (chkSignFileCertUtil.Checked == true && string.IsNullOrEmpty(SerialNumber))
+                {
+                    MessageBox.Show("Không có thông tin Usb Token ký số");
+                    return;
+                }
                 await ProcessSyncTreatment(listSelection);
+
                 if (callSyncSuccess)
                 {
                     if (listMessageError != null && listMessageError.Count > 0)
@@ -3174,7 +3730,6 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
             try
             {
                 listMessageError = new List<string>();
-                paramUpdateXml130 = new CommonParam();
                 string connect_infor = HisConfigCFG.QD_130_BYT__CONNECTION_INFO;
                 string username = null, password = null, address = null, typeXml = null;
                 string xml130Api = null, xmlGdykApi = null;
@@ -3399,6 +3954,8 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                         #endregion
                         foreach (var treatment in HisTreatments)
                         {
+
+                            paramUpdateXml130 = new CommonParam();
                             #region
                             bool sendXml12 = true;
                             InputADO ado = new InputADO();
@@ -3463,6 +4020,7 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                             }
                             else
                                 sendXml12 = false;
+                            sendXml12 = !string.IsNullOrEmpty(typeXml) ? typeXml.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).ToList().Contains("12") : false;
                             if (dicHivTreatment.ContainsKey(treatment.ID))
                             {
                                 ado.HivTreatment = dicHivTreatment[treatment.ID];
@@ -3475,7 +4033,6 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                             ado.TotalSericeData = BackendDataWorker.Get<V_HIS_SERVICE>();
                             ado.TotalEmployeeData = BackendDataWorker.Get<HIS_EMPLOYEE>();
                             ado.serverInfo = new ServerInfo() { Username = username, Password = password, Address = address, TypeXml = typeXml, Xml130Api = xml130Api, XmlGdykApi = xmlGdykApi };
-                            #endregion
                             //cap nhat thx
                             if (treatment != null && HIS.Desktop.Plugins.ExportXmlQD130.ADO.THX_ADO.Get_THX().FirstOrDefault(o => o.MA_PHUONG_XA == (treatment.TDL_PATIENT_COMMUNE_CODE ?? "")
                                 && o.MA_QUAN_HUYEN == (treatment.TDL_PATIENT_DISTRICT_CODE ?? "")
@@ -3488,91 +4045,198 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                             {
                                 if (!CheckIcdCode(ado, HIS.Desktop.Plugins.ExportXmlQD130.ADO.HisConfigCFG.IcdCodeExcludes)) continue;
                             }
+                            if (isXML130 == false)
+                            {
+                                ado.IS_3176 = true;
+                                Inventec.Common.Logging.LogSystem.Debug("IS_3176 = true");
+                            }
+                            #endregion
                             His.Bhyt.ExportXml.XML130.CreateXmlProcessor xmlProcessor = new His.Bhyt.ExportXml.XML130.CreateXmlProcessor(ado);
                             SyncResultADO syncResult = null;
                             SyncResultADO syncResult12 = null;
-                            if (sendXml12)
+                            MemoryStream resultSync = null;
+                            MemoryStream resultSync12 = null;
+                            MemoryStream resultSyncTT = null;
+                            string saveFilePathXml12 = "";
+                            string saveFilePathXml = "";
+                            string saveFilePathXmlTT = "";
+                            string errorMess = "";
+                            int count = 0;
+                            Inventec.Common.Logging.LogSystem.Debug("Dang xu ly gui  : " + treatment.TDL_PATIENT_NAME + " Ma dieu tri: " + treatment.TREATMENT_CODE);
+
+                            if (configSync != null && !this.configSync.dontSend)
                             {
-                                if ((isAutoSync && configSync != null && configSync.isCheckCollinearXml) || (isSendCollinearXml))
+
+                                if (sendXml12)
                                 {
-                                    Task task = Task.Run(async () => syncResult = await xmlProcessor.SyncDataCollinear());
-                                    Task taskXml12 = Task.Run(async () => syncResult12 = await xmlProcessor.SyncDataXml12());
-                                    Task.WaitAll(task, taskXml12);
-                                }
-                                else
-                                {
-                                    Task task = Task.Run(async () => syncResult = await xmlProcessor.SyncData());
-                                    Task taskXml12 = Task.Run(async () => syncResult12 = await xmlProcessor.SyncDataXml12());
-                                    Task.WaitAll(task, taskXml12);
-                                }
 
 
-                                Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData("syncResult__" + Inventec.Common.Logging.LogUtil.GetMemberName(() => syncResult), syncResult));
-                                Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData("syncResult12__" + Inventec.Common.Logging.LogUtil.GetMemberName(() => syncResult12), syncResult12));
+                                    string fullFileName = xmlProcessor.GetFileName();
 
-
-                                if (syncResult != null && syncResult12 != null)
-                                {
-                                    string errorCode = syncResult.ErrorCode;
-                                    if (errorCode == "01" || errorCode == "02" || errorCode == "03")
+                                    if ((isAutoSync && configSync != null && configSync.isCheckCollinearXml) || (isSendCollinearXml))
                                     {
-                                        XtraMessageBox.Show(String.Format("{0} - {1}", errorCode, syncResult.Message), Resources.ResourceMessageLang.ThongBao);
-                                        autoSync.Stop();
-                                        isAutoSync = false;
-                                        return;
+                                        resultSyncTT = xmlProcessor.RunCollinearXml(ref errorMess);
+                                        Task task = null;
+                                        List<Task> lstTask = new List<Task>();
+                                        if (resultSyncTT != null)
+                                        {
+                                            saveFilePathXmlTT = String.Format("{0}/{1}{2}", this.configSync.folderPath, "XMLTT_", fullFileName);
+                                            FileStream file12 = new FileStream(saveFilePathXmlTT, FileMode.Create, FileAccess.Write);
+                                            resultSyncTT.WriteTo(file12);
+                                            file12.Close();
+                                            resultSyncTT.Close();
+                                            Inventec.Common.Logging.LogSystem.Debug("__Luu XMlTT vao client folder thanh cong. path: " + saveFilePathXmlTT);
+                                        }
+                                        if (isNotFileSign == false)
+                                        {
+                                            sendXMLSign(xmlProcessor, saveFilePathXml, ref syncResult);
+                                        }
+                                        else
+                                        {
+                                            task = Task.Run(async () => syncResult = await xmlProcessor.SyncDataCollinear());
+                                            lstTask.Add(task);
+                                        }
+                                        Task taskXml12 = Task.Run(async () => syncResult12 = await xmlProcessor.SyncDataXml12());
+                                        lstTask.Add(taskXml12);
+                                        resultSync12 = xmlProcessor.RunXml12(ref errorMess);
+                                        Task.WaitAll(lstTask.ToArray());
                                     }
                                     else
                                     {
-                                        callSyncSuccess = true;
-                                        if (!syncResult.Success)
+                                        resultSync = xmlProcessor.Run(ref errorMess);
+                                        Task task = null;
+                                        List<Task> lstTask = new List<Task>();
+                                        if (resultSync != null)
                                         {
-                                            listMessageError.Add(String.Format("{0}: {1} - {2}", treatment.TREATMENT_CODE, syncResult.ErrorCode, syncResult.Message));
+                                            saveFilePathXml = String.Format("{0}/{1}{2}", this.configSync.folderPath, "XML", fullFileName);
+                                            FileStream file12 = new FileStream(saveFilePathXml, FileMode.Create, FileAccess.Write);
+                                            resultSync.WriteTo(file12);
+                                            file12.Close();
+                                            resultSync.Close();
+                                            Inventec.Common.Logging.LogSystem.Debug("__Luu XMl vao client folder thanh cong. path: " + saveFilePathXml);
                                         }
-                                        if (!syncResult12.Success)
+                                        if (isNotFileSign == false)
                                         {
-                                            listMessageError.Add(String.Format("{0}: {1} - {2}", treatment.TREATMENT_CODE, syncResult12.ErrorCode, syncResult12.Message));
+                                            sendXMLSign(xmlProcessor, saveFilePathXml, ref syncResult);
                                         }
-                                        if (!((isAutoSync && configSync != null && configSync.isCheckCollinearXml) || isSendCollinearXml))
+                                        else
                                         {
-                                            List<string> xmlDescription = new List<string> { syncResult.Message, syncResult12.Message };
-                                            List<string> xmlCheckCode = new List<string> { syncResult.CheckCode, syncResult12.CheckCode };
-                                            HisTreatmentXmlResultSDO xmlResultSDO = new HisTreatmentXmlResultSDO();
-                                            xmlResultSDO.TreatmentId = treatment.ID;
-                                            xmlResultSDO.XmlResult = syncResult.Success && syncResult12.Success ? 2 : 1;
-                                            xmlResultSDO.Description = String.Join(". ", xmlDescription.Where(o => !String.IsNullOrEmpty(o)).Distinct());
-                                            xmlResultSDO.CheckCode = String.Join(";", xmlCheckCode.Where(o => !String.IsNullOrEmpty(o)).Distinct());
-                                            Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => xmlResultSDO), xmlResultSDO));
-                                            var rs = new Inventec.Common.Adapter.BackendAdapter(paramUpdateXml130).Post<bool>("api/HisTreatment/UpdateXml130Info", ApiConsumers.MosConsumer, xmlResultSDO, paramUpdateXml130);
+                                            task = Task.Run(async () => syncResult = await xmlProcessor.SyncData());
+                                            lstTask.Add(task);
+                                        }
+                                        Task taskXml12 = Task.Run(async () => syncResult12 = await xmlProcessor.SyncDataXml12());
+                                        lstTask.Add(taskXml12);
+                                        resultSync12 = xmlProcessor.RunXml12(ref errorMess);
+                                        Task.WaitAll(lstTask.ToArray());
+                                    }
+
+
+                                    Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData("syncResult__" + Inventec.Common.Logging.LogUtil.GetMemberName(() => syncResult), syncResult));
+                                    Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData("syncResult12__" + Inventec.Common.Logging.LogUtil.GetMemberName(() => syncResult12), syncResult12));
+
+
+
+                                    if (syncResult != null && syncResult12 != null)
+                                    {
+                                        string errorCode = syncResult.ErrorCode;
+                                        if (errorCode == "01" || errorCode == "02" || errorCode == "03")
+                                        {
+                                            XtraMessageBox.Show(String.Format("{0} - {1}", errorCode, syncResult.Message), Resources.ResourceMessageLang.ThongBao);
+                                            autoSync.Stop();
+                                            isAutoSync = false;
+                                            return;
+                                        }
+                                        else
+                                        {
+                                            callSyncSuccess = true;
+                                            if (!syncResult.Success)
+                                            {
+                                                listMessageError.Add(String.Format("{0}: {1} - {2}", treatment.TREATMENT_CODE, syncResult.ErrorCode, syncResult.Message));
+                                            }
+                                            if (!syncResult12.Success)
+                                            {
+                                                listMessageError.Add(String.Format("{0}: {1} - {2}", treatment.TREATMENT_CODE, syncResult12.ErrorCode, syncResult12.Message));
+                                            }
+                                            if (!((isAutoSync && configSync != null && configSync.isCheckCollinearXml) || isSendCollinearXml))
+                                            {
+
+                                                List<string> xmlDescription = new List<string> { syncResult.Message, syncResult12.Message };
+                                                List<string> xmlCheckCode = new List<string> { syncResult.CheckCode, syncResult12.CheckCode };
+                                                HisTreatmentXmlResultSDO xmlResultSDO = new HisTreatmentXmlResultSDO();
+                                                xmlResultSDO.TreatmentId = treatment.ID;
+                                                xmlResultSDO.XmlResult = syncResult.Success && syncResult12.Success ? 2 : 1;
+                                                xmlResultSDO.Description = String.Join(". ", xmlDescription.Where(o => !String.IsNullOrEmpty(o)).Distinct());
+                                                xmlResultSDO.CheckCode = String.Join(";", xmlCheckCode.Where(o => !String.IsNullOrEmpty(o)).Distinct());
+                                                Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => xmlResultSDO), xmlResultSDO));
+                                                var rs = new Inventec.Common.Adapter.BackendAdapter(paramUpdateXml130).Post<bool>("api/HisTreatment/UpdateXml130Info", ApiConsumers.MosConsumer, xmlResultSDO, paramUpdateXml130);
+                                                //luu file
+                                                if (configSync != null && !string.IsNullOrEmpty(configSync.folderPath))
+                                                {
+                                                    if (resultSync12 != null)
+                                                    {
+                                                        saveFilePathXml12 = String.Format("{0}/{1}{2}", this.configSync.folderPath, "XML12_", fullFileName);
+                                                        FileStream file12 = new FileStream(saveFilePathXml12, FileMode.Create, FileAccess.Write);
+                                                        resultSync12.WriteTo(file12);
+                                                        file12.Close();
+                                                        resultSync12.Close();
+                                                        Inventec.Common.Logging.LogSystem.Debug("__Luu XMl12 vao client folder thanh cong. path: " + saveFilePathXml12);
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 }
-                            }
-                            else
-                            {
-                                if ((isAutoSync && configSync != null && configSync.isCheckCollinearXml) || (isSendCollinearXml))
-                                    syncResult = await xmlProcessor.SyncDataCollinear();
                                 else
-                                    syncResult = await xmlProcessor.SyncData();
-                                Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData("syncResult__" + Inventec.Common.Logging.LogUtil.GetMemberName(() => syncResult), syncResult));
-                                if (syncResult != null)
                                 {
-                                    string errorCode = syncResult.ErrorCode;
-                                    if (errorCode == "01" || errorCode == "02" || errorCode == "03")
+                                    resultSync = treatment.HEIN_LOCK_TIME != null ? xmlProcessor.Run(ref errorMess) : xmlProcessor.RunCollinearXml(ref errorMess);
+
+                                    //luu file
+                                    if (resultSync != null)
                                     {
-                                        XtraMessageBox.Show(String.Format("{0} - {1}", errorCode, syncResult.Message), Resources.ResourceMessageLang.ThongBao);
-                                        autoSync.Stop();
-                                        isAutoSync = false;
-                                        return;
+                                        string fullFileName = xmlProcessor.GetFileName();
+                                        saveFilePathXml = String.Format("{0}/{1}{2}", this.configSync.folderPath, "XML", fullFileName);
+                                        FileStream file12 = new FileStream(saveFilePathXml, FileMode.Create, FileAccess.Write);
+                                        resultSync.WriteTo(file12);
+                                        file12.Close();
+                                        resultSync.Close();
+                                        Inventec.Common.Logging.LogSystem.Debug("__Luu XMl vao client folder thanh cong. path: " + saveFilePathXml);
+
+                                    }
+                                    if (isNotFileSign == false)
+                                    {
+                                        sendXMLSign(xmlProcessor, saveFilePathXml, ref syncResult);
                                     }
                                     else
                                     {
-                                        callSyncSuccess = true;
-                                        if (!syncResult.Success)
+                                        syncResult = treatment.HEIN_LOCK_TIME != null ? await xmlProcessor.SyncData() : await xmlProcessor.SyncDataCollinear();
+                                    }
+
+                                    //if ((isAutoSync && configSync != null && configSync.isCheckCollinearXml) || (isSendCollinearXml))
+                                    //    syncResult = await xmlProcessor.SyncDataCollinear();
+                                    //else
+                                    //    syncResult = await xmlProcessor.SyncData();
+                                    Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData("syncResult__" + Inventec.Common.Logging.LogUtil.GetMemberName(() => syncResult), syncResult));
+                                    if (syncResult != null)
+                                    {
+
+
+                                        string errorCode = syncResult.ErrorCode;
+                                        if (errorCode == "01" || errorCode == "02" || errorCode == "03")
                                         {
-                                            listMessageError.Add(String.Format("{0}: {1} - {2}", treatment.TREATMENT_CODE, syncResult.ErrorCode, syncResult.Message));
+                                            XtraMessageBox.Show(String.Format("{0} - {1}", errorCode, syncResult.Message), Resources.ResourceMessageLang.ThongBao);
+                                            autoSync.Stop();
+                                            isAutoSync = false;
+                                            return;
                                         }
-                                        if (!((isAutoSync && configSync != null && configSync.isCheckCollinearXml) || isSendCollinearXml))
+                                        else
                                         {
+                                            callSyncSuccess = true;
+                                            if (!syncResult.Success)
+                                            {
+                                                listMessageError.Add(String.Format("{0}: {1} - {2}", treatment.TREATMENT_CODE, syncResult.ErrorCode, syncResult.Message));
+                                            }
+
+
                                             HisTreatmentXmlResultSDO xmlResultSDO = new HisTreatmentXmlResultSDO();
                                             xmlResultSDO.TreatmentId = treatment.ID;
                                             xmlResultSDO.XmlResult = syncResult.Success ? 2 : 1;
@@ -3580,10 +4244,56 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                                             xmlResultSDO.CheckCode = syncResult.CheckCode;
                                             Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => xmlResultSDO), xmlResultSDO));
                                             var rs = new Inventec.Common.Adapter.BackendAdapter(paramUpdateXml130).Post<bool>("api/HisTreatment/UpdateXml130Info", ApiConsumers.MosConsumer, xmlResultSDO, paramUpdateXml130);
+                                            Inventec.Common.Logging.LogSystem.Debug("Update thanh cong  : " + rs + " du lieu: " + treatment.TDL_PATIENT_NAME + " Ma dieu tri: " + treatment.TREATMENT_CODE);
+
+
                                         }
                                     }
                                 }
                             }
+                            else
+                            {
+                                string errMessage = "";
+                                bool success = false;
+                                try
+                                {
+                                    resultSync = xmlProcessor.RunCollinearXml(ref errorMess);
+                                    if (string.IsNullOrEmpty(errMessage)) success = true;
+                                }
+                                catch (Exception error)
+                                {
+                                    success = false;
+                                    errorMess = error.Message;
+                                }
+                                if (resultSync != null)
+                                {
+                                    HisTreatmentXmlResultSDO xmlResultSDO = new HisTreatmentXmlResultSDO();
+                                    xmlResultSDO.TreatmentId = treatment.ID;
+                                    xmlResultSDO.XmlResult = success ? 2 : 1;
+                                    xmlResultSDO.Description = errMessage;
+                                    //xmlResultSDO.CheckCode = syncResult.CheckCode;
+                                    Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => xmlResultSDO), xmlResultSDO));
+                                    var rs = new Inventec.Common.Adapter.BackendAdapter(paramUpdateXml130).Post<bool>("api/HisTreatment/UpdateXml130Info", ApiConsumers.MosConsumer, xmlResultSDO, paramUpdateXml130);
+                                    //luu file
+                                    if (this.configSync != null && !string.IsNullOrEmpty(this.configSync.folderPath))
+                                    {
+                                        string fullFileName = xmlProcessor.GetFileName();
+                                        saveFilePathXml = String.Format("{0}/{1}{2}", this.configSync.folderPath, "XML", fullFileName);
+                                        FileStream file12 = new FileStream(saveFilePathXml, FileMode.Create, FileAccess.Write);
+                                        resultSync.WriteTo(file12);
+                                        file12.Close();
+                                        resultSync.Close();
+                                        success = true;
+                                        Inventec.Common.Logging.LogSystem.Debug("__Luu XMl vao client folder thanh cong. path: " + saveFilePathXml);
+                                        if (isNotFileSign == false)
+                                        {
+                                            sendXMLSign(xmlProcessor, saveFilePathXml, ref syncResult);
+                                        }
+                                    }
+                                }
+
+                            }
+                            count++;
                         }
                     }
                 }
@@ -3639,52 +4349,85 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
             }
             return result;
         }
-
-        private void UpdateTHX(V_HIS_TREATMENT_12 treatment, List<THX_ADO> listAdoThx)
+        private void sendXMLSign(His.Bhyt.ExportXml.XML130.CreateXmlProcessor xmlProcessor, string sourceFile, ref SyncResultADO syncResult)
         {
             try
             {
-                string maTinh = "";
-                string maHuyen = "";
-                string maXa = "";
-                List<string> array = treatment.TDL_PATIENT_ADDRESS.ToString().Split(',').ToList();
-                foreach (THX_ADO drHC in listAdoThx)
-                {
-                    foreach (string t in array)
-                    {
-                        if (t.ToUpper().Trim() == drHC.TEN_THANH_PHO.ToUpper().Trim())
-                        {
-                            foreach (string h in array.Where(o => o != t).ToList())
-                            {
-                                if (h.ToUpper().Trim() == drHC.TEN_QUAN_HUYEN.ToString().ToUpper().Trim())
-                                {
-                                    foreach (string x in array.Where(o => o != t && o != h).ToList())
-                                    {
-                                        if (x.ToUpper().Trim() == drHC.TEN_PHUONG_XA.ToString().ToUpper().Trim())
-                                        {
-                                            maXa = drHC.MA_PHUONG_XA.ToString();
-                                            maHuyen = drHC.MA_QUAN_HUYEN.ToString();
-                                            maTinh = drHC.MA_THANH_PHO.ToString();
-                                            goto exit;
 
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                // Lấy đường dẫn đến thư mục hiện tại của chương trình
+                string currentDirectory = Directory.GetCurrentDirectory();
+
+                // Tạo đường dẫn đến thư mục tạm trong thư mục hiện tại
+                string tempFolderPath = Path.Combine(currentDirectory, "Temp");
+
+                // Tạo thư mục tạm nếu chưa tồn tại
+                Directory.CreateDirectory(tempFolderPath);
+
+                string fullFileName = xmlProcessor.GetFileName();
+                // Tạo đường dẫn đến file tạm 
+                string tempFilePath = Path.Combine(tempFolderPath, fullFileName);
+                File.Create(tempFilePath).Close();
+
+                WcfSignDCO wcfSignDCO = new WcfSignDCO();
+                wcfSignDCO.SerialNumber = SerialNumber;
+                wcfSignDCO.OutputFile = tempFilePath;
+                wcfSignDCO.PIN = "";
+
+                wcfSignDCO.SourceFile = sourceFile;
+
+                string jsonData = JsonConvert.SerializeObject(wcfSignDCO);
+                SignProcessorClient signProcessorClient = new SignProcessorClient();
+                string pathAfterFileSign = sourceFile;
+                if (VerifyServiceSignProcessorIsRunning())
+                {
+                    var wcfSignResultDCO = signProcessorClient.SignXml130(jsonData);
+                    if (wcfSignResultDCO.Success)
+                    {
+                        pathAfterFileSign = wcfSignResultDCO.OutputFile;
                     }
                 }
-            exit: ;
-                treatment.TDL_PATIENT_PROVINCE_CODE = maTinh;
-                treatment.TDL_PATIENT_DISTRICT_CODE = maHuyen;
-                treatment.TDL_PATIENT_COMMUNE_CODE = maXa;
+
+                if (configSync != null && !this.configSync.dontSend)
+                {
+                    //gọi api đẩy cổng ...
+                    //...
+                    SyncResultADO syncResultADO = new SyncResultADO();
+                    Task task = Task.Run(async () => syncResultADO = await xmlProcessor.SendFileSign(pathAfterFileSign));
+                    task.Wait();
+                    syncResult = syncResultADO;
+                }
+                else
+                {
+                    if (this.configSync != null && !string.IsNullOrEmpty(this.configSync.folderPath))
+                    {
+                        if (wcfSignDCO.SourceFile.Trim() != pathAfterFileSign.Trim())
+                        {
+                            if (File.Exists(wcfSignDCO.SourceFile))
+                            {
+                                File.Delete(wcfSignDCO.SourceFile);
+                            }
+                        }
+                        File.Copy(pathAfterFileSign, wcfSignDCO.SourceFile);
+                    }
+                }
+
+                foreach (string file in Directory.GetFiles(tempFolderPath))
+                {
+                    File.Delete(file);
+                }
+                if (configSync != null && !this.configSync.dontSend && string.IsNullOrEmpty(this.configSync.folderPath))
+                {
+                    if (File.Exists(wcfSignDCO.SourceFile))
+                    {
+                        File.Delete(wcfSignDCO.SourceFile);
+                    }
+                }
             }
             catch (Exception ex)
             {
                 Inventec.Common.Logging.LogSystem.Error(ex);
             }
         }
-
         private void gridViewTreatment_PopupMenuShowing(object sender, PopupMenuShowingEventArgs e)
         {
             try
@@ -3812,6 +4555,7 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                         }
                         foreach (var treatment in HisTreatments)
                         {
+                            int count = 0;
                             InputADO ado = new InputADO();
                             ado.Treatment = treatment;
                             if (dicMedicalAssessment.ContainsKey(treatment.ID))
@@ -3820,7 +4564,8 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                             }
                             ado.TotalConfigData = NewConfig;
                             His.Bhyt.ExportXml.XML130.CreateXmlProcessor xmlProcessor = new His.Bhyt.ExportXml.XML130.CreateXmlProcessor(ado);
-
+                            SyncResultADO syncResult = null;
+                            MemoryStream resultSync = null;
                             string errorMess = "";
                             string fullFileName = "";
                             fullFileName = xmlProcessor.GetFileName();
@@ -3981,10 +4726,11 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                     e.DisplayText = "";
                     return;
                 }
+                this.searchFilter.listDTTT = new List<HIS_PATIENT_TYPE>();
                 foreach (MOS.EFMODEL.DataModels.HIS_PATIENT_TYPE rv in gridCheckMark.Selection)
                 {
                     if (sb.ToString().Length > 0) { sb.Append(", "); }
-
+                    this.searchFilter.listDTTT.Add(rv);
                     sb.Append(rv.PATIENT_TYPE_NAME.ToString());
                 }
                 e.DisplayText = sb.ToString();
@@ -4011,11 +4757,218 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                 }
                 if (this.savePathADO != null && !string.IsNullOrEmpty(this.savePathADO.pathCollinearXml))
                 {
+                    //if (string.IsNullOrEmpty(SerialNumber))
+                    //{
+                    //    MessageBox.Show("Không có thông tin Usb Token ký số");
+                    //    return;
+                    //}
                     WaitingManager.Show();
                     Inventec.Common.Logging.LogSystem.Info("btnExportCollinearXml_Click Begin");
                     success = this.GenerateXml(ref param, ref memoryStream, false, true, false, listSelection);
                     Inventec.Common.Logging.LogSystem.Info("btnExportCollinearXml_Click End");
                     WaitingManager.Hide();
+                    if (success && param.Messages.Count == 0)
+                    {
+                        MessageManager.Show(this.ParentForm, param, success);
+                    }
+                    else if (param.Messages.Count > 0)
+                    {
+                        MessageManager.Show(param, success);
+                    }
+
+                    this.gridControlTreatment.RefreshDataSource();
+                }
+                SessionManager.ProcessTokenLost(param);
+            }
+            catch (Exception ex)
+            {
+                WaitingManager.Hide();
+
+            }
+        }
+        #region luu tim kiem
+        private void cboStatus_Closed(object sender, DevExpress.XtraEditors.Controls.ClosedEventArgs e)
+        {
+            try
+            {
+                if (cboStatus.EditValue != null)
+                {
+                    this.searchFilter.prfileType = this.ListStatusAll.Where(s => s.id == Convert.ToInt64(cboStatus.EditValue)).FirstOrDefault();
+                }
+            }
+            catch (Exception ex)
+            {
+
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+        }
+
+
+        private void cboXml130Result_Closed(object sender, DevExpress.XtraEditors.Controls.ClosedEventArgs e)
+        {
+            try
+            {
+                if (cboXml130Result.EditValue != null)
+                {
+                    this.searchFilter.statusXml = this.ListXml130ResultAll.Where(s => s.id == Convert.ToInt64(cboXml130Result.EditValue)).FirstOrDefault();
+                }
+            }
+            catch (Exception ex)
+            {
+
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+        }
+        private void SaveSearchFilter()
+        {
+            try
+            {
+                string value = Newtonsoft.Json.JsonConvert.SerializeObject(this.searchFilter);
+                HIS.Desktop.Library.CacheClient.ControlStateRDO csAddOrUpdate = (this.currentControlStateRDO != null && this.currentControlStateRDO.Count > 0) ? this.currentControlStateRDO.Where(o => o.KEY == btnFind.Name && o.MODULE_LINK == moduleLink).FirstOrDefault() : null;
+                if (csAddOrUpdate != null)
+                {
+                    csAddOrUpdate.VALUE = value;
+                }
+                else
+                {
+                    csAddOrUpdate = new HIS.Desktop.Library.CacheClient.ControlStateRDO();
+                    csAddOrUpdate.KEY = btnFind.Name;
+                    csAddOrUpdate.VALUE = value;
+                    csAddOrUpdate.MODULE_LINK = moduleLink;
+                    if (this.currentControlStateRDO == null)
+                        this.currentControlStateRDO = new List<HIS.Desktop.Library.CacheClient.ControlStateRDO>();
+                    this.currentControlStateRDO.Add(csAddOrUpdate);
+                }
+                this.controlStateWorker.SetData(this.currentControlStateRDO);
+                WaitingManager.Hide();
+            }
+            catch (Exception ex)
+            {
+
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+        }
+        #endregion
+        private void SetDefaultSearchFilter()
+        {
+            try
+            {
+                if (this.searchFilter != null)
+                {
+                    if (this.searchFilter.listBranch != null)
+                    {
+                        GridCheckMarksSelection gridCheck = CboBranch.Properties.Tag as GridCheckMarksSelection;
+                        if (gridCheck != null)
+                        {
+                            gridCheck.ClearSelection(CboBranch.Properties.View);
+                            var rs = listBranchDataSource.Where(s => this.searchFilter.listBranch.Select(o => o.ID).Contains(s.ID)).Distinct().ToList();
+                            gridCheck.SelectAll(rs);
+
+                        }
+                    }
+                    if (this.searchFilter.listPatientType != null)
+                    {
+                        GridCheckMarksSelection gridCheck = cboPatientType.Properties.Tag as GridCheckMarksSelection;
+                        if (gridCheck != null)
+                        {
+                            gridCheck.ClearSelection(cboPatientType.Properties.View);
+                            var rs = listPatientTypeDataSource.Where(s => this.searchFilter.listPatientType.Select(o => o.ID).Contains(s.ID)).Distinct().ToList();
+                            gridCheck.SelectAll(rs);
+                        }
+                    }
+                    if (this.searchFilter.listPTreattmentType != null)
+                    {
+                        GridCheckMarksSelection gridCheck = cboFilterTreatmentType.Properties.Tag as GridCheckMarksSelection;
+                        if (gridCheck != null)
+                        {
+                            gridCheck.ClearSelection(cboFilterTreatmentType.Properties.View);
+                            var rs = listTreatmentTypeDataSource.Where(s => this.searchFilter.listPTreattmentType.Select(o => o.ID).Contains(s.ID)).Distinct().ToList();
+                            gridCheck.SelectAll(rs);
+                        }
+                    }
+                    if (this.searchFilter.listDTTT != null)
+                    {
+                        GridCheckMarksSelection gridCheck = cboPatientTypeTT.Properties.Tag as GridCheckMarksSelection;
+                        if (gridCheck != null)
+                        {
+                            gridCheck.ClearSelection(cboPatientTypeTT.Properties.View);
+                            var rs = listPatientTypeTTDataSource.Where(s => this.searchFilter.listDTTT.Select(o => o.ID).Contains(s.ID)).Distinct().ToList();
+                            gridCheck.SelectAll(rs);
+                        }
+                    }
+                    if (this.searchFilter.prfileType != null)
+                    {
+                        cboStatus.EditValue = this.searchFilter.prfileType.id;
+                    }
+                    if (this.searchFilter.statusXml != null)
+                    {
+                        cboXml130Result.EditValue = this.searchFilter.statusXml.id;
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+        }
+
+        private void btnExportGroupXml_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (!btnExportGroupXml.Enabled || listSelection == null || listSelection.Count == 0) return;
+                CommonParam param = new CommonParam();
+                MemoryStream memoryStream = new MemoryStream();
+                bool success = false;
+                bool xuatXml12 = true;
+
+                if (this.savePathADO == null || string.IsNullOrEmpty(this.savePathADO.pathXml))
+                {
+                    btnSavePath_Click(null, null);
+                }
+                if (this.savePathADO != null && !string.IsNullOrEmpty(this.savePathADO.pathXml))
+                {
+                    if (string.IsNullOrEmpty(this.savePathADO.pathXmlGDYK))
+                    {
+                        if (XtraMessageBox.Show("Chưa chọn thư mục lưu file chỉ tiêu dữ liệu giám định y khoa. Bạn có muốn chọn đường dẫn không?", Resources.ResourceMessageLang.ThongBao, MessageBoxButtons.YesNo) == DialogResult.Yes)
+                            btnSavePath_Click(null, null);
+                    }
+
+                    xuatXml12 = !string.IsNullOrEmpty(this.savePathADO.pathXmlGDYK);
+                    if (chkSignFileCertUtil.Checked == false)
+                    {
+                        WaitingManager.Show();
+                        isNotFileSign = true;
+                        success = this.GenerateXmlPlus(ref param, ref memoryStream, xuatXml12, listSelection);
+                        WaitingManager.Hide();
+                    }
+                    else
+                    {
+                        if (string.IsNullOrEmpty(SerialNumber))
+                        {
+                            if (XtraMessageBox.Show("Không có thông tin Usb Token ký số. Bạn có muốn tiếp tục xuất xml?", Resources.ResourceMessageLang.ThongBao, MessageBoxButtons.YesNo) == DialogResult.No)
+                            {
+                                return;
+                            }
+                            else
+                            {
+                                isNotFileSign = true;
+                                WaitingManager.Show();
+                                success = this.GenerateXmlPlus(ref param, ref memoryStream, xuatXml12, listSelection);
+                                WaitingManager.Hide();
+                            }
+                        }
+                        else
+                        {
+                            isNotFileSign = false;
+                            WaitingManager.Show();
+                            success = this.GenerateXmlPlus(ref param, ref memoryStream, xuatXml12, listSelection);
+                            WaitingManager.Hide();
+                        }
+                    }
+
                     if (success && param.Messages.Count == 0)
                     {
                         MessageManager.Show(this.ParentForm, param, success);
@@ -4035,70 +4988,241 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                 Inventec.Common.Logging.LogSystem.Error(ex);
             }
         }
-
-        private void btnCheckin_Click(object sender, EventArgs e)
+        public string AppFilePathSignService()
         {
             try
             {
-                if (listSelection == null || listSelection.Count == 0)
+                string pathFolderTemp = Path.Combine(Path.Combine(Path.Combine(Application.StartupPath, "Integrate"), "EMR.SignProcessor"), "EMR.SignProcessor.exe");
+                return pathFolderTemp;
+            }
+            catch (IOException exception)
+            {
+                Inventec.Common.Logging.LogSystem.Warn("Error create temp file: " + exception.Message);
+                return "";
+            }
+        }
+        private bool IsProcessOpen(string name)
+        {
+            foreach (Process clsProcess in Process.GetProcesses())
+            {
+                if (clsProcess.ProcessName == name || clsProcess.ProcessName == String.Format("{0}.exe", name) || clsProcess.ProcessName == String.Format("{0} (32 bit)", name) || clsProcess.ProcessName == String.Format("{0}.exe (32 bit)", name))
                 {
-                    XtraMessageBox.Show(Resources.ResourceMessageLang.BanChuaChonHoSoDeDongBo, Resources.ResourceMessageLang.ThongBao);
-                    return;
+                    return true;
                 }
+            }
 
-                CommonParam param = new CommonParam();
-                WaitingManager.Show();
-                callCheckinSuccess = false;
-                int skip = 0;
-                List<long> listTreatmentIds = listSelection.Select(o => o.ID).ToList();
-                while (listTreatmentIds.Count - skip > 0)
+            return false;
+        }
+        internal bool VerifyServiceSignProcessorIsRunning()
+        {
+            bool valid = false;
+            try
+            {
+                Inventec.Common.Logging.LogSystem.Debug("GetSerialNumber.1");
+                string exeSignPath = AppFilePathSignService();
+                if (File.Exists(exeSignPath))
                 {
-                    List<long> limit = listTreatmentIds.Skip(skip).Take(GlobalVariables.MAX_REQUEST_LENGTH_PARAM).ToList();
-                    skip = skip + GlobalVariables.MAX_REQUEST_LENGTH_PARAM;
-                    var rs = new Inventec.Common.Adapter.BackendAdapter(param).Post<List<V_HIS_TREATMENT_1>>("api/Histreatment/ExportXmlCheckIn", ApiConsumers.MosConsumer, limit, param);
-                    if (rs != null && rs.Count > 0)
+                    if (IsProcessOpen("EMR.SignProcessor"))
                     {
-                        if (rs.Exists(o => o.XML_CHECKIN_RESULT == 1))
+                        Inventec.Common.Logging.LogSystem.Debug("GetSerialNumber.2");
+                        valid = true;
+                    }
+                    else
+                    {
+                        Inventec.Common.Logging.LogSystem.Debug("GetSerialNumber.3");
+                        Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => exeSignPath), exeSignPath));
+                        ProcessStartInfo startInfo = new ProcessStartInfo();
+                        startInfo.FileName = exeSignPath;
+                        try
                         {
-                            callCheckinSuccess = true;
+                            Process.Start(startInfo);
+                            Inventec.Common.Logging.LogSystem.Debug("GetSerialNumber.4");
+                            Thread.Sleep(500);
+                            valid = true;
+                            Inventec.Common.Logging.LogSystem.Debug("GetSerialNumber.5");
                         }
-                        FillDataToGridTreatment();
+                        catch (Exception exx)
+                        {
+                            Inventec.Common.Logging.LogSystem.Warn(exx);
+                        }
                     }
                 }
-                WaitingManager.Hide();
-
-                MessageManager.Show(this.ParentForm, param, callCheckinSuccess);
-                SessionManager.ProcessTokenLost(param);
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+            return valid;
+        }
+        private void chkSignFileCertUtil_CheckedChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                CreateThread();
             }
             catch (Exception ex)
             {
                 Inventec.Common.Logging.LogSystem.Error(ex);
             }
-
         }
-
-        private void cboCheckinResult_CustomDisplayText(object sender, DevExpress.XtraEditors.Controls.CustomDisplayTextEventArgs e)
+        bool chooseChungThu = true;
+        private void isChkSignFileCertUtil()
         {
             try
             {
-                StringBuilder sb = new StringBuilder();
-                GridCheckMarksSelection gridCheckMark = sender is GridLookUpEdit ? (sender as GridLookUpEdit).Properties.Tag as GridCheckMarksSelection : (sender as DevExpress.XtraEditors.Repository.RepositoryItemGridLookUpEdit).Tag as GridCheckMarksSelection;
-                if (gridCheckMark == null || gridCheckMark.Selection == null || gridCheckMark.Selection.Count == 0)
+                if (chkSignFileCertUtil.Checked == true)
                 {
-                    e.DisplayText = "";
-                    return;
-                }
-                foreach (FilterCheckinTypeADO rv in gridCheckMark.Selection)
-                {
-                    if (sb.ToString().Length > 0) { sb.Append(", "); }
+                    if (VerifyServiceSignProcessorIsRunning())
+                    {
+                        if (chooseChungThu && string.IsNullOrEmpty(SerialNumber))
+                        {
+                            WcfSignDCO wcfSignDCO = new WcfSignDCO();
+                            wcfSignDCO.HwndParent = this.ParentForm.Handle;
+                            string jsonData = JsonConvert.SerializeObject(wcfSignDCO);
+                            SignProcessorClient signProcessorClient = new SignProcessorClient();
+                            var wcfSignResultDCO = signProcessorClient.GetSerialNumber(jsonData);  //EDIT
+                            if (wcfSignResultDCO != null)
+                            {
+                                SerialNumber = wcfSignResultDCO.OutputFile;
+                            }
+                            chooseChungThu = false;
+                        }
+                    }
 
-                    sb.Append(rv.Name.ToString());
+                    if (!string.IsNullOrEmpty(SerialNumber))
+                    {
+                        HIS.Desktop.Library.CacheClient.ControlStateRDO csAddOrUpdate = (this.currentControlStateRDO != null && this.currentControlStateRDO.Count > 0) ? this.currentControlStateRDO.Where(o => o.KEY == chkSignFileCertUtil.Name && o.MODULE_LINK == this.currentModule.ModuleLink).FirstOrDefault() : null;
+                        Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => csAddOrUpdate), csAddOrUpdate));
+                        if (csAddOrUpdate != null)
+                        {
+                            csAddOrUpdate.VALUE = SerialNumber;
+                        }
+                        else
+                        {
+                            csAddOrUpdate = new HIS.Desktop.Library.CacheClient.ControlStateRDO();
+                            csAddOrUpdate.KEY = chkSignFileCertUtil.Name;
+                            csAddOrUpdate.VALUE = SerialNumber;
+                            csAddOrUpdate.MODULE_LINK = this.currentModule.ModuleLink;
+                            if (this.currentControlStateRDO == null)
+                                this.currentControlStateRDO = new List<HIS.Desktop.Library.CacheClient.ControlStateRDO>();
+                            this.currentControlStateRDO.Add(csAddOrUpdate);
+                        }
+                        this.controlStateWorker.SetData(this.currentControlStateRDO);
+                    }
+                    //else
+                    //{
+                    //    chkSignFileCertUtil.Checked = false;
+                    //    XtraMessageBox.Show("Không lấy được chứng thư hoặc chứng thư không hợp lệ", Resources.ResourceMessageLang.ThongBao);
+                    //}
                 }
-                e.DisplayText = sb.ToString();
+                else
+                {
+                    HIS.Desktop.Library.CacheClient.ControlStateRDO csAddOrUpdate = (this.currentControlStateRDO != null && this.currentControlStateRDO.Count > 0) ? this.currentControlStateRDO.Where(o => o.KEY == chkSignFileCertUtil.Name && o.MODULE_LINK == this.currentModule.ModuleLink).FirstOrDefault() : null;
+                    Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => csAddOrUpdate), csAddOrUpdate));
+                    if (csAddOrUpdate != null)
+                    {
+                        csAddOrUpdate.VALUE = "";
+                    }
+                    this.currentControlStateRDO.Add(csAddOrUpdate);
+                    this.controlStateWorker.SetData(this.currentControlStateRDO);
+                    chooseChungThu = true;
+                    SerialNumber = "";
+                }
             }
             catch (Exception ex)
             {
-                Inventec.Common.Logging.LogSystem.Warn(ex);
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+        }
+        System.Windows.Forms.Timer timerCert = new System.Windows.Forms.Timer();
+        private void CreateThread()
+        {
+
+            try
+            {
+                timerCert.Stop();
+                timerCert.Interval = 100;
+                timerCert.Tick += timerCert_Tick;
+                timerCert.Start();
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+        }
+
+        void timerCert_Tick(object sender, EventArgs e)
+        {
+            timerCert.Stop();
+            isChkSignFileCertUtil();
+        }
+
+        private async void btnXML3176_Click(object sender, EventArgs e)
+        {
+
+            try
+            {
+                btnExportXML3176 = true;
+                if (!btnXML3176.Enabled || listSelection == null || listSelection.Count == 0) return;
+                CommonParam param = new CommonParam();
+                MemoryStream memoryStream = new MemoryStream();
+                bool success = false;
+                bool xuatXml12 = true;
+
+                if (this.savePathADO == null || string.IsNullOrEmpty(this.savePathADO.pathXml))
+                {
+                    btnSavePath_Click(null, null);
+                }
+                if (this.savePathADO != null && !string.IsNullOrEmpty(this.savePathADO.pathXml))
+                {
+                    if (string.IsNullOrEmpty(this.savePathADO.pathXmlGDYK))
+                    {
+                        if (XtraMessageBox.Show("Chưa chọn thư mục lưu file chỉ tiêu dữ liệu giám định y khoa. Bạn có muốn chọn đường dẫn không?", Resources.ResourceMessageLang.ThongBao, MessageBoxButtons.YesNo) == DialogResult.Yes)
+                            btnSavePath_Click(null, null);
+                    }
+                    xuatXml12 = !string.IsNullOrEmpty(this.savePathADO.pathXmlGDYK);
+
+                    WaitingManager.Show();
+                    Inventec.Common.Logging.LogSystem.Info("btnXML3176_Click Begin");
+                    success = this.GenerateXml(ref param, ref memoryStream, false, false, xuatXml12, listSelection);
+                    btnExportXML3176 = false;
+                    Inventec.Common.Logging.LogSystem.Info("btnXML3176_Click End");
+                    WaitingManager.Hide();
+                    if (success && param.Messages.Count == 0)
+                    {
+                        MessageManager.Show(this.ParentForm, param, success);
+                    }
+                    else if (param.Messages.Count > 0)
+                    {
+                        MessageManager.Show(param, success);
+                    }
+
+                    this.gridControlTreatment.RefreshDataSource();
+                }
+                SessionManager.ProcessTokenLost(param);
+            }
+            catch (Exception ex)
+            {
+                WaitingManager.Hide();
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+        }
+
+        private async void btnXML3176_Send(object sender, EventArgs e)
+        {
+            try
+            {
+                btnAutoSyncClick = false;
+                isXML130 = false;
+                showMessSusscess = false;
+                isXML3176 = true;
+                isAutoSignXML3176 = false;
+                showMessSusscess = true;
+                await XML130();
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
             }
         }
     }
