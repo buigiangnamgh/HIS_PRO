@@ -2359,22 +2359,8 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                     if (this.isTimeServer) treatmentFinishInitADO.Treatment.OUT_TIME = loadParam().Now;
                     this.ucTreatmentFinish = (UserControl)treatmentFinishProcessor.Run(treatmentFinishInitADO,this.currentTreatmentExt);
                     LoadUCToPanelExecuteExt(this.ucTreatmentFinish, chkTreatmentFinish);
-
-                    if (treatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNOITRU
-                    || treatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNGOAITRU
-                    || treatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTBANNGAY)
-                    {
-                        lblCaptionPathologicalProcess.AppearanceItemCaption.ForeColor = Color.Maroon;
-                        lblCaptionDiagnostic.AppearanceItemCaption.ForeColor = Color.Maroon;
-                        lblCaptionConclude.AppearanceItemCaption.ForeColor = Color.Maroon;
-                        ValidateForm();
-                    }
-                    else
-                    {
-                        lblCaptionPathologicalProcess.AppearanceItemCaption.ForeColor = Color.Black;
-                        lblCaptionDiagnostic.AppearanceItemCaption.ForeColor = Color.Black;
-                        lblCaptionConclude.AppearanceItemCaption.ForeColor = Color.Black;
-                    }
+                    //
+                    validTreatmentMethod();
 
                     if (this.requiredControl != null && this.requiredControl == 1)
                     {
@@ -2385,6 +2371,32 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                 else
                 {
                     LoadUCToPanelExecuteExt(null, chkTreatmentFinish);
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+
+        private void validTreatmentMethod()
+        {
+            try
+            {
+                if (treatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNOITRU
+                   || treatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNGOAITRU
+                   || treatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTBANNGAY)
+                {
+                    lblCaptionPathologicalProcess.AppearanceItemCaption.ForeColor = Color.Maroon;
+                    lblCaptionDiagnostic.AppearanceItemCaption.ForeColor = Color.Maroon;
+                    lblCaptionConclude.AppearanceItemCaption.ForeColor = Color.Maroon;
+                    ValidateForm();
+                }
+                else
+                {
+                    lblCaptionPathologicalProcess.AppearanceItemCaption.ForeColor = Color.Black;
+                    lblCaptionDiagnostic.AppearanceItemCaption.ForeColor = Color.Black;
+                    lblCaptionConclude.AppearanceItemCaption.ForeColor = Color.Black;
                 }
             }
             catch (Exception ex)
@@ -3688,7 +3700,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                 {
                     return;
                 }
-
+                validTreatmentMethod();
                 this.onClickSaveFormAsyncForOtherButtonClick();
 
                 Inventec.Common.Logging.LogSystem.Debug("ExamServiceReqExecute.btnAssignPre_Click.2");

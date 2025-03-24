@@ -732,7 +732,6 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                 if (result != null)
                 {
                     listTreatment1 = (List<V_HIS_TREATMENT_1>)result.Data;
-                    listTreatment1 = listTreatment1.Where(o => o.XML130_RESULT != 2).ToList();
                     rowCount = (listTreatment1 == null ? 0 : listTreatment1.Count);
                     dataTotal = (result.Param == null ? 0 : result.Param.Count ?? 0);
                 }
@@ -3484,6 +3483,7 @@ namespace HIS.Desktop.Plugins.ExportXmlQD130
                     filter.HAS_XML130_RESULT = false;
                     LogSystem.Debug("Treatment Filter: " + LogUtil.TraceData("Filter", filter));
                     result = new BackendAdapter(new CommonParam()).Get<List<V_HIS_TREATMENT_1>>("api/HisTreatment/GetView1", ApiConsumers.MosConsumer, filter, null);
+                    result = result.Where(o => o.XML130_RESULT != 2).ToList();
                 }
             }
             catch (Exception ex)
