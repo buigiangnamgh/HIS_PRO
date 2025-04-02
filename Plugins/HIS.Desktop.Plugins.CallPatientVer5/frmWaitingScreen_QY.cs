@@ -26,6 +26,7 @@ using System.IO;
 using System.Linq;
 using System.Resources;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace HIS.Desktop.Plugins.CallPatientVer5
@@ -49,9 +50,6 @@ namespace HIS.Desktop.Plugins.CallPatientVer5
         bool _IsNotInDebt = false;
         internal long roomId = 0;
         Inventec.Desktop.Common.Modules.Module _module;
-        int xpos = 0;
-        int ypos = 0;
-
 
         public frmWaitingScreen_QY9(MOS.EFMODEL.DataModels.HIS_SERVICE_REQ HisServiceReq, List<MOS.EFMODEL.DataModels.HIS_SERVICE_REQ_STT> ServiceReqStts, bool IsNotInDebt, Inventec.Desktop.Common.Modules.Module module)
             : base(module)
@@ -105,10 +103,12 @@ namespace HIS.Desktop.Plugins.CallPatientVer5
                 where sr1.parent_id=sr.id
                 and  sr1.is_no_execute is null and sr1.is_delete=0 and sr1.service_req_type_id in (2,3,5,8,9,13) and sr1.VIR_INTRUCTION_MONTH=ROUND({0},-8)
                 ) sr1 on 1=1
-                where sr.is_no_execute is null and sr.is_delete=0 and sr.service_req_type_id = 1 and sr.VIR_INTRUCTION_MONTH=ROUND({0},-8) and sr.finish_time>0 
+                where sr.is_no_execute is null and sr.is_delete=0 and sr.service_req_type_id = 1 and sr.VIR_INTRUCTION_MONTH between ROUND({0},-8) and  {0} and sr.finish_time>0 
                 and ss.patient_type_id in (1,42) and sr.intruction_date+1000000>sr.finish_time/*";
                 sql = string.Format(sql, timeLong);
                 dic.Add("SQL", sql);
+                dic.Add("TIME_FROM", Inventec.Common.DateTime.Get.StartMonth(DateTime.Now.AddMonths(-1)));
+                dic.Add("TIME_TO", Inventec.Common.DateTime.Get.EndMonth(DateTime.Now.AddMonths(-1)));
                 createRpSDO.Filter = dic;
                 MRS.SDO.ReportResultSDO result = new MRS.SDO.ReportResultSDO();
                 CommonParam param = new CommonParam();
@@ -127,10 +127,16 @@ namespace HIS.Desktop.Plugins.CallPatientVer5
                 mess = mess + " - KHÁM + XN: " + jsonString["AVG_KHAM_XN"];
                 mess = mess + " - KHÁM + XN + CĐHA: " + jsonString["AVG_KHAM_XN_CDHA"];
                 mess = mess +  " - KHÁM + KHÁC: " + jsonString["AVG_KHAM_KHAC"];
-                mess = mess + " BỆNH VIỆN ĐÃ TRIỂN KHAI KHÁM DỊCH VỤ THEO YÊU CẦU, KHÁM TỪ 6H - 18H KHÁM CẢ THỨ 7 VÀ CHỦ NHẬT";
+                mess = mess + " - BỆNH VIỆN ĐÃ TRIỂN KHAI KHÁM DỊCH VỤ THEO YÊU CẦU, KHÁM TỪ 6H - 18H KHÁM CẢ THỨ 7 VÀ CHỦ NHẬT";
+                mess = mess + " - TỶ LỆ TRẢ KẾT QUẢ KHÁM BỆNH ĐÚNG HẸN 100%";
                 lblThongBao.Text = mess;
-                xpos = lblThongBao.Location.X;
-                ypos = lblThongBao.Location.Y;
+                float fontSize = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<float>(AppConfigKeys.FONT_SIZE__MESSAGE);
+                if (fontSize <= 0)
+                {
+                    fontSize = 15;
+                }
+                lblThongBao.Font = new System.Drawing.Font(new FontFamily("Arial"), fontSize, FontStyle.Bold);
+                timer2.Interval = 20;
                 timer2.Start();
             }
             catch (Exception ex)
@@ -154,7 +160,6 @@ namespace HIS.Desktop.Plugins.CallPatientVer5
                 GetFilePath();
                 //Start all timer
                 StartAllTimer();
-                lblSrollText.Text = "";
                 //Set color Form
                 setFromConfigToControl();
                 RegisterTimer(ModuleLink, "timerAutoLoadDataPatient", WaitingScreenCFG.TIMER_FOR_AUTO_LOAD_WAITING_SCREENS * 1000, StartTheadWaitingPatientToCall);
@@ -296,14 +301,6 @@ namespace HIS.Desktop.Plugins.CallPatientVer5
         {
             try
             {
-                if (countTimer == 1 || countTimer == 3 || countTimer == 5 || countTimer == 7 || countTimer == 9)
-                {
-                    lblSrollText.ForeColor = System.Drawing.Color.FromArgb(40, 255, 40);
-                }
-                if (countTimer == 10 || countTimer == 2 || countTimer == 4 || countTimer == 6 || countTimer == 8)
-                {
-                    lblSrollText.ForeColor = Color.White;
-                }
 
                 if (countTimer > 10)
                 {
@@ -313,7 +310,7 @@ namespace HIS.Desktop.Plugins.CallPatientVer5
                     List<int> organizationColorCodes = WaitingScreenCFG.ORGANIZATION_FORCE_COLOR_CODES;
                     if (organizationColorCodes != null && organizationColorCodes.Count == 3)
                     {
-                        lblSrollText.ForeColor = System.Drawing.Color.FromArgb(organizationColorCodes[0], organizationColorCodes[1], organizationColorCodes[2]);
+                        //lblSrollText.ForeColor = System.Drawing.Color.FromArgb(organizationColorCodes[0], organizationColorCodes[1], organizationColorCodes[2]);
                     }
                     countTimer = 0;
                 }
@@ -395,7 +392,7 @@ namespace HIS.Desktop.Plugins.CallPatientVer5
                     scrll = 0;
                 }
                 string str = strString.Substring(scrll, lengthStr - 150);
-                lblSrollText.Text = str;
+                //lblSrollText.Text = str;
             }
             catch (Exception ex)
             {
@@ -476,7 +473,6 @@ namespace HIS.Desktop.Plugins.CallPatientVer5
                     layoutControlGroup1.AppearanceGroup.BackColor = System.Drawing.Color.FromArgb(parentBackColorCodes[0], parentBackColorCodes[1], parentBackColorCodes[2]);
                     layoutControlGroup2.AppearanceGroup.BackColor = System.Drawing.Color.FromArgb(parentBackColorCodes[0], parentBackColorCodes[1], parentBackColorCodes[2]);
                     layoutControlGroup3.AppearanceGroup.BackColor = System.Drawing.Color.FromArgb(parentBackColorCodes[0], parentBackColorCodes[1], parentBackColorCodes[2]);
-                    layoutControlGroup4.AppearanceGroup.BackColor = System.Drawing.Color.FromArgb(parentBackColorCodes[0], parentBackColorCodes[1], parentBackColorCodes[2]);
                     layoutControlGroup5.AppearanceGroup.BackColor = System.Drawing.Color.FromArgb(parentBackColorCodes[0], parentBackColorCodes[1], parentBackColorCodes[2]);
                     layoutControlGroup6.AppearanceGroup.BackColor = System.Drawing.Color.FromArgb(parentBackColorCodes[0], parentBackColorCodes[1], parentBackColorCodes[2]);
                     Root.AppearanceGroup.BackColor = System.Drawing.Color.FromArgb(parentBackColorCodes[0], parentBackColorCodes[1], parentBackColorCodes[2]);
@@ -512,7 +508,7 @@ namespace HIS.Desktop.Plugins.CallPatientVer5
                 List<int> organizationColorCodes = WaitingScreenCFG.ORGANIZATION_FORCE_COLOR_CODES;
                 if (organizationColorCodes != null && organizationColorCodes.Count == 3)
                 {
-                    lblSrollText.ForeColor = System.Drawing.Color.FromArgb(organizationColorCodes[0], organizationColorCodes[1], organizationColorCodes[2]);
+                    //lblSrollText.ForeColor = System.Drawing.Color.FromArgb(organizationColorCodes[0], organizationColorCodes[1], organizationColorCodes[2]);
                 }
                 // gridControlWaitngCls
                 // màu nền grid patients
@@ -795,7 +791,6 @@ namespace HIS.Desktop.Plugins.CallPatientVer5
 
                 ////Gan gia tri cho cac control editor co Text/Caption/ToolTip/NullText/NullValuePrompt/FindNullPrompt
                 this.layoutControl1.Text = Inventec.Common.Resource.Get.Value("frmWaitingScreen_QY9.layoutControl1.Text", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
-                this.layoutControl5.Text = Inventec.Common.Resource.Get.Value("frmWaitingScreen_QY9.layoutControl5.Text", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
                 this.layoutControl4.Text = Inventec.Common.Resource.Get.Value("frmWaitingScreen_QY9.layoutControl4.Text", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
                 this.lblDoctorName.Text = Inventec.Common.Resource.Get.Value("frmWaitingScreen_QY9.lblUserName.Text", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
                 //this.lblRoomName.Text = Inventec.Common.Resource.Get.Value("frmWaitingScreen_QY9.lblRoomName.Text", Resources.ResourceLanguageManager.LanguageResource, LanguageManager.GetCulture());
@@ -1426,6 +1421,7 @@ namespace HIS.Desktop.Plugins.CallPatientVer5
                 timerForScrollTextBottom.Enabled = false;
                 Timer.Enabled = false;
                 timer1.Enabled = false;
+                timer2.Enabled = false;
 
                 timerAutoLoadDataPatient.Stop();
                 timerForHightLightCallPatientLayout.Stop();
@@ -1433,6 +1429,7 @@ namespace HIS.Desktop.Plugins.CallPatientVer5
                 timerForScrollTextBottom.Stop();
                 Timer.Stop();
                 timer1.Stop();
+                timer2.Stop();
 
                 timerAutoLoadDataPatient.Dispose();
                 timerForHightLightCallPatientLayout.Dispose();
@@ -1440,6 +1437,7 @@ namespace HIS.Desktop.Plugins.CallPatientVer5
                 timerForScrollTextBottom.Dispose();
                 Timer.Dispose();
                 timer1.Dispose();
+                timer2.Dispose();
 
 
                 //StopTimer(ModuleLink, "timerForScrollListPatient");
@@ -1472,18 +1470,59 @@ namespace HIS.Desktop.Plugins.CallPatientVer5
 
         private void timer2_Tick(object sender, EventArgs e)
         {
-            if (xpos == -this.Width)
-            {
-                this.lblThongBao.Location = new System.Drawing.Point(this.Width, ypos);
-                xpos = this.Width;
-            }
-            else
-            {
-                this.lblThongBao.Location = new System.Drawing.Point(xpos, ypos);
-                xpos -= 1;
-            }
-
+            Timer2Thread();
         }
 
+        void Timer2Thread()
+        {
+            try
+            {
+                Task.Factory.StartNew(ExecuteTimer2UsingThread);
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+
+        void ExecuteTimer2UsingThread()
+        {
+            try
+            {
+                if (this.InvokeRequired)
+                {
+                    this.Invoke(new MethodInvoker(delegate { timer2Process(); }));
+                }
+                else
+                {
+                    timer2Process();
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+        private void timer2Process()
+        {
+            try
+            {
+                //Inventec.Common.Logging.LogSystem.Debug("timer2Process.1" + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => lblThongBao.Left), lblThongBao.Left) + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => lblThongBao.Width), lblThongBao.Width) + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => ClientRectangle.Left), ClientRectangle.Left));
+                if (lblThongBao.Left + lblThongBao.Width <= Convert.ToInt32(this.ClientRectangle.Left))
+                {
+                    lblThongBao.Left = this.ClientRectangle.Right;
+                }
+                else
+                {
+                    lblThongBao.Left -= 4;
+                }
+
+                Inventec.Common.Logging.LogSystem.Debug("timer2Process.2" + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => lblThongBao.Left), lblThongBao.Left) + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => ClientRectangle.Left), ClientRectangle.Left));
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
     }
 }
