@@ -674,7 +674,7 @@ namespace HIS.Desktop.Plugins.CallPatientV5
                     List<long> lstServiceReqSTTFilter = serviceReqStts.Select(o => o.ID).ToList();
                     hisServiceReqFilter.SERVICE_REQ_STT_IDs = lstServiceReqSTTFilter;
                 }
-                var result = new BackendAdapter(param).Get<List<HIS_SERVICE_REQ>>("api/HisServiceReq/Get", ApiConsumers.MosConsumer, hisServiceReqFilter, param);
+                var result = new BackendAdapter(param).Get<List<HIS_SERVICE_REQ>>("api/HisServiceReq/Get", ApiConsumers.MosConsumer, hisServiceReqFilter,5, param);
                 if (result != null && result.Count > 0)
                 {
                     //CallPatientDataUpdateDictionary.UpdateDictionaryPatient(room.ID, ConnvertListServiceReq1ToADO(result));

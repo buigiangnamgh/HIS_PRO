@@ -30,117 +30,286 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AutoMapper">
-      <HintPath>..\..\..\..\..\..\RELEASE\MOS\AutoMapper.dll</HintPath>
+    <Reference Include="Accessibility" />
+    <Reference Include="ACS.EFMODEL, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\ACS.EFMODEL.dll</HintPath>
     </Reference>
-    <Reference Include="AxInterop.WMPLib">
-      <HintPath>..\..\..\..\..\..\FRONTEND\HIS4\EXE\LIBRARIES\AxInterop.WMPLib.dll</HintPath>
+    <Reference Include="AutoMapper, Version=4.0.4.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\AutoMapper.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Data.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Images.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
     <Reference Include="DevExpress.Printing.v15.2.Core, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
     <Reference Include="DevExpress.Sparkline.v15.2.Core, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
     <Reference Include="DevExpress.Utils.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.XtraBars.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.XtraEditors.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
     <Reference Include="DevExpress.XtraGrid.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.XtraLayout.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraNavBar.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\DevExpress.XtraNavBar.v15.2.dll</HintPath>
+    </Reference>
     <Reference Include="DevExpress.XtraPrinting.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.XtraTreeList.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\DevExpress.XtraTreeList.v15.2.dll</HintPath>
+    </Reference>
+    <Reference Include="EMR.EFMODEL, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\EMR.EFMODEL.dll</HintPath>
+    </Reference>
+    <Reference Include="EMR.SDO, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\EMR.SDO.dll</HintPath>
+    </Reference>
+    <Reference Include="EMR.WCF.DCO">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\EMR.WCF.DCO.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Bhyt.Hssk">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\HIS.Bhyt.Hssk.dll</HintPath>
+    </Reference>
+    <Reference Include="His.Bhyt.InsuranceExpertise">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\His.Bhyt.InsuranceExpertise.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Common.Treatment">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\HIS.Common.Treatment.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.ADO">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\HIS.Desktop.ADO.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.ApiConsumer">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\HIS.Desktop.ApiConsumer.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.ApplicationFont">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\HIS.Desktop.ApplicationFont.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.Common">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\HIS.Desktop.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.Controls.Session">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\HIS.Desktop.Controls.Session.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.Library.CacheClient">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\HIS.Desktop.Library.CacheClient.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.LibraryMessage">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\HIS.Desktop.LibraryMessage.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.LocalStorage.BackendData">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\HIS.Desktop.LocalStorage.BackendData.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.LocalStorage.ConfigApplication">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\HIS.Desktop.LocalStorage.ConfigApplication.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.LocalStorage.ConfigSystem">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\HIS.Desktop.LocalStorage.ConfigSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.LocalStorage.HisConfig">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\HIS.Desktop.LocalStorage.HisConfig.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.LocalStorage.LocalData">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\HIS.Desktop.LocalStorage.LocalData.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.LocalStorage.Location">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\HIS.Desktop.LocalStorage.Location.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.ModuleExt">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\HIS.Desktop.ModuleExt.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.Plugins.Library.CheckHeinGOV">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\HIS.Desktop.Plugins.Library.CheckHeinGOV.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.Plugins.Library.CheckIcd">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\HIS.Desktop.Plugins.Library.CheckIcd.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.Plugins.Library.EmrGenerate">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\HIS.Desktop.Plugins.Library.EmrGenerate.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.Plugins.Library.FormMedicalRecord">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\HIS.Desktop.Plugins.Library.FormMedicalRecord.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.Plugins.Library.PrintOtherForm">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\HIS.Desktop.Plugins.Library.PrintOtherForm.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.Plugins.Library.PrintTestTotal">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\HIS.Desktop.Plugins.Library.PrintTestTotal.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.Plugins.Library.PrintTreatmentEndTypeExt">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\HIS.Desktop.Plugins.Library.PrintTreatmentEndTypeExt.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.Plugins.Library.PrintTreatmentFinish">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\HIS.Desktop.Plugins.Library.PrintTreatmentFinish.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.Plugins.Library.RegisterConfig">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\HIS.Desktop.Plugins.Library.RegisterConfig.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.Plugins.Library.TreatmentEndTypeExt">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\HIS.Desktop.Plugins.Library.TreatmentEndTypeExt.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.Print">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\HIS.Desktop.Print.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.Utility">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\HIS.Desktop.Utility.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.UC.Death">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\HIS.UC.Death.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.UC.DHST">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\HIS.UC.DHST.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.UC.Icd">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\HIS.UC.Icd.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.UC.SecondaryIcd">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\HIS.UC.SecondaryIcd.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.UC.SurgeryAppointment">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\HIS.UC.SurgeryAppointment.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.UC.UCCauseOfDeath">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\HIS.UC.UCCauseOfDeath.dll</HintPath>
+    </Reference>
     <Reference Include="IMSys.DbConfig.HIS_RS">
-      <HintPath>..\..\..\..\..\..\RELEASE\IMSys.DbConfig\IMSys.DbConfig.HIS_RS\IMSys.DbConfig.HIS_RS.dll</HintPath>
-    </Reference>
-    <Reference Include="Interop.WMPLib">
-      <HintPath>..\..\..\..\..\..\FRONTEND\HIS4\EXE\LIBRARIES\Interop.WMPLib.dll</HintPath>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="Inventec.Backend.EFMODEL">
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Backend\Inventec.Backend.EFMODEL\Inventec.Backend.EFMODEL.dll</HintPath>
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\IMSys.DbConfig.HIS_RS.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Common.Adapter">
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Common\Inventec.Common.Adapter\Inventec.Common.Adapter.dll</HintPath>
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\Inventec.Common.Adapter.dll</HintPath>
     </Reference>
-    <Reference Include="Inventec.Common.DateTime, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Common\Inventec.Common.DateTime\Inventec.Common.DateTime.dll</HintPath>
+    <Reference Include="Inventec.Common.BarcodeLib">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\Inventec.Common.BarcodeLib.dll</HintPath>
     </Reference>
-    <Reference Include="Inventec.Common.LocalStorage.SdaConfig, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Common\Inventec.Common.LocalStorage.SdaConfig\Inventec.Common.LocalStorage.SdaConfig.dll</HintPath>
+    <Reference Include="Inventec.Common.Controls.EditorLoader">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\Inventec.Common.Controls.EditorLoader.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.Controls.PopupLoader">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\Inventec.Common.Controls.PopupLoader.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.DateTime">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\Inventec.Common.DateTime.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.LocalStorage.SdaConfig">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\Inventec.Common.LocalStorage.SdaConfig.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Common.Logging">
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Common\Inventec.Common.Logging\Inventec.Common.Logging.dll</HintPath>
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\Inventec.Common.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.Mapper">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\Inventec.Common.Mapper.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.Number">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\Inventec.Common.Number.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.QrCodeBHYT ">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\Inventec.Common.QrCodeBHYT .dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Common.Resource">
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Common\Inventec.Common.Resource\Inventec.Common.Resource.dll</HintPath>
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\Inventec.Common.Resource.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.RichEditor">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\Inventec.Common.RichEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.SignFile">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\Inventec.Common.SignFile.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.SignLibrary">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\Inventec.Common.SignLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.String">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\Inventec.Common.String.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.ThreadCustom">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\Inventec.Common.ThreadCustom.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Common.TypeConvert">
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Common\Inventec.Common.TypeConvert\Inventec.Common.TypeConvert.dll</HintPath>
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\Inventec.Common.TypeConvert.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Common.WebApiClient">
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Common\Inventec.Common.WebApiClient\Inventec.Common.WebApiClient.dll</HintPath>
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\Inventec.Common.WebApiClient.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Core">
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Core\Inventec.Core.dll</HintPath>
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\Inventec.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Inventec.Desktop.Common.LanguageManager, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Desktop\Inventec.Desktop.Common.LanguageManager\Inventec.Desktop.Common.LanguageManager.dll</HintPath>
+    <Reference Include="Inventec.Desktop.Common.Controls">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\Inventec.Desktop.Common.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Desktop.Common.Controls.ValidationRule">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\Inventec.Desktop.Common.Controls.ValidationRule.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Desktop.Common.LanguageManager">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\Inventec.Desktop.Common.LanguageManager.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Desktop.Common.LibraryMessage">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\Inventec.Desktop.Common.LibraryMessage.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Desktop.Common.Message">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\Inventec.Desktop.Common.Message.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Desktop.Common.Modules">
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Desktop\Inventec.Desktop.Common.Module\Inventec.Desktop.Common.Modules.dll</HintPath>
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\Inventec.Desktop.Common.Modules.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Desktop.Core">
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Desktop\Inventec.Desktop.Core\Inventec.Desktop.Core.dll</HintPath>
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\Inventec.Desktop.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Desktop.CustomControl">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\Inventec.Desktop.CustomControl.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Speech">
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Speech\Inventec.Speech.dll</HintPath>
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\Inventec.Speech.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Token.ClientSystem">
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Token\Inventec.Token.ClientSystem\Inventec.Token.ClientSystem.dll</HintPath>
-    </Reference>
-    <Reference Include="Inventec.Token.Core">
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Token\Inventec.Token.Core\Inventec.Token.Core.dll</HintPath>
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\Inventec.Token.ClientSystem.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.UC.Login">
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.UC\Inventec.UC.Login\Inventec.UC.Login.dll</HintPath>
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\Inventec.UC.Login.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.UC.Paging">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\Inventec.UC.Paging.dll</HintPath>
     </Reference>
     <Reference Include="MOS.EFMODEL">
-      <HintPath>..\..\..\..\..\..\RELEASE\MOS\MOS.EFMODEL.dll</HintPath>
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\MOS.EFMODEL.dll</HintPath>
     </Reference>
     <Reference Include="MOS.Filter">
-      <HintPath>..\..\..\..\..\..\RELEASE\MOS\MOS.Filter.dll</HintPath>
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\MOS.Filter.dll</HintPath>
+    </Reference>
+    <Reference Include="MOS.LibraryHein.Bhyt">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\MOS.LibraryHein.Bhyt.dll</HintPath>
     </Reference>
     <Reference Include="MOS.SDO">
-      <HintPath>..\..\..\..\..\..\RELEASE\MOS\MOS.SDO.dll</HintPath>
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\MOS.SDO.dll</HintPath>
     </Reference>
-    <Reference Include="MOS.TDO">
-      <HintPath>..\..\..\..\..\..\RELEASE\MOS\MOS.TDO.dll</HintPath>
+    <Reference Include="MPS.ProcessorBase">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\MPS.ProcessorBase.dll</HintPath>
     </Reference>
     <Reference Include="MRS.SDO">
-      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\MRS.SDO.dll</HintPath>
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\MRS.SDO.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="SDA.EFMODEL, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\RELEASE\SDA\SDA.EFMODEL.dll</HintPath>
+    <Reference Include="SDA.EFMODEL">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\SDA.EFMODEL.dll</HintPath>
     </Reference>
-    <Reference Include="SDA.Filter, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\RELEASE\SDA\SDA.Filter.dll</HintPath>
+    <Reference Include="SDA.Filter">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\SDA.Filter.dll</HintPath>
     </Reference>
-    <Reference Include="SDA.SDO, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\RELEASE\SDA\SDA.SDO.dll</HintPath>
+    <Reference Include="SDA.SDO">
+      <HintPath>..\..\..\SVN\PROJECT\IMSYS\RELEASE\HIS\ReferencedAssemblies\SDA.SDO.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -188,7 +357,6 @@
     <EmbeddedResource Include="frmWaitingScreen_V5.resx">
       <DependentUpon>frmWaitingScreen_V5.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -219,10 +387,6 @@
       <Project>{9b4b505c-afa1-4974-8ac8-503f748bd5a2}</Project>
       <Name>HIS.Desktop.Controls.Session</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\HIS.Desktop.EventLog\HIS.Desktop.EventLog.csproj">
-      <Project>{306cbc95-d95a-48e1-941e-f3ecc0cbee34}</Project>
-      <Name>HIS.Desktop.EventLog</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\HIS.Desktop.LibraryMessage\HIS.Desktop.LibraryMessage.csproj">
       <Project>{48d9a44a-7120-4c9b-8923-b1af16b1992f}</Project>
       <Name>HIS.Desktop.LibraryMessage</Name>
@@ -243,7 +407,7 @@
       <Project>{d1e5461b-8a8e-46f7-9aee-5c1b327e5f2b}</Project>
       <Name>HIS.Desktop.LocalStorage.HisConfig</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\HIS.Desktop.LocalStorage.LocalData\HIS.Desktop.LocalStorage.LocalData.csproj">
+    <ProjectReference Include="..\..\..\SVN\PROJECT\IMSYS\FE\YTE\DESKTOP\HIS\HIS.Desktop.LocalStorage.LocalData\HIS.Desktop.LocalStorage.LocalData.csproj">
       <Project>{e036edf5-788c-4892-8d8f-6b1c16dcbd21}</Project>
       <Name>HIS.Desktop.LocalStorage.LocalData</Name>
     </ProjectReference>
