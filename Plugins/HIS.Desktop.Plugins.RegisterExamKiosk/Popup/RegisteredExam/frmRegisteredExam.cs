@@ -217,6 +217,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisteredExam
                 decimal patientPaid = 0;
                 decimal patientMissing = 0;
                 decimal balance = 0;
+                Pe_QR.Image = null; 
                 if (data.SereServs != null && data.SereServs.Count() > 0)
                 {
                     lblServiceName.Text = String.Join(", ", data.SereServs.Where(o => o.TDL_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__KH).Select(o => o.TDL_SERVICE_NAME));
@@ -259,34 +260,38 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisteredExam
                 if (data.ServiceReqs != null && data.ServiceReqs.Count() > 0)
                 {
                     var serviceReq_KH = data.ServiceReqs.FirstOrDefault(o => o.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__KH);
-                    if (serviceReq_KH != null && serviceReq_KH.TRANS_REQ_ID > 0)
+                    if (serviceReq_KH != null)
                     {
-                        MOS.Filter.HisTransReqFilter filter = new HisTransReqFilter();
-                        filter.ID = serviceReq_KH.TRANS_REQ_ID;
-                        var transReq = new BackendAdapter(new CommonParam()).Get<List<HIS_TRANS_REQ>>("api/HisTransReq/Get", ApiConsumer.ApiConsumers.MosConsumer, filter, new CommonParam());
-                        if (transReq != null && transReq.Count > 0)
+                        MOS.Filter.HisSereServBillFilter ssBillFilter = new HisSereServBillFilter();
+                        ssBillFilter.TDL_SERVICE_REQ_ID = serviceReq_KH.ID;
+                        var ssBills = new BackendAdapter(new CommonParam()).Get<List<HIS_SERE_SERV_BILL>>("api/HisSereServBill/Get", ApiConsumer.ApiConsumers.MosConsumer, ssBillFilter, new CommonParam());
+                        bool isPaid = false;
+                        if (ssBills != null && ssBills.Count > 0)
                         {
-                            var dataIMG = HIS.Desktop.Common.BankQrCode.QrCodeProcessor.CreateQrImage(transReq.FirstOrDefault(), lstConfig).FirstOrDefault();
-                            using (var ms = new MemoryStream((byte[])dataIMG.Value))
+                            var check = ssBills.Where(o => o.IS_CANCEL == null || o.IS_CANCEL == 0);
+                            if (check != null && check.Count() > 0)
+                                isPaid = true;
+                        }
+                        if (isPaid)
+                        {
+                            Pe_QR.Image = imageList1.Images[0];
+                        }
+                        else if (serviceReq_KH.TRANS_REQ_ID > 0)
+                        {
+                            MOS.Filter.HisTransReqFilter filter = new HisTransReqFilter();
+                            filter.ID = serviceReq_KH.TRANS_REQ_ID;
+                            var transReq = new BackendAdapter(new CommonParam()).Get<List<HIS_TRANS_REQ>>("api/HisTransReq/Get", ApiConsumer.ApiConsumers.MosConsumer, filter, new CommonParam());
+                            if (transReq != null && transReq.Count > 0)
                             {
-                                Pe_QR.Image = Image.FromStream(ms);
+                                var dataIMG = HIS.Desktop.Common.BankQrCode.QrCodeProcessor.CreateQrImage(transReq.FirstOrDefault(), lstConfig).FirstOrDefault();
+                                using (var ms = new MemoryStream((byte[])dataIMG.Value))
+                                {
+                                    Pe_QR.Image = Image.FromStream(ms);
+                                }
                             }
                         }
-                        else
-                        {
-                            Pe_QR.Image = null;
-                        }
-                    }
-                    else
-                    {
-                        Pe_QR.Image = null;
                     }
                 }
-                else
-                {
-                    Pe_QR.Image = null;
-                }
-
             }
             catch (Exception ex)
             {

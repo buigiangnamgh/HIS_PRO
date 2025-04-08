@@ -133,6 +133,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk
                 txtColumn_dv.Text = "4";
                 txtTitleSize_dv.Text = "10";
                 txtSizeItem_dv.Text = "120";
+                txtTime_Refresh.Text = "50";
             }
             catch (Exception ex)
             {
@@ -187,6 +188,10 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk
                         {
                             chkAutoOpen.Checked = item.VALUE == true.ToString();
                         }
+                        else if (item.KEY == txtTime_Refresh.Name)
+                        {
+                            txtTime_Refresh.Text = item.VALUE;
+                        }
                     }
                 }
             }
@@ -221,6 +226,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk
                 stAdo.Dv_Columns = !string.IsNullOrEmpty(txtColumn_dv.Text) ? Int64.Parse(txtColumn_dv.Text.Trim()) : 4;
                 stAdo.Dv_SizeItem = !string.IsNullOrEmpty(txtSizeItem_dv.Text) ? Int64.Parse(txtSizeItem_dv.Text.Trim()) : 120;
                 stAdo.Dv_SizeTitle = !string.IsNullOrEmpty(txtTitleSize_dv.Text) ? Int64.Parse(txtTitleSize_dv.Text.Trim()) : 10;
+                stAdo.Time_Refresh = !string.IsNullOrEmpty(txtTime_Refresh.Text) ? Int32.Parse(txtTime_Refresh.Text.Trim()) : 50;
 
                 frmWaitingScreen frm = new frmWaitingScreen(this.module, stAdo);
 
@@ -231,6 +237,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk
                 SetControlState(txtColumn_dv);
                 SetControlState(txtSizeItem_dv);
                 SetControlState(txtTitleSize_dv);
+                SetControlState(txtTime_Refresh);
 
                 SetControlState(chkAutoOpen);
 

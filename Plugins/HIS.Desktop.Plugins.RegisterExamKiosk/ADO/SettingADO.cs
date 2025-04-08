@@ -14,5 +14,6 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.ADO
         public long Dv_Columns { get; set; }
         public long Dv_SizeItem { get; set; }
         public long Dv_SizeTitle { get; set; }
+        public int Time_Refresh { get; set; }
     }
 }

@@ -209,7 +209,7 @@
             this.txtNumberInput.MaxLengthTexts = 200;
             this.txtNumberInput.Name = "txtNumberInput";
             this.txtNumberInput.Padding = new System.Windows.Forms.Padding(20, 18, 20, 18);
-            this.txtNumberInput.Size = new System.Drawing.Size(778, 104);
+            this.txtNumberInput.Size = new System.Drawing.Size(778, 78);
             this.txtNumberInput.TabIndex = 0;
             this.txtNumberInput.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(64)))), ((int)(((byte)(0)))));
             this.txtNumberInput.TextHintNull = "Nhập số tìm kiếm";

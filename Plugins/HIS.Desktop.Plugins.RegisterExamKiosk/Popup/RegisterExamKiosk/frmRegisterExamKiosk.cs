@@ -38,6 +38,7 @@ using HIS.Desktop.Plugins.RegisterExamKiosk.Config;
 using HIS.Desktop.Plugins.RegisterExamKiosk.Popup.InformationObject;
 using DevExpress.XtraEditors.Controls;
 using HIS.Desktop.Plugins.RegisterExamKiosk.ADO;
+using HIS.Desktop.LocalStorage.HisConfig;
 
 namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
 {
@@ -66,7 +67,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
         frmServiceRoom frmServiceRoom;
         List<V_HIS_SERVICE_PATY> listServicePatys;
         List<V_HIS_SERVICE> services;
-        List<V_HIS_SERVICE> vlistService;
+        List<ServiceADO> vlistService;
         long PatientTypeId;
         bool checkPrint;
         long treatmentCurrentID;
@@ -137,6 +138,9 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
             try
             {
                 Inventec.Common.Logging.LogSystem.Debug("hisCardPatientSdo__1_" + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => hisCardPatientSdo), hisCardPatientSdo));
+                toggleSwitch_ThanhToan.EditValue = true;
+                timer1.Start();
+                timer1.Interval = this.stADO.Time_Refresh * 1000;
                 LoadPatientype();
                 WaitingManager.Show();
                 LoadVisiblePrimaryPatientType();
@@ -351,7 +355,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
             return result;
         }
 
-        private void getService(V_HIS_EXECUTE_ROOM_1 data, HisCardSDO hisCard, ref List<V_HIS_SERVICE> listService, bool IsRegisterClick = false)
+        private void getService(V_HIS_EXECUTE_ROOM_1 data, HisCardSDO hisCard, ref List<ServiceADO> listService, bool IsRegisterClick = false)
         {
             try
             {
@@ -377,9 +381,30 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
                     roomServiceIds.Add(item.SERVICE_ID);
                 }
                 long patientTypeId;
+                patientTypeId = this.PatientTypeId;
+                var serviceIdByPatysNew = listServicePatys
+                       .Where(o => o.SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__KH
+                           && roomServiceIds != null && roomServiceIds.Contains(o.SERVICE_ID)
+                       ).Distinct().ToList();
+                List<ServiceADO> listServiceClone = new List<ServiceADO>();
+                foreach (var item in services)
+                {
+                    decimal price = 0;
+                    V_HIS_SERVICE_PATY sp = null;
+                    if (item.BILL_PATIENT_TYPE_ID.HasValue && item.BILL_PATIENT_TYPE_ID.Value > 0)
+                        sp = serviceIdByPatysNew.FirstOrDefault(o => o.SERVICE_ID == item.ID && o.PATIENT_TYPE_ID == item.BILL_PATIENT_TYPE_ID.Value); // nếu có đối tượng phụ thu mặc định thì lấy theo đt phụ thu
+                    else
+                        sp = serviceIdByPatysNew.FirstOrDefault(o => o.SERVICE_ID == item.ID);
+
+                    if (sp != null)
+                    {
+                        price = sp.PRICE;
+                    }
+                    listServiceClone.Add(new ServiceADO(item, price)); // review
+                }
                 //long patientTypeId = string.IsNullOrEmpty(hisCardPatientSdo.HeinCardNumber) ? GetId(HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>("MOS.HIS_PATIENT_TYPE.PATIENT_TYPE_CODE.HOSPITAL_FEE")) : GetId(HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>("MOS.HIS_PATIENT_TYPE.PATIENT_TYPE_CODE.BHYT"));
                 //if (string.IsNullOrEmpty(hisCardPatientSdo.HeinCardNumber))
-                patientTypeId = this.PatientTypeId;
+
 
                 if (patientTypeId != 0)
                 {
@@ -392,7 +417,10 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
                     var serviceIdByPatys = serviceByPatys.Select(o => o.SERVICE_ID).Distinct().ToList();
                     if (serviceIdByPatys != null && serviceIdByPatys.Count > 0)
                     {
-                        listService = services.Where(o => serviceIdByPatys != null && serviceIdByPatys.Contains(o.ID)).ToList();
+                        listService = listServiceClone.Where(o => serviceIdByPatys != null && serviceIdByPatys.Contains(o.ID)).ToList();
+
+
+
                         if (HisConfigCFG.PrimaryPatientType == 2 && IsRegisterClick && PrimaryTypeId > 0)
                         {
                             var serviceByPatysPrimaryPatientType = listServicePatys
@@ -405,13 +433,13 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
                             if (serviceIdByPatysPrimaryPatientType != null && serviceIdByPatysPrimaryPatientType.Count > 0)
                             {
                                 var dicGroup = serviceByPatys.GroupBy(o => o.SERVICE_ID);
-                                listService = new List<V_HIS_SERVICE>();
+                                listService = new List<ServiceADO>();
                                 foreach (var item in dicGroup)
                                 {
                                     var lstValue = dicGroup.FirstOrDefault(o => o.Key == item.Key);
                                     if (lstValue.Count() >= 2 && lstValue.Last().PRICE > lstValue.First().PRICE)
                                     {
-                                        listService.Add(services.FirstOrDefault(o => o.ID == item.Key));
+                                        listService.Add(listServiceClone.FirstOrDefault(o => o.ID == item.Key));
                                     }
                                 }
                             }
@@ -426,7 +454,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
                         ).Select(o => o.SERVICE_ID).Distinct().ToList();
                     if (serviceIdByPatys != null && serviceIdByPatys.Count > 0)
                     {
-                        listService = services.Where(o => serviceIdByPatys != null && serviceIdByPatys.Contains(o.ID)).ToList();
+                        listService = listServiceClone.Where(o => serviceIdByPatys != null && serviceIdByPatys.Contains(o.ID)).ToList();
                     }
                 }
 
@@ -455,7 +483,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
             try
             {
                 this.services = new List<V_HIS_SERVICE>();
-                this.services = BackendDataWorker.Get<MOS.EFMODEL.DataModels.V_HIS_SERVICE>();
+                this.services = BackendDataWorker.Get<MOS.EFMODEL.DataModels.V_HIS_SERVICE>().Where(o => o.SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__KH && o.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE).ToList();
             }
             catch (Exception ex)
             {
@@ -469,6 +497,8 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
             {
                 if (treatmentId > 0)
                 {
+                    var patientTypeCode = HisConfigs.Get<string>("HIS.HIS_PATIENT_TYPE.PATIENT_TYPE_CODE.BHYT");
+                    var patientType_BYHT = this.lstPatientType.Where(o => o.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE && o.PATIENT_TYPE_CODE == patientTypeCode).FirstOrDefault();
                     CommonParam param = new CommonParam();
                     HisServiceReqFilter filter = new HisServiceReqFilter();
                     ServiceReqPrint = new V_HIS_SERVICE_REQ();
@@ -478,7 +508,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
                     var listServiceReq = new BackendAdapter(param).Get<List<V_HIS_SERVICE_REQ>>("api/HisServiceReq/GetView", ApiConsumer.ApiConsumers.MosConsumer, filter, param);
                     if (listServiceReq != null && listServiceReq.Count > 0)
                     {
-                        this.ServiceReqPrint = listServiceReq.Where(o => o.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__KH).OrderBy(o => o.INTRUCTION_TIME).ThenBy(o => o.ID).FirstOrDefault();
+                        this.ServiceReqPrint = listServiceReq.Where(o => o.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__KH && o.TDL_PATIENT_TYPE_ID != patientType_BYHT.ID).OrderBy(o => o.INTRUCTION_TIME).ThenBy(o => o.ID).FirstOrDefault();
                     }
                 }
             }
@@ -604,38 +634,58 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
         {
             try
             {
+                Inventec.Common.Logging.LogSystem.Info("FillDataToQR");
                 var lstConfig = BackendDataWorker.Get<HIS_CONFIG>().Where(o => o.KEY.StartsWith("HIS.Desktop.Plugins.PaymentQrCode") && !string.IsNullOrEmpty(o.VALUE)).ToList();
+                labelControl_ServiceReqCode.Text = "";
+                pE_QR.Image = null;
+                lblSoTien.Text = "";
+                layoutControlItem_MaYLenh.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
                 if (this.patientForKioskSDO != null)
                 {
                     var treatmentPrint = getTreatmentID(patientForKioskSDO.ID);
-                    treatmentId = treatmentPrint.ID;    
+                    treatmentId = treatmentPrint.ID;
                 }
-              
+
                 getServiceReq(treatmentId);
-                if (ServiceReqPrint != null && ServiceReqPrint.ID > 0 && ServiceReqPrint.TRANS_REQ_ID > 0)
+                if (ServiceReqPrint != null && ServiceReqPrint.ID > 0)
                 {
-                    MOS.Filter.HisTransReqFilter filter = new HisTransReqFilter();
-                    filter.ID = ServiceReqPrint.TRANS_REQ_ID;
-                    var transReq = new BackendAdapter(new CommonParam()).Get<List<HIS_TRANS_REQ>>("api/HisTransReq/Get", ApiConsumer.ApiConsumers.MosConsumer, filter, new CommonParam());
-                    if (transReq != null && transReq.Count > 0)
+                    MOS.Filter.HisSereServBillFilter ssBillFilter = new HisSereServBillFilter();
+                    ssBillFilter.TDL_SERVICE_REQ_ID = ServiceReqPrint.ID;
+                    var ssBills = new BackendAdapter(new CommonParam()).Get<List<HIS_SERE_SERV_BILL>>("api/HisSereServBill/Get", ApiConsumer.ApiConsumers.MosConsumer, ssBillFilter, new CommonParam());
+                    bool isPaid = false;
+                    if (ssBills != null && ssBills.Count > 0)
                     {
-                        var dataIMG = HIS.Desktop.Common.BankQrCode.QrCodeProcessor.CreateQrImage(transReq.FirstOrDefault(), lstConfig).FirstOrDefault();
-                        using (var ms = new MemoryStream((byte[])dataIMG.Value))
+                        var check = ssBills.Where(o => o.IS_CANCEL == null || o.IS_CANCEL == 0);
+                        if (check != null && check.Count() > 0)
+                            isPaid = true;
+                    }
+                    if (isPaid)
+                    {
+                        pE_QR.Image = imageList1.Images[0];
+
+                    }
+                    else if (ServiceReqPrint.TRANS_REQ_ID > 0)
+                    {
+                        MOS.Filter.HisTransReqFilter filter = new HisTransReqFilter();
+                        filter.ID = ServiceReqPrint.TRANS_REQ_ID;
+                        var transReq = new BackendAdapter(new CommonParam()).Get<List<HIS_TRANS_REQ>>("api/HisTransReq/Get", ApiConsumer.ApiConsumers.MosConsumer, filter, new CommonParam());
+                        if (transReq != null && transReq.Count > 0)
                         {
-                            pE_QR.Image = Image.FromStream(ms);
+                            var dataIMG = HIS.Desktop.Common.BankQrCode.QrCodeProcessor.CreateQrImage(transReq.FirstOrDefault(), lstConfig).FirstOrDefault();
+                            using (var ms = new MemoryStream((byte[])dataIMG.Value))
+                            {
+                                pE_QR.Image = Image.FromStream(ms);
+                            }
+                            layoutControlItem_MaYLenh.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Always;
+                            labelControl_ServiceReqCode.Text = "MÃ Y LỆNH: " + ServiceReqPrint.SERVICE_REQ_CODE;
+                            lblSoTien.Text = String.Format("Số tiền: {0}", Inventec.Common.Number.Convert.NumberToString(transReq.FirstOrDefault().AMOUNT, ConfigApplications.NumberSeperator));
                         }
-                        lblSoTien.Text = String.Format("Số tiền: {0}", Inventec.Common.Number.Convert.NumberToString(transReq.FirstOrDefault().AMOUNT, ConfigApplications.NumberSeperator));
                     }
-                    else
+                    else if (isPaid && ServiceReqPrint.SERVICE_REQ_STT_ID != IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_STT.ID__HT)
                     {
-                        pE_QR.Image = null;
-                        lblSoTien.Text = "";
+                        layoutControlItem_MaYLenh.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Always;
+                        labelControl_ServiceReqCode.Text = "MÃ Y LỆNH: " + ServiceReqPrint.SERVICE_REQ_CODE;
                     }
-                }
-                else
-                {
-                    pE_QR.Image = null;
-                    lblSoTien.Text = "";
                 }
             }
             catch (Exception ex)
@@ -658,6 +708,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
                     lblCodeCardBhyt.Text = data.HeinCardNumber;
                     lblPlaceRegister.Text = data.HeinOrgName;
                     lblBorn.Text = Inventec.Common.DateTime.Convert.TimeNumberToDateString(data.Dob.ToString());
+                    txtPhone.Text = data.Phone;
                     if (this.patientForKioskSDO != null && this.patientForKioskSDO.Balance != null)
                     {
                         layoutControlItem35.Visibility = layoutControlItem36.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Always;
@@ -765,7 +816,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
                         listGroupItem = listGroupItem.OrderBy(o => o.NUM_ORDER).ToList();
                         foreach (var item in listGroupItem)
                         {
-                            var listSerrvice = new List<V_HIS_SERVICE>();
+                            var listSerrvice = new List<ServiceADO>();
                             getService(item, hisCardPatientSdo, ref listSerrvice);
                             string AMOUNT = "";
                             string TOTAL = "";
@@ -830,6 +881,20 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
         {
             try
             {
+                if (String.IsNullOrEmpty(txtPhone.Text))
+                {
+                    MessageBox.Show("Vui lòng nhập số điện thoại!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtPhone.Focus();
+                    txtPhone.SelectAll();
+                    return;
+                }
+                if (Inventec.Common.String.CheckString.IsOverMaxLengthUTF8(txtPhone.Text, 12))
+                {
+                    MessageBox.Show("Số điện thoại lớn hơn 12 kí tự", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtPhone.Focus();
+                    txtPhone.SelectAll();
+                    return;
+                }
                 ResetLoopCount();
                 if (frmServiceRoom != null)
                 {
@@ -851,9 +916,13 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
                 //Nếu có 1 dịch vụ khám thì hiển thị thông báo Bạn có chắc chắn muốn đăng ký khám
                 //Nếu có nhiều dịch vụ thì hiển thị ra popup đẻ người dùng chọn dịch vụ để đăng kí
 
-                this.vlistService = new List<V_HIS_SERVICE>();
+                this.vlistService = new List<ServiceADO>();
                 Inventec.Common.Logging.LogSystem.Debug("this.PatientTypeId 1 là : " + this.PatientTypeId);
                 getService((V_HIS_EXECUTE_ROOM_1)e.Item.Tag, hisCardPatientSdo, ref vlistService, true);
+                if (hisCardPatientSdo != null)
+                {
+                    hisCardPatientSdo.Phone = txtPhone.Text.Trim();
+                }
                 if (vlistService != null && vlistService.Count > 1)
                 {
                     //frmServiceRoom = new frmServiceRoom((V_HIS_EXECUTE_ROOM_1)e.Item.Tag, hisCardPatientSdo, requestRoomId, patient, vlistService, this.currentModule);
@@ -1011,11 +1080,11 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
                 IsAppointmentAccept = false;
                 var currentBranch = BackendDataWorker.Get<HIS_BRANCH>().FirstOrDefault(o => o.ID == WorkPlace.GetBranchId());
 
-                //if (!string.IsNullOrEmpty(hisCardPatientSdo.HeinCardNumber) && hisCardPatientSdo.RightRouteCode == MOS.LibraryHein.Bhyt.HeinRightRoute.HeinRightRouteCode.FALSE && currentBranch != null && (currentBranch.HEIN_LEVEL_CODE == MOS.LibraryHein.Bhyt.HeinLevel.HeinLevelCode.NATIONAL || currentBranch.HEIN_LEVEL_CODE == MOS.LibraryHein.Bhyt.HeinLevel.HeinLevelCode.PROVINCE))
-                //{
-                //    frmInputSave1 frm = new frmInputSave1((DelegateSelectData)InputSaveForm);
-                //    frm.ShowDialog();
-                //}
+                if (!string.IsNullOrEmpty(hisCardPatientSdo.HeinCardNumber) && hisCardPatientSdo.RightRouteCode == MOS.LibraryHein.Bhyt.HeinRightRoute.HeinRightRouteCode.FALSE && currentBranch != null && (currentBranch.HEIN_LEVEL_CODE == MOS.LibraryHein.Bhyt.HeinLevel.HeinLevelCode.NATIONAL || currentBranch.HEIN_LEVEL_CODE == MOS.LibraryHein.Bhyt.HeinLevel.HeinLevelCode.PROVINCE))
+                {
+                    frmInputSave1 frm = new frmInputSave1((DelegateSelectData)InputSaveForm);
+                    frm.ShowDialog();
+                }
 
                 bool success = false;
                 CommonParam param = new CommonParam();
@@ -1157,6 +1226,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
                     Inventec.Common.Logging.LogSystem.Debug("IsNotRequireFee 2" + chkRecieveLater.Checked);
                     sdo.IsNotRequireFee = chkRecieveLater.Checked ? true : false;
                 }
+                sdo.CardSDO.Phone = txtPhone.Text.Trim();
                 LogSystem.Info(LogUtil.TraceData("Du kieu gui len khi dkk kios:", sdo));
                 examServiceReqRegisterResultSDO = new BackendAdapter(param).Post<HisServiceReqExamRegisterResultSDO>("api/HisServiceReq/ExamRegisterKiosk", ApiConsumer.ApiConsumers.MosConsumer, sdo, param);
                 LogSystem.Info(LogUtil.TraceData("Du kieu dang ky kham tra ve", examServiceReqRegisterResultSDO));
@@ -2058,6 +2128,58 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.RegisterExemKiosk
             try
             {
                 ResetLoopCount();
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+        }
+
+        private void toggleSwitch_ThanhToan_Toggled(object sender, EventArgs e)
+        {
+            if ((bool)(toggleSwitch_ThanhToan.EditValue) == true)
+            {
+                timer1.Start();
+                timer1.Interval = 15000;
+            }
+            else
+                timer1.Stop();
+        }
+
+        private void CreateThreadThanhToanRefresh()
+        {
+            Thread thread = new System.Threading.Thread(new System.Threading.ThreadStart(ThanhToanNewThreadRefresh));
+            try
+            {
+                thread.Start();
+            }
+            catch (Exception ex)
+            {
+                LogSystem.Error(ex);
+                thread.Abort();
+            }
+        }
+
+        private void ThanhToanNewThreadRefresh()
+        {
+            try
+            {
+                FillDataToQR();
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            try
+            {
+                if ((bool)(toggleSwitch_ThanhToan.EditValue) == true)
+                {
+                    CreateThreadThanhToanRefresh();
+                }
             }
             catch (Exception ex)
             {

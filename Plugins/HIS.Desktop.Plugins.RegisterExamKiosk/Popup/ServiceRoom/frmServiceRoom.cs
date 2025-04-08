@@ -30,6 +30,7 @@ using HIS.Desktop.Plugins.RegisterExamKiosk.Popup.InputSave;
 using HIS.Desktop.Plugins.RegisterExamKiosk.ADO;
 using HIS.Desktop.Plugins.RegisterExamKiosk.Config;
 using HIS.Desktop.Plugins.RegisterExamKiosk.ADO;
+using HIS.Desktop.LocalStorage.ConfigApplication;
 
 namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.ServiceRoom
 {
@@ -47,7 +48,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.ServiceRoom
         V_HIS_SERVICE_REQ ServiceReqPrint;
         List<V_HIS_SERE_SERV> sereServs;
         V_HIS_PATIENT patient;
-        List<V_HIS_SERVICE> vlistService;
+        List<ServiceADO> vlistService;
         bool IsAppointmentAccept;
         public bool IsPriority;
         public bool IsRecieveLater;
@@ -95,7 +96,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.ServiceRoom
 
         }
 
-        public frmServiceRoom(V_HIS_EXECUTE_ROOM_1 data, HisCardSDO hisCardPatientSdo, Inventec.Desktop.Common.Modules.Module module, V_HIS_PATIENT patient, List<V_HIS_SERVICE> vlistService, SettingADO stADO)
+        public frmServiceRoom(V_HIS_EXECUTE_ROOM_1 data, HisCardSDO hisCardPatientSdo, Inventec.Desktop.Common.Modules.Module module, V_HIS_PATIENT patient, List<ServiceADO> vlistService, SettingADO stADO)
         {
             InitializeComponent();
             try
@@ -115,7 +116,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.ServiceRoom
             }
         }
 
-        public frmServiceRoom(V_HIS_EXECUTE_ROOM_1 data, HisCardSDO hisCardPatientSdo, long roomId, V_HIS_PATIENT patient, List<V_HIS_SERVICE> vlistService, Inventec.Desktop.Common.Modules.Module module, SettingADO stADO)
+        public frmServiceRoom(V_HIS_EXECUTE_ROOM_1 data, HisCardSDO hisCardPatientSdo, long roomId, V_HIS_PATIENT patient, List<ServiceADO> vlistService, Inventec.Desktop.Common.Modules.Module module, SettingADO stADO)
         {
             InitializeComponent();
             try
@@ -136,7 +137,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.ServiceRoom
             }
         }
 
-        public frmServiceRoom(V_HIS_EXECUTE_ROOM_1 data, HisCardSDO hisCardPatientSdo, long roomId, V_HIS_PATIENT patient, List<V_HIS_SERVICE> vlistService, Inventec.Desktop.Common.Modules.Module module, long _patientType, SettingADO stADO)
+        public frmServiceRoom(V_HIS_EXECUTE_ROOM_1 data, HisCardSDO hisCardPatientSdo, long roomId, V_HIS_PATIENT patient, List<ServiceADO> vlistService, Inventec.Desktop.Common.Modules.Module module, long _patientType, SettingADO stADO)
         {
             InitializeComponent();
             try
@@ -158,7 +159,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.ServiceRoom
             }
         }
 
-        public frmServiceRoom(V_HIS_EXECUTE_ROOM_1 data, HisCardSDO hisCardPatientSdo, long roomId, V_HIS_PATIENT patient, List<V_HIS_SERVICE> vlistService, Inventec.Desktop.Common.Modules.Module module, long _patientType, HisExamRegisterKioskSDO sdoData, SettingADO stADO, DelegateSelectData refreshData)
+        public frmServiceRoom(V_HIS_EXECUTE_ROOM_1 data, HisCardSDO hisCardPatientSdo, long roomId, V_HIS_PATIENT patient, List<ServiceADO> vlistService, Inventec.Desktop.Common.Modules.Module module, long _patientType, HisExamRegisterKioskSDO sdoData, SettingADO stADO, DelegateSelectData refreshData)
         {
             InitializeComponent();
             try
@@ -291,16 +292,18 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.ServiceRoom
             }
         }
 
-        private void LoadDataTileServiceRoom(List<V_HIS_SERVICE> data)
+        private void LoadDataTileServiceRoom(List<ServiceADO> data)
         {
             try
             {      //Khởi tạo động các tile để hiển thị
                 if (data != null && data.Count > 0)
                 {
+                    data = data.OrderBy(o => o.SERVICE_NAME.Split('[')[0]).ThenBy(o => o.PRICE).ToList();
                     foreach (var item in data)
                     {
                         tileNew = new TileItem();
-                        tileNew.Text = item.SERVICE_NAME;
+                        tileNew.AllowHtmlText = DevExpress.Utils.DefaultBoolean.True;
+                        tileNew.Text = item.SERVICE_NAME + "<br><b><size=+4>Giá: " + Inventec.Common.Number.Convert.NumberToString(item.PRICE ?? 0, ConfigApplications.NumberSeperator) + "</size></b>";
                         tileNew.AppearanceItem.Normal.ForeColor = Color.White;
                         tileNew.AppearanceItem.Normal.FontSizeDelta = (int)this.stADO.Dv_SizeTitle;
                         tileNew.TextAlignment = TileItemContentAlignment.MiddleCenter;
@@ -530,7 +533,6 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.ServiceRoom
                     sdo.TransferInTimeFrom = sdoData.TransferInTimeFrom;
                     sdo.IsTransferIn = true;
                 }
-
                 LogSystem.Info(LogUtil.TraceData("Du kieu gui len khi dkk kios:", sdo));
                 this.examServiceReqRegisterResultSDO = new BackendAdapter(param).Post<HisServiceReqExamRegisterResultSDO>("api/HisServiceReq/ExamRegisterKiosk", ApiConsumer.ApiConsumers.MosConsumer, sdo, param);
                 LogSystem.Info(LogUtil.TraceData("Du kieu dang ky kham tra ve", examServiceReqRegisterResultSDO));
@@ -541,6 +543,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.ServiceRoom
                     success = true;
                     this.delegateSelectData(examServiceReqRegisterResultSDO);
                     onClickPrint();
+                    this.Close();
                 }
 
                 this.currentInputSaveAdo = null;
@@ -894,7 +897,7 @@ namespace HIS.Desktop.Plugins.RegisterExamKiosk.Popup.ServiceRoom
                         hisCardList = new BackendAdapter(new CommonParam()).Get<List<HIS_CARD>>("api/HisCard/Get", ApiConsumers.MosConsumer, cardfilter, null);
                         if (hisCardList != null && hisCardList.Count > 0)
                         {
-                            PrintKiosk printKiosk = new PrintKiosk(this.currentModule,patyAlter, ServiceReqPrint, sereServs, (DelegateReturnSuccess)DelegetSuccess, printTypeCode, fileName, treatmentPrint, SereServDeposits, SereServBills, Transactions, false, hisCardList);
+                            PrintKiosk printKiosk = new PrintKiosk(this.currentModule, patyAlter, ServiceReqPrint, sereServs, (DelegateReturnSuccess)DelegetSuccess, printTypeCode, fileName, treatmentPrint, SereServDeposits, SereServBills, Transactions, false, hisCardList);
                             printKiosk.PrintProcess();
                         }
                     }
