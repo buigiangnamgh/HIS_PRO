@@ -6403,7 +6403,7 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                             if (icdByCode != null && icdByCode.ID > 0)
                             {
                                 string messErr = null;
-                                if (!checkIcdManager.ProcessCheckIcd(null, icdByCode.ICD_CODE, ref messErr))
+                                if (!checkIcdManager.ProcessCheckIcd(null, icdByCode.ICD_CODE, ref messErr,false))
                                 {
                                     XtraMessageBox.Show(messErr, "Thông báo", MessageBoxButtons.OK);
                                     continue;
@@ -6619,7 +6619,7 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                 {
                     count++;
                     string messErr = null;
-                    if (!checkIcdManager.ProcessCheckIcd(null, item.ICD_CODE, ref messErr))
+                    if (!checkIcdManager.ProcessCheckIcd(null, item.ICD_CODE, ref messErr,false))
                     {
                         XtraMessageBox.Show(messErr, "Thông báo", MessageBoxButtons.OK);
                         item.IsChecked = false;
@@ -6848,7 +6848,7 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                         cboIcds.EditValue = listData.First().ID;
                         chkEditIcd.Checked = (chkEditIcd.Enabled ? this.isAutoCheckIcd : false);
                         string messErr = null;
-                        if (!checkIcdManager.ProcessCheckIcd(txtIcdCode.Text.Trim(), txtIcdSubCode.Text.Trim(), ref messErr))
+                        if (!checkIcdManager.ProcessCheckIcd(txtIcdCode.Text.Trim(), txtIcdSubCode.Text.Trim(), ref messErr,false))
                         {
                             XtraMessageBox.Show(messErr, "Thông báo", MessageBoxButtons.OK);
                             if (Desktop.Plugins.Library.CheckIcd.CheckIcdManager.IcdCodeError.Equals(txtIcdCode.Text))
@@ -6965,7 +6965,7 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                     txtIcdMainText.Text = icd.ICD_NAME;
                     chkEditIcd.Checked = (chkEditIcd.Enabled ? this.isAutoCheckIcd : false);
                     string messErr = null;
-                    if (!checkIcdManager.ProcessCheckIcd(txtIcdCode.Text.Trim(), txtIcdSubCode.Text.Trim(), ref messErr))
+                    if (!checkIcdManager.ProcessCheckIcd(txtIcdCode.Text.Trim(), txtIcdSubCode.Text.Trim(), ref messErr,false))
                     {
                         XtraMessageBox.Show(messErr, "Thông báo", MessageBoxButtons.OK);
                         if (Desktop.Plugins.Library.CheckIcd.CheckIcdManager.IcdCodeError.Equals(txtIcdCode.Text))
@@ -8166,7 +8166,8 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                 {
                     new LoaiPhieuInADO("gridView7_1", "Phiếu yêu cầu dịch vụ",true),
                     new LoaiPhieuInADO("gridView7_2", "Hướng dẫn bệnh nhân"),
-                    new LoaiPhieuInADO("gridView7_3", "Yêu cầu thanh toán QR")
+                    new LoaiPhieuInADO("gridView7_3", "Yêu cầu thanh toán QR"),
+                    new LoaiPhieuInADO("gridView7_4", "In tem xét nghiệm")
                 };
 
                 gridView7.BeginUpdate();

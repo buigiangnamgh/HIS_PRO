@@ -547,6 +547,55 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
             }
         }
 
+        private void InTemBarcodeXN()
+        {
+            try
+            {
+                var serviceReq_Test = this.serviceReqComboResultSDO.ServiceReqs.Where(o => o.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__XN).ToList();
+                string txt = "";
+                if (serviceReq_Test != null && serviceReq_Test.Count > 0)
+                {
+                   
+                        foreach (var item in serviceReq_Test)
+                        {
+                            var SereServBySRQ = this.serviceReqComboResultSDO.SereServs.Where(o => o.SERVICE_REQ_ID == item.ID).ToList();
+                            //int amount = (int)itemSS.AMOUNT;
+                            GenText(item, SereServBySRQ, ref txt);
+                        }
+                    string resultPrint = new Bartender.PrintTestServiceReq.PrintTestServiceReq().StartPrintTestServiceReq(txt);
+
+                    if (!string.IsNullOrWhiteSpace(resultPrint))
+                    {
+                        Inventec.Common.Logging.LogSystem.Warn(resultPrint);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+
+        private void GenText(V_HIS_SERVICE_REQ serviceReq, List<V_HIS_SERE_SERV> sereServ, ref string txt)
+        {
+            txt += serviceReq.BARCODE;
+            txt += "," + serviceReq.TDL_PATIENT_NAME;
+            txt += "," + serviceReq.TDL_PATIENT_GENDER_NAME;
+            txt += "," + serviceReq.TDL_PATIENT_DOB;
+            txt += "," + (serviceReq.TDL_PATIENT_DOB != null && serviceReq.TDL_PATIENT_DOB > 10000000000000 ? serviceReq.TDL_PATIENT_DOB.ToString().Substring(0, 4) : "");
+            txt += "," + serviceReq.REQUEST_DEPARTMENT_NAME;
+            txt += "," + serviceReq.REQUEST_ROOM_NAME;
+            //string parentName = "";
+            //string serviceTypeName = "";
+            //foreach (var item in sereServ)
+            //{
+            //    parentName += "," + (item.PARENT_ID.HasValue && item.PARENT_ID.Value > 0 ? BackendDataWorker.Get<V_HIS_SERVICE>().FirstOrDefault(o => item.PARENT_ID.Value == o.ID).SERVICE_NAME : "");
+            //    serviceTypeName += "," + item.SERVICE_TYPE_NAME;
+            //}
+            txt += "," + Inventec.Common.DateTime.Convert.TimeNumberToTimeStringWithoutSecond(serviceReq.INTRUCTION_TIME);
+            txt += "," + serviceReq.TREATMENT_CODE;
+        }
+
         private void InYeuCauThanhToanQR(bool printTH, bool isSign, bool isPrintPreview)
         {
             try

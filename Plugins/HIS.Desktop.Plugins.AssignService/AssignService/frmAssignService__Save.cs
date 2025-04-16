@@ -1897,6 +1897,8 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
 
                             var checkQR = this.lstLoaiPhieu.FirstOrDefault(o => o.Check == true && o.ID == "gridView7_3");
 
+                            var checkTemXN = this.lstLoaiPhieu.FirstOrDefault(o => o.Check == true && o.ID == "gridView7_4");
+
                             if (checkHDBN != null)
                             {
                                 InPhieuHuoangDanBenhNhan(isSaveAndShow);
@@ -1910,6 +1912,11 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                             if (checkQR != null)
                             {
                                 InYeuCauThanhToanQR(isSaveAndPrint, isSign, isPrintPreview);
+                            }
+
+                            if (checkTemXN !=null)
+                            {
+                                InTemBarcodeXN();
                             }
                         }
 
