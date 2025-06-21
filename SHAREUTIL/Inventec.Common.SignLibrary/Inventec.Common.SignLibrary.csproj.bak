@@ -1,0 +1,645 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C73196A6-E1CC-4D81-BCD5-A8E5C5EA74CB}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Inventec.Common.SignLibrary</RootNamespace>
+    <AssemblyName>Inventec.Common.SignLibrary</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Aspose.Cells">
+      <HintPath>..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Aspose.Cells.dll</HintPath>
+    </Reference>
+    <Reference Include="Aspose.Pdf">
+      <HintPath>..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Aspose.Pdf.dll</HintPath>
+    </Reference>
+    <Reference Include="CARD.WCF.Client.FingerprintClient">
+      <HintPath>..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\CARD.WCF.Client.FingerprintClient.dll</HintPath>
+    </Reference>
+    <Reference Include="CARD.WCF.DCO">
+      <HintPath>..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\CARD.WCF.DCO.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.Data.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.Docs.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.Images.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.Office.v15.2.Core, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.Pdf.v15.2.Core, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.Pdf.v15.2.Drawing, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.Printing.v15.2.Core, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.RichEdit.v15.2.Core, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.Charts.v15.2.Core, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.Spreadsheet.v15.2.Core, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.Utils.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.Xpf.Core.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\DevExpress.Xpf.Core.v15.2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.Xpf.Core.v15.2.Extensions, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\DevExpress.Xpf.Core.v15.2.Extensions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.Xpf.DocumentViewer.v15.2.Core, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\DevExpress.Xpf.DocumentViewer.v15.2.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.Xpf.PdfViewer.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\DevExpress.Xpf.PdfViewer.v15.2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.Xpf.Printing.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\DevExpress.Xpf.Printing.v15.2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.XtraBars.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.XtraEditors.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.XtraGrid.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.XtraLayout.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.XtraPdfViewer.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraPrinting.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.XtraRichEdit.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.XtraSpreadsheet.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.XtraTreeList.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EMR.EFMODEL">
+      <HintPath>..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\EMR.EFMODEL.dll</HintPath>
+    </Reference>
+    <Reference Include="EMR.Filter">
+      <HintPath>..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\EMR.Filter.dll</HintPath>
+    </Reference>
+    <Reference Include="EMR.SDO">
+      <HintPath>..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\EMR.SDO.dll</HintPath>
+    </Reference>
+    <Reference Include="EMR.TDO">
+      <HintPath>..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\EMR.TDO.dll</HintPath>
+    </Reference>
+    <Reference Include="EMR.URI">
+      <HintPath>..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\EMR.URI.dll</HintPath>
+    </Reference>
+    <Reference Include="EMR.WCF.DCO">
+      <HintPath>..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\EMR.WCF.DCO.dll</HintPath>
+    </Reference>
+    <Reference Include="GemBox.Pdf">
+      <HintPath>..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\GemBox.Pdf.dll</HintPath>
+    </Reference>
+    <Reference Include="IMSys.DbConfig.HIS_RS">
+      <HintPath>..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\IMSys.DbConfig.HIS_RS.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.Controls.EditorLoader">
+      <HintPath>..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.Controls.EditorLoader.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.Logging">
+      <HintPath>..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.SignFile">
+      <HintPath>..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.SignFile.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Desktop.Common.Controls.ValidationRule">
+      <HintPath>..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Desktop.Common.Controls.ValidationRule.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.SignViewLib">
+      <HintPath>..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.SignViewLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Token.ClientSystem">
+      <HintPath>..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Token.ClientSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Token.Core">
+      <HintPath>..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Token.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.UC.Login">
+      <HintPath>..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.UC.Login.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp">
+      <HintPath>..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\itextsharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>Lib\Microsoft.Office.Interop.Excel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.WinForms, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Lib\Microsoft.ReportViewer.WinForms.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\lib\Library packages\Newtonsoft.Json.6.0.8\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Configuration">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Core">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Net.Http">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Lib\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Extensions">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Services">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xaml">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CSharp">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Data">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Deployment">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Windows.Forms">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="WindowsBase">
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ADO\AttackADO.cs" />
+    <Compile Include="ADO\EmrBusinessADO.cs" />
+    <Compile Include="ADO\FileADO.cs" />
+    <Compile Include="ADO\ListSignConfigADO.cs" />
+    <Compile Include="ADO\SignPositionADO.cs" />
+    <Compile Include="ADO\SignToken.cs" />
+    <Compile Include="Api\EmrFlow.cs" />
+    <Compile Include="Api\EmrSignerFlow.cs" />
+    <Compile Include="Api\EmrSignOrder.cs" />
+    <Compile Include="Api\EmrSignTemplate.cs" />
+    <Compile Include="Api\EmrDocumentContent.cs" />
+    <Compile Include="Api\EmrAttachment.cs" />
+    <Compile Include="Api\EmrDocumentGroup.cs" />
+    <Compile Include="Api\EmrBusiness.cs" />
+    <Compile Include="Api\EmrConfig.cs" />
+    <Compile Include="Api\EmrRelation.cs" />
+    <Compile Include="CacheClient\CacheClientWorker.cs" />
+    <Compile Include="CacheClient\RegistryConstant.cs" />
+    <Compile Include="frmConfirmAutoUpdateSign.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmConfirmAutoUpdateSign.Designer.cs">
+      <DependentUpon>frmConfirmAutoUpdateSign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmCreateEmrBusiness.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmCreateEmrBusiness.Designer.cs">
+      <DependentUpon>frmCreateEmrBusiness.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Integrate\BusinessBase.cs" />
+    <Compile Include="Popup\CodeValidationRule.cs" />
+    <Compile Include="Popup\frmUpdateSigner.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Popup\frmUpdateSigner.Designer.cs">
+      <DependentUpon>frmUpdateSigner.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Popup\RelationComboValidationRule.cs" />
+    <Compile Include="Popup\frmChoicePatientRelation.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Popup\frmChoicePatientRelation.Designer.cs">
+      <DependentUpon>frmChoicePatientRelation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Popup\frmChooseDocumentDependent.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Popup\frmChooseDocumentDependent.Designer.cs">
+      <DependentUpon>frmChooseDocumentDependent.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Delegates.cs" />
+    <Compile Include="DTO\ImageOfPageDTO.cs" />
+    <Compile Include="DTO\FileDataDTO.cs" />
+    <Compile Include="DTO\FileHolder.cs" />
+    <Compile Include="DTO\SignerConfigDTO.cs" />
+    <Compile Include="DTO\DisplayConfigDTO.cs" />
+    <Compile Include="DTO\DocumentSignedResultDTO.cs" />
+    <Compile Include="ADO\SignADO.cs" />
+    <Compile Include="ADO\InputADO.cs" />
+    <Compile Include="Api\BussinessBase.cs" />
+    <Compile Include="Api\IGDocumentState.cs" />
+    <Compile Include="Api\EmrTreatment.cs" />
+    <Compile Include="Api\EmrVersion.cs" />
+    <Compile Include="Api\EmrDocumentType.cs" />
+    <Compile Include="Api\EmrSigner.cs" />
+    <Compile Include="Api\EmrDocument.cs" />
+    <Compile Include="Api\EmrSign.cs" />
+    <Compile Include="DocumentManager.cs" />
+    <Compile Include="DTO\DocumentSignedUpdateIGSysResultDTO.cs" />
+    <Compile Include="DTO\DocumentSignedDTO.cs" />
+    <Compile Include="DTO\TreatmentDTO.cs" />
+    <Compile Include="EmrConfigKeys.cs" />
+    <Compile Include="Enums.cs" />
+    <Compile Include="FingerPrintClientService.cs" />
+    <Compile Include="FormEmrSign.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormEmrSign.Designer.cs">
+      <DependentUpon>FormEmrSign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmAddNote.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmAddNote.Designer.cs">
+      <DependentUpon>frmAddNote.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmAttachMents.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmAttachMents.designer.cs">
+      <DependentUpon>frmAttachMents.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Popup\frmChoiceRelation.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Popup\frmChoiceRelation.Designer.cs">
+      <DependentUpon>frmChoiceRelation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Popup\frmChooseBusiness.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Popup\frmChooseBusiness.Designer.cs">
+      <DependentUpon>frmChooseBusiness.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmConfirmSign.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmConfirmSign.Designer.cs">
+      <DependentUpon>frmConfirmSign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmRejectInfo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmRejectInfo.Designer.cs">
+      <DependentUpon>frmRejectInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmShowAndPrintNow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmShowAndPrintNow.Designer.cs">
+      <DependentUpon>frmShowAndPrintNow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmSignerAdd.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmSignerAdd.Designer.cs">
+      <DependentUpon>frmSignerAdd.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Integrate\BackendAdapter.cs" />
+    <Compile Include="Integrate\ApiException.cs" />
+    <Compile Include="Integrate\CustomControl\CustomGridControlWithFilterMultiColumn.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Integrate\CustomControl\CustomGridLookUpEditWithFilterMultiColumn.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Integrate\CustomControl\MyCurrencyDataController.cs" />
+    <Compile Include="Integrate\CustomControl\MyGridControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Integrate\CustomControl\MyGridDataController.cs" />
+    <Compile Include="Integrate\CustomControl\MyGridInfoRegistrator.cs" />
+    <Compile Include="Integrate\CustomControl\MyGridView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Integrate\CustomControl\RowColumnErrorEventArgs.cs" />
+    <Compile Include="Integrate\CustomControl\RowErrorEventArgs.cs" />
+    <Compile Include="Integrate\EntityBaseAdapter.cs" />
+    <Compile Include="Integrate\frmWaitForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Integrate\frmWaitForm.Designer.cs">
+      <DependentUpon>frmWaitForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Integrate\MessageManager.cs" />
+    <Compile Include="GlobalStore.cs" />
+    <Compile Include="FileUtils.cs" />
+    <Compile Include="frmLogin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmLogin.Designer.cs">
+      <DependentUpon>frmLogin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmPdfViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmPdfViewer.Designer.cs">
+      <DependentUpon>frmPdfViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ADO\InvalidReasonADO.cs" />
+    <Compile Include="Integrate\ApiConsumer.cs" />
+    <Compile Include="Integrate\ApiParam.cs" />
+    <Compile Include="Integrate\ApiResultObject.cs" />
+    <Compile Include="Integrate\ClientTokenManager.cs" />
+    <Compile Include="Integrate\CommonParam.cs" />
+    <Compile Include="Integrate\ConstanIG.cs" />
+    <Compile Include="Integrate\FileConvert.cs" />
+    <Compile Include="Integrate\DateTimeConvert.cs" />
+    <Compile Include="Integrate\EditorLoader\ColumnInfo.cs" />
+    <Compile Include="Integrate\EditorLoader\ControlEditorADO.cs" />
+    <Compile Include="Integrate\EditorLoader\ControlEditorLoader.cs" />
+    <Compile Include="Integrate\FssConstant.cs" />
+    <Compile Include="Integrate\FssFileDownload.cs" />
+    <Compile Include="Integrate\HeaderConstants.cs" />
+    <Compile Include="Integrate\JsonConvertUtil.cs" />
+    <Compile Include="Integrate\PopupLoader.cs" />
+    <Compile Include="Integrate\RegistryProcessor.cs" />
+    <Compile Include="Integrate\StringCompressorParse.cs" />
+    <Compile Include="Integrate\TokenData.cs" />
+    <Compile Include="Integrate\TypeConvertParse.cs" />
+    <Compile Include="Integrate\WaitingManager.cs" />
+    <Compile Include="Integrate\Worker.cs" />
+    <Compile Include="LaunchBrowse.cs" />
+    <Compile Include="LibraryMessage\MessageConstan.cs" />
+    <Compile Include="LibraryMessage\MessagePartialGetMessage.cs" />
+    <Compile Include="LibraryMessage\MessageViResource.Designer.cs">
+      <DependentUpon>MessageViResource.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Licenses\LicenceProcess.cs" />
+    <Compile Include="Licenses\Licenses.cs" />
+    <Compile Include="Popup\frmRelationship.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Popup\frmRelationship.Designer.cs">
+      <DependentUpon>frmRelationship.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PdfCommentKeyProcess.cs" />
+    <Compile Include="PDFParser.cs" />
+    <Compile Include="Popup\RelationNameValidationRule.cs" />
+    <Compile Include="PrintLibProcess.cs" />
+    <Compile Include="PdfDocumentProcess.cs" />
+    <Compile Include="ProcessFile.cs" />
+    <Compile Include="Service References\ServiceSign\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="SignBoard\SignBoardNoUseBehavior.cs" />
+    <Compile Include="SignBoard\SignBoardUseBehavior.cs" />
+    <Compile Include="SignBoard\SignBoardFactory.cs" />
+    <Compile Include="SignBoard\ISignBoard.cs" />
+    <Compile Include="SignHandler\PdfSplitFileWithKeyProcess.cs" />
+    <Compile Include="SignHandler\SignHandlerBase.cs" />
+    <Compile Include="SignHandler\SignHSMHandler.cs" />
+    <Compile Include="SignLibraryGUIProcessor.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ADO\SubjectDNADO.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ADO\VerifierADO.cs" />
+    <Compile Include="SignHandle.cs" />
+    <Compile Include="SignHandler\SignUSBHandler.cs" />
+    <Compile Include="SignStateCode.cs" />
+    <Compile Include="UCViewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UCViewer.Designer.cs">
+      <DependentUpon>UCViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Verify.cs" />
+    <Compile Include="VerifyPdfFileHandle.cs" />
+    <Compile Include="VerifySign.cs" />
+    <Compile Include="WaterMarkProcess.cs" />
+    <EmbeddedResource Include="frmConfirmAutoUpdateSign.resx">
+      <DependentUpon>frmConfirmAutoUpdateSign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmCreateEmrBusiness.resx">
+      <DependentUpon>frmCreateEmrBusiness.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Popup\frmChoicePatientRelation.resx">
+      <DependentUpon>frmChoicePatientRelation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Popup\frmChooseDocumentDependent.resx">
+      <DependentUpon>frmChooseDocumentDependent.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormEmrSign.resx">
+      <DependentUpon>FormEmrSign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmAddNote.resx">
+      <DependentUpon>frmAddNote.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmAttachMents.resx">
+      <DependentUpon>frmAttachMents.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Popup\frmChoiceRelation.resx">
+      <DependentUpon>frmChoiceRelation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Popup\frmChooseBusiness.resx">
+      <DependentUpon>frmChooseBusiness.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmConfirmSign.resx">
+      <DependentUpon>frmConfirmSign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmLogin.resx">
+      <DependentUpon>frmLogin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmPdfViewer.resx">
+      <DependentUpon>frmPdfViewer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmRejectInfo.resx">
+      <DependentUpon>frmRejectInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmShowAndPrintNow.resx">
+      <DependentUpon>frmShowAndPrintNow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmSignerAdd.resx">
+      <DependentUpon>frmSignerAdd.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Integrate\frmWaitForm.resx">
+      <DependentUpon>frmWaitForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LibraryMessage\MessageViResource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>MessageViResource.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Popup\frmRelationship.resx">
+      <DependentUpon>frmRelationship.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Popup\frmUpdateSigner.resx">
+      <DependentUpon>frmUpdateSigner.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\licenses.licx" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <EmbeddedResource Include="UCViewer.resx">
+      <DependentUpon>UCViewer.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="app.config" />
+    <None Include="Properties\DataSources\EMR.WCF.DCO.WcfSignResultDCO.datasource" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <None Include="Service References\ServiceSign\EMR.WCF.DCO.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\ServiceSign\service.wsdl" />
+    <None Include="Service References\ServiceSign\service.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\ServiceSign\service1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Service References\ServiceSign\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\ServiceSign\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\ServiceSign\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\ServiceSign\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

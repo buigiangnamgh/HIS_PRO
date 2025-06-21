@@ -1,0 +1,313 @@
+﻿using EMR.EFMODEL.DataModels;
+using Inventec.Common.SignFile;
+using Inventec.Common.SignLibrary.ADO;
+using Inventec.Common.SignLibrary.LibraryMessage;
+using iTextSharp.text.pdf;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Inventec.Common.SignLibrary
+{
+    internal class WaterMarkProcess
+    {
+        internal static void ProcessInsertWaterMark(PdfReader readerWorking, string outPathFile, List<EMR_SIGN> signElectronics, bool hasSignInformationPage)
+        {
+            try
+            {
+                Inventec.Common.Logging.LogSystem.Debug("ProcessInsertWaterMark.1");
+                int pageCount = readerWorking.NumberOfPages;
+                using (FileStream fs_ = File.Open(outPathFile, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite))
+                {
+                    using (PdfStamper stam = new PdfStamper(readerWorking, fs_))
+                    {
+                        PdfLayer layer = new PdfLayer("watermarkPdfLayer", stam.Writer);
+
+                        Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => pageCount), pageCount));
+                        for (int i = 1; i <= pageCount; i++)
+                        {
+                            iTextSharp.text.Rectangle rec = readerWorking.GetPageSize(i);
+                            Inventec.Common.Logging.LogSystem.Debug("ProcessInsertWaterMark.2");
+                            PdfContentByte cb = stam.GetUnderContent(i);
+                            Inventec.Common.Logging.LogSystem.Debug("ProcessInsertWaterMark.3");
+                            //PdfContentByte canvas = writer.DirectContentUnder;
+                            //Image image = Image.GetInstance(IMAGE);
+                            //image.SetAbsolutePosition(0, 0);
+                            //canvas.SaveState();
+                            //PdfGState state = new PdfGState();
+                            //state.FillOpacity = 0.6f;
+                            //canvas.SetGState(state);
+                            //canvas.AddImage(image);
+                            //canvas.RestoreState();
+
+                            cb.BeginLayer(layer);
+                            cb.SetFontAndSize(SharedUtils.GetBaseFont(), 18);
+                            //add watermark                       
+                            var gstate = new PdfGState { FillOpacity = 0.1f, StrokeOpacity = 0.3f };
+                            cb.SetGState(gstate);
+                            Inventec.Common.Logging.LogSystem.Debug("ProcessInsertWaterMark.4");
+                            iTextSharp.text.Rectangle realPageSize = readerWorking.GetPageSizeWithRotation(i);
+
+                            var ps = rec ?? realPageSize; /*dc.PdfDocument.PageSize is not always correct*/
+                            var x = (ps.Right + ps.Left) / 2;
+                            var y = (ps.Bottom + ps.Top) / 2;
+                            var rh = ((ps.Bottom + ps.Top) / 8) + 10;
+                            Inventec.Common.Logging.LogSystem.Debug("ProcessInsertWaterMark.5");
+                            string formatWM = "{0}       {1}       {2}       {3}       {4}       {5}       {6}";
+                            float stepvm = 40;
+                            int demvm = 1;
+                            cb.SetColorFill(iTextSharp.text.BaseColor.RED);
+                            cb.BeginText();
+
+                            demvm = 1;
+                            Inventec.Common.Logging.LogSystem.Debug("ProcessInsertWaterMark.6");
+                            if (GlobalStore.PrintUsingWaterMark)
+                            {
+                                Inventec.Common.Logging.LogSystem.Debug("ProcessInsertWaterMark.7");
+                                string vlWM = String.Format("{0} - {1} - {2}", GlobalStore.LoginName, GlobalStore.UserName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
+                                string wmt2 = String.Format(formatWM, vlWM, vlWM, vlWM, vlWM, vlWM, vlWM, vlWM);
+
+                                cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, wmt2, (stepvm * (1 - demvm)) + x, -2 * rh, 45f);
+                                cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, wmt2, (stepvm * (1 - demvm)) + x, -rh, 45f);
+                                cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, wmt2, (stepvm * (1 - demvm)) + x, 0, 45f);
+                                cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, wmt2, (stepvm * (1 - demvm)) + x, rh, 45f);
+                                cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, wmt2, (stepvm * (1 - demvm)) + x, 2 * rh, 45f);
+                                cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, wmt2, (stepvm * (1 - demvm)) + x, 3 * rh, 45f);
+                                cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, wmt2, (stepvm * (1 - demvm)) + x, 4 * rh, 45f);
+                                cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, wmt2, (stepvm * (1 - demvm)) + x, 5 * rh, 45f);
+                                cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, wmt2, (stepvm * (1 - demvm)) + x, 6 * rh, 45f);
+                                cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, wmt2, (stepvm * (1 - demvm)) + x, 7 * rh, 45f);
+                                cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, wmt2, (stepvm * (1 - demvm)) + x, 8 * rh, 45f);
+                                cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, wmt2, (stepvm * (1 - demvm)) + x, 9 * rh, 45f);
+                                cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, wmt2, (stepvm * (1 - demvm)) + x, 10 * rh, 45f);
+                                Inventec.Common.Logging.LogSystem.Debug("ProcessInsertWaterMark.8");
+                            }
+
+                            if (signElectronics != null && signElectronics.Count > 0)
+                            {
+                                Inventec.Common.Logging.LogSystem.Debug("ProcessInsertWaterMark.9");
+                                cb.SetColorFill(iTextSharp.text.BaseColor.BLACK);
+                                //cb.SetFontAndSize(iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA_BOLD).BaseFont, 12);
+                                cb.SetFontAndSize(Utils.GetBaseFont(), 12);
+                                foreach (var itemsignElectronic in signElectronics)
+                                {
+                                    if (itemsignElectronic != null && itemsignElectronic.COOR_X_RECTANGLE.HasValue && itemsignElectronic.COOR_Y_RECTANGLE.HasValue && itemsignElectronic.IS_SIGN_ELECTRONIC + (hasSignInformationPage ? 1 : 0) == i)
+                                    {
+                                        cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, String.Format(MessageUitl.GetMessage(MessageConstan.ChuKyDienTuBenhNhanDaKy), itemsignElectronic.VIR_PATIENT_NAME), (float)itemsignElectronic.COOR_X_RECTANGLE, (float)itemsignElectronic.COOR_Y_RECTANGLE, 0f);
+                                    }
+                                }
+                                Inventec.Common.Logging.LogSystem.Debug("ProcessInsertWaterMark.10");
+                            }
+
+                            Inventec.Common.Logging.LogSystem.Info(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => signElectronics), signElectronics));
+                            demvm += 1;
+
+                            cb.EndText();
+                            cb.EndLayer();
+                            Inventec.Common.Logging.LogSystem.Debug("ProcessInsertWaterMark.11");
+                        }
+                    }
+                }
+                Inventec.Common.Logging.LogSystem.Debug("ProcessInsertWaterMark.12");
+                readerWorking.Close();
+                Inventec.Common.Logging.LogSystem.Debug("ProcessInsertWaterMark.13");
+            }
+            catch (Exception ex)
+            {
+                Logging.LogSystem.Warn(ex);
+            }
+        }
+
+        internal static void ProcessNoInsertWaterMark(PdfReader readerWorking, string outPathFile)
+        {
+            try
+            {
+                int pageCount = readerWorking.NumberOfPages;
+
+                var pages = new List<int>();
+                for (int i = 0; i <= readerWorking.NumberOfPages; i++)
+                {
+                    pages.Add(i);
+                }
+                if (String.IsNullOrEmpty(outPathFile))
+                    outPathFile = Utils.GenerateTempFileWithin();
+                var currentStream = File.Open(outPathFile, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+                var pdfConcat = new PdfConcatenate(currentStream);
+
+                readerWorking.SelectPages(pages);
+                pdfConcat.AddPages(readerWorking);
+
+                try
+                {
+                    currentStream.Close();
+                }
+                catch { }
+
+                try
+                {
+                    pdfConcat.Close();
+                }
+                catch { }
+
+                try
+                {
+                    readerWorking.Close();
+                }
+                catch { }
+            }
+            catch (Exception ex)
+            {
+                Logging.LogSystem.Warn(ex);
+            }
+        }
+
+        internal static void ProcessInsertWaterMark(string inPathFile, string outPathFile)
+        {
+            try
+            {
+                PdfReader readerWorking = new PdfReader(inPathFile);
+                int pageCount = readerWorking.NumberOfPages;
+                using (FileStream fs_ = File.Open(outPathFile, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite))
+                {
+                    using (PdfStamper stam = new PdfStamper(readerWorking, fs_))
+                    {
+                        PdfLayer layer = new PdfLayer("watermarkPdfLayer", stam.Writer);
+                        for (int i = 1; i <= pageCount; i++)
+                        {
+                            iTextSharp.text.Rectangle rec = readerWorking.GetPageSize(i);
+                            PdfContentByte cb = stam.GetUnderContent(i);
+
+                            cb.BeginLayer(layer);
+                            cb.SetFontAndSize(SharedUtils.GetBaseFont(), 18);
+                            //add watermark                       
+                            var gstate = new PdfGState { FillOpacity = 0.1f, StrokeOpacity = 0.3f };
+                            cb.SetGState(gstate);
+
+                            iTextSharp.text.Rectangle realPageSize = readerWorking.GetPageSizeWithRotation(i);
+
+                            var ps = rec ?? realPageSize; /*dc.PdfDocument.PageSize is not always correct*/
+                            var x = (ps.Right + ps.Left) / 2;
+                            var y = (ps.Bottom + ps.Top) / 2;
+                            var rh = ((ps.Bottom + ps.Top) / 8) + 10;
+
+                            string formatWM = "{0}       {1}       {2}       {3}       {4}       {5}       {6}";
+                            float stepvm = 40;
+                            float stepvm1 = 30;
+                            int demvm = 1;
+                            cb.SetColorFill(iTextSharp.text.BaseColor.RED);
+                            cb.BeginText();
+
+                            demvm = 1;
+
+                            string vlWM = String.Format("{0} - {1} - {2}", GlobalStore.LoginName, GlobalStore.UserName, DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
+                            string wmt2 = String.Format(formatWM, vlWM, vlWM, vlWM, vlWM, vlWM, vlWM, vlWM);
+
+                            cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, wmt2, (stepvm * (1 - demvm)) + x, -2 * rh, 45f);
+                            cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, wmt2, (stepvm * (1 - demvm)) + x, -rh, 45f);
+                            cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, wmt2, (stepvm * (1 - demvm)) + x, 0, 45f);
+                            cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, wmt2, (stepvm * (1 - demvm)) + x, rh, 45f);
+                            cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, wmt2, (stepvm * (1 - demvm)) + x, 2 * rh, 45f);
+                            cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, wmt2, (stepvm * (1 - demvm)) + x, 3 * rh, 45f);
+                            cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, wmt2, (stepvm * (1 - demvm)) + x, 4 * rh, 45f);
+                            cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, wmt2, (stepvm * (1 - demvm)) + x, 5 * rh, 45f);
+                            cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, wmt2, (stepvm * (1 - demvm)) + x, 6 * rh, 45f);
+                            cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, wmt2, (stepvm * (1 - demvm)) + x, 7 * rh, 45f);
+                            cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, wmt2, (stepvm * (1 - demvm)) + x, 8 * rh, 45f);
+                            cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, wmt2, (stepvm * (1 - demvm)) + x, 9 * rh, 45f);
+                            cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, wmt2, (stepvm * (1 - demvm)) + x, 10 * rh, 45f);
+                            demvm += 1;
+
+                            cb.EndText();
+                            cb.EndLayer();
+                        }
+                    }
+                }
+                readerWorking.Close();
+            }
+            catch (Exception ex)
+            {
+                Logging.LogSystem.Warn(ex);
+            }
+        }
+
+        internal static void ProcessInsertWaterMarkOld(string inPathFile, System.Windows.Forms.ImageList imageList1)
+        {
+            try
+            {
+                PdfReader readerWorking = new PdfReader(inPathFile);
+                int pageCount = readerWorking.NumberOfPages;
+                int signedCount = Utils.GetSignedCount(readerWorking);
+                List<ADO.SignPositionADO> signPositionADOs = new List<ADO.SignPositionADO>();
+
+                GemBox.Pdf.ComponentInfo.SetLicense(GlobalStore.GemBoxPdf__LicKey);
+                using (var document = GemBox.Pdf.PdfDocument.Load(inPathFile))
+                {
+                    int p = 1;
+                    foreach (var page in document.Pages)
+                    {
+                        foreach (var textElement in page.Content.Elements.All()
+                        .Where(element => element.ElementType == GemBox.Pdf.Content.PdfContentElementType.Text)
+                        .Cast<GemBox.Pdf.Content.PdfTextContent>())
+                        {
+                            string text = textElement.ToString();
+                            var font = textElement.Format.Text.Font;
+                            var color = textElement.Format.Fill.Color;
+                            var location = textElement.Location;
+
+                            if (text.Contains("<SINGLE_KEY__COMMENT_SIGN__"))// thay "<SINGLE_KEY__COMMENT_SIGN__" bằng key cần gán
+                            {
+                                iTextSharp.text.Rectangle stickyRectangle = new iTextSharp.text.Rectangle(
+                                               (float)location.X,
+                                               (float)location.Y,
+                                               (float)location.X + 2,
+                                               (float)location.Y + 2
+                                           );
+
+                                signPositionADOs.Add(new ADO.SignPositionADO()
+                                {
+                                    PageNUm = p,
+                                    Text = text,
+                                    Reactanle = stickyRectangle
+                                });
+                            }
+                        }
+                        p++;
+                    }
+                }
+
+                if (signPositionADOs != null && signPositionADOs.Count > 0)
+                {
+                    using (FileStream fs_ = File.Open(inPathFile, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite))
+                    {
+                        using (PdfStamper stam = new PdfStamper(readerWorking, fs_))
+                        {
+                            for (int i = 1; i <= pageCount; i++)
+                            {
+                                iTextSharp.text.Rectangle rec = readerWorking.GetPageSize(i);
+                                PdfContentByte cb = stam.GetOverContent(i);
+
+                                var spInserts = signPositionADOs.Skip(signedCount).ToList();
+                                foreach (var sp in spInserts)
+                                {
+                                    Inventec.Common.Logging.LogSystem.Debug("PageNUm=" + sp.PageNUm + "__Text=" + sp.Text);
+                                    iTextSharp.text.Image chartImg = iTextSharp.text.Image.GetInstance(imageList1.Images[1], iTextSharp.text.BaseColor.YELLOW);//thay imageList1.Images[1] bằng ảnh cần hiển thị
+                                    chartImg.ScaleToFit(10f, 10f);
+                                    chartImg.SetAbsolutePosition(sp.Reactanle.Left, sp.Reactanle.Bottom);
+
+                                    cb.AddImage(chartImg);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.LogSystem.Warn(ex);
+            }
+        }
+    }
+}
