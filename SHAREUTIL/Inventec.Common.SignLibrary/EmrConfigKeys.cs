@@ -168,5 +168,7 @@ namespace Inventec.Common.SignLibrary
         /// Khác 1: Không bắt buộc
         /// </summary>
         internal const string EMR_EMR_DOCUMENT_PATIENT_SIGN_FIRST_OPTION = "EMR.EMR_DOCUMENT.PATIENT_SIGN_FIRST.OPTION";
+
+        internal static string EMR_EMR_SIGN_CONNECT_DEVICE_TYPE_OPTION = "EMR.EMR_SIGN.CONNECT_DEVICE_TYPE_OPTION";
     }
 }

@@ -551,6 +551,17 @@ namespace Inventec.Common.SignLibrary
                         }
                     }
 
+                    var cfgSignDeviceOptions = configs.Where(o => o.KEY == EmrConfigKeys.EMR_EMR_SIGN_CONNECT_DEVICE_TYPE_OPTION);
+                    var cfgSignDeviceOption = cfgSignDeviceOptions != null ? cfgSignDeviceOptions.FirstOrDefault() : null;
+                    if (cfgSignDeviceOption != null)
+                    {
+                        string vlSignDeviceOption = !String.IsNullOrEmpty(cfgSignDeviceOption.VALUE) ? cfgSignDeviceOption.VALUE : cfgSignDeviceOption.DEFAULT_VALUE;
+                        if (!String.IsNullOrEmpty(vlSignDeviceOption))
+                        {
+                            GlobalStore.EMR_EMR_SIGN_CONNECT_DEVICE_TYPE_OPTION = vlSignDeviceOption;
+                        }
+                    }
+
                     var cfgSignDescriptionInfoOptions = configs.Where(o => o.KEY == EmrConfigKeys.EMR__EMR_SIGN__SIGN_DESCRIPTION_INFO__OPTION);
                     var cfgSignDescriptionInfoOption = cfgSignDescriptionInfoOptions != null ? cfgSignDescriptionInfoOptions.FirstOrDefault() : null;
                     if (cfgSignDescriptionInfoOption != null)

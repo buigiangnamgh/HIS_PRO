@@ -8,10 +8,15 @@ using Inventec.Common.SignLibrary.FingerPrint;
 using Inventec.Common.SignLibrary.Integrate;
 using Inventec.Common.SignLibrary.LibraryMessage;
 using Inventec.Common.SignLibrary.SignBoard;
+using OpenCvSharp;
+using OpenCvSharp.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -306,7 +311,7 @@ namespace Inventec.Common.SignLibrary.SignHandler
             return success;
         }
 
-        internal bool PatientOrHomeRelativeSignOnly(ref DocumentTDO document, List<SignTDO> signStrategys, List<SignTDO> signTemps, PointSignTDO pointSignTDO, string signDescription, bool isPatientSign, bool isHomeRelativeSign, bool isMultiSign, string cmnd, string cardCode, string serviceCode, bool isCardAnonymous, long? relationId, string relationName, string relationPeopleName, ref Stream outputStream, EMR_SIGN _signSelected, string mergeCode = "", string linkCode = "", byte[] signedImageData = null,bool IsHasBusinessCode = false)
+        internal bool PatientOrHomeRelativeSignOnly(ref DocumentTDO document, List<SignTDO> signStrategys, List<SignTDO> signTemps, PointSignTDO pointSignTDO, string signDescription, bool isPatientSign, bool isHomeRelativeSign, bool isMultiSign, string cmnd, string cardCode, string serviceCode, bool isCardAnonymous, long? relationId, string relationName, string relationPeopleName, ref Stream outputStream, EMR_SIGN _signSelected, string mergeCode = "", string linkCode = "", byte[] signedImageData = null, bool IsHasBusinessCode = false)
         {
             bool success = false;
             try
@@ -406,11 +411,23 @@ namespace Inventec.Common.SignLibrary.SignHandler
                         SignPadImageData = signedImageData;
                         return valid;
                     }
-                    IFingerPrint behavior = FingerPrintFactory.MakeISignBoard(param, inputADOWorking, SignBoardOption.Use);
-                    SignPadImageData = behavior != null ? (behavior.Run()) : null;
-                    Utils.SignPadImageData = SignPadImageData;
+                    if (GlobalStore.EMR_EMR_SIGN_CONNECT_DEVICE_TYPE_OPTION == "2")
+                    {
+                        IFingerPrint behavior = FingerPrintFactory.MakeISignBoard(param, inputADOWorking, SignBoardOption.Use);
+                        SignPadImageData = behavior != null ? (behavior.Run()) : null;
 
-                    //byte[] imageBytes = File.ReadAllBytes("D:\\MyFile2.Png");
+                        Utils.SignPadImageData = SignPadImageData;  //SharpenBitmapToByteArray(SignPadImageData, 256, 288); 
+                    }
+                    else
+                    {
+                        ISignBoard behavior = SignBoardFactory.MakeISignBoard(param, inputADOWorking, SignBoardOption.Use);
+                        SignPadImageData = behavior != null ? (behavior.Run()) : null;
+
+                        Utils.SignPadImageData = signedImageData;
+                    }
+
+
+                    //byte[] imageBytes = File.ReadAllBytes("D:\\MyFile3.Png");
 
                     //frmConfigFingerPrint frm = new frmConfigFingerPrint(UpdateSignerPad);
                     //frm.ShowDialog();
@@ -432,6 +449,96 @@ namespace Inventec.Common.SignLibrary.SignHandler
             }
 
             return valid;
+        }
+
+        public static byte[] Sharpen(byte[] input, int width, int height)
+        {
+            try
+            {
+
+
+                if (input.Length != width * height)
+                    throw new ArgumentException("Kích thước dữ liệu không hợp lệ.");
+
+                byte[] output = new byte[width * height];
+
+                // Kernel làm nét 3x3
+                int[,] kernel = new int[,]
+                {
+                    { -1, -1, -1 },
+                    { -1,  9, -1 },
+                    { -1, -1, -1 }
+                };
+
+                int kSize = 3;
+                int kCenter = kSize / 2;
+
+                for (int y = kCenter; y < height - kCenter; y++)
+                {
+                    for (int x = kCenter; x < width - kCenter; x++)
+                    {
+                        int sum = 0;
+
+                        for (int ky = 0; ky < kSize; ky++)
+                        {
+                            for (int kx = 0; kx < kSize; kx++)
+                            {
+                                int px = x + kx - kCenter;
+                                int py = y + ky - kCenter;
+                                int pixel = input[py * width + px];
+                                int weight = kernel[ky, kx];
+
+                                sum += pixel * weight;
+                            }
+                        }
+
+                        sum = Math.Max(0, Math.Min(255, sum)); // clamp 0–255
+                        output[y * width + x] = (byte)sum;
+                    }
+                }
+
+                return output;
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+                return null;
+            }
+        }
+
+        public static byte[] SharpenBitmapToByteArray(byte[] inputBytes, int width, int height)
+        {
+            try
+            {
+                if (inputBytes.Length != width * height)
+                    throw new Exception("Dữ liệu ảnh không khớp kích thước." + inputBytes.Length);
+
+                // Tạo Mat từ mảng byte[]
+                Mat src = new Mat(height, width, MatType.CV_8UC1, inputBytes);
+
+                // Tạo kernel sharpen 3x3
+                Mat kernel = new Mat(3, 3, MatType.CV_32F, new float[]
+                {
+                    -1, -1, -1,
+                    -1,  9, -1,
+                    -1, -1, -1
+                });
+
+                // Áp dụng sharpen
+                Mat dst = new Mat();
+                Cv2.Filter2D(src, dst, src.Depth(), kernel);
+
+                // Chuyển Mat kết quả về byte[]
+                byte[] outputBytes = new byte[dst.Rows * dst.Cols];
+                Marshal.Copy(dst.Data, outputBytes, 0, outputBytes.Length);
+
+                return outputBytes;
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+                return null;
+            }
         }
 
         private void UpdateSignerPad(Byte[] _image)

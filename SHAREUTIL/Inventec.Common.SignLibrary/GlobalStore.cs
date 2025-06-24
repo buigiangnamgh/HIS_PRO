@@ -261,5 +261,7 @@ namespace Inventec.Common.SignLibrary
         internal static string EMR_EMR_SIGNER_AUTO_UPDATE_SIGN_IMAGE = "";
 
         internal static string EMR_EMR_DOCUMENT_PATIENT_SIGN_FIRST_OPTION = "";
+
+        internal static string EMR_EMR_SIGN_CONNECT_DEVICE_TYPE_OPTION = "1";
     }
 }

@@ -30,8 +30,8 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UCViewer));
-            DevExpress.Utils.SuperToolTip superToolTip2 = new DevExpress.Utils.SuperToolTip();
-            DevExpress.Utils.ToolTipItem toolTipItem2 = new DevExpress.Utils.ToolTipItem();
+            DevExpress.Utils.SuperToolTip superToolTip1 = new DevExpress.Utils.SuperToolTip();
+            DevExpress.Utils.ToolTipItem toolTipItem1 = new DevExpress.Utils.ToolTipItem();
             this.pdfViewer1 = new DevExpress.XtraPdfViewer.PdfViewer();
             this.barManager1 = new DevExpress.XtraBars.BarManager(this.components);
             this.pdfCommandBar1 = new DevExpress.XtraPdfViewer.Bars.PdfCommandBar();
@@ -124,7 +124,7 @@
             // 
             this.pdfViewer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pdfViewer1.Location = new System.Drawing.Point(0, 39);
-            this.pdfViewer1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pdfViewer1.Margin = new System.Windows.Forms.Padding(4);
             this.pdfViewer1.MenuManager = this.barManager1;
             this.pdfViewer1.Name = "pdfViewer1";
             this.pdfViewer1.Size = new System.Drawing.Size(2616, 649);
@@ -532,7 +532,7 @@
             // 
             // barCheckUsingSignPad
             // 
-            this.barCheckUsingSignPad.Caption = "Sử dụng bảng ký";
+            this.barCheckUsingSignPad.Caption = "Sử dụng vân tay";
             this.barCheckUsingSignPad.CheckBoxVisibility = DevExpress.XtraBars.CheckBoxVisibility.BeforeText;
             this.barCheckUsingSignPad.Id = 55;
             this.barCheckUsingSignPad.Name = "barCheckUsingSignPad";
@@ -545,9 +545,9 @@
             this.bbtnSignType.CheckBoxVisibility = DevExpress.XtraBars.CheckBoxVisibility.BeforeText;
             this.bbtnSignType.Id = 54;
             this.bbtnSignType.Name = "bbtnSignType";
-            toolTipItem2.Text = "Ký bằng USB token hoặc HSM";
-            superToolTip2.Items.Add(toolTipItem2);
-            this.bbtnSignType.SuperTip = superToolTip2;
+            toolTipItem1.Text = "Ký bằng USB token hoặc HSM";
+            superToolTip1.Items.Add(toolTipItem1);
+            this.bbtnSignType.SuperTip = superToolTip1;
             this.bbtnSignType.Visibility = DevExpress.XtraBars.BarItemVisibility.Never;
             this.bbtnSignType.CheckedChanged += new DevExpress.XtraBars.ItemClickEventHandler(this.bbtnSignType_CheckedChanged);
             // 
@@ -619,7 +619,7 @@
             this.barDockControlTop.CausesValidation = false;
             this.barDockControlTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.barDockControlTop.Location = new System.Drawing.Point(0, 0);
-            this.barDockControlTop.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.barDockControlTop.Margin = new System.Windows.Forms.Padding(4);
             this.barDockControlTop.Size = new System.Drawing.Size(2839, 39);
             // 
             // barDockControlBottom
@@ -627,7 +627,7 @@
             this.barDockControlBottom.CausesValidation = false;
             this.barDockControlBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.barDockControlBottom.Location = new System.Drawing.Point(0, 688);
-            this.barDockControlBottom.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.barDockControlBottom.Margin = new System.Windows.Forms.Padding(4);
             this.barDockControlBottom.Size = new System.Drawing.Size(2839, 0);
             // 
             // barDockControlLeft
@@ -635,7 +635,7 @@
             this.barDockControlLeft.CausesValidation = false;
             this.barDockControlLeft.Dock = System.Windows.Forms.DockStyle.Left;
             this.barDockControlLeft.Location = new System.Drawing.Point(0, 39);
-            this.barDockControlLeft.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.barDockControlLeft.Margin = new System.Windows.Forms.Padding(4);
             this.barDockControlLeft.Size = new System.Drawing.Size(0, 649);
             // 
             // barDockControlRight
@@ -643,7 +643,7 @@
             this.barDockControlRight.CausesValidation = false;
             this.barDockControlRight.Dock = System.Windows.Forms.DockStyle.Right;
             this.barDockControlRight.Location = new System.Drawing.Point(2839, 39);
-            this.barDockControlRight.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.barDockControlRight.Margin = new System.Windows.Forms.Padding(4);
             this.barDockControlRight.Size = new System.Drawing.Size(0, 649);
             // 
             // dockManager1
@@ -669,7 +669,7 @@
             this.dockPanel1.Dock = DevExpress.XtraBars.Docking.DockingStyle.Right;
             this.dockPanel1.ID = new System.Guid("529d1c7c-406a-4a9f-871a-d38066fae95d");
             this.dockPanel1.Location = new System.Drawing.Point(2616, 39);
-            this.dockPanel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.dockPanel1.Margin = new System.Windows.Forms.Padding(4);
             this.dockPanel1.Name = "dockPanel1";
             this.dockPanel1.OriginalSize = new System.Drawing.Size(223, 200);
             this.dockPanel1.Size = new System.Drawing.Size(223, 649);
@@ -679,7 +679,7 @@
             // 
             this.dockPanel1_Container.Controls.Add(this.layoutControl1);
             this.dockPanel1_Container.Location = new System.Drawing.Point(5, 27);
-            this.dockPanel1_Container.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.dockPanel1_Container.Margin = new System.Windows.Forms.Padding(4);
             this.dockPanel1_Container.Name = "dockPanel1_Container";
             this.dockPanel1_Container.Size = new System.Drawing.Size(213, 617);
             this.dockPanel1_Container.TabIndex = 0;
@@ -690,7 +690,7 @@
             this.layoutControl1.Controls.Add(this.txtSignDescription);
             this.layoutControl1.Dock = System.Windows.Forms.DockStyle.Top;
             this.layoutControl1.Location = new System.Drawing.Point(0, 0);
-            this.layoutControl1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.layoutControl1.Margin = new System.Windows.Forms.Padding(4);
             this.layoutControl1.Name = "layoutControl1";
             this.layoutControl1.Root = this.layoutControlGroup1;
             this.layoutControl1.Size = new System.Drawing.Size(213, 594);
@@ -701,7 +701,7 @@
             // 
             this.txtSignDescriptionList.ActiveViewType = DevExpress.XtraRichEdit.RichEditViewType.Simple;
             this.txtSignDescriptionList.Location = new System.Drawing.Point(3, 3);
-            this.txtSignDescriptionList.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtSignDescriptionList.Margin = new System.Windows.Forms.Padding(4);
             this.txtSignDescriptionList.MenuManager = this.barManager1;
             this.txtSignDescriptionList.Name = "txtSignDescriptionList";
             this.txtSignDescriptionList.ReadOnly = true;
@@ -713,7 +713,7 @@
             // 
             this.txtSignDescription.EditValue = "";
             this.txtSignDescription.Location = new System.Drawing.Point(3, 482);
-            this.txtSignDescription.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtSignDescription.Margin = new System.Windows.Forms.Padding(4);
             this.txtSignDescription.MenuManager = this.barManager1;
             this.txtSignDescription.Name = "txtSignDescription";
             this.txtSignDescription.Properties.Appearance.Options.UseTextOptions = true;
@@ -871,7 +871,7 @@
             this.Controls.Add(this.barDockControlRight);
             this.Controls.Add(this.barDockControlBottom);
             this.Controls.Add(this.barDockControlTop);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "UCViewer";
             this.Size = new System.Drawing.Size(2839, 688);
             this.Load += new System.EventHandler(this.UCViewer1_Load);
