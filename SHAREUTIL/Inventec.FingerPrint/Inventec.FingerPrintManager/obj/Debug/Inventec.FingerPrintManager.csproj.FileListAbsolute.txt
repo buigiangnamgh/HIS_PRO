@@ -1,0 +1,14 @@
+D:\Software\ZKFinger SDK V10.0-Windows-Lite\C#\Demo\Inventec.FingerPrintManager\obj\Debug\Inventec.FingerPrintManager.csprojResolveAssemblyReference.cache
+D:\Software\ZKFinger SDK V10.0-Windows-Lite\C#\Demo\Inventec.FingerPrintManager\obj\Debug\Inventec.FingerPrintManager.Properties.Resources.resources
+D:\Software\ZKFinger SDK V10.0-Windows-Lite\C#\Demo\Inventec.FingerPrintManager\obj\Debug\Inventec.FingerPrintManager.csproj.GenerateResource.Cache
+D:\Software\ZKFinger SDK V10.0-Windows-Lite\C#\Demo\Inventec.FingerPrintManager\bin\Debug\Inventec.FingerPrintManager.exe
+D:\Software\ZKFinger SDK V10.0-Windows-Lite\C#\Demo\Inventec.FingerPrintManager\bin\Debug\Inventec.FingerPrintManager.pdb
+D:\Software\ZKFinger SDK V10.0-Windows-Lite\C#\Demo\Inventec.FingerPrintManager\bin\Debug\Inventec.Common.Logging.dll
+D:\Software\ZKFinger SDK V10.0-Windows-Lite\C#\Demo\Inventec.FingerPrintManager\bin\Debug\Inventec.FingerPrint.dll
+D:\Software\ZKFinger SDK V10.0-Windows-Lite\C#\Demo\Inventec.FingerPrintManager\bin\Debug\libzkfpcsharp.dll
+D:\Software\ZKFinger SDK V10.0-Windows-Lite\C#\Demo\Inventec.FingerPrintManager\bin\Debug\log4net.dll
+D:\Software\ZKFinger SDK V10.0-Windows-Lite\C#\Demo\Inventec.FingerPrintManager\bin\Debug\EntityFramework.dll
+D:\Software\ZKFinger SDK V10.0-Windows-Lite\C#\Demo\Inventec.FingerPrintManager\bin\Debug\Newtonsoft.Json.dll
+D:\Software\ZKFinger SDK V10.0-Windows-Lite\C#\Demo\Inventec.FingerPrintManager\bin\Debug\Inventec.FingerPrint.pdb
+D:\Software\ZKFinger SDK V10.0-Windows-Lite\C#\Demo\Inventec.FingerPrintManager\obj\Debug\Inventec.FingerPrintManager.exe
+D:\Software\ZKFinger SDK V10.0-Windows-Lite\C#\Demo\Inventec.FingerPrintManager\obj\Debug\Inventec.FingerPrintManager.pdb

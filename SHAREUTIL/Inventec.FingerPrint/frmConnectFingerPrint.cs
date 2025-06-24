@@ -54,6 +54,29 @@ namespace Inventec.FingerPrint
                 deviceDefault = signViewInputADO.DriverName;
             }
             InitializeComponent();
+            //int initResult = zkfp2.Init();
+            //if (initResult == zkfperrdef.ZKFP_ERR_OK)
+            //{
+            //    int deviceCount = zkfp2.GetDeviceCount();
+
+            //    if (deviceCount > 0)
+            //    {
+            //        MessageBox.Show("✅ Có thiết bị vân tay đang kết nối (" + deviceCount + ")");
+            //        bnVerify.Enabled = true;
+            //    }
+            //    else if (deviceCount == 0)
+            //        MessageBox.Show("❌ Không tìm thấy thiết bị.");
+            //    else
+            //        MessageBox.Show("⚠️ Lỗi khi kiểm tra thiết bị.");
+            //}
+            //else
+            //{
+            //    MessageBox.Show("❌ Lỗi khởi tạo SDK (Init).");
+            //}
+            bnInit_Click(null, null);
+            bnOpen_Click(null, null);
+            bnVerify_Click(null, null);
+
         }
 
         private void bnInit_Click(object sender, EventArgs e)
@@ -71,7 +94,7 @@ namespace Inventec.FingerPrint
                         {
                             cmbIdx.Items.Add(i.ToString());
                         }
-                        cmbIdx.SelectedIndex = 0;
+                        cmbIdx.Text = "0";
                         Inventec.Common.Logging.LogSystem.Debug("frmConnectFingerPrint deviceDefault: " + deviceDefault);
                         bnInit.Enabled = false;
                         bnFree.Enabled = true;
@@ -80,12 +103,12 @@ namespace Inventec.FingerPrint
                     else
                     {
                         zkfp2.Terminate();
-                        MessageBox.Show("No device connected!");
+                        MessageBox.Show("Không có thiết bị nào được kết nối!");
                     }
                 }
                 else
                 {
-                    MessageBox.Show("Initialize fail, ret=" + ret + " !");
+                    MessageBox.Show("Khởi tạo thất bại [ret=" + ret + "] !");
                 }
             }
             catch (Exception ex)
@@ -98,7 +121,7 @@ namespace Inventec.FingerPrint
         {
             try
             {
-                zkfp2.Terminate();
+                //zkfp2.Terminate();
                 cbRegTmp = 0;
                 bnInit.Enabled = true;
                 bnFree.Enabled = false;
@@ -119,18 +142,16 @@ namespace Inventec.FingerPrint
         {
             try
             {
-
-
                 int ret = zkfp.ZKFP_ERR_OK;
                 if (IntPtr.Zero == (mDevHandle = zkfp2.OpenDevice(cmbIdx.SelectedIndex)))
                 {
-                    MessageBox.Show("OpenDevice fail");
+                    MessageBox.Show("Kết nối thiết bị thành công");
                     return;
                 }
                 if (IntPtr.Zero == (mDBHandle = zkfp2.DBInit()))
                 {
-                    MessageBox.Show("Init DB fail");
-                    zkfp2.CloseDevice(mDevHandle);
+                    MessageBox.Show("Khởi tạo DB thất bại");
+                    //zkfp2.CloseDevice(mDevHandle);
                     mDevHandle = IntPtr.Zero;
                     return;
                 }
@@ -194,38 +215,89 @@ namespace Inventec.FingerPrint
             }
         }
 
-        protected override void DefWndProc(ref Message m)
+        public static byte[] Sharpen(byte[] input, int width, int height)
         {
             try
             {
 
 
+                if (input.Length != width * height)
+                    throw new ArgumentException("Kích thước dữ liệu không hợp lệ.");
+
+                byte[] output = new byte[width * height];
+
+                // Kernel làm nét 3x3
+                int[,] kernel = new int[,]
+                {
+                    { -1, -1, -1 },
+                    { -1,  9, -1 },
+                    { -1, -1, -1 }
+                };
+
+                int kSize = 3;
+                int kCenter = kSize / 2;
+
+                for (int y = kCenter; y < height - kCenter; y++)
+                {
+                    for (int x = kCenter; x < width - kCenter; x++)
+                    {
+                        int sum = 0;
+
+                        for (int ky = 0; ky < kSize; ky++)
+                        {
+                            for (int kx = 0; kx < kSize; kx++)
+                            {
+                                int px = x + kx - kCenter;
+                                int py = y + ky - kCenter;
+                                int pixel = input[py * width + px];
+                                int weight = kernel[ky, kx];
+
+                                sum += pixel * weight;
+                            }
+                        }
+
+                        sum = Math.Max(0, Math.Min(255, sum)); // clamp 0–255
+                        output[y * width + x] = (byte)sum;
+                    }
+                }
+
+                return output;
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+                return null;
+            }
+        }
+        Bitmap bmp;
+        protected override void DefWndProc(ref Message m)
+        {
+            try
+            {
                 switch (m.Msg)
                 {
                     case MESSAGE_CAPTURED_OK:
                         {
                             MemoryStream ms = new MemoryStream();
                             BitmapFormat.GetBitmap(FPBuffer, mfpWidth, mfpHeight, ref ms);
-                            Bitmap bmp = new Bitmap(ms);
+                            bmp = new Bitmap(ms);
                             this.picFPImg.Image = bmp;
-                            //File.WriteAllBytes("C:\\MyFile2.Png", image);
-                            if (actGetSignImageFile != null && bmp != null && bmp.Width > 0)
-                            {
-                                actGetSignImageFile(bmp);
-                            }
-                                if (IsRegister)
+                          //var bm1 =  Sharpen(ms.ToArray(),256,288);
+                            //bm1.Save("MyFile3.Png", System.Drawing.Imaging.ImageFormat.Png);
+
+                            if (IsRegister)
                             {
                                 int ret = zkfp.ZKFP_ERR_OK;
                                 int fid = 0, score = 0;
                                 ret = zkfp2.DBIdentify(mDBHandle, CapTmp, ref fid, ref score);
                                 if (zkfp.ZKFP_ERR_OK == ret)
                                 {
-                                    textRes.Text = "This finger was already register by " + fid + "!";
+                                    textRes.Text = "Dấu vân tay đã được đăng ký bởi " + fid + "!";
                                     return;
                                 }
                                 if (RegisterCount > 0 && zkfp2.DBMatch(mDBHandle, CapTmp, RegTmps[RegisterCount - 1]) <= 0)
                                 {
-                                    textRes.Text = "Please press the same finger 3 times for the enrollment";
+                                    textRes.Text = "Xin mời lấy dấu vân tay (3 lần)!";
                                     return;
                                 }
                                 Array.Copy(CapTmp, RegTmps[RegisterCount], cbCapTmp);
@@ -239,11 +311,11 @@ namespace Inventec.FingerPrint
                                            zkfp.ZKFP_ERR_OK == (ret = zkfp2.DBAdd(mDBHandle, iFid, RegTmp)))
                                     {
                                         iFid++;
-                                        textRes.Text = "enroll succ";
+                                        textRes.Text = "Kết nối thiết bị thành công";
                                     }
                                     else
                                     {
-                                        textRes.Text = "enroll fail, error code=" + ret;
+                                        textRes.Text = "Kết nối thiết bị thành công [error code=" + ret + "]";
                                     }
                                     IsRegister = false;
                                     return;
@@ -257,7 +329,7 @@ namespace Inventec.FingerPrint
                             {
                                 if (cbRegTmp <= 0)
                                 {
-                                    textRes.Text = "Please register your finger first!";
+                                    textRes.Text = "Xin mời quét vây tay!";
                                     return;
                                 }
                                 if (bIdentify)
@@ -342,7 +414,7 @@ namespace Inventec.FingerPrint
                     IsRegister = true;
                     RegisterCount = 0;
                     cbRegTmp = 0;
-                    textRes.Text = "Please press your finger 3 times!";
+                    textRes.Text = "Xin mời quét dấu vân tay! (3 lần)";
                 }
             }
             catch (Exception ex)
@@ -358,7 +430,7 @@ namespace Inventec.FingerPrint
                 if (!bIdentify)
                 {
                     bIdentify = true;
-                    textRes.Text = "Please press your finger!";
+                    textRes.Text = "Xin mời quét dấu vân tay!";
                 }
 
             }
@@ -375,13 +447,26 @@ namespace Inventec.FingerPrint
                 if (bIdentify)
                 {
                     bIdentify = false;
-                    textRes.Text = "Please press your finger!";
+                    textRes.Text = "Xin mời quét dấu vân tay!";
                 }
             }
             catch (Exception ex)
             {
                 Inventec.Common.Logging.LogSystem.Warn(ex);
             }
+        }
+
+        private void bnChoose_Click(object sender, EventArgs e)
+        {
+            if (actGetSignImageFile != null && bmp != null && bmp.Width > 0)
+            {
+                actGetSignImageFile(bmp);
+            }
+        }
+
+        private void btnChoose_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
