@@ -42,7 +42,7 @@ using HIS.Desktop.Plugins.ServiceReqList.Base;
 using HIS.Desktop.Utilities.Extensions;
 using HIS.Desktop.Utility;
 using Inventec.Common.Adapter;
-using Inventec.Common.Integrate.EditorLoader;
+using Inventec.Common.Controls.EditorLoader;
 using Inventec.Common.Logging;
 using Inventec.Core;
 using Inventec.Desktop.Common.LanguageManager;
@@ -6548,13 +6548,17 @@ namespace HIS.Desktop.Plugins.ServiceReqList
                 string txt = "";
                 if (datas != null && datas.Count > 0)
                 {
-
+                    HisSereServFilter hisSereServFilter = new HisSereServFilter();
+                    hisSereServFilter.SERVICE_REQ_IDs = datas.Select(o => o.ID).ToList();
+                    var listHisSereServ = new BackendAdapter(param).Get<List<HIS_SERE_SERV>>("api/HisSereServ/Get", ApiConsumers.MosConsumer, hisSereServFilter, param);
                     foreach (var item in datas)
                     {
                         Inventec.Common.Logging.LogSystem.Info("BN: " + item.SERVICE_REQ_CODE);
-                        //int amount = (int)itemSS.AMOUNT;
-                        GenText(item, ref txt);
-                        txt = txt + "\n";
+                        var SereServBySRQ = listHisSereServ.Where(o => o.SERVICE_REQ_ID == item.ID).ToList();
+                        foreach (var ss in SereServBySRQ)
+                        {
+                            GenText(item, ss, ref txt);
+                        }
                     }
                     string resultPrint = new Bartender.PrintTestServiceReq.PrintTestServiceReq().StartPrintTestServiceReq(txt);
 
@@ -6570,24 +6574,47 @@ namespace HIS.Desktop.Plugins.ServiceReqList
             }
         }
 
-        private void GenText(ServiceReqADO serviceReq, ref string txt)
+        private void GenText(ServiceReqADO serviceReq, HIS_SERE_SERV sereServ, ref string txt)
         {
+            var service = BackendDataWorker.Get<HIS_SERVICE>().FirstOrDefault(o => o.ID == sereServ.SERVICE_ID);
+            HIS_SERVICE servicePr = null;
+            if (service != null && service.PARENT_ID.HasValue && service.PARENT_ID.Value > 0)
+            {
+                servicePr = BackendDataWorker.Get<HIS_SERVICE>().FirstOrDefault(o => o.ID == service.PARENT_ID);
+            }
             txt += serviceReq.BARCODE;
             txt += "," + serviceReq.TDL_PATIENT_NAME;
             txt += "," + serviceReq.TDL_PATIENT_GENDER_NAME;
             txt += "," + serviceReq.TDL_PATIENT_DOB;
-            txt += "," + (serviceReq.TDL_PATIENT_DOB != null && serviceReq.TDL_PATIENT_DOB > 10000000000000 ? serviceReq.TDL_PATIENT_DOB.ToString().Substring(0, 4) : "");
+            txt += "," + (serviceReq.TDL_PATIENT_DOB > 10000000000000 ? serviceReq.TDL_PATIENT_DOB.ToString().Substring(0, 4) : "");
             txt += "," + serviceReq.REQUEST_DEPARTMENT_NAME;
             txt += "," + serviceReq.REQUEST_ROOM_NAME;
-            //string parentName = "";
-            //string serviceTypeName = "";
-            //foreach (var item in sereServ)
-            //{
-            //    parentName += "," + (item.PARENT_ID.HasValue && item.PARENT_ID.Value > 0 ? BackendDataWorker.Get<V_HIS_SERVICE>().FirstOrDefault(o => item.PARENT_ID.Value == o.ID).SERVICE_NAME : "");
-            //    serviceTypeName += "," + item.SERVICE_TYPE_NAME;
-            //}
-            txt += "," + Inventec.Common.DateTime.Convert.TimeNumberToTimeStringWithoutSecond(serviceReq.INTRUCTION_TIME);
+            txt += "," + Inventec.Common.DateTime.Convert.TimeNumberToTimeStringWithoutSecond(Inventec.Common.DateTime.Get.Now() ?? 0);
             txt += "," + serviceReq.TDL_TREATMENT_CODE;
+            if (serviceReq.TEST_SAMPLE_TYPE_ID.HasValue && serviceReq.TEST_SAMPLE_TYPE_ID.Value > 0)
+            {
+                var testSampleType = BackendDataWorker.Get<HIS_TEST_SAMPLE_TYPE>().FirstOrDefault(o => o.ID == serviceReq.TEST_SAMPLE_TYPE_ID);
+                if (testSampleType != null)
+                {
+                    txt += "," + testSampleType.TEST_SAMPLE_TYPE_NAME;
+                }
+            }
+            else
+            {
+                txt += ",";
+            }
+
+
+            if (servicePr != null)
+            {
+                txt += "," + servicePr.SERVICE_NAME;
+            }
+            else
+            {
+                txt += ",";
+            }
+            // xuong dong (1 row trong db)
+            txt += "\n";
         }
 
         private void PrintBarcodeByBartender(HIS_SERVICE_REQ req)
