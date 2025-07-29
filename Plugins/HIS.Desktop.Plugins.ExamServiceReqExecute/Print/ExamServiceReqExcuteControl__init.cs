@@ -257,7 +257,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
         {
             try
             {
-                InDonPhongKhamTongHop(false, true);
+                InDonPhongKhamTongHop(false,false, true);
             }
             catch (Exception ex)
             {

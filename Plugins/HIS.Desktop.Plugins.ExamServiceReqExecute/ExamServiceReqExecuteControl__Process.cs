@@ -1963,6 +1963,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                         isInPhieuPhuLuc = treatmentFinish.IsPrintTrichPhuLuc;
                         isKyPhieuPhuLuc = treatmentFinish.IsSignTrichPhuLuc;
                         isPrintPrescription = treatmentFinish.IsPrintPrescription;
+                        isSignPrescription = treatmentFinish.IsSignPrescription;
                         isPrintHosTransfer = treatmentFinish.IsPrintHosTransfer;
                         IsSignExam = treatmentFinish.IsSignExam;
                         IsPrintExam = treatmentFinish.IsPrintExam;
@@ -2579,11 +2580,18 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                         //        printTest.Print("Mps000316");
                         //    }
                         //}
-
-                        if (this.isPrintPrescription)
+                        Inventec.Common.Logging.LogSystem.Fatal("SaveExamServiceReq this.isPrintPrescription " + this.isPrintPrescription + " this.isSignPrescription " + this.isSignPrescription);
+                        if (this.isPrintPrescription && !this.isSignPrescription)
                         {
                             bool printNow = true;
-                            InDonPhongKhamTongHop(printNow, false);
+                            bool signNow = false;
+                            InDonPhongKhamTongHop(printNow, signNow, false);
+                        }
+                        else if (this.isPrintPrescription && this.isSignPrescription)
+                        {
+                            bool printNow = true;
+                            bool signNow = true;
+                            InDonPhongKhamTongHop(printNow, signNow, false);
                         }
                     }
                     if (this.isPrintHosTransfer)

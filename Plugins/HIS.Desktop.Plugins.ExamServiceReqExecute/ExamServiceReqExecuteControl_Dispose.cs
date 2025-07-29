@@ -86,6 +86,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                 IsAppointment_ExamServiceAdd = false;
                 isPayment = false;
                 isPrintPrescription = false;
+                isSignPrescription = false;
                 isKyPhieuPhuLuc = false;
                 isInPhieuPhuLuc = false;
                 IsSignBHXH = false;
