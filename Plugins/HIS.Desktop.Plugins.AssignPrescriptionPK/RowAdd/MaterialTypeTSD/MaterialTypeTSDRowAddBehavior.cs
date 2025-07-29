@@ -1,4 +1,21 @@
-﻿using DevExpress.XtraEditors.DXErrorProvider;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using DevExpress.XtraEditors.DXErrorProvider;
 using HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription;
 using HIS.Desktop.Plugins.AssignPrescriptionPK.Resources;
 using Inventec.Core;
@@ -53,10 +70,12 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Add.MaterialType
             this.SERVICE_CONDITION_NAME = frmAssignPrescription.currentMedicineTypeADOForEdit.SERVICE_CONDITION_NAME;
             this.Amount = 1;
             this.frmAssignPrescription.PresAmount = 1;
+            this.IsExpend = frmAssignPrescription.currentMedicineTypeADOForEdit.IsExpend;
             if (!String.IsNullOrEmpty(frmAssignPrescription.txtPreviousUseDay.Text) && Inventec.Common.TypeConvert.Parse.ToInt64(frmAssignPrescription.txtPreviousUseDay.Text) > 0)
                 this.PREVIOUS_USING_COUNT = Inventec.Common.TypeConvert.Parse.ToInt64(frmAssignPrescription.txtPreviousUseDay.Text);
             else
                 this.PREVIOUS_USING_COUNT = null;
+            this.IsStent = frmAssignPrescription.currentMedicineTypeADOForEdit.IsStent;
         }
 
         bool IAdd.Run()
@@ -64,7 +83,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Add.MaterialType
             bool success = false;
             try
             {
-                if (ValidSerialNumber() && this.CheckPatientTypeHasValue())
+                if (ValidSerialNumber() && this.CheckPatientTypeHasValue() && frmAssignPrescription.CheckValidMaterial())
                 {
                     this.CreateADO();
                     this.UpdatePatientTypeInDataRow(this.medicineTypeSDO);
@@ -98,6 +117,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Add.MaterialType
             }
             return success;
         }
+
 
         bool ValidSerialNumber()
         {

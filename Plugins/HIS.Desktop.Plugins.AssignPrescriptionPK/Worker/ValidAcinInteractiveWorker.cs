@@ -1,4 +1,21 @@
-﻿using DevExpress.XtraEditors;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using DevExpress.XtraEditors;
 using HIS.Desktop.ApiConsumer;
 using HIS.Desktop.LocalStorage.BackendData;
 using HIS.Desktop.LocalStorage.LocalData;
@@ -60,7 +77,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK
                 if (medicineTypeCodeOthers != null && medicineTypeCodeOthers.Count > 0 && currentMedicineTypeAcins != null && currentMedicineTypeAcins.Count > 0)
                 {
                     Inventec.Common.Logging.LogSystem.Debug("Cac thuoc dang ke hoac thuoc da ke trong ngay____" + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => medicineTypeCodes), medicineTypeCodes)
-                        + "________Thuoc dang chon de bo sung____" + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => mediMatyTypeADO), mediMatyTypeADO) + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => currentMedicineTypeAcins), currentMedicineTypeAcins));
+                        + "________Thuoc dang chon de bo sung____" + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => mediMatyTypeADO), mediMatyTypeADO));
 
                     var dicMedicineTypeAcin = currentMedicineTypeAcins.GroupBy(o => o.MEDICINE_TYPE_ID).ToDictionary(o => o.Key, t => t.ToList());
                     var mediMatyTypeAcinByCurrents = dicMedicineTypeAcin.ContainsKey(mediMatyTypeADO.ID) ? dicMedicineTypeAcin[mediMatyTypeADO.ID] : null;
@@ -96,7 +113,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK
                 }
                 else
                 {
-                    Inventec.Common.Logging.LogSystem.Info("ValidSameAcin: khong du 2 thuoc de so sanh hoac thuoc khong co thiet lap thuoc - hoat chat" + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => medicineTypeCodes), medicineTypeCodes) + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => medicineTypeCodeOthers), medicineTypeCodeOthers) + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => currentMedicineTypeAcins), currentMedicineTypeAcins));
+                    Inventec.Common.Logging.LogSystem.Info("ValidSameAcin: khong du 2 thuoc de so sanh hoac thuoc khong co thiet lap thuoc - hoat chat" + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => medicineTypeCodes), medicineTypeCodes) + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => medicineTypeCodeOthers), medicineTypeCodeOthers));
                 }
             }
             catch (Exception ex)
@@ -128,7 +145,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK
         {
             bool valid = true;
             try
-            {              
+            {
                 strtxtLoginName = _frmAssignPrescription.txtLoginName.Text;
                 requestDepartmentId = HIS.Desktop.LocalStorage.LocalData.WorkPlace.GetDepartmentId(_frmAssignPrescription.currentModule.RoomTypeId); ;
                 treatmentId = _frmAssignPrescription.currentTreatmentWithPatientType.ID;
@@ -139,7 +156,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK
 
                 //Kiểm tra nếu có cấu hình key 'AcinInteractive__Grade' thì mới tiếp tục, không có thì bỏ qua không xử lý gì
                 if (HisConfigCFG.AcinInteractive__Grade.HasValue
-                    && ((MediMatyTypeADOs != null && MediMatyTypeADOs.Count > 0) || ((HisConfigCFG.AcinInteractiveOption == "1" || HisConfigCFG.AcinInteractiveOption == "2") && _frmAssignPrescription.ListMedicineTypeAcin != null && _frmAssignPrescription.ListMedicineTypeAcin.Count > 0)))
+                    && ((MediMatyTypeADOs != null && MediMatyTypeADOs.Count > 0) || ((HisConfigCFG.AcinInteractiveOption == "1" || HisConfigCFG.AcinInteractiveOption == "2" || HisConfigCFG.AcinInteractiveOption == "3") && _frmAssignPrescription.ListMedicineTypeAcin != null && _frmAssignPrescription.ListMedicineTypeAcin.Count > 0)))
                 {
                     var acinInteractives = BackendDataWorker.Get<MOS.EFMODEL.DataModels.V_HIS_ACIN_INTERACTIVE>();
                     string messageErr = "", Message1 = "";
@@ -168,20 +185,57 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK
                         var medicineTypeAcin__Adds = GetMedicineTypeAcinByMedicineType(mediId__Adds);
                         if (medicineTypeAcin__Adds != null && medicineTypeAcin__Adds.Count > 0)
                         {
+                            List<long> mediId_Check = new List<long>();
+                            if (HisConfigCFG.AcinInteractiveOption == "3")
+                            {
+                                var HtuMediCheckAT = _frmAssignPrescription.DataHtuList != null && _frmAssignPrescription.DataHtuList.Count > 0 && _frmAssignPrescription.DataHtuList.Exists(o => o.IsChecked && o.CHECK_ACIN_INTERACTIVE == 1) ? _frmAssignPrescription.DataHtuList.Where(o => o.IsChecked && o.CHECK_ACIN_INTERACTIVE == 1).ToList() : null;
+                                if (HtuMediCheckAT == null || HtuMediCheckAT.Count == 0)
+                                {
+                                    return valid;
+                                }
+                                else if (HtuMediCheckAT != null && HtuMediCheckAT.Count > 0)
+                                {
+                                    foreach (var item in MediMatyTypeADOs)
+                                    {
+                                        if (item.HTU_IDs != null && item.HTU_IDs.Count > 0 && HtuMediCheckAT.Exists(o => item.HTU_IDs.Exists(p => p == o.ID)))
+                                        {
+                                            mediId_Check.Add(item.ID);
+                                        }
+                                    }
+                                    if(_frmAssignPrescription.ListMedicineTypeOld != null && _frmAssignPrescription.ListMedicineTypeOld.Count > 0)
+                                    {
+                                        foreach (var item in _frmAssignPrescription.ListMedicineTypeOld)
+                                        {
+                                            if (!string.IsNullOrEmpty(item.HTU_IDS) && HtuMediCheckAT.Exists(o => item.HTU_IDS.Split(new string[] {","}, StringSplitOptions.RemoveEmptyEntries).ToList().Exists(p => p == o.ID.ToString())))
+                                            {
+                                                mediId_Check.Add(item.MEDICINE_TYPE_ID);
+                                            }
+                                        }
+                                    }
+                                }
+                                if (mediId_Check == null || mediId_Check.Count == 0)
+                                    return valid;
+                            }
                             //Lấy tất cả các thuốc đã chọn kê trong grid bên phải
                             //Mỗi thuốc đã kê lấy ra tất cả các cấu hình loại thuốc - hoạt chất
                             var mediId__InGrids = MediMatyTypeADOs.Where(o => o.SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__THUOC).Select(o => o.ID).Distinct().ToList();
+
                             foreach (var item in medicineTypeAcin__Adds)
                             {
                                 var medicineTypeAcin__InGrids = GetMedicineTypeAcinByMedicineType(mediId__InGrids);
                                 //Khi bật key AcinInteractiveOption thì thực hiện lấy thêm tất cả các thuốc được kê tương ứng với ngày chỉ định của hsđt.
-                                if ((HisConfigCFG.AcinInteractiveOption == "1" || HisConfigCFG.AcinInteractiveOption == "2") && _frmAssignPrescription.ListMedicineTypeAcin != null && _frmAssignPrescription.ListMedicineTypeAcin.Count > 0)
+                                if ((HisConfigCFG.AcinInteractiveOption == "1" || HisConfigCFG.AcinInteractiveOption == "2" || HisConfigCFG.AcinInteractiveOption == "3") && _frmAssignPrescription.ListMedicineTypeAcin != null && _frmAssignPrescription.ListMedicineTypeAcin.Count > 0)
                                 {
                                     if (medicineTypeAcin__InGrids != null && medicineTypeAcin__InGrids.Count > 0)
                                         medicineTypeAcin__InGrids.AddRange(_frmAssignPrescription.ListMedicineTypeAcin.Where(o => medicineTypeAcin__InGrids.Exists
                                         (p => p.MEDICINE_TYPE_ID != o.MEDICINE_TYPE_ID)));
                                     else
                                         medicineTypeAcin__InGrids = _frmAssignPrescription.ListMedicineTypeAcin;
+                                }
+
+                                if (mediId_Check.Count > 0)
+                                {
+                                    medicineTypeAcin__InGrids = medicineTypeAcin__InGrids.Where(o => mediId_Check.Exists(p => p == o.MEDICINE_TYPE_ID)).ToList();
                                 }
                                 if (medicineTypeAcin__InGrids != null && medicineTypeAcin__InGrids.Count > 0)
                                 {
@@ -348,25 +402,25 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK
         private static void CreatMedicineInteractive()
         {
             try
-            {              
+            {
                 CommonParam param = new CommonParam();
                 HIS_MEDICINE_INTERACTIVE data = new HIS_MEDICINE_INTERACTIVE();
                 data.REQUEST_LOGINNAME = strtxtLoginName;
                 data.REQUEST_DEPARTMENT_ID = requestDepartmentId;
                 data.TREATMENT_ID = treatmentId;
-                              
+
                 if (ucIcdValue != null)
                 {
                     data.ICD_CODE = ucIcdValue.ICD_CODE;
                     data.ICD_NAME = ucIcdValue.ICD_NAME;
                 }
-               
+
                 if (icdCauseValue != null)
                 {
                     data.ICD_CAUSE_CODE = icdCauseValue.ICD_CODE;
                     data.ICD_CAUSE_NAME = icdCauseValue.ICD_NAME;
                 }
-                             
+
                 if (secondaryIcdValue != null)
                 {
                     data.ICD_SUB_CODE = secondaryIcdValue.ICD_SUB_CODE;

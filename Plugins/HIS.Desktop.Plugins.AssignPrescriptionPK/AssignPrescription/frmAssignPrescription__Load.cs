@@ -1,4 +1,21 @@
-﻿using HIS.Desktop.ApiConsumer;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using HIS.Desktop.ApiConsumer;
 using HIS.Desktop.Common;
 using HIS.Desktop.LocalStorage.BackendData;
 using HIS.Desktop.LocalStorage.ConfigApplication;
@@ -77,15 +94,18 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                             IcdInputADO icdData = UcIcdGetValue() as IcdInputADO;
                             var serviceTemp = lstService.Where(o => o.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE && o.ID == currentRowSereServADO.SERVICE_ID).FirstOrDefault();
                             if (serviceTemp != null && serviceTemp.OTHER_PAY_SOURCE_ID.HasValue && dataOtherPaySourceTmps.Exists(k =>
-                               k.ID == serviceTemp.OTHER_PAY_SOURCE_ID.Value)
-                               && (String.IsNullOrEmpty(serviceTemp.OTHER_PAY_SOURCE_ICDS) || (icdData != null && !String.IsNullOrEmpty(serviceTemp.OTHER_PAY_SOURCE_ICDS) && !String.IsNullOrEmpty(icdData.ICD_CODE) && ("," + serviceTemp.OTHER_PAY_SOURCE_ICDS.ToLower() + ",").Contains("," + icdData.ICD_CODE.ToLower() + ","))))
+                               k.ID == serviceTemp.OTHER_PAY_SOURCE_ID.Value))
                             {
-                                var otherPaysourceByService = dataOtherPaySourceTmps.Where(k => k.ID == serviceTemp.OTHER_PAY_SOURCE_ID.Value).FirstOrDefault();
-                                if (otherPaysourceByService != null)
+
+                                if (((String.IsNullOrEmpty(serviceTemp.OTHER_PAY_SOURCE_ICDS) && string.IsNullOrEmpty(serviceTemp.BHYT_WHITELIST_CODES)) || (icdData != null && !String.IsNullOrEmpty(serviceTemp.OTHER_PAY_SOURCE_ICDS) && !String.IsNullOrEmpty(icdData.ICD_CODE) && ("," + serviceTemp.OTHER_PAY_SOURCE_ICDS.ToLower() + ",").Contains("," + icdData.ICD_CODE.ToLower() + ","))) || ((currentRowSereServADO.OTHER_PAY_SOURCE_ID == null || String.IsNullOrEmpty(serviceTemp.OTHER_PAY_SOURCE_ICDS)) && (!string.IsNullOrEmpty(serviceTemp.BHYT_WHITELIST_CODES) && (!string.IsNullOrEmpty(currentTreatmentWithPatientType.HEIN_CARD_NUMBER) && ("," + serviceTemp.BHYT_WHITELIST_CODES + ",").Contains(currentTreatmentWithPatientType.HEIN_CARD_NUMBER.Substring(0, 2))))))
                                 {
-                                    currentRowSereServADO.OTHER_PAY_SOURCE_ID = otherPaysourceByService.ID;
-                                    currentRowSereServADO.OTHER_PAY_SOURCE_CODE = otherPaysourceByService.OTHER_PAY_SOURCE_CODE;
-                                    currentRowSereServADO.OTHER_PAY_SOURCE_NAME = otherPaysourceByService.OTHER_PAY_SOURCE_NAME;
+                                    var otherPaysourceByService = dataOtherPaySourceTmps.Where(k => k.ID == serviceTemp.OTHER_PAY_SOURCE_ID.Value).FirstOrDefault();
+                                    if (otherPaysourceByService != null)
+                                    {
+                                        currentRowSereServADO.OTHER_PAY_SOURCE_ID = otherPaysourceByService.ID;
+                                        currentRowSereServADO.OTHER_PAY_SOURCE_CODE = otherPaysourceByService.OTHER_PAY_SOURCE_CODE;
+                                        currentRowSereServADO.OTHER_PAY_SOURCE_NAME = otherPaysourceByService.OTHER_PAY_SOURCE_NAME;
+                                    }
                                 }
                             }
                             Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => serviceTemp), serviceTemp)
@@ -610,7 +630,6 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 Inventec.Common.Logging.LogSystem.Warn(ex);
             }
         }
-
         private async Task FillDataToControlsForm()
         {
             try
@@ -621,7 +640,9 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 this.InitComboUser();
                 this.InitComboHtu(null);
                 this.InitComboMedicineUseForm(null);
-                this.InitComboMediStockAllow(0);
+                await InitComboMediStockAllow(0);
+
+                LoadSubPrescription();
                 this.InitPatientAgeInfo();
                 this.FillSomePatientInfoSelectedInFormGeneralAfterLoad();
             }
@@ -852,7 +873,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 LogSystem.Debug(LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => this.currentTreatmentWithPatientType), this.currentTreatmentWithPatientType)
                     + LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => this.treatmentId), this.treatmentId)
                     + LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => this.intructionTimeSelecteds), this.intructionTimeSelecteds));
-                this.LoadDataSereServWithTreatment(currentTreatmentWithPatientType,0);
+                this.LoadDataSereServWithTreatment(currentTreatmentWithPatientType, 0);
                 this.PatientTypeWithTreatmentView7();
                 this.FillTreatmentInfo__PatientType();//tinh toan va hien thi thong tin ve tong tien tat ca cac dich vu dang chi dinh
                 this.CheckWarningOverTotalPatientPrice();
@@ -963,7 +984,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 HIS_CARD PatientCard = null;
                 decimal SoDuTaiKhoan = 0;
                 if (treatmentFees[0].TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__KHAM
-                && (HisConfigCFG.IsUsingExecuteRoomPayment == "1" || HisConfigCFG.ExecuteRoomPaymentOption == "1" || HisConfigCFG.ExecuteRoomPaymentOption == "2")) {
+                && (HisConfigCFG.IsUsingExecuteRoomPayment == "1" || HisConfigCFG.ExecuteRoomPaymentOption == "1" || HisConfigCFG.ExecuteRoomPaymentOption == "2"))
+                {
                     HisCardFilter CardFilter = new HisCardFilter();
                     CardFilter.PATIENT_ID = treatmentFees[0].PATIENT_ID;
                     CardFilter.IS_ACTIVE = IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE;
@@ -1391,6 +1413,28 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 HIS_TRACKING tracking = new HIS_TRACKING();
                 tracking = (this.Listtrackings != null && this.Listtrackings.Count > 0) ? this.Listtrackings.OrderByDescending(o => o.TRACKING_TIME).FirstOrDefault() : null;
 
+
+                Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => icdExam), icdExam));
+
+                Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => tracking), tracking));
+
+                Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => currentTreatmentWithPatientType), currentTreatmentWithPatientType));
+                if (tracking != null && !String.IsNullOrEmpty(tracking.TRADITIONAL_ICD_CODE) && HisConfigCFG.TrackingCreate__UpdateTreatmentIcd == "1")
+                {
+                    this.LoadIcdTranditionalToControl(tracking.TRADITIONAL_ICD_CODE, tracking.TRADITIONAL_ICD_NAME);
+                    this.LoadIcdSubTranditionalToControl(tracking.TRADITIONAL_ICD_SUB_CODE, tracking.TRADITIONAL_ICD_TEXT);
+                }
+                else if ((HisConfigCFG.IsloadIcdFromExamServiceExecute || (currentTreatmentWithPatientType != null && String.IsNullOrEmpty(currentTreatmentWithPatientType.TRADITIONAL_ICD_CODE))) && this.icdExam != null)
+                {
+                    this.LoadIcdTranditionalToControl(icdExam.TRADITIONAL_ICD_CODE, icdExam.TRADITIONAL_ICD_NAME);
+                    this.LoadIcdSubTranditionalToControl(icdExam.TRADITIONAL_ICD_SUB_CODE, icdExam.TRADITIONAL_ICD_TEXT);
+                }
+                else if (this.currentTreatmentWithPatientType != null)
+                {
+                    this.LoadIcdTranditionalToControl(currentTreatmentWithPatientType.TRADITIONAL_ICD_CODE, currentTreatmentWithPatientType.TRADITIONAL_ICD_NAME);
+                    this.LoadIcdSubTranditionalToControl(currentTreatmentWithPatientType.TRADITIONAL_ICD_SUB_CODE, currentTreatmentWithPatientType.TRADITIONAL_ICD_TEXT);
+                }
+
                 if (tracking != null && !String.IsNullOrEmpty(tracking.ICD_CODE) && HisConfigCFG.TrackingCreate__UpdateTreatmentIcd == "1")
                 {
                     this.LoadIcdToControl(tracking.ICD_CODE, tracking.ICD_NAME);
@@ -1678,7 +1722,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             try
             {
                 var patientTypeAllows = BackendDataWorker.Get<MOS.EFMODEL.DataModels.V_HIS_PATIENT_TYPE_ALLOW>();
-                var patientTypes = BackendDataWorker.Get<MOS.EFMODEL.DataModels.HIS_PATIENT_TYPE>();
+                var patientTypes = BackendDataWorker.Get<MOS.EFMODEL.DataModels.HIS_PATIENT_TYPE>().Where(o => o.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE).ToList();
                 if (patientTypeAllows != null && patientTypeAllows.Count > 0 && patientTypes != null)
                 {
                     if (this.currentTreatmentWithPatientType != null && !String.IsNullOrEmpty(this.currentTreatmentWithPatientType.PATIENT_TYPE_CODE))
@@ -1858,11 +1902,11 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                     setyAllowsIds.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__THUOC);
                     //if (this.sereServsInTreatmentRaw == null || this.sereServsInTreatmentRaw.Count == 0)
                     //{
-                        Inventec.Common.Logging.LogSystem.Debug("LoadDataSereServWithTreatment.3");
-                        HisSereServFilter hisSereServFilter = new HisSereServFilter();
-                        hisSereServFilter.TREATMENT_ID = treatment.ID;
-                        hisSereServFilter.TDL_SERVICE_TYPE_IDs = setyAllowsIds;
-                        this.sereServWithTreatment = new BackendAdapter(param).Get<List<MOS.EFMODEL.DataModels.HIS_SERE_SERV>>("api/HisSereServ/GetView", ApiConsumers.MosConsumerNoStore, hisSereServFilter, ProcessLostToken, param);
+                    Inventec.Common.Logging.LogSystem.Debug("LoadDataSereServWithTreatment.3");
+                    HisSereServFilter hisSereServFilter = new HisSereServFilter();
+                    hisSereServFilter.TREATMENT_ID = treatment.ID;
+                    hisSereServFilter.TDL_SERVICE_TYPE_IDs = setyAllowsIds;
+                    this.sereServWithTreatment = new BackendAdapter(param).Get<List<MOS.EFMODEL.DataModels.HIS_SERE_SERV>>("api/HisSereServ/Get", ApiConsumers.MosConsumerNoStore, hisSereServFilter, ProcessLostToken, param);
                     //}
                     //else
                     //{

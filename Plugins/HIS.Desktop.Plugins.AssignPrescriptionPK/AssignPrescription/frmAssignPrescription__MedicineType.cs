@@ -1,4 +1,21 @@
-﻿using HIS.Desktop.ApiConsumer;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using HIS.Desktop.ApiConsumer;
 using HIS.Desktop.LocalStorage.BackendData;
 using HIS.Desktop.LocalStorage.BackendData.ADO;
 using HIS.Desktop.LocalStorage.ConfigApplication;
@@ -544,14 +561,22 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                             this.currentMedicineTypeADOForEdit.IS_SUB_PRES = null;
                         }
                     }
-                    if (currentMedicineTypeADOForEdit.HTU_ID != null)
+                    if (currentMedicineTypeADOForEdit.HTU_IDs != null && currentMedicineTypeADOForEdit.HTU_IDs.Count > 0)
                     {
-                        this.cboHtu.EditValue = currentMedicineTypeADOForEdit.HTU_ID;
+                        if (DataHtuList != null && DataHtuList.Count > 0)
+                        {
+                            DataHtuList.ForEach(o =>
+                            {
+                                o.IsChecked = currentMedicineTypeADOForEdit.HTU_IDs.Exists(p => p == o.ID);
+                            });
+                            this.cboHtu.Text = string.Join(", ", DataHtuList.Where(o => o.IsChecked).Select(o => o.HTU_NAME));
+                        }
                         this.cboHtu.Properties.Buttons[1].Visible = true;
                     }
                     else
                     {
-                        this.cboHtu.EditValue = null;
+                        DataHtuList.ForEach(o => o.IsChecked = false);
+                        this.cboHtu.Text = null;
                         this.cboHtu.Properties.Buttons[1].Visible = false;
                     }
                     if (CheckExistMedicinePaymentLimit(this.currentMedicineTypeADOForEdit.MEDICINE_TYPE_CODE))

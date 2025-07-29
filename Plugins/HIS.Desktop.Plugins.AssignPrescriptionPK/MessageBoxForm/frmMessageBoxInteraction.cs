@@ -1,7 +1,25 @@
-﻿using DevExpress.XtraEditors;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using DevExpress.XtraEditors;
 using DevExpress.XtraEditors.DXErrorProvider;
 using DevExpress.XtraEditors.ViewInfo;
 using DevExpress.XtraLayout.Utils;
+using HIS.Desktop.LocalStorage.BackendData;
 using Inventec.Desktop.Common.Controls.ValidationRule;
 using Inventec.Desktop.Common.LanguageManager;
 using Inventec.Desktop.Common.LibraryMessage;
@@ -74,25 +92,27 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.MessageBoxForm
                  {
                      this.lblQuestion.Text = this.Question;
                      this.lciReason.Visibility = LayoutVisibility.Always;
-                     this.btnAdd.Visible = true;
+                    this.layoutControlItem1.Visibility = LayoutVisibility.Always;
+                    this.btnAdd.Visible = true;
                      layoutControlItem4.Visibility = LayoutVisibility.Always;
                      this.btnAdd.Text = Inventec.Common.Resource.Get.Value("frmMessageBoxInteraction.btnAdd.Text", Resources.ResourceLanguageManager.LanguagefrmMessageBoxInteraction, Inventec.Desktop.Common.LanguageManager.LanguageManager.GetCulture());
                      this.btnNoAdd.Text = Inventec.Common.Resource.Get.Value("frmMessageBoxInteraction.btnNoAdd.Text", Resources.ResourceLanguageManager.LanguagefrmMessageBoxInteraction, Inventec.Desktop.Common.LanguageManager.LanguageManager.GetCulture());
-                     this.Size = new Size(627, 370);
+                     this.Size = new Size(627, 420);
                  }
                  else
                  {
                      this.lciQuestion.Visibility = LayoutVisibility.Never;
                      this.lciReason.Visibility = LayoutVisibility.Never;
-                     this.btnAdd.Visible = false;
+                    this.layoutControlItem1.Visibility = LayoutVisibility.Never;
+                    this.btnAdd.Visible = false;
                      layoutControlItem4.Visibility = LayoutVisibility.Never;
                      this.btnNoAdd.Text = Inventec.Common.Resource.Get.Value("frmMessageBoxInteraction.btnAgree.Text", Resources.ResourceLanguageManager.LanguagefrmMessageBoxInteraction, Inventec.Desktop.Common.LanguageManager.LanguageManager.GetCulture());
-                     this.Size = new Size(627, 310);
+                     this.Size = new Size(627, 360);
                      emptySpaceItem1.Size = new Size(530, 20);
                  }
 
                  ValidateForm();
-
+                gridControl1.DataSource = BackendDataWorker.Get<MOS.EFMODEL.DataModels.HIS_INTERACTION_REASON>().Where(o => o.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE).ToList();
                  this.timer1.Interval = 100;
                  this.timer1.Enabled = true;
                  this.timer1.Start();
@@ -252,7 +272,97 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.MessageBoxForm
             }
         }
 
+        private void btnMore_Click(object sender, EventArgs e)
+        {
+            ProcessShowpopupControlContainer();
+        }
 
+        private void gridView1_RowCellClick(object sender, DevExpress.XtraGrid.Views.Grid.RowCellClickEventArgs e)
+        {
+
+            try
+            {
+                var rowdataAssignOld = (MOS.EFMODEL.DataModels.HIS_INTERACTION_REASON)gridView1.GetFocusedRow();
+
+                if (rowdataAssignOld != null)
+                {
+                    txtReason.Text = rowdataAssignOld.INTERACTION_REASON_NAME;
+                }
+                popupControlContainer1.HidePopup();
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+
+        }
+
+        int popupHeight = 600;
+        void ProcessShowpopupControlContainer()
+        {
+            int heightPlus = 0;
+            Rectangle bounds = GetClientRectangle(this.txtReason, ref heightPlus);
+            Rectangle bounds1 = GetAllClientRectangle(this.Parent, ref heightPlus);
+            if (bounds == null)
+            {
+                bounds = txtReason.Bounds;
+            }
+
+            //xử lý tính toán lại vị trí hiển thị popup tương đối phụ thuộc theo chiều cao của popup, kích thước màn hình, đối tượng bệnh nhân(bhyt/...)
+            if (bounds1.Height <= 768)
+            {
+                if (popupHeight == 600)
+                {
+                    heightPlus = bounds.Y >= 650 ? -125 : (bounds.Y > 410 ? (-262) : (bounds.Y < 230 ? (-bounds.Y - 227) : -276));
+                }
+                else
+                    heightPlus = bounds.Y >= 650 ? -60 : (bounds.Y > 410 ? -60 : ((bounds.Y < 230 ? -bounds.Y - 27 : -78)));
+            }
+            else
+            {
+                if (popupHeight == 600)
+                {
+                    heightPlus = bounds.Y >= 650 ? -327 : (bounds.Y > 410 ? -260 : (bounds.Y < 230 ? (-bounds.Y - 225) : -608));
+                }
+                else
+                    heightPlus = bounds.Y >= 650 ? (-122) : (bounds.Y > 410 ? -60 : ((bounds.Y < 230 ? -bounds.Y - 25 : -180)));
+            }
+
+            Rectangle buttonBounds = new Rectangle(txtReason.Bounds.X + 100, bounds.Y, bounds.Width, bounds.Height);
+            popupControlContainer1.ShowPopup(new Point(txtReason.Bounds.X + 650, txtReason.Bounds.Y + txtReason.Bounds.Height + 320));
+            gridView1.Focus();
+            gridView1.FocusedRowHandle = 0;
+        }
+
+        private Rectangle GetClientRectangle(Control control, ref int heightPlus)
+        {
+            Rectangle bounds = default(Rectangle);
+            if (control != null)
+            {
+                bounds = control.Bounds;
+                if (control.Parent != null && !(control is UserControl))
+                {
+                    heightPlus += bounds.Y;
+                    return GetClientRectangle(control.Parent, ref heightPlus);
+                }
+            }
+            return bounds;
+        }
+
+        private Rectangle GetAllClientRectangle(Control control, ref int heightPlus)
+        {
+            Rectangle bounds = default(Rectangle);
+            if (control != null)
+            {
+                bounds = control.Bounds;
+                if (control.Parent != null)
+                {
+                    heightPlus += bounds.Y;
+                    return GetAllClientRectangle(control.Parent, ref heightPlus);
+                }
+            }
+            return bounds;
+        }
 
 
     }

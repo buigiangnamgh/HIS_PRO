@@ -1,4 +1,21 @@
-﻿using HIS.Desktop.ApiConsumer;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using HIS.Desktop.ApiConsumer;
 using HIS.Desktop.LocalStorage.BackendData;
 using HIS.Desktop.Plugins.AssignPrescriptionPK.ADO;
 using HIS.Desktop.Plugins.AssignPrescriptionPK.Config;
@@ -553,9 +570,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK
                     foreach (var item in medis)
                     {
                         if ((item.DataType == HIS.Desktop.LocalStorage.BackendData.ADO.MedicineMaterialTypeComboADO.THUOC)
-                            && (!GlobalStore.IsTreatmentIn || GlobalStore.IsCabinet)
-                            && !((serviceReqMain != null && serviceReqMain.IS_MAIN_EXAM != 1) && (HisConfigCFG.IsUsingSubPrescriptionMechanism == "1"))
-                            )
+                            && ((!GlobalStore.IsTreatmentIn || !GlobalStore.IsCabinet)
+                            && !(serviceReqMain != null && serviceReqMain.IS_MAIN_EXAM != 1 && HisConfigCFG.IsUsingSubPrescriptionMechanism == "1")) || GlobalStore.IsCabinet)
                         {
                             TakeBeanSDO takeBeanSDO = new TakeBeanSDO();
                             takeBeanSDO.ClientSessionKey = GlobalStore.ClientSessionKey;
@@ -806,9 +822,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK
                     foreach (var item in matys)
                     {
                         if ((item.DataType == HIS.Desktop.LocalStorage.BackendData.ADO.MedicineMaterialTypeComboADO.VATTU)
-                            && (!GlobalStore.IsTreatmentIn || GlobalStore.IsCabinet)
-                            && !((serviceReqMain != null && serviceReqMain.IS_MAIN_EXAM != 1) && (HisConfigCFG.IsUsingSubPrescriptionMechanism == "1"))
-                            )
+                                && ((!GlobalStore.IsTreatmentIn || !GlobalStore.IsCabinet)
+                                && !(serviceReqMain != null && serviceReqMain.IS_MAIN_EXAM != 1 && HisConfigCFG.IsUsingSubPrescriptionMechanism == "1")) || GlobalStore.IsCabinet)
                         {
                             TakeBeanSDO takeBeanSDO = new TakeBeanSDO();
                             takeBeanSDO.ClientSessionKey = GlobalStore.ClientSessionKey;
@@ -867,7 +882,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK
             bool result = true;
             try
             {
-                if (!GlobalStore.IsTreatmentIn || GlobalStore.IsCabinet && !((serviceReqMain != null && serviceReqMain.IS_MAIN_EXAM != 1) && (HisConfigCFG.IsUsingSubPrescriptionMechanism == "1")))
+                if (((!GlobalStore.IsTreatmentIn || !GlobalStore.IsCabinet)
+                        && !(serviceReqMain != null && serviceReqMain.IS_MAIN_EXAM != 1 && HisConfigCFG.IsUsingSubPrescriptionMechanism == "1")) || GlobalStore.IsCabinet)
                 {
                     if (matys == null || matys.Count == 0)
                     {

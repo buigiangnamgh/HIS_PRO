@@ -1,4 +1,21 @@
-﻿using DevExpress.XtraEditors.DXErrorProvider;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using DevExpress.XtraEditors.DXErrorProvider;
 using HIS.Desktop.ADO;
 using HIS.Desktop.ApiConsumer;
 using HIS.Desktop.LocalStorage.BackendData;
@@ -83,7 +100,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Add
         protected CommonParam Param { get; set; }
         protected MediMatyTypeADO medicineTypeSDO { get; set; }
 
-        protected long HtuId { get; set; }
+        protected List<long> HtuIds { get; set; }
+        protected long HtuIdNotCheckAcinInteractive { get; set; }
         protected long MedicineUseFormId { get; set; }
         protected string Tutorial { get; set; }
         protected bool IsExpend { get; set; }
@@ -147,7 +165,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Add
             this.MediMatyTypeADOs = frmAssignPrescription.mediMatyTypeADOs;
             this.MediStockD1SDOs = frmAssignPrescription.mediStockD1ADOs;
             this.MedicineUseFormId = Inventec.Common.TypeConvert.Parse.ToInt64((frmAssignPrescription.cboMedicineUseForm.EditValue ?? "0").ToString());
-            this.HtuId = Inventec.Common.TypeConvert.Parse.ToInt64((frmAssignPrescription.cboHtu.EditValue ?? "0").ToString());
+            this.HtuIds = frmAssignPrescription.DataHtuList.Exists(o=>o.IsChecked) ? frmAssignPrescription.DataHtuList.Where(o => o.IsChecked).Select(o=>o.ID).ToList() : null;
+            this.HtuIdNotCheckAcinInteractive = frmAssignPrescription.DataHtuList.Exists(o => o.IsChecked && o.CHECK_ACIN_INTERACTIVE != 1) ? frmAssignPrescription.DataHtuList.Where(o => o.IsChecked && o.CHECK_ACIN_INTERACTIVE != 1).OrderBy(o => o.NUM_ORDER).ToList()[0].ID : 0;
             this.Tutorial = frmAssignPrescription.txtTutorial.Text.Trim();
             this.UseDays = frmAssignPrescription.spinSoLuongNgay.Value;
 
@@ -176,6 +195,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Add
             this.DataRow = dataRow;
             this.ExceedLimitInPresReason = frmAssignPrescription.reasonMaxPrescription;
             this.ExceedLimitInDayReason = frmAssignPrescription.reasonMaxPrescriptionDay;
+
             this.OddPresReason = frmAssignPrescription.reasonOddPrescription;
             if (HisConfigCFG.ManyDayPrescriptionOption == 2 && GlobalStore.IsTreatmentIn && !GlobalStore.IsCabinet)
             {
@@ -254,8 +274,10 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Add
             medicineTypeSDO.IsDisableExpend = this.IsDisableExpend;
             if (this.MedicineUseFormId > 0)
                 medicineTypeSDO.MEDICINE_USE_FORM_ID = this.MedicineUseFormId;
-            if (this.HtuId > 0)
-                medicineTypeSDO.HTU_ID = this.HtuId;
+            if (this.HtuIds != null && this.HtuIds.Count > 0)
+                medicineTypeSDO.HTU_IDs = this.HtuIds;
+            if(this.HtuIdNotCheckAcinInteractive > 0)
+                medicineTypeSDO.HTU_ID_NOT_CHECK_ACIN_INTERACTIVE = this.HtuIdNotCheckAcinInteractive;
             if (frmAssignPrescription.currentMedicineTypeADOForEdit != null)
             {
                 if (frmAssignPrescription.currentMedicineTypeADOForEdit.LAST_EXP_PRICE.HasValue || frmAssignPrescription.currentMedicineTypeADOForEdit.LAST_EXP_VAT_RATIO.HasValue)
@@ -308,13 +330,22 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Add
             medicineTypeSDO.ODD_WARNING_CONTENT = frmAssignPrescription.currentMedicineTypeADOForEdit != null ? frmAssignPrescription.currentMedicineTypeADOForEdit.ODD_WARNING_CONTENT : null;
             medicineTypeSDO.IdRowPopupGrid = frmAssignPrescription.currentMedicineTypeADOForEdit != null ? frmAssignPrescription.currentMedicineTypeADOForEdit.IdRow : 0;
             medicineTypeSDO.IntructionTime = frmAssignPrescription.InstructionTime;
+            medicineTypeSDO.IS_IDENTITY_MANAGEMENT = frmAssignPrescription.currentMedicineTypeADOForEdit != null ? frmAssignPrescription.currentMedicineTypeADOForEdit.IS_IDENTITY_MANAGEMENT : null;
+            medicineTypeSDO.IS_REUSABLE = frmAssignPrescription.currentMedicineTypeADOForEdit != null ? frmAssignPrescription.currentMedicineTypeADOForEdit.IS_REUSABLE : null;
+            medicineTypeSDO.ALERT_MAX_IN_TREATMENT = frmAssignPrescription.currentMedicineTypeADOForEdit != null ? frmAssignPrescription.currentMedicineTypeADOForEdit.ALERT_MAX_IN_TREATMENT : null;
+            medicineTypeSDO.IS_BLOCK_MAX_IN_TREATMENT = frmAssignPrescription.currentMedicineTypeADOForEdit != null ? frmAssignPrescription.currentMedicineTypeADOForEdit.IS_BLOCK_MAX_IN_TREATMENT : null;
+            medicineTypeSDO.NUMBER_EXCEED_IN_TREATMENT = frmAssignPrescription.currentMedicineTypeADOForEdit != null ? frmAssignPrescription.currentMedicineTypeADOForEdit.NUMBER_EXCEED_IN_TREATMENT : null;
+            medicineTypeSDO.NUMBER_PRESCIPTION_IN_TREATMENT = frmAssignPrescription.currentMedicineTypeADOForEdit != null ? frmAssignPrescription.currentMedicineTypeADOForEdit.NUMBER_PRESCIPTION_IN_TREATMENT : null;
+            var amountPres = (medicineTypeSDO.NUMBER_PRESCIPTION_IN_TREATMENT ?? 0) + medicineTypeSDO.AMOUNT + frmAssignPrescription.mediMatyTypeADOs.Where(o => o.ID == medicineTypeSDO.ID && o.PrimaryKey != medicineTypeSDO.PrimaryKey).Sum(o => o.UseDays != 0 ? o.AMOUNT / o.UseDays : o.AMOUNT);
+            if (amountPres > medicineTypeSDO.ALERT_MAX_IN_TREATMENT)
+                medicineTypeSDO.IsAlertInTreatPresciption = true;
         }
 
         protected void SaveDataAndRefesh(MediMatyTypeADO mediMatyADO)
         {
             frmAssignPrescription.mediMatyTypeADOs.Add(mediMatyADO);
             frmAssignPrescription.idRow += frmAssignPrescription.stepRow;
-
+            frmAssignPrescription.ProcessMediStock(frmAssignPrescription.mediMatyTypeADOs);
             frmAssignPrescription.gridViewServiceProcess.GridControl.DataSource = null;
             frmAssignPrescription.gridViewServiceProcess.GridControl.DataSource = frmAssignPrescription.mediMatyTypeADOs.OrderBy(o => o.NUM_ORDER).ToList();
             int rowHandlerActive = 0;

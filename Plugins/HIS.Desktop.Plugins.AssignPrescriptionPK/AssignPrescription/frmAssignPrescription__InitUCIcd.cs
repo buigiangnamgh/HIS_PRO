@@ -1,4 +1,21 @@
-﻿using ACS.SDO;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using ACS.SDO;
 using DevExpress.XtraEditors.DXErrorProvider;
 using HIS.Desktop.ApiConsumer;
 using HIS.Desktop.LocalStorage.BackendData;
@@ -11,6 +28,7 @@ using HIS.UC.Icd.ADO;
 using HIS.UC.PatientSelect;
 using HIS.UC.PeriousExpMestList;
 using HIS.UC.SecondaryIcd;
+using HIS.UC.SecondaryIcd.ADO;
 using HIS.UC.TreatmentFinish;
 using Inventec.Common.Adapter;
 using Inventec.Common.Logging;
@@ -201,6 +219,43 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 {
                     chkEditIcd.Checked = (HisConfigCFG.AutoCheckIcd != "2");
                     txtIcdMainText.Text = icdName;
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+        private void LoadIcdTranditionalToControl(string icdCode, string icdName)
+        {
+            try
+            {
+                if(icdYhctProcessor != null)
+                {
+                    UC.Icd.ADO.IcdInputADO icdYhct = new UC.Icd.ADO.IcdInputADO();
+                    icdYhct.ICD_CODE = icdCode;
+                    icdYhct.ICD_NAME = icdName;
+                    if (ucIcdYhct != null)
+                    {
+                        this.icdYhctProcessor.Reload(ucIcdYhct, icdYhct);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+        private void LoadIcdSubTranditionalToControl(string icdCode, string icdName)
+        {
+            try
+            {
+                SecondaryIcdDataADO subYhctIcd = new SecondaryIcdDataADO();
+                subYhctIcd.ICD_SUB_CODE = icdCode;
+                subYhctIcd.ICD_TEXT = icdName;
+                if (ucSecondaryIcdYhct != null)
+                {
+                    subIcdYhctProcessor.Reload(ucSecondaryIcdYhct, subYhctIcd);
                 }
             }
             catch (Exception ex)

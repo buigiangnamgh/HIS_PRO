@@ -69,7 +69,6 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-       
         
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
@@ -81,6 +80,15 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Properties {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap block {
+            get {
+                object obj = ResourceManager.GetObject("block", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
@@ -88,6 +96,36 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Properties {
         internal static System.Drawing.Bitmap dau_tích_02 {
             get {
                 object obj = ResourceManager.GetObject("dau tích-02", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap noi_dung_mau {
+            get {
+                object obj = ResourceManager.GetObject("noi-dung-mau", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap noi_dung_mau_dis {
+            get {
+                object obj = ResourceManager.GetObject("noi-dung-mau-dis", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap warning {
+            get {
+                object obj = ResourceManager.GetObject("warning", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

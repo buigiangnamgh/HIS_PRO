@@ -1,4 +1,21 @@
-﻿using ACS.SDO;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using ACS.SDO;
 using HIS.Desktop.ApiConsumer;
 using HIS.Desktop.LocalStorage.BackendData;
 using HIS.Desktop.LocalStorage.LocalData;
@@ -30,12 +47,14 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 int heightUCBottom = 0;
 
                 this.isAutoCheckIcd = (HisConfigCFG.AutoCheckIcd == GlobalVariables.CommonStringTrue);
-                this.currentIcds = BackendDataWorker.Get<HIS_ICD>().Where(o => o.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE).OrderBy(o => o.ICD_CODE).ToList();
+                this.currentIcds = BackendDataWorker.Get<HIS_ICD>().Where(o => o.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE && o.IS_TRADITIONAL != 1).OrderBy(o => o.ICD_CODE).ToList();
+                this.currentTranditionalIcds = BackendDataWorker.Get<HIS_ICD>().Where(o => o.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE && o.IS_TRADITIONAL == 1).OrderBy(o => o.ICD_CODE).ToList();
                 VisibleLayoutSubIcd(HisConfigCFG.OptionSubIcdWhenFinish == "3");
                 UCIcdInit();
                 UCIcdCauseInit();
                 UcDateInit();
-
+                InitUcIcdYhct();
+                InitUcSecondaryIcdYhct();
                 if (HisConfigCFG.IsUsingServiceTime
                     && !GlobalStore.IsTreatmentIn
                     && !GlobalStore.IsExecutePTTT)
@@ -114,6 +133,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 ado.TreatmentEndHasAppointmentTimeDefault = HisConfigCFG.TreatmentEndHasAppointmentTimeDefault;
                 ado.treatmentId = this.treatmentId;
                 ado.WorkingRoomId = (this.currentModule != null ? this.currentModule.RoomId : 0);
+                ado.WorkingDepartmentId = this.currentWorkPlace != null ? this.currentWorkPlace.DepartmentId : 0;
                 var dataRoom = BackendDataWorker.Get<V_HIS_ROOM>().FirstOrDefault(o => o.ID == this.currentModule.RoomId);
                 ado.IsBlockOrder = dataRoom.IS_BLOCK_NUM_ORDER == 1 ? true : false;
                 ado.LanguageInputADO = new UC.TreatmentFinish.ADO.LanguageInputADO();

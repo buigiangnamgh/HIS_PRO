@@ -1,4 +1,21 @@
-﻿using DevExpress.XtraEditors;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using DevExpress.XtraEditors;
 using HIS.Desktop.ApiConsumer;
 using HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription;
 using HIS.Desktop.Plugins.AssignPrescriptionPK.Resources;
@@ -24,13 +41,13 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Save.Create
                 List<OutPatientPresSDO> listInput = new List<OutPatientPresSDO>();
                 List<long> lstUseTime = new List<long>();
                 if (this.OutPatientPresMedicineADOs != null && this.OutPatientPresMedicineADOs.Count > 0)
-                    lstUseTime.AddRange(this.OutPatientPresMedicineADOs.Select(o=>o.useTime));
+                    lstUseTime.AddRange(this.OutPatientPresMedicineADOs.Select(o => o.useTime));
                 if (this.OutPatientPresMaterialADOs != null && this.OutPatientPresMaterialADOs.Count > 0)
                     lstUseTime.AddRange(this.OutPatientPresMaterialADOs.Select(o => o.useTime));
                 lstUseTime = lstUseTime.Distinct().ToList();
 
                 Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => lstUseTime), lstUseTime));
-                if(!GlobalStore.IsTreatmentIn && !GlobalStore.IsCabinet && this.InstructionTimes != null && this.InstructionTimes.Count > 1)
+                if (!GlobalStore.IsTreatmentIn && !GlobalStore.IsCabinet && this.InstructionTimes != null && this.InstructionTimes.Count > 1)
                 {
                     foreach (var item in InstructionTimes)
                     {
@@ -38,7 +55,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Save.Create
                         ProcessData(ref prescriptionSDO, 0, item);
                         listInput.Add(prescriptionSDO);
                     }
-                }    
+                }
                 else if (lstUseTime != null && lstUseTime.Count() > 0)
                 {
                     foreach (var item in lstUseTime)
@@ -91,18 +108,18 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Save.Create
             try
             {
                 OutPatientPresMedicineSDOs = new List<PresMedicineSDO>();
-				foreach (var item in OutPatientPresMedicineADOs)
-				{
-                    if(item.useTime == useTime)
-					{
+                foreach (var item in OutPatientPresMedicineADOs)
+                {
+                    if (item.useTime == useTime)
+                    {
                         PresMedicineSDO sdo = new PresMedicineSDO();
                         Inventec.Common.Mapper.DataObjectMapper.Map<PresMedicineSDO>(sdo, item);
                         sdo.InstructionTimes = item.InstructionTimes;
                         sdo.MedicineBeanIds = item.MedicineBeanIds;
                         sdo.MedicineInfoSdos = item.MedicineInfoSdos;
                         OutPatientPresMedicineSDOs.Add(sdo);
-                    }                        
-				}
+                    }
+                }
                 OutPatientPresMaterialSDOs = new List<PresMaterialSDO>();
                 foreach (var item in OutPatientPresMaterialADOs)
                 {
@@ -122,6 +139,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Save.Create
                 prescriptionSDO.TreatmentId = this.TreatmentId;
                 prescriptionSDO.PrescriptionTypeId = PrescriptionType.NEW;
                 prescriptionSDO.ClientSessionKey = GlobalStore.ClientSessionKey;
+                prescriptionSDO.PrescriptionPhaseNum = (short?)this.PrescriptionPhaseNum;
                 if (this.ParentServiceReqId > 0)
                     prescriptionSDO.ParentServiceReqId = this.ParentServiceReqId;
 
@@ -136,7 +154,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Save.Create
             }
         }
 
-        private void ProcessPrescriptionUpdateSDO(OutPatientPresSDO prescriptionSDO,long useTime, long intructionTime)
+        private void ProcessPrescriptionUpdateSDO(OutPatientPresSDO prescriptionSDO, long useTime, long intructionTime)
         {
             try
             {
@@ -154,11 +172,11 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Save.Create
                 if (useTime > 0)
                     prescriptionSDO.UseTime = useTime;
                 //else
-                    //prescriptionSDO.UseTime = this.InstructionTimes.OrderByDescending(o => o).First();
+                //prescriptionSDO.UseTime = this.InstructionTimes.OrderByDescending(o => o).First();
                 prescriptionSDO.IsCabinet = GlobalStore.IsCabinet;
                 prescriptionSDO.ProvisionalDiagnosis = this.ProvisionalDiagnosis;
                 prescriptionSDO.InteractionReason = this.InteractionReason;
-                if(useTime > 0)
+                if (useTime > 0)
                     prescriptionSDO.UseTimes = new List<long> { useTime };
                 //Set numofday của đươn ngoài kho
                 //Kiem tra khong có đơn trong kho thì set numofday cho đơn ngoài kho
@@ -202,6 +220,10 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Save.Create
                 prescriptionSDO.IcdCauseCode = this.IcdCauseCode;
                 prescriptionSDO.IcdText = this.IcdText;
                 prescriptionSDO.IcdSubCode = this.IcdSubCode;
+                prescriptionSDO.TraditionalIcdCode = this.IcdTranditionalCode;
+                prescriptionSDO.TraditionalIcdName = this.IcdTranditionalName;
+                prescriptionSDO.TraditionalIcdSubCode = this.IcdTranditionalSubCode;
+                prescriptionSDO.TraditionalIcdText = this.IcdTranditionalText;
             }
             catch (Exception ex)
             {
@@ -214,7 +236,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Save.Create
             try
             {
                 if (prescriptionSDO.Materials.Count > 0
-                    || prescriptionSDO.Medicines.Count > 0
+                        || prescriptionSDO.Medicines.Count > 0
                     )
                 {
                     if (frmAssignPrescription.currentSereServ != null)
@@ -269,6 +291,10 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Save.Create
                     prescriptionSDO.TreatmentFinishSDO.IcdCauseCode = this.IcdCauseCode;
                     prescriptionSDO.TreatmentFinishSDO.IcdSubCode = this.IcdSubCode;
                     prescriptionSDO.TreatmentFinishSDO.IcdText = this.IcdText;
+                    prescriptionSDO.TreatmentFinishSDO.TraditionalIcdCode = this.IcdTranditionalCode;
+                    prescriptionSDO.TreatmentFinishSDO.TraditionalIcdName = this.IcdTranditionalName;
+                    prescriptionSDO.TreatmentFinishSDO.TraditionalIcdSubCode = this.IcdTranditionalSubCode;
+                    prescriptionSDO.TreatmentFinishSDO.TraditionalIcdText = this.IcdTranditionalText;
                     prescriptionSDO.TreatmentFinishSDO.TreatmentId = this.TreatmentId;
                     prescriptionSDO.TreatmentFinishSDO.TreatmentEndTypeExtId = this.TreatmentEndTypeExtId;
                     prescriptionSDO.TreatmentFinishSDO.TreatmentEndTypeId = this.TreatmentEndTypeId;
@@ -313,7 +339,9 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Save.Create
                     prescriptionSDO.TreatmentFinishSDO.SubclinicalResult = this.SubclinicalResult;
                     prescriptionSDO.TreatmentFinishSDO.PatientCondition = this.PatientCondition;
                     prescriptionSDO.TreatmentFinishSDO.TransportVehicle = this.TransportVehicle;
+                    prescriptionSDO.TreatmentFinishSDO.TransporterLoginnames = this.TransporterLoginnames;
                     prescriptionSDO.TreatmentFinishSDO.Transporter = this.Transporter;
+                    prescriptionSDO.TreatmentFinishSDO.TreatmentMethod = this.TreatmentMethod;
                     prescriptionSDO.TreatmentFinishSDO.TreatmentDirection = this.TreatmentDirection;
                     prescriptionSDO.TreatmentFinishSDO.MainCause = this.MainCause;
                     prescriptionSDO.TreatmentFinishSDO.Surgery = this.Surgery;

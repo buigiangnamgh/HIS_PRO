@@ -2685,21 +2685,6 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Resources
                 return "";
             }
         }
-        internal static string ThuocVatTuChuaNhapQuaKyTuChoPhep
-        {
-            get
-            {
-                try
-                {
-                    return Inventec.Common.Resource.Get.Value("ThuocVatTuChuaNhapQuaKyTuChoPhep", languageMessage, Inventec.Desktop.Common.LanguageManager.LanguageManager.GetCulture());
-                }
-                catch (Exception ex)
-                {
-                    Inventec.Common.Logging.LogSystem.Warn(ex);
-                }
-                return "";
-            }
-        }
         internal static string ThuocVatTuChuaNhapLyDoKeQuaSoLuongToiDaTrongNgay
         {
             get

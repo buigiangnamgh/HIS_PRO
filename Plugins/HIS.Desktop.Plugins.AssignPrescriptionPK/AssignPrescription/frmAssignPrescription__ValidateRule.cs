@@ -1,4 +1,21 @@
-﻿using DevExpress.XtraEditors;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using DevExpress.XtraEditors;
 using DevExpress.XtraEditors.DXErrorProvider;
 using DevExpress.XtraEditors.ViewInfo;
 using HIS.Desktop.LocalStorage.LocalData;
@@ -128,13 +145,37 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 {
                     this.ValidationSingleControl(this.txtInteractionReason, this.dxValidationProviderControl);
                 }
+
+                this.dxValidationProviderControl.SetValidationRule(txtAdvise, null);
+                this.ValidMaxLengthControl(this.txtAdvise, false, 1024);
+                if (HisConfigCFG.IsRequiredHtu == "1")
+                {
+                    this.ValidationSingleControl(this.cboHtu, this.dxValidProviderBoXung);
+                    lciHtu.AppearanceItemCaption.ForeColor = System.Drawing.Color.Maroon;
+                }
             }
             catch (Exception ex)
             {
                 Inventec.Common.Logging.LogSystem.Warn(ex);
             }
         }
+        private void ValidMaxLengthControl(BaseEdit txt, bool IsRequired, int maxlength)
+        {
 
+            try
+            {
+                ValidateMaxLength valid = new ValidateMaxLength();
+                valid.maxLength = maxlength;
+                valid.textEdit = txt;
+                valid.IsRequired = IsRequired;
+                this.dxValidationProviderControl.SetValidationRule(txt, valid);
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+
+        }
         private void ValdateSecondaryIcd()
         {
             try

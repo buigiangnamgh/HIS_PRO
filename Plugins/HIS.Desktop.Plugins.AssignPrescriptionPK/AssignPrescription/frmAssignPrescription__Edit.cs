@@ -1,4 +1,21 @@
-﻿using DevExpress.XtraGrid.Columns;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using DevExpress.XtraGrid.Columns;
 using HIS.Desktop.LocalStorage.BackendData;
 using HIS.Desktop.LocalStorage.ConfigApplication;
 using HIS.Desktop.LocalStorage.LocalData;
@@ -169,6 +186,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 Inventec.Common.Logging.LogSystem.Debug("3. " + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => currentMediStock.Count), currentMediStock.Count));
 
                 LoadIcdToControl(this.oldServiceReq.ICD_CODE, this.oldServiceReq.ICD_NAME);
+                LoadIcdTranditionalToControl(this.oldServiceReq.TRADITIONAL_ICD_CODE, this.oldServiceReq.TRADITIONAL_ICD_NAME);
+                LoadIcdSubTranditionalToControl(this.oldServiceReq.TRADITIONAL_ICD_SUB_CODE, this.oldServiceReq.TRADITIONAL_ICD_TEXT);
                 LoadIcdCauseToControl(this.oldServiceReq.ICD_CAUSE_CODE, this.oldServiceReq.ICD_CAUSE_NAME);
                 var icdCaus = this.currentIcds.FirstOrDefault(o => o.ICD_CODE == this.oldServiceReq.ICD_CODE);
                 if (icdCaus != null)
@@ -213,11 +232,15 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
         {
             try
             {
-                CommonParam param = new CommonParam();
-                HisObeyContraindiFilter filter = new HisObeyContraindiFilter();
-                filter.SERVICE_REQ_CODE__EXACT = oldServiceReq.SERVICE_REQ_CODE;
-                ObeyContraindiEdit = new Inventec.Common.Adapter.BackendAdapter(param).Get<List<HIS_OBEY_CONTRAINDI>>("api/HisObeyContraindi/Get", ApiConsumer.ApiConsumers.MosConsumer, filter, param);
-
+                if (HisConfigCFG.ContraindicaterWarningOption == "1" || HisConfigCFG.ContraindicaterWarningOption == "2")
+                {
+                    CommonParam param = new CommonParam();
+                    HisObeyContraindiFilter filter = new HisObeyContraindiFilter();
+                    filter.SERVICE_REQ_CODE__EXACT = oldServiceReq.SERVICE_REQ_CODE;
+                    filter.TREATMENT_ID = oldServiceReq.TREATMENT_ID;
+                    filter.REQUEST_LOGINNAME__EXACT = oldServiceReq.REQUEST_LOGINNAME;
+                    ObeyContraindiEdit = new Inventec.Common.Adapter.BackendAdapter(param).Get<List<HIS_OBEY_CONTRAINDI>>("api/HisObeyContraindi/Get", ApiConsumer.ApiConsumers.MosConsumer, filter, param);
+                }
             }
             catch (Exception ex)
             {
@@ -325,12 +348,14 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                         this.SetTotalPrice__TrongDon();
                         this.idRow = (int)((this.mediMatyTypeADOs != null && this.mediMatyTypeADOs.Count > 0) ? (this.mediMatyTypeADOs.Max(o => o.NUM_ORDER ?? 0) + stepRow) : 0 + stepRow);
                         this.InstructionTime = this.oldServiceReq.INTRUCTION_TIME;
+                        this.LoadMLCT();
                         this.EnableCheckTemporaryPres();
                         if (this.oldServiceReq.TRACKING_ID.HasValue)
                         {
                             cboPhieuDieuTri.EditValue = Inventec.Common.TypeConvert.Parse.ToInt64(this.oldServiceReq.TRACKING_ID.Value.ToString());
                             cboPhieuDieuTri.Properties.Buttons[1].Visible = true;
                         }
+                        this.spnPresPhaseNum.EditValue = this.oldServiceReq.PRESCRIPTION_PHASE_NUM.HasValue ? (long?)this.oldServiceReq.PRESCRIPTION_PHASE_NUM : null;
                         this.chkTemporayPres.Checked = (this.oldServiceReq.IS_TEMPORARY_PRES == 1);
                         this.chkHomePres.Checked = (this.oldServiceReq.IS_HOME_PRES == 1);
                         this.chkPreKidneyShift.Checked = (this.oldServiceReq.IS_KIDNEY == 1);

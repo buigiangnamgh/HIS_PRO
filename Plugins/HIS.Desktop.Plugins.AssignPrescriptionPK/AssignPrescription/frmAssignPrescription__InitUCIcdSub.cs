@@ -1,4 +1,21 @@
-﻿using ACS.SDO;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using ACS.SDO;
 using HIS.Desktop.ApiConsumer;
 using HIS.Desktop.LocalStorage.BackendData;
 using HIS.Desktop.LocalStorage.LocalData;
@@ -71,20 +88,6 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             }
         }
 
-        private void LoadIcdToControlIcdSub(string icdSubCode, string icdText)
-        {
-            try
-            {
-                this.txtIcdSubCode.Text = icdSubCode;
-                this.txtIcdText.Text = icdText;
-            }
-            catch (Exception ex)
-            {
-                Inventec.Common.Logging.LogSystem.Warn(ex);
-            }
-        }
-
-
         private void UcSecondaryIcdFocusComtrol()
         {
             try
@@ -126,8 +129,39 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
         {
             try
             {
-                this.txtIcdSubCode.Text = icdSubCode;
-                this.txtIcdText.Text = icdText;                    
+                List<string> IcdsubCodes = new List<string>();
+                List<string> IcdsubText = new List<string>();
+                if (!string.IsNullOrEmpty(icdText))
+                {
+                    IcdsubText = icdText.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                }
+                if (!string.IsNullOrEmpty(icdSubCode))
+                {
+                    var splt = icdSubCode.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                    foreach (var item in splt)
+                    {
+                        if (!string.IsNullOrEmpty(item))
+                        {
+                            var i = currentIcds.FirstOrDefault(o => o.ICD_CODE == item.Trim());
+                            if (i != null)
+                            {
+                                IcdsubCodes.Add(i.ICD_CODE);
+                            }
+                            else
+                            {
+                                if (IcdsubText != null && IcdsubText.Count > 0)
+                                {
+                                    var icdTextRemove = BackendDataWorker.Get<HIS_ICD>().Where(o => o.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE).ToList().FirstOrDefault(o => o.ICD_CODE == item.Trim());
+                                    if (icdTextRemove != null)
+                                        IcdsubText = IcdsubText.Where(o => !o.Equals(icdTextRemove.ICD_NAME)).ToList();
+                                }
+                            }
+                        }
+                    }
+                }
+
+                this.txtIcdSubCode.Text = string.Join(";", IcdsubCodes);
+                this.txtIcdText.Text = string.Join(";", IcdsubText);
             }
             catch (Exception ex)
             {

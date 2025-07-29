@@ -1,4 +1,21 @@
-﻿using DevExpress.XtraEditors;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using DevExpress.XtraEditors;
 using HIS.Desktop.ApiConsumer;
 using HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription;
 using HIS.Desktop.Plugins.AssignPrescriptionPK.Resources;
@@ -94,6 +111,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Save.Update
                 prescriptionSDO.Id = OldServiceReq.ID;
                 prescriptionSDO.TreatmentId = this.TreatmentId;
                 prescriptionSDO.ClientSessionKey = GlobalStore.ClientSessionKey;
+                prescriptionSDO.PrescriptionPhaseNum = (short?)this.PrescriptionPhaseNum;
                 if (this.ParentServiceReqId > 0)
                     prescriptionSDO.ParentServiceReqId = this.ParentServiceReqId;
 
@@ -165,6 +183,10 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Save.Update
                 prescriptionSDO.IcdCauseCode = this.IcdCauseCode;
                 prescriptionSDO.IcdText = this.IcdText;
                 prescriptionSDO.IcdSubCode = this.IcdSubCode;
+                prescriptionSDO.TraditionalIcdCode = this.IcdTranditionalCode;
+                prescriptionSDO.TraditionalIcdName = this.IcdTranditionalName;
+                prescriptionSDO.TraditionalIcdSubCode = this.IcdTranditionalSubCode;
+                prescriptionSDO.TraditionalIcdText = this.IcdTranditionalText;
             }
             catch (Exception ex)
             {
@@ -232,6 +254,10 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Save.Update
                     prescriptionSDO.TreatmentFinishSDO.IcdName = this.IcdName;
                     prescriptionSDO.TreatmentFinishSDO.IcdSubCode = this.IcdSubCode;
                     prescriptionSDO.TreatmentFinishSDO.IcdText = this.IcdText;
+                    prescriptionSDO.TreatmentFinishSDO.TraditionalIcdCode = this.IcdTranditionalCode;
+                    prescriptionSDO.TreatmentFinishSDO.TraditionalIcdName = this.IcdTranditionalName;
+                    prescriptionSDO.TreatmentFinishSDO.TraditionalIcdSubCode = this.IcdTranditionalSubCode;
+                    prescriptionSDO.TreatmentFinishSDO.TraditionalIcdText = this.IcdTranditionalText;
                     prescriptionSDO.TreatmentFinishSDO.TreatmentId = this.TreatmentId;
                     prescriptionSDO.TreatmentFinishSDO.TreatmentEndTypeExtId = this.TreatmentEndTypeExtId;
                     prescriptionSDO.TreatmentFinishSDO.TreatmentEndTypeId = this.TreatmentEndTypeId;
@@ -277,6 +303,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Save.Update
                     prescriptionSDO.TreatmentFinishSDO.PatientCondition = this.PatientCondition;
                     prescriptionSDO.TreatmentFinishSDO.TransportVehicle = this.TransportVehicle;
                     prescriptionSDO.TreatmentFinishSDO.Transporter = this.Transporter;
+                    prescriptionSDO.TreatmentFinishSDO.TreatmentMethod = this.TreatmentMethod;
+                    prescriptionSDO.TreatmentFinishSDO.TransporterLoginnames = this.TransporterLoginnames;
                     prescriptionSDO.TreatmentFinishSDO.TreatmentDirection = this.TreatmentDirection;
                     prescriptionSDO.TreatmentFinishSDO.MainCause = this.MainCause;
                     prescriptionSDO.TreatmentFinishSDO.Surgery = this.Surgery;

@@ -1,4 +1,21 @@
-﻿using DevExpress.XtraEditors.DXErrorProvider;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using DevExpress.XtraEditors.DXErrorProvider;
 using HIS.Desktop.LocalStorage.BackendData;
 using HIS.Desktop.LocalStorage.LocalData;
 using HIS.Desktop.Plugins.AssignPrescriptionPK.ADO;
@@ -71,7 +88,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Edit
         protected MediMatyTypeADO medicineTypeSDO { get; set; }
 
         protected decimal? Speed { get; set; }
-        protected long? HtuId { get; set; }
+        protected List<long> HtuIds { get; set; }
+        protected long? HtuIdNotCheckAcinInteractive { get; set; }
         protected long? MedicineUseFormId { get; set; }
         protected string Tutorial { get; set; }
         protected bool IsExpend { get; set; }
@@ -101,6 +119,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Edit
         public bool IsNotOutStock { get; set; }
         protected string ExceedLimitInPresReason { get; set; }
         protected string ExceedLimitInDayReason { get; set; }
+        protected string ExceedLimitInBatchReason { get; set; }
         protected string OddPresReason { get; set; }
         public OptionChonThuocThayThe ChonThuocThayThe { get; set; }
         public EnumOptionChonVatTuThayThe ChonVTThayThe { get; set; }
@@ -129,8 +148,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Edit
             this.MediStockD1SDOs = frmAssignPrescription.mediStockD1ADOs;
             if (frmAssignPrescription.cboMedicineUseForm.EditValue != null)
                 this.MedicineUseFormId = Inventec.Common.TypeConvert.Parse.ToInt64((frmAssignPrescription.cboMedicineUseForm.EditValue ?? "0").ToString());
-            if (frmAssignPrescription.cboHtu.EditValue != null)
-                this.HtuId = Inventec.Common.TypeConvert.Parse.ToInt64((frmAssignPrescription.cboHtu.EditValue ?? "0").ToString());
+            this.HtuIds = frmAssignPrescription.DataHtuList.Exists(o => o.IsChecked) ? frmAssignPrescription.DataHtuList.Where(o => o.IsChecked).Select(o => o.ID).ToList() : null;
+            this.HtuIdNotCheckAcinInteractive = frmAssignPrescription.DataHtuList.Exists(o => o.IsChecked && o.CHECK_ACIN_INTERACTIVE != 1) ? (long?)frmAssignPrescription.DataHtuList.Where(o => o.IsChecked && o.CHECK_ACIN_INTERACTIVE != 1).OrderBy(o => o.NUM_ORDER).ToList()[0].ID : null;
             this.Tutorial = frmAssignPrescription.txtTutorial.Text.Trim();
             this.UseDays = frmAssignPrescription.spinSoLuongNgay.Value;
             if (!String.IsNullOrEmpty(frmAssignPrescription.spinSang.Text))
@@ -159,9 +178,11 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Edit
             this.DataRow = dataRow;
             this.ExceedLimitInPresReason = frmAssignPrescription.reasonMaxPrescription;
             this.ExceedLimitInDayReason = frmAssignPrescription.reasonMaxPrescriptionDay;
+            if (!(GlobalStore.IsTreatmentIn && !GlobalStore.IsCabinet))
+                this.ExceedLimitInBatchReason = frmAssignPrescription.reasonMaxPrescriptionBatch;
             this.OddPresReason = frmAssignPrescription.reasonOddPrescription;
 
-            if (HisConfigCFG.ManyDayPrescriptionOption == 2 && ((GlobalStore.IsTreatmentIn && !GlobalStore.IsCabinet)||frmAssignPrescription.VHistreatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNOITRU))
+            if (HisConfigCFG.ManyDayPrescriptionOption == 2 && ((GlobalStore.IsTreatmentIn && !GlobalStore.IsCabinet) || frmAssignPrescription.VHistreatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNOITRU))
             {
                 this.IsMultiDateState = frmAssignPrescription.isMultiDateState;
                 if (frmAssignPrescription.UcDateGetValueForMedi() != null
@@ -230,7 +251,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Edit
                 medicineTypeSDO.TUTORIAL = this.Tutorial;
                 medicineTypeSDO.IsExpend = this.IsExpend;
                 medicineTypeSDO.MEDICINE_USE_FORM_ID = this.MedicineUseFormId;
-                medicineTypeSDO.HTU_ID = this.HtuId;
+                medicineTypeSDO.HTU_IDs = this.HtuIds;
+                medicineTypeSDO.HTU_ID_NOT_CHECK_ACIN_INTERACTIVE = this.HtuIdNotCheckAcinInteractive;
                 medicineTypeSDO.Speed = this.Speed;
                 medicineTypeSDO.IsKidneyShift = this.IsKidneyShift;
                 medicineTypeSDO.KidneyShiftCount = this.KidneyShiftCount;
@@ -247,7 +269,15 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Edit
                 medicineTypeSDO.IcdsWarning = this.frmAssignPrescription.icdsWarning;
                 medicineTypeSDO.EXCEED_LIMIT_IN_PRES_REASON = this.ExceedLimitInPresReason;
                 medicineTypeSDO.EXCEED_LIMIT_IN_DAY_REASON = this.ExceedLimitInDayReason;
+                medicineTypeSDO.EXCEED_LIMIT_IN_BATCH_REASON = this.ExceedLimitInBatchReason;
                 medicineTypeSDO.ODD_PRES_REASON = this.OddPresReason;
+                medicineTypeSDO.ALERT_MAX_IN_TREATMENT = frmAssignPrescription.currentMedicineTypeADOForEdit != null ? frmAssignPrescription.currentMedicineTypeADOForEdit.ALERT_MAX_IN_TREATMENT : null;
+                medicineTypeSDO.IS_BLOCK_MAX_IN_TREATMENT = frmAssignPrescription.currentMedicineTypeADOForEdit != null ? frmAssignPrescription.currentMedicineTypeADOForEdit.IS_BLOCK_MAX_IN_TREATMENT : null; 
+                medicineTypeSDO.NUMBER_EXCEED_IN_TREATMENT = frmAssignPrescription.currentMedicineTypeADOForEdit != null ? frmAssignPrescription.currentMedicineTypeADOForEdit.NUMBER_EXCEED_IN_TREATMENT : null; 
+                medicineTypeSDO.NUMBER_PRESCIPTION_IN_TREATMENT = frmAssignPrescription.currentMedicineTypeADOForEdit != null ? frmAssignPrescription.currentMedicineTypeADOForEdit.NUMBER_PRESCIPTION_IN_TREATMENT : null;
+                var amountPres = (medicineTypeSDO.NUMBER_PRESCIPTION_IN_TREATMENT ?? 0) + medicineTypeSDO.AMOUNT + frmAssignPrescription.mediMatyTypeADOs.Where(o => o.ID == medicineTypeSDO.ID && o.PrimaryKey != medicineTypeSDO.PrimaryKey).Sum(o => o.UseDays != 0 ? o.AMOUNT / o.UseDays : o.AMOUNT);
+                if (amountPres > medicineTypeSDO.ALERT_MAX_IN_TREATMENT)
+                    medicineTypeSDO.IsAlertInTreatPresciption = true;
             }
         }
 

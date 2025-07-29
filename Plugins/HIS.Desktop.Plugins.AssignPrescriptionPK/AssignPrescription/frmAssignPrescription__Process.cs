@@ -1,5 +1,23 @@
-﻿using DevExpress.XtraEditors;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using DevExpress.XtraEditors;
 using DevExpress.XtraEditors.DXErrorProvider;
+using DevExpress.XtraPrinting.Native;
 using HIS.Desktop.ADO;
 using HIS.Desktop.ApiConsumer;
 using HIS.Desktop.LocalStorage.BackendData;
@@ -239,11 +257,15 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                     useTimeMax = ((useTimeFind != null && useTimeFind.Count > 0) ? useTimeFind.Max(o => o.UseTimeTo ?? 0) : 0);
                     result.UseTimeTo = useTimeMax;
                 }
-                if (this.intructionTimeSelecteds != null && this.intructionTimeSelecteds.Count > 0)
+
+                long useTime = (this.intructionTimeSelecteds != null && this.intructionTimeSelecteds.Count > 0) ? this.intructionTimeSelecteds.OrderBy(o => o).First() : 0;
+                if (HisConfigCFG.IsShowServerTimeByDefault && dteCommonParam != null && dteCommonParam != DateTime.MinValue)
+                    result.UseTime = Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(dteCommonParam);
+                else if (dteTreatmentFinishIntructionTime > 0)
                 {
-                    long useTime = this.intructionTimeSelecteds.OrderBy(o => o).First();
-                    result.UseTime = useTime;
+                    result.UseTime = dteTreatmentFinishIntructionTime;
                 }
+                result.IntructionTime = useTime;
                 if (this.currentTreatmentWithPatientType != null)
                 {
                     if (!string.IsNullOrEmpty(this.currentTreatmentWithPatientType.SHOW_ICD_CODE)
@@ -605,6 +627,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             {
                 Inventec.Common.Logging.LogSystem.Debug("RefeshResourceGridMedicine.1");
                 this.ProcessMediStock(this.mediMatyTypeADOs);
+                this.ProcessAddListMaxInTreat(this.mediMatyTypeADOs);
                 this.gridControlServiceProcess.DataSource = null;
                 this.gridControlServiceProcess.DataSource = this.mediMatyTypeADOs.OrderBy(o => o.NUM_ORDER).ToList();
                 Inventec.Common.Logging.LogSystem.Debug("RefeshResourceGridMedicine.2");
@@ -613,6 +636,35 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             {
                 Inventec.Common.Logging.LogSystem.Warn(ex);
             }
+        }
+        private void ProcessAddListMaxInTreat(List<MediMatyTypeADO> mediMatyTypeADOs)
+        {
+
+            try
+            {
+                foreach (var item in mediMatyTypeADOs)
+                {
+                    if (item.ALERT_MAX_IN_TREATMENT != null && !string.IsNullOrEmpty(item.EXCEED_LIMIT_IN_BATCH_REASON))
+                    {
+                        item.IsAlertInTreatPresciption = true;
+                        var alert = mediMatyTypeADOsAlertInTreatment.LastOrDefault(o => o.PrimaryKey == item.PrimaryKey);
+                        if (alert == null)
+                        {
+                            mediMatyTypeADOsAlertInTreatment.Add(item);
+                        }
+                        else
+                        {
+                            mediMatyTypeADOsAlertInTreatment.Remove(alert);//Xóa thông tin cũ
+                            mediMatyTypeADOsAlertInTreatment.Add(item);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+
         }
 
         private List<MediMatyTypeADO> ProcessMergeDuplicateRowForListProcessingForShow()
@@ -669,7 +721,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                                             && o.PATIENT_TYPE_ID == item.PATIENT_TYPE_ID
                                             && o.IsExpend == item.IsExpend
                                             && o.PRICE == item.PRICE
-                            //&& !GlobalStore.IsTreatmentIn ? o.PRICE == item.PRICE : true
+                                            //&& !GlobalStore.IsTreatmentIn ? o.PRICE == item.PRICE : true
                                             );
 
                         if (checkPresExists != null && checkPresExists.ID > 0 && item.IsStent == false)
@@ -772,8 +824,11 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 List<MediMatyTypeADO> mediMatyTypeADOsTemp = new List<MediMatyTypeADO>();
                 this.ValidDataMediMaty();
                 this.UpdateAutoRoundUpByConvertUnitRatioDataMediMaty();
-                if (this.ProcessValidMedicineTypeAge(true) && this.ProcessAmountInStockWarning())
+                bool IsRemoveMediMatyAmountAlert = false;
+                if (this.ProcessValidMedicineTypeAge(true) && this.ProcessAmountInStockWarning(ref IsRemoveMediMatyAmountAlert))
                 {
+                    if (IsRemoveMediMatyAmountAlert)
+                        mediMatyTypeADOs = mediMatyTypeADOs.Where(o => o.AmountAlert == null || o.AmountAlert == 0).ToList();
                     var mediMatyTypeADOsForTakeBeans__Other = (this.mediMatyTypeADOs.Where(o => o.DataType != HIS.Desktop.LocalStorage.BackendData.ADO.MedicineMaterialTypeComboADO.THUOC && o.DataType != HIS.Desktop.LocalStorage.BackendData.ADO.MedicineMaterialTypeComboADO.VATTU && o.DataType != HIS.Desktop.LocalStorage.BackendData.ADO.MedicineMaterialTypeComboADO.VATTU_TSD).ToList());
                     if (mediMatyTypeADOsForTakeBeans__Other != null && mediMatyTypeADOsForTakeBeans__Other.Count > 0)
                         mediMatyTypeADOsTemp.AddRange(mediMatyTypeADOsForTakeBeans__Other);
@@ -784,7 +839,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                     {
                         if (!GlobalStore.IsTreatmentIn || GlobalStore.IsCabinet)
                         {
-                            if (TakeOrReleaseBeanWorker.ProcessTakeListMedi(this.intructionTimeSelecteds, mediMatyTypeADOsForTakeBeans__Medicine, this.serviceReqMain,this.UseTimeSelecteds,this.lstOutPatientPres))
+                            if (TakeOrReleaseBeanWorker.ProcessTakeListMedi(this.intructionTimeSelecteds, mediMatyTypeADOsForTakeBeans__Medicine, this.serviceReqMain, this.UseTimeSelecteds, this.lstOutPatientPres))
                             {
                             }
 
@@ -802,7 +857,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                         if (!GlobalStore.IsTreatmentIn || GlobalStore.IsCabinet)
                         {
                             CommonParam Param = new CommonParam();
-                            if (TakeOrReleaseBeanWorker.ProcessTakeListMaty(this.intructionTimeSelecteds, mediMatyTypeADOsForTakeBeans__Material, this.serviceReqMain, this.UseTimeSelecteds, this.lstOutPatientPres,ref Param))
+                            if (TakeOrReleaseBeanWorker.ProcessTakeListMaty(this.intructionTimeSelecteds, mediMatyTypeADOsForTakeBeans__Material, this.serviceReqMain, this.UseTimeSelecteds, this.lstOutPatientPres, ref Param))
                             {
                                 mediMatyTypeADOsTemp.AddRange(mediMatyTypeADOsForTakeBeans__Material);
                             }
@@ -855,7 +910,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 {
                     FillDataOtherPaySourceDataRow(item);
                     UpdateExpMestReasonInDataRow(item);
-                    if (ValidAcinInteractiveWorker.ValidGrade(item, mediMatycheck, ref txtInteractionReason,this))
+                    if (ValidAcinInteractiveWorker.ValidGrade(item, mediMatycheck, ref txtInteractionReason, this))
                     {
                         mediMatycheck.Add(item);
                     }
@@ -954,7 +1009,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
         /// <summary>
         /// Cảnh báo thuốc không có trong kho hoặc số lượng khả dụng không đủ
         /// </summary>
-        private bool ProcessAmountInStockWarning()
+        private bool ProcessAmountInStockWarning(ref bool IsRemoveMediMatyAmountAlert)
         {
             bool result = true;
             try
@@ -1005,14 +1060,15 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                         }
                         Inventec.Common.Logging.LogSystem.Debug("ProcessAmountInStockWarning.3");
                     }
-                    else if (dialogResult == DialogResult.No)
+                    else if (dialogResult == DialogResult.No || dialogResult == DialogResult.OK)
                     {
+                        IsRemoveMediMatyAmountAlert = true;
                         //this.mediMatyTypeADOs = new List<MediMatyTypeADO>();
                         //this.gridControlServiceProcess.DataSource = null;
                         //result = false;
                         Inventec.Common.Logging.LogSystem.Debug("ProcessAmountInStockWarning.4");
                     }
-                    else if (dialogResult == DialogResult.Cancel || dialogResult == DialogResult.OK)
+                    else if (dialogResult == DialogResult.Cancel)
                     {
                         this.mediMatyTypeADOs = new List<MediMatyTypeADO>();
                         this.gridControlServiceProcess.DataSource = null;
@@ -1259,7 +1315,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                         foreach (var item in mediMateTypeComboADOs)
                         {
                             var key = "MedicineMaterialTypeComboADO_" + item.IdRow;
-                            if (serviceIds.Exists(o=>o == item.SERVICE_ID))
+                            if (serviceIds.Exists(o => o == item.SERVICE_ID))
                             {
                                 item.IsExistAssignPres = true;
                                 if (!dicMediMateAssignPres.ContainsKey(key))
@@ -1327,10 +1383,10 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
         {
             try
             {
-                if(gridViewMediMaty.GridControl.DataSource is List<MedicineMaterialTypeComboADO>  && mediMateTypeComboADOs != null && mediMateTypeComboADOs.Count > 0)
+                if (gridViewMediMaty.GridControl.DataSource is List<MedicineMaterialTypeComboADO> && mediMateTypeComboADOs != null && mediMateTypeComboADOs.Count > 0)
                 {
                     var count = 0;
-                    int total = dicMediMateAssignPres.Where(o=>o.Key.Contains("MedicineMaterialTypeComboADO_")).GroupBy(o=>o.Key).Count();
+                    int total = dicMediMateAssignPres.Where(o => o.Key.Contains("MedicineMaterialTypeComboADO_")).GroupBy(o => o.Key).Count();
                     if (total > 0)
                     {
                         foreach (var item in mediMateTypeComboADOs)
@@ -1470,7 +1526,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                         = spinToi.Enabled
                         = spinTocDoTruyen.Enabled
                         = txtTutorial.Enabled
-                        = cboHtu.Enabled 
+                        = cboHtu.Enabled
                         = txtPreviousUseDay.Enabled = true;
 
                     txtMedicineTypeOther.Enabled = spinPrice.Enabled = txtUnitOther.Enabled = true;
@@ -1488,7 +1544,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                         = spinToi.Enabled
                         = spinTocDoTruyen.Enabled
                         = txtTutorial.Enabled
-                        = cboHtu.Enabled 
+                        = cboHtu.Enabled
                         = txtPreviousUseDay.Enabled = false;
                     txtMedicineTypeOther.Enabled = spinPrice.Enabled = txtUnitOther.Enabled = false;
 
@@ -1571,7 +1627,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             try
             {
                 this.cboMedicineUseForm.EditValue = null;
-                this.cboHtu.EditValue = null;
+                this.DataHtuList.ForEach(o => o.IsChecked = false);
+                this.cboHtu.Text = null;
                 this.cboHtu.Properties.Buttons[1].Visible = false;
                 this.spinSang.EditValue = null;
                 this.spinTrua.EditValue = null;
@@ -1615,7 +1672,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 if (this.actionType == GlobalVariables.ActionAdd)
                 {
                     List<MediMatyTypeADO> serviceCheckeds__Send = this.mediMatyTypeADOs;
-                    this.btnSave.Enabled = btnSaveAndPrint.Enabled = (serviceCheckeds__Send != null && serviceCheckeds__Send.Count > 0);
+                    this.btnSave.Enabled = btnSaveAndPrint.Enabled = isCheckAssignServiceSimultaneityOption ? false : (serviceCheckeds__Send != null && serviceCheckeds__Send.Count > 0);
                     this.lciPrintAssignPrescription.Enabled = false;
                     this.btnAdd.Enabled = true;//this.btnNew.Enabled =
                     if (this.treatmentFinishProcessor != null && this.ucTreatmentFinish != null)
@@ -1625,7 +1682,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 else if (this.actionType == GlobalVariables.ActionEdit)
                 {
                     List<MediMatyTypeADO> serviceCheckeds__Send = this.mediMatyTypeADOs;
-                    this.btnSave.Enabled = btnSaveAndPrint.Enabled = true;
+                    this.btnSave.Enabled = btnSaveAndPrint.Enabled = isCheckAssignServiceSimultaneityOption ? false : true;
                     this.lciPrintAssignPrescription.Enabled = true;
                     this.btnAdd.Enabled = true;
                     this.btnNew.Enabled = (oldServiceReq != null ? false : true);
@@ -2033,6 +2090,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 this.spinTocDoTruyen.EditValue = null;
                 this.chkHomePres.Checked = false;
                 this.chkTemporayPres.Checked = false;
+                this.spnPresPhaseNum.EditValue = null;
                 this.txtProvisionalDiagnosis.Text = this.provisionalDiagnosis;
                 this.txtPreviousUseDay.Text = "";
 
@@ -2106,11 +2164,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
         {
             try
             {
-                CommonParam param = new CommonParam();
-                //Lấy list service package
-                HisServiceConditionFilter filter = new HisServiceConditionFilter();
-                filter.IS_ACTIVE = GlobalVariables.CommonNumberTrue;
-                this.workingServiceConditions = new BackendAdapter(param).Get<List<HIS_SERVICE_CONDITION>>(RequestUriStore.HIS_SERVICE_CONDITION_GET, ApiConsumers.MosConsumer, filter, ProcessLostToken, param);
+                workingServiceConditions = BackendDataWorker.Get<HIS_SERVICE_CONDITION>().Where(o => o.IS_ACTIVE == GlobalVariables.CommonNumberTrue).ToList();
             }
             catch (Exception ex)
             {
@@ -2462,7 +2516,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
 
                         model.ID = item.MEDICINE_TYPE_ID;
                         model.PrimaryKey = (model.SERVICE_ID + "__" + Inventec.Common.DateTime.Get.Now() + "__" + Guid.NewGuid().ToString());
-                       
+
                         if ((AssignPrescriptionWorker.Instance.MediMatyCreateWorker.getIsAutoCheckExpend() == true
                     && HisConfigCFG.IsAutoTickExpendWithAssignPresPTTT)
                     || (mety != null && mety.IS_AUTO_EXPEND == GlobalVariables.CommonNumberTrue))
@@ -2679,7 +2733,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             {
                 this.lblPatientName.Text = this.currentTreatmentWithPatientType.TDL_PATIENT_NAME;
                 if (this.currentTreatmentWithPatientType.TDL_PATIENT_DOB > 0)
-                    this.lblDob.Text = Inventec.Common.DateTime.Convert.TimeNumberToDateString(this.currentTreatmentWithPatientType.TDL_PATIENT_DOB) + " (" + MPS.AgeUtil.CalculateFullAge(currentTreatmentWithPatientType.TDL_PATIENT_DOB)+")";
+                    this.lblDob.Text = Inventec.Common.DateTime.Convert.TimeNumberToDateString(this.currentTreatmentWithPatientType.TDL_PATIENT_DOB) + " (" + MPS.AgeUtil.CalculateFullAge(currentTreatmentWithPatientType.TDL_PATIENT_DOB) + ")";
                 this.lblGenderName.Text = this.currentTreatmentWithPatientType.TDL_PATIENT_GENDER_NAME;
 
                 if (this.currentHisPatientTypeAlter != null)
@@ -2817,7 +2871,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 {
                     bool isTSD = model.DataType == LocalStorage.BackendData.ADO.MedicineMaterialTypeComboADO.VATTU_TSD;
 
-                    var medicineInStock = this.mediMatyTypeAvailables.FirstOrDefault(o => o.SERVICE_ID == model.SERVICE_ID && ((isTSD && o.IS_REUSABLE == 1) || (!isTSD && (o.IS_REUSABLE == null || o.IS_REUSABLE != 1))));//Mac dinh lay kho dau tien
+                    var medicineInStock = this.mediMatyTypeAvailables.FirstOrDefault(o => o.SERVICE_ID == model.SERVICE_ID && ((isTSD && (o.IS_REUSABLE == 1 || o.IS_IDENTITY_MANAGEMENT == 1)) || (!isTSD && ((o.IS_REUSABLE == null || o.IS_REUSABLE != 1) && (o.IS_IDENTITY_MANAGEMENT == null || o.IS_IDENTITY_MANAGEMENT != 1)))));//Mac dinh lay kho dau tien
                     if (medicineInStock != null)
                     {
                         decimal amountAvailable = ((((model.IsUseOrginalUnitForPres ?? false) == false && model.CONVERT_RATIO.HasValue && model.CONVERT_RATIO > 0) ? medicineInStock.AMOUNT * model.CONVERT_RATIO : medicineInStock.AMOUNT) ?? 0);
@@ -2926,7 +2980,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             bool isReturn = false;
             try
             {
-                if((currentMediStock == null || currentMediStock.Count == 0) && mediMatyTypeADOs != null && mediMatyTypeADOs.Count > 0 && ((IsExpMestTemp && mediMatyTypeADOs.FirstOrDefault(o=>o.IS_OUT_MEDI_STOCK == null) != null) ||!IsExpMestTemp))
+                if ((currentMediStock == null || currentMediStock.Count == 0) && mediMatyTypeADOs != null && mediMatyTypeADOs.Count > 0 && ((IsExpMestTemp && mediMatyTypeADOs.FirstOrDefault(o => o.IS_OUT_MEDI_STOCK == null) != null) || !IsExpMestTemp))
                 {
                     mediMatyTypeADOs = new List<MediMatyTypeADO>();
                     var myResult = DevExpress.XtraEditors.XtraMessageBox.Show(ResourceMessage.BanChuaChonKhoXuat, HIS.Desktop.LibraryMessage.MessageUtil.GetMessage(LibraryMessage.Message.Enum.TieuDeCuaSoThongBaoLaThongBao), MessageBoxButtons.OK);
@@ -2963,6 +3017,13 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 this.ProcessGetEmteMaterialType(this.GetEmteMaterialTypeByExpMestId(expTemplate.ID), false);
                 if (ProcessCheckOutMediStock(true))
                     return;
+                //Check trong kho
+                //Gắn biến tạm để không bị gấp đôi số lượng khi kiểm tra danh sách
+                var dataSourceTmp = mediMatyTypeADOs;
+                mediMatyTypeADOs = new List<MediMatyTypeADO>();
+                this.ProcessDataMediStock(dataSourceTmp);
+                if (!CheckMaterialReusableOrIdentityManager() || !CheckValidMaterial(true) || !CheckMedicineGroupTuberCulosis(true))
+                    return;
                 this.ProcessInstructionTimeMediForEdit();
                 if (this.ProcessCheckAllergenicByPatientAfterChoose()
                     && this.ProcessCheckContraindicaterWarningOptionAfterChoose())
@@ -2985,7 +3046,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                                 }
                                 FillDataOtherPaySourceDataRow(item);
                                 UpdateExpMestReasonInDataRow(item);
-                                if (ValidAcinInteractiveWorker.ValidGrade(item, mediMatycheck, ref txtInteractionReason,this))
+                                if (ValidAcinInteractiveWorker.ValidGrade(item, mediMatycheck, ref txtInteractionReason, this))
                                 {
                                     mediMatycheck.Add(item);
                                 }
@@ -3005,7 +3066,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 Inventec.Common.Logging.LogSystem.Error(ex);
             }
         }
-        private void ProcessMediStock(List<MediMatyTypeADO> mediMatyTypeADOs)
+        public void ProcessMediStock(List<MediMatyTypeADO> mediMatyTypeADOs)
         {
             try
             {
@@ -3073,6 +3134,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 this.ReleaseAllMediByUser();
 
                 this.ProcessGetEquipmentSetMaterial(this.GetMaterialTypeByEquipmentSetId(equipmentSet.ID));
+                if (!CheckMaterialReusableOrIdentityManager() || !CheckValidMaterial(true) || !CheckMedicineGroupTuberCulosis(true))
+                    return;
                 this.ProcessInstructionTimeMediForEdit();
                 if (this.ProcessCheckAllergenicByPatientAfterChoose()
                     && this.ProcessCheckContraindicaterWarningOptionAfterChoose())
@@ -3087,6 +3150,30 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             {
                 Inventec.Common.Logging.LogSystem.Error(ex);
             }
+        }
+
+        private bool CheckMaterialReusableOrIdentityManager()
+        {
+            if (this.mediMatyTypeADOs != null && this.mediMatyTypeADOs.Count > 0)
+            {
+                var MaterialReusableOrIdentityManager = GetMaterialReusableOrIdentityManager();
+                if (MaterialReusableOrIdentityManager != null && MaterialReusableOrIdentityManager.Count > 0)
+                {
+                    DevExpress.XtraEditors.XtraMessageBox.Show(string.Format("Cần chọn lại vật tư đích danh - TSD: {0}.", string.Join(", ", MaterialReusableOrIdentityManager.Select(o => o.MEDICINE_TYPE_NAME))), HIS.Desktop.LibraryMessage.MessageUtil.GetMessage(LibraryMessage.Message.Enum.TieuDeCuaSoThongBaoLaThongBao), MessageBoxButtons.OK);
+                    mediMatyTypeADOs = mediMatyTypeADOs.Where(o => !MaterialReusableOrIdentityManager.Contains(o)).ToList();
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private List<MediMatyTypeADO> GetMaterialReusableOrIdentityManager()
+        {
+            if (this.mediMatyTypeADOs != null && this.mediMatyTypeADOs.Count > 0)
+            {
+                return this.mediMatyTypeADOs.Where(maty => (maty.IS_REUSABLE == 1 || maty.IS_IDENTITY_MANAGEMENT == 1)).ToList();
+            }
+            return new List<MediMatyTypeADO>();
         }
 
         /// <summary>
@@ -3316,7 +3403,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                                    && o.SERE_SERV_PARENT_ID == item.SERE_SERV_PARENT_ID
                                    && o.TUTORIAL == item.TUTORIAL
                                    );
-                           
+
                             MediMatyTypeADO mediMatyTypeADOAdd = null;
                             if (itemNoPres != null)
                             {
@@ -3356,7 +3443,13 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                                         + Inventec.Common.Logging.LogUtil.TraceData("ExpMestID", item.ID)
                                         + Inventec.Common.Logging.LogUtil.TraceData("SERVICE_ID", item.SERVICE_ID));
                                 }
-                            }                           
+                            }
+                            if (mediMatyTypeADOAdd.ALERT_MAX_IN_TREATMENT.HasValue && !string.IsNullOrEmpty(mediMatyTypeADOAdd.EXCEED_LIMIT_IN_BATCH_REASON))
+                            {
+                                mediMatyTypeADOAdd.IsAlertInTreatPresciption = true;
+                                mediMatyTypeADOAdd.PATIENT_NAME_BY_TREATMENT_CODE = currentTreatment.TDL_PATIENT_NAME + "_" + currentTreatment.TREATMENT_CODE;
+                                mediMatyTypeADOsAlertInTreatment.Add(mediMatyTypeADOAdd);
+                            }
                             mediMatyTypeADOAdds.Add(mediMatyTypeADOAdd);
                         }
                     }
@@ -3388,19 +3481,19 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                     {
                         if ((item.IS_NOT_PRES ?? 0) != 1)
                         {
-                           var itemNoPres = lstExpMestMedicine.FirstOrDefault(o =>
-                                   o.IS_NOT_PRES.HasValue && o.IS_NOT_PRES == 1
-                                   && o.MEDICINE_TYPE_ID == item.MEDICINE_TYPE_ID
-                                   && ((o.MEDICINE_ID == null && item.MEDICINE_ID == null) || (o.MEDICINE_ID == item.MEDICINE_ID))
-                                   && o.MEDI_STOCK_ID == item.MEDI_STOCK_ID
-                                       //&& o.PATIENT_TYPE_ID == item.PATIENT_TYPE_ID
-                                       //&& o.IS_EXPEND == item.IS_EXPEND
-                                       //&& o.EXPEND_TYPE_ID == item.EXPEND_TYPE_ID
-                                       //&& o.IS_OUT_PARENT_FEE == item.IS_OUT_PARENT_FEE
-                                       //&& o.SERE_SERV_PARENT_ID == item.SERE_SERV_PARENT_ID
-                                   && o.TUTORIAL == item.TUTORIAL
-                                   );
-                           
+                            var itemNoPres = lstExpMestMedicine.FirstOrDefault(o =>
+                                    o.IS_NOT_PRES.HasValue && o.IS_NOT_PRES == 1
+                                    && o.MEDICINE_TYPE_ID == item.MEDICINE_TYPE_ID
+                                    && ((o.MEDICINE_ID == null && item.MEDICINE_ID == null) || (o.MEDICINE_ID == item.MEDICINE_ID))
+                                    && o.MEDI_STOCK_ID == item.MEDI_STOCK_ID
+                                    //&& o.PATIENT_TYPE_ID == item.PATIENT_TYPE_ID
+                                    //&& o.IS_EXPEND == item.IS_EXPEND
+                                    //&& o.EXPEND_TYPE_ID == item.EXPEND_TYPE_ID
+                                    //&& o.IS_OUT_PARENT_FEE == item.IS_OUT_PARENT_FEE
+                                    //&& o.SERE_SERV_PARENT_ID == item.SERE_SERV_PARENT_ID
+                                    && o.TUTORIAL == item.TUTORIAL
+                                    );
+
                             MediMatyTypeADO mediMatyTypeADOAdd = null;
                             if (itemNoPres != null)
                             {
@@ -3610,14 +3703,14 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                                    o.IS_NOT_PRES.HasValue && o.IS_NOT_PRES == 1
                                    && o.MATERIAL_TYPE_ID == item.MATERIAL_TYPE_ID
                                    && ((o.MATERIAL_ID == null && item.MATERIAL_ID == null) || (o.MATERIAL_ID == item.MATERIAL_ID))
-                                   
-                                    //&& o.MEDI_STOCK_ID == item.MEDI_STOCK_ID
-                                    //&& o.PATIENT_TYPE_ID == item.PATIENT_TYPE_ID
-                                    //&& o.IS_EXPEND == item.IS_EXPEND
-                                    //&& o.EXPEND_TYPE_ID == item.EXPEND_TYPE_ID
-                                    //&& o.IS_OUT_PARENT_FEE == item.IS_OUT_PARENT_FEE
+
+                                   //&& o.MEDI_STOCK_ID == item.MEDI_STOCK_ID
+                                   //&& o.PATIENT_TYPE_ID == item.PATIENT_TYPE_ID
+                                   //&& o.IS_EXPEND == item.IS_EXPEND
+                                   //&& o.EXPEND_TYPE_ID == item.EXPEND_TYPE_ID
+                                   //&& o.IS_OUT_PARENT_FEE == item.IS_OUT_PARENT_FEE
                                    );
-                           
+
 
                             MediMatyTypeADO mediMatyTypeADOAdd = null;
                             if (itemNoPres != null)
@@ -3662,8 +3755,19 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                     var q1 = (from m in lstExpMestMety
                               select new MediMatyTypeADO(m, isEdit)).ToList();
                     if (q1 != null && q1.Count > 0)
+                    {
                         this.mediMatyTypeADOs.AddRange(q1);
 
+                        if (q1.Exists(o => o.ALERT_MAX_IN_TREATMENT.HasValue && !string.IsNullOrEmpty(o.EXCEED_LIMIT_IN_BATCH_REASON)))
+                        {
+                            foreach (var mediMatyTypeADOAdd in q1.Where(o => o.ALERT_MAX_IN_TREATMENT.HasValue && !string.IsNullOrEmpty(o.EXCEED_LIMIT_IN_BATCH_REASON)))
+                            {
+                                mediMatyTypeADOAdd.IsAlertInTreatPresciption = true;
+                                mediMatyTypeADOAdd.PATIENT_NAME_BY_TREATMENT_CODE = currentTreatment.TDL_PATIENT_NAME + "_" + currentTreatment.TREATMENT_CODE;
+                                mediMatyTypeADOsAlertInTreatment.Add(mediMatyTypeADOAdd);
+                            }
+                        }
+                    }
                     if (this.mediMatyTypeADOs != null && this.mediMatyTypeADOs.Count > 0)
                     {
                         foreach (var item in this.mediMatyTypeADOs)
@@ -3882,6 +3986,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                     LogSystem.Debug("ProcessChoicePrescriptionPrevious => thao tac khong hop le. actionType = " + this.actionType);
                     return;
                 }
+                if (this.mediMatyTypeAvailables == null || this.mediMatyTypeAvailables.Count == 0)
+                    this.InitDataMetyMatyTypeInStockD(this.currentMediStock);
                 this.PrescriptionPrevious = true;
                 this.lstOutPatientPres = new List<OutPatientPresADO>();
                 //Release tat ca cac thuoc/ vat tu da duoc take bean truoc do nhung chua duoc luu
@@ -3927,8 +4033,16 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                     }
                     this.mediMatyTypeADOs.ForEach(o => o.EXCEED_LIMIT_IN_PRES_REASON = null);
                     this.mediMatyTypeADOs.ForEach(o => o.EXCEED_LIMIT_IN_DAY_REASON = null);
+                    this.mediMatyTypeADOs.ForEach(o => o.EXCEED_LIMIT_IN_BATCH_REASON = null);
                     this.mediMatyTypeADOs.ForEach(o => o.ODD_PRES_REASON = null);
                 }
+                //Check trong kho
+                //Gắn biến tạm để không bị gấp đôi số lượng khi kiểm tra danh sách
+                var dataSourceTmp = mediMatyTypeADOs;
+                mediMatyTypeADOs = new List<MediMatyTypeADO>();
+                this.ProcessDataMediStock(dataSourceTmp);
+                if (!CheckMaterialReusableOrIdentityManager() || !CheckValidMaterial(true) || !CheckMedicineGroupTuberCulosis(true))
+                    return;
                 this.ProcessInstructionTimeMediForEdit();
                 if (this.ProcessCheckAllergenicByPatientAfterChoose()
                     && this.ProcessCheckContraindicaterWarningOptionAfterChoose())
@@ -4357,7 +4471,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                             huongDan.Append(trua > 0 ? ((String.IsNullOrEmpty(huongDan.ToString()) ? "" : strSeperator) + String.Format(format__Trua, Inventec.Common.Number.Convert.NumberToStringRoundAuto((decimal)trua, 4), "").Trim().ToLower()) : "");
                             huongDan.Append(chieu > 0 ? ((String.IsNullOrEmpty(huongDan.ToString()) ? "" : strSeperator) + String.Format(format__Chieu, Inventec.Common.Number.Convert.NumberToStringRoundAuto((decimal)chieu, 4), "").Trim().ToLower()) : "");
                             huongDan.Append(toi > 0 ? ((String.IsNullOrEmpty(huongDan.ToString()) ? "" : strSeperator) + String.Format(format__Toi, Inventec.Common.Number.Convert.NumberToStringRoundAuto((decimal)toi, 4), "").Trim().ToLower()) : "");
-                            huongDan.Append((String.IsNullOrEmpty(this.cboHtu.Text) ? "" : " " + this.cboHtu.Text.ToLower()));
+                            huongDan.Append((String.IsNullOrEmpty(this.cboHtu.Text) ? "" : " " + string.Join(", ", DataHtuList.Where(o => o.IsChecked).OrderByDescending(o => o.CHECK_ACIN_INTERACTIVE ?? Int64.MaxValue).ThenBy(o => o.NUM_ORDER).Select(o => o.HTU_NAME).ToList()).ToLower()));
                         }
                         else
                         {
@@ -4391,7 +4505,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                                             huongDan.Append(tongCong > 0 ? String.Format(format__NgayUong, (String.IsNullOrEmpty(this.cboMedicineUseForm.Text) ? "" : " " + this.cboMedicineUseForm.Text.ToLower() + " "), ConvertNumber.ConvertDecToFracByConfig(tongCong, 4), serviceUnitName, solan) : "");
                                     }
 
-                                    huongDan.Append(sang > 0 ? String.Format(format__Sang, ConvertNumber.ConvertDecToFracByConfig(sang, 4), serviceUnitName) : "");
+                                    huongDan.Append(sang > 0 ? (String.IsNullOrEmpty(huongDan.ToString()) ? "" : strSeperator) + String.Format(format__Sang, ConvertNumber.ConvertDecToFracByConfig(sang, 4), serviceUnitName) : "");
                                     huongDan.Append(trua > 0 ? ((String.IsNullOrEmpty(huongDan.ToString()) ? "" : strSeperator) + String.Format(format__Trua, ConvertNumber.ConvertDecToFracByConfig(trua, 4), serviceUnitName)) : "");
                                     huongDan.Append(chieu > 0 ? ((String.IsNullOrEmpty(huongDan.ToString()) ? "" : strSeperator) + String.Format(format__Chieu, ConvertNumber.ConvertDecToFracByConfig(chieu, 4), serviceUnitName)) : "");
                                     huongDan.Append(toi > 0 ? ((String.IsNullOrEmpty(huongDan.ToString()) ? "" : strSeperator) + String.Format(format__Toi, ConvertNumber.ConvertDecToFracByConfig(toi, 4), serviceUnitName)) : "");
@@ -4405,7 +4519,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                                 }
                             }
                             if (is4Control)
-                                huongDan.Append(!String.IsNullOrEmpty(this.cboHtu.Text) ? " (" + this.cboHtu.Text + ")" : "");
+                                huongDan.Append(!String.IsNullOrEmpty(this.cboHtu.Text) ? " (" + string.Join(", ", DataHtuList.Where(o => o.IsChecked).OrderByDescending(o => o.CHECK_ACIN_INTERACTIVE ?? Int64.MaxValue).ThenBy(o => o.NUM_ORDER).Select(o => o.HTU_NAME).ToList()).ToLower() + ")" : "");
 
                             huongDan = new StringBuilder().Append(FirstCharToUpper(huongDan.ToString()));
                         }
@@ -4428,11 +4542,11 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                             //<Đường dùng>, <Cách dùng>, Thời điểm trong ngày : Số lượng
                             //Ví dụ: Uống, Trước ăn, sáng 1 viên, chiều 1 viên.
                             huongDan = new StringBuilder();
-                            huongDan.Append(soLuongTrenlanMin > 0 ? String.Format(format__NgayUongTemp5, (String.IsNullOrEmpty(this.cboMedicineUseForm.Text) ? "" : " " + this.cboMedicineUseForm.Text.ToLower() + " "), !String.IsNullOrEmpty(this.cboHtu.Text) ? this.cboHtu.Text : "") : "");
+                            huongDan.Append(soLuongTrenlanMin > 0 ? String.Format(format__NgayUongTemp5, (String.IsNullOrEmpty(this.cboMedicineUseForm.Text) ? "" : " " + this.cboMedicineUseForm.Text.ToLower() + " "), !String.IsNullOrEmpty(this.cboHtu.Text) ? string.Join(", ", DataHtuList.Where(o => o.IsChecked).OrderByDescending(o => o.CHECK_ACIN_INTERACTIVE ?? Int64.MaxValue).ThenBy(o => o.NUM_ORDER).Select(o => o.HTU_NAME).ToList()).ToLower() : "") : "");
                             huongDan.Append(sang > 0 ? ((String.IsNullOrEmpty(huongDan.ToString()) ? "" : strSeperator) + String.Format(format__Sang, ConvertNumber.ConvertDecToFracByConfig(sang, 4), serviceUnitName)) : "");
                             huongDan.Append(trua > 0 ? ((String.IsNullOrEmpty(huongDan.ToString()) ? "" : strSeperator) + String.Format(format__Trua, ConvertNumber.ConvertDecToFracByConfig(trua, 4), serviceUnitName)) : "");
                             huongDan.Append(chieu > 0 ? ((String.IsNullOrEmpty(huongDan.ToString()) ? "" : strSeperator) + String.Format(format__Chieu, ConvertNumber.ConvertDecToFracByConfig(chieu, 4), serviceUnitName)) : "");
-                            huongDan.Append(toi > 0 ? ((String.IsNullOrEmpty(huongDan.ToString()) ? "" : strSeperator) + String.Format(format__Toi, 
+                            huongDan.Append(toi > 0 ? ((String.IsNullOrEmpty(huongDan.ToString()) ? "" : strSeperator) + String.Format(format__Toi,
                               ConvertNumber.ConvertDecToFracByConfig(toi, 4), serviceUnitName)) : "");
                         }
                     }
@@ -4621,6 +4735,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 {
                     int plusSeperate = 1;
                     CultureInfo culture = new CultureInfo("en-US");
+                    spinAmount.Text = GetAmount().ToString();
                     if (spinAmount.Text.Contains(","))
                         culture = new CultureInfo("fr-FR");
                     decimal amountTmp = Convert.ToDecimal(spinAmount.EditValue.ToString(), culture);
@@ -4655,7 +4770,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             try
             {
                 if (!String.IsNullOrEmpty(strValue))
-                {                  
+                {
+
                     string vl = strValue;
                     vl = vl.Replace(".", System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator);
                     vl = vl.Replace(",", System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator);
@@ -4693,9 +4809,9 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                     //Xử lý tụ động làm tròn đến số chữ số được cấu hình sau phần thập phân(numberDisplaySeperateFormatAmount)//TODO
                     //if (value != (int)value)
                     //{
-                        //Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData("value before", value));
-                        //value = (double)Inventec.Common.Number.Convert.NumberToNumberRoundAuto((decimal)value, GetNumberDisplaySeperateFormat());
-                        //Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData("numberDisplaySeperateFormatAmount", numberDisplaySeperateFormatAmount) + Inventec.Common.Logging.LogUtil.TraceData("HisConfigCFG.AmountDecimalNumber", HisConfigCFG.AmountDecimalNumber) + Inventec.Common.Logging.LogUtil.TraceData("value after", value));
+                    //Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData("value before", value));
+                    //value = (double)Inventec.Common.Number.Convert.NumberToNumberRoundAuto((decimal)value, GetNumberDisplaySeperateFormat());
+                    //Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData("numberDisplaySeperateFormatAmount", numberDisplaySeperateFormatAmount) + Inventec.Common.Logging.LogUtil.TraceData("HisConfigCFG.AmountDecimalNumber", HisConfigCFG.AmountDecimalNumber) + Inventec.Common.Logging.LogUtil.TraceData("value after", value));
                     //}
                 }
             }

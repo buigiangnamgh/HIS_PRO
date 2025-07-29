@@ -1,4 +1,21 @@
-﻿
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 using HIS.Desktop.LocalStorage.BackendData;
 using HIS.Desktop.Plugins.AssignPrescriptionPK.Resources;
 using MOS.EFMODEL.DataModels;
@@ -19,7 +36,7 @@ DevExpress.XtraEditors.DXErrorProvider.ValidationRule
         internal DevExpress.XtraEditors.TextEdit maBenhPhuTxt;
         internal DevExpress.XtraEditors.TextEdit tenBenhPhuTxt;
         private string[] icdSeparators = new string[] { ";" };
-        internal List<HIS_ICD> listIcd = BackendDataWorker.Get<HIS_ICD>();
+        internal List<HIS_ICD> listIcd = BackendDataWorker.Get<HIS_ICD>().Where(o => o.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE && o.IS_TRADITIONAL != 1).OrderBy(o => o.ICD_CODE).ToList();
         internal DelegateGetIcdMain getIcdMain;
 
         public override bool Validate(Control control, object value)

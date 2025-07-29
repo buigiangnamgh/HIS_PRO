@@ -1,4 +1,21 @@
-﻿using DevExpress.XtraEditors;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using DevExpress.XtraEditors;
 using HIS.Desktop.ApiConsumer;
 using HIS.Desktop.LocalStorage.BackendData;
 using HIS.Desktop.LocalStorage.ConfigApplication;
@@ -12,6 +29,7 @@ using Inventec.Common.Logging;
 using Inventec.Core;
 using MOS.EFMODEL.DataModels;
 using MOS.Filter;
+using MOS.SDO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +43,9 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
     {
         List<long> mediStockId__Cabinets;
         List<long> mediStockId__Bloods;
+
+        public List<HtuADO> DataHtuList { get; private set; }
+        public List<HtuADO> DataHtuListShow { get; private set; }
         private async Task InitComboHtu(List<MOS.EFMODEL.DataModels.HIS_HTU> data)
         {
             try
@@ -43,23 +64,27 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                     if (htus != null) BackendDataWorker.UpdateToRam(typeof(MOS.EFMODEL.DataModels.HIS_HTU), htus, long.Parse(DateTime.Now.ToString("yyyyMMddHHmmss")));
                 }
 
-                List<ColumnInfo> columnInfos = new List<ColumnInfo>();
-                columnInfos.Add(new ColumnInfo("HTU_NAME", "", 200, 2));
-                ControlEditorADO controlEditorADO = new ControlEditorADO("HTU_NAME", "ID", columnInfos, false, 200);
                 if (data != null)
                 {
                     data = data.OrderBy(o => o.NUM_ORDER).ToList();
                 }
                 else
                     data = htus.OrderBy(o => o.NUM_ORDER).ToList();
-                ControlEditorLoader.Load(cboHtu, data, controlEditorADO);
+                data.ForEach(o => o.CHECK_ACIN_INTERACTIVE = o.CHECK_ACIN_INTERACTIVE == 0 || o.CHECK_ACIN_INTERACTIVE == null ? Int16.MaxValue : (short)o.CHECK_ACIN_INTERACTIVE);
+                AutoMapper.Mapper.CreateMap<HIS_HTU, HtuADO>();
+                DataHtuList = AutoMapper.Mapper.Map<List<HtuADO>>(data);
+                DataHtuList = DataHtuList.OrderByDescending(o => o.ID).ToList();
+                AutoMapper.Mapper.CreateMap<HtuADO, HtuADO>();
+                DataHtuListShow = AutoMapper.Mapper.Map<List<HtuADO>>(DataHtuList);
+                DataHtuListShow = DataHtuListShow.OrderByDescending(o => o.ID).ToList();
+                gridControlHtu.DataSource = null;
+                gridControlHtu.DataSource = DataHtuListShow;
             }
             catch (Exception ex)
             {
                 Inventec.Common.Logging.LogSystem.Warn(ex);
             }
         }
-
         private async Task InitComboNhaThuoc()
         {
             try

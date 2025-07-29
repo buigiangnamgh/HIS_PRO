@@ -1,4 +1,21 @@
-﻿using HIS.Desktop.ApiConsumer;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using HIS.Desktop.ApiConsumer;
 using HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription;
 using Inventec.Common.Logging;
 using MOS.SDO;
@@ -28,6 +45,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Save.Update
                 prescriptionSDO.TreatmentId = this.TreatmentId;
                 prescriptionSDO.PrescriptionTypeId = PrescriptionType.NEW;
                 prescriptionSDO.IsTemporaryPres = (short?)this.IsTemporaryPres;
+                prescriptionSDO.PrescriptionPhaseNum = (short?)this.PrescriptionPhaseNum;
                 this.ProcessPrescriptionUpdateSDO(prescriptionSDO);
                 this.ProcessPrescriptionUpdateSDOICD(prescriptionSDO);
                 this.ProcessPrescriptionSDOForSereServInKip(prescriptionSDO);
@@ -122,6 +140,10 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Save.Update
                 prescriptionSDO.IcdCauseCode = this.IcdCauseCode;
                 prescriptionSDO.IcdText = this.IcdText;
                 prescriptionSDO.IcdSubCode = this.IcdSubCode;
+                prescriptionSDO.TraditionalIcdCode = this.IcdTranditionalCode;
+                prescriptionSDO.TraditionalIcdName = this.IcdTranditionalName;
+                prescriptionSDO.TraditionalIcdSubCode = this.IcdTranditionalSubCode;
+                prescriptionSDO.TraditionalIcdText = this.IcdTranditionalText;
             }
             catch (Exception ex)
             {
@@ -135,6 +157,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Save.Update
             {
                 if (prescriptionSDO.Materials.Count > 0
                     || prescriptionSDO.Medicines.Count > 0
+                    || prescriptionSDO.SerialNumbers.Count > 0
                     )
                 {
                     if (frmAssignPrescription.currentSereServ != null)
@@ -148,6 +171,11 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Save.Update
                         {
                             item.SereServParentId = frmAssignPrescription.currentSereServ.ID;
                         }
+
+                        foreach (var item in prescriptionSDO.SerialNumbers)
+                        {
+                            item.SereServParentId = frmAssignPrescription.currentSereServInEkip.ID;
+                        }
                     }
 
                     if (frmAssignPrescription.currentSereServInEkip != null)
@@ -158,6 +186,11 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Save.Update
                         }
 
                         foreach (var item in prescriptionSDO.Medicines)
+                        {
+                            item.SereServParentId = frmAssignPrescription.currentSereServInEkip.ID;
+                        }
+
+                        foreach (var item in prescriptionSDO.SerialNumbers)
                         {
                             item.SereServParentId = frmAssignPrescription.currentSereServInEkip.ID;
                         }
