@@ -6555,9 +6555,9 @@ namespace HIS.Desktop.Plugins.ServiceReqList
                     {
                         Inventec.Common.Logging.LogSystem.Info("BN: " + item.SERVICE_REQ_CODE);
                         var SereServBySRQ = listHisSereServ.Where(o => o.SERVICE_REQ_ID == item.ID).ToList();
-                        foreach (var ss in SereServBySRQ)
+                        if (SereServBySRQ != null && SereServBySRQ.Count() > 0)
                         {
-                            GenText(item, ss, ref txt);
+                            GenText(item, SereServBySRQ.FirstOrDefault(), ref txt);
                         }
                     }
                     string resultPrint = new Bartender.PrintTestServiceReq.PrintTestServiceReq().StartPrintTestServiceReq(txt);
@@ -6591,19 +6591,19 @@ namespace HIS.Desktop.Plugins.ServiceReqList
             txt += "," + serviceReq.REQUEST_ROOM_NAME;
             txt += "," + Inventec.Common.DateTime.Convert.TimeNumberToTimeStringWithoutSecond(Inventec.Common.DateTime.Get.Now() ?? 0);
             txt += "," + serviceReq.TDL_TREATMENT_CODE;
+
             if (serviceReq.TEST_SAMPLE_TYPE_ID.HasValue && serviceReq.TEST_SAMPLE_TYPE_ID.Value > 0)
             {
                 var testSampleType = BackendDataWorker.Get<HIS_TEST_SAMPLE_TYPE>().FirstOrDefault(o => o.ID == serviceReq.TEST_SAMPLE_TYPE_ID);
                 if (testSampleType != null)
                 {
-                    txt += "," + testSampleType.TEST_SAMPLE_TYPE_NAME;
+                    txt += "," + testSampleType.TEST_SAMPLE_TYPE_NAME.Replace(",",";");
                 }
             }
             else
             {
                 txt += ",";
             }
-
 
             if (servicePr != null)
             {
@@ -6613,6 +6613,8 @@ namespace HIS.Desktop.Plugins.ServiceReqList
             {
                 txt += ",";
             }
+            txt += "," + serviceReq.EXECUTE_ROOM_CODE;
+
             // xuong dong (1 row trong db)
             txt += "\n";
         }
