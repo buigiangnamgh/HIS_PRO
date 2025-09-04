@@ -15,20 +15,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-using MPS.ProcessorBase;
 namespace MPS.Processor.Mps000276
 {
-    class Mps000276ExtendSingleKey : CommonKey
+    public class VHisServiceReqAdo:MOS.EFMODEL.DataModels.V_HIS_SERVICE_REQ
     {
-        internal const string BARCODE_PATIENT_CODE = "BARCODE_PATIENT_CODE";
-        internal const string BARCODE_TREATMENT_CODE = "BARCODE_TREATMENT_CODE";
+        public long NUM_ORDER_FIXED { get; set; }
 
-        internal const string REQUEST_ROOM_ADDRESS = "REQUEST_ROOM_ADDRESS";
-        internal const string INTRUCTION_DATE_DAY_OF_WEEK = "INTRUCTION_DATE_DAY_OF_WEEK";
-        internal const string IS_ONLY_CDHA = "IS_ONLY_CDHA";
-        internal const string PAYMENT_AMOUNT = "PAYMENT_AMOUNT";
-        internal const string TEST_SERVICE_REQ_BAR = "TEST_SERVICE_REQ_BAR";
-        internal const string BARCODE_ASSIGN_TURN_CODE = "BARCODE_ASSIGN_TURN_CODE";
+        public VHisServiceReqAdo(MOS.EFMODEL.DataModels.V_HIS_SERVICE_REQ serviceReq)
+        {
+            System.Reflection.PropertyInfo[] pi = Inventec.Common.Repository.Properties.Get<MOS.EFMODEL.DataModels.V_HIS_SERVICE_REQ>();
+            foreach (var item in pi)
+            {
+                item.SetValue(this, (item.GetValue(serviceReq)));
+            }
+        }
     }
 }

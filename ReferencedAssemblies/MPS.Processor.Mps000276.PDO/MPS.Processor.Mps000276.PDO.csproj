@@ -42,8 +42,9 @@
     <Reference Include="Inventec.Common.TypeConvert">
       <HintPath>..\..\..\..\RELEASE\Inventec.Common\Inventec.Common.TypeConvert\Inventec.Common.TypeConvert.dll</HintPath>
     </Reference>
-    <Reference Include="MOS.EFMODEL">
-      <HintPath>..\..\..\..\RELEASE\MOS\MOS.EFMODEL.dll</HintPath>
+    <Reference Include="MOS.EFMODEL, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\MOS.EFMODEL.dll</HintPath>
     </Reference>
     <Reference Include="MPS.ProcessorBase">
       <HintPath>..\..\..\..\RELEASE\MPSv2\MPS.ProcessorBase\MPS.ProcessorBase.dll</HintPath>

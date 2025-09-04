@@ -33,11 +33,18 @@
     <Reference Include="FlexCel">
       <HintPath>..\..\..\..\RELEASE\FlexCellReport\FlexCel.dll</HintPath>
     </Reference>
+    <Reference Include="HIS.Desktop.ApiConsumer">
+      <HintPath>..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.Desktop.ApiConsumer.dll</HintPath>
+    </Reference>
     <Reference Include="HIS.Desktop.Common.BankQrCode">
       <HintPath>..\..\..\..\RELEASE\HIS\HIS.Desktop.Common.BankQrCode\HIS.Desktop.Common.BankQrCode.dll</HintPath>
     </Reference>
     <Reference Include="IMSys.DbConfig.HIS_RS">
       <HintPath>..\..\..\..\RELEASE\IMSys.DbConfig\IMSys.DbConfig.HIS_RS\IMSys.DbConfig.HIS_RS.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.Adapter, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.Adapter.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Common.BarcodeLib">
       <HintPath>..\..\..\..\RELEASE\Inventec.Common\Inventec.Common.BarcodeLib\Inventec.Common.BarcodeLib.dll</HintPath>
@@ -57,14 +64,26 @@
     <Reference Include="Inventec.Common.Number">
       <HintPath>..\..\..\..\RELEASE\Inventec.Common\Inventec.Common.Number\Inventec.Common.Number.dll</HintPath>
     </Reference>
+    <Reference Include="Inventec.Common.Repository, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.Repository.dll</HintPath>
+    </Reference>
     <Reference Include="Inventec.Common.String">
       <HintPath>..\..\..\..\RELEASE\Inventec.Common\Inventec.Common.String\Inventec.Common.String.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.WebApiClient, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.WebApiClient.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Core">
       <HintPath>..\..\..\..\RELEASE\Inventec.Core\Inventec.Core.dll</HintPath>
     </Reference>
-    <Reference Include="MOS.EFMODEL">
-      <HintPath>..\..\..\..\RELEASE\MOS\MOS.EFMODEL.dll</HintPath>
+    <Reference Include="MOS.EFMODEL, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\MOS.EFMODEL.dll</HintPath>
+    </Reference>
+    <Reference Include="MOS.Filter">
+      <HintPath>..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\MOS.Filter.dll</HintPath>
     </Reference>
     <Reference Include="MOS.LibraryHein.Bhyt">
       <HintPath>..\..\..\..\RELEASE\MOS\MOS.LibraryHein.Bhyt.dll</HintPath>
@@ -85,6 +104,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="VHisServiceReqAdo.cs" />
     <Compile Include="Mps000276ADO.cs" />
     <Compile Include="Mps000276ExtendSingleKey.cs" />
     <Compile Include="Mps000276Processor.cs" />

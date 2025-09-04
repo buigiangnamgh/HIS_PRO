@@ -28,6 +28,9 @@ using MPS.ProcessorBase;
 using MOS.EFMODEL.DataModels;
 using System.Text;
 using System.Linq;
+using MOS.Filter;
+using Inventec.Common.Adapter;
+using HIS.Desktop.ApiConsumer;
 
 namespace MPS.Processor.Mps000276
 {
@@ -82,20 +85,39 @@ namespace MPS.Processor.Mps000276
                             dicImage.Add(Mps000276ExtendSingleKey.BARCODE_TREATMENT_CODE, barcode);
                         }
 
-                        if (!String.IsNullOrEmpty(rdo._vServiceReqs.First().BARCODE))
+                        var xn = rdo._vServiceReqs.OrderByDescending(o=>o.INTRUCTION_TIME).First(o => o.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__XN);
+                        if (xn != null)
                         {
-                            Inventec.Common.BarcodeLib.Barcode barcodeTestServiceReq = new Inventec.Common.BarcodeLib.Barcode(rdo._vServiceReqs.First().BARCODE);
-                            barcodeTestServiceReq.RawData = rdo._vServiceReqs.First().BARCODE;
-                            barcodeTestServiceReq.Alignment = Inventec.Common.BarcodeLib.AlignmentPositions.CENTER;
-                            barcodeTestServiceReq.IncludeLabel = false;
-                            barcodeTestServiceReq.Width = 120;
-                            barcodeTestServiceReq.Height = 40;
-                            barcodeTestServiceReq.RotateFlipType = RotateFlipType.Rotate180FlipXY;
-                            barcodeTestServiceReq.LabelPosition = Inventec.Common.BarcodeLib.LabelPositions.BOTTOMCENTER;
-                            barcodeTestServiceReq.EncodedType = Inventec.Common.BarcodeLib.TYPE.CODE128;
-                            barcodeTestServiceReq.IncludeLabel = true;
+                            if (!String.IsNullOrEmpty(xn.BARCODE))
+                            {
+                                Inventec.Common.BarcodeLib.Barcode barcodeTestServiceReq = new Inventec.Common.BarcodeLib.Barcode(xn.BARCODE);
+                                barcodeTestServiceReq.RawData = xn.BARCODE;
+                                barcodeTestServiceReq.Alignment = Inventec.Common.BarcodeLib.AlignmentPositions.CENTER;
+                                barcodeTestServiceReq.IncludeLabel = false;
+                                barcodeTestServiceReq.Width = 120;
+                                barcodeTestServiceReq.Height = 40;
+                                barcodeTestServiceReq.RotateFlipType = RotateFlipType.Rotate180FlipXY;
+                                barcodeTestServiceReq.LabelPosition = Inventec.Common.BarcodeLib.LabelPositions.BOTTOMCENTER;
+                                barcodeTestServiceReq.EncodedType = Inventec.Common.BarcodeLib.TYPE.CODE128;
+                                barcodeTestServiceReq.IncludeLabel = true;
 
-                            dicImage.Add(Mps000276ExtendSingleKey.TEST_SERVICE_REQ_BAR, barcodeTestServiceReq);
+                                dicImage.Add(Mps000276ExtendSingleKey.TEST_SERVICE_REQ_BAR, barcodeTestServiceReq);
+                            }
+                            if (!String.IsNullOrEmpty(xn.ASSIGN_TURN_CODE))
+                            {
+                                Inventec.Common.BarcodeLib.Barcode barcodeAssignTurnCode = new Inventec.Common.BarcodeLib.Barcode(xn.ASSIGN_TURN_CODE);
+                                barcodeAssignTurnCode.RawData = xn.ASSIGN_TURN_CODE;
+                                barcodeAssignTurnCode.Alignment = Inventec.Common.BarcodeLib.AlignmentPositions.CENTER;
+                                barcodeAssignTurnCode.IncludeLabel = false;
+                                barcodeAssignTurnCode.Width = 120;
+                                barcodeAssignTurnCode.Height = 40;
+                                barcodeAssignTurnCode.RotateFlipType = RotateFlipType.Rotate180FlipXY;
+                                barcodeAssignTurnCode.LabelPosition = Inventec.Common.BarcodeLib.LabelPositions.BOTTOMCENTER;
+                                barcodeAssignTurnCode.EncodedType = Inventec.Common.BarcodeLib.TYPE.CODE128;
+                                barcodeAssignTurnCode.IncludeLabel = true;
+
+                                dicImage.Add(Mps000276ExtendSingleKey.BARCODE_ASSIGN_TURN_CODE, barcodeAssignTurnCode);
+                            }
                         }
                     }
                 }
@@ -127,10 +149,76 @@ namespace MPS.Processor.Mps000276
                 store.ReadTemplate(System.IO.Path.GetFullPath(fileName));
                 singleTag.ProcessData(store, singleValueDictionary);
                 barCodeTag.ProcessData(store, dicImage);
-
-                rdo._vServiceReqs = rdo._vServiceReqs.OrderBy(o => o.ID).ToList();
+                List<VHisServiceReqAdo> listResult = new List<VHisServiceReqAdo>();
+                var serviceReqGroup = rdo._vServiceReqs.GroupBy(o => o.SERVICE_REQ_TYPE_ID).ToList();
+                foreach (var item in serviceReqGroup)
+                {
+                    VHisServiceReqAdo resultV = new VHisServiceReqAdo(item.FirstOrDefault());
+                    if (resultV.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__XN)
+                    {
+                        resultV.NUM_ORDER_FIXED = 1;
+                        HisRoomSaroViewFilter hisRoomSaroViewFilter = new HisRoomSaroViewFilter();
+                        hisRoomSaroViewFilter.ROOM_ID = resultV.REQUEST_ROOM_ID;
+                        List<MOS.EFMODEL.DataModels.V_HIS_ROOM_SARO> hisRoomSaroList = new BackendAdapter(new CommonParam())
+                        .Get<List<MOS.EFMODEL.DataModels.V_HIS_ROOM_SARO>>("api/HisRoomSaro/GetView", ApiConsumers.MosConsumer, hisRoomSaroViewFilter, new CommonParam());
+                        if (hisRoomSaroList != null && hisRoomSaroList.Count() > 0)
+                        {
+                            resultV.EXECUTE_ROOM_ADDRESS = hisRoomSaroList.FirstOrDefault().SAMPLE_ROOM_NAME;
+                            resultV.EXECUTE_ROOM_NAME = hisRoomSaroList.FirstOrDefault().SAMPLE_ROOM_NAME;
+                        }
+                        else
+                        {
+                            resultV.EXECUTE_ROOM_ADDRESS = resultV.EXECUTE_ROOM_ADDRESS;
+                            resultV.EXECUTE_ROOM_NAME = resultV.EXECUTE_ROOM_ADDRESS;
+                        }
+                        resultV.NUM_ORDER = resultV.CALL_SAMPLE_ORDER;
+                        listResult.Add(resultV);
+                    }
+                    else
+                    {
+                        var group = item.GroupBy(o => o.EXECUTE_ROOM_ID).ToList();
+                        foreach (var itemOther in group)
+                        {
+                            VHisServiceReqAdo resultTher = new VHisServiceReqAdo(itemOther.FirstOrDefault());
+                            if (resultTher.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__TDCN)
+                            {
+                                resultTher.NUM_ORDER_FIXED = 2;
+                            }
+                            else if (resultTher.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__SA)
+                            {
+                                resultTher.NUM_ORDER_FIXED = 3;
+                            }
+                            else if (resultTher.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__GPBL)
+                            {
+                                resultTher.NUM_ORDER_FIXED = 4;
+                            }
+                            else if (resultTher.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__NS)
+                            {
+                                resultTher.NUM_ORDER_FIXED = 5;
+                            }
+                            else if (resultTher.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__CDHA)
+                            {
+                                resultTher.NUM_ORDER_FIXED = 6;
+                            }
+                            else if (resultTher.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__PT)
+                            {
+                                resultTher.NUM_ORDER_FIXED = 7;
+                            }
+                            else if (resultTher.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__TT)
+                            {
+                                resultTher.NUM_ORDER_FIXED = 8;
+                            }
+                            else if (resultTher.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__KHAC)
+                            {
+                                resultTher.NUM_ORDER_FIXED = 9;
+                            }
+                            listResult.Add(resultTher);
+                        }
+                    }
+                }
+                listResult = listResult.OrderBy(o => o.NUM_ORDER_FIXED).ToList();
                 rdo._SereServs = (rdo._SereServs != null && rdo._SereServs.Count > 0) ? rdo._SereServs.OrderBy(p => p.ID).ToList() : rdo._SereServs;
-                objectTag.AddObjectData(store, "ServiceReqs", rdo._vServiceReqs);
+                objectTag.AddObjectData(store, "ServiceReqs", listResult);
                 objectTag.AddObjectData(store, "CashierRooms", this._ListCashierRoom);
                 objectTag.AddObjectData(store, "SereServs", this._ListSereServ);
                 objectTag.AddObjectData(store, "ServiceNumOrder", this._ListServiceNumOder.Distinct().ToList());
@@ -165,6 +253,16 @@ namespace MPS.Processor.Mps000276
                 foreach (var group in Groups)
                 {
                     List<V_HIS_SERVICE_REQ> list = group.ToList();
+                    //đối với xn: theo phòng chỉ định
+                    //cấp cứu lấy máu tại khu lấy máu khoa cấp cứu
+                    //các pk bnd lấy khu lấy máu phòng khám bệnh nhiệt đới
+                    //các pk kkb t1 thì lấy máu ở phòng lấy máu tầng 1
+                    //các pk kkb t2 thì lấy máu ở phòng lấy máu tầng 2
+                    //khu yc lấy ở khu khám bệnh theo yêu cầu
+
+                    //TT: XN, CĐHA, giải phẫu bệnh, Siêu âm, TDCN,Nội soi, PT Thủ thuật, khác
+
+                    //cùng địa chỉ và loại dv group lại
                     Mps000276ADO parentAdo = new Mps000276ADO();
                     parentAdo.CashierRoomId = group.Key;
                     V_HIS_CASHIER_ROOM cashierRoom = rdo._CashierRooms != null ? rdo._CashierRooms.FirstOrDefault(o => o.ID == group.Key) : null;
@@ -225,7 +323,7 @@ namespace MPS.Processor.Mps000276
 
                         ado.CallSampleOrder = sr.CALL_SAMPLE_ORDER;
                         ado.SampleRoomCode = sr.SAMPLE_ROOM_CODE;
-                        ado.SampleRoomName = sr.SAMPLE_ROOM_NAME; 
+                        ado.SampleRoomName = sr.SAMPLE_ROOM_NAME;
                         ado.ASSIGN_TURN_CODE = sr.ASSIGN_TURN_CODE;
 
                         if (parent != null)
@@ -307,7 +405,7 @@ namespace MPS.Processor.Mps000276
                 // minhnq
                 if (_ListServiceNumOder.Count() > 0)
                 {
-                    this._ListServiceNumOder = this._ListServiceNumOder.OrderBy(o => o.NUM_ORDER).ThenBy(o=>o.SERVICE_ID).ToList();
+                    this._ListServiceNumOder = this._ListServiceNumOder.OrderBy(o => o.NUM_ORDER).ThenBy(o => o.SERVICE_ID).ToList();
                     Dictionary<long, int> numRanks = _ListServiceNumOder
                         .GroupBy(i => i.NUM_ORDER)
                         .OrderBy(g => g.First().NUM_ORDER)
