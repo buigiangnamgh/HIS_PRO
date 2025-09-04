@@ -4646,14 +4646,15 @@ namespace HIS.Desktop.Plugins.ServiceReqList
 
                         if (listServiceReq != null && listServiceReq.Count > 0)
                         {
-                            CommonParam param = new CommonParam();
-                            if (CheckListServiceReq(listServiceReq, param))
-                            {
-                                MessageManager.Show(this, param, false);
-                                return;
-                            }
+                            //CommonParam param = new CommonParam();
+                            //if (CheckListServiceReq(listServiceReq, param))
+                            //{
+                            //    MessageManager.Show(this, param, false);
+                            //    return;
+                            //}
 
-                            InPhieuYeuCauChiDinhTongHop(MPS000037);
+                            //InPhieuYeuCauChiDinhTongHop(MPS000037);
+                            PrintMps190001();
                         }
                     }
                     else
@@ -4661,6 +4662,19 @@ namespace HIS.Desktop.Plugins.ServiceReqList
                         DevExpress.XtraEditors.XtraMessageBox.Show(Resources.ResourceMessage.BanChuaChonDichVu);
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+        }
+
+        private void PrintMps190001()
+        {
+            try
+            {
+                Inventec.Common.RichEditor.RichEditorStore richStore = new Inventec.Common.RichEditor.RichEditorStore(ApiConsumer.ApiConsumers.SarConsumer, HIS.Desktop.LocalStorage.ConfigSystem.ConfigSystems.URI_API_SAR, Inventec.Desktop.Common.LanguageManager.LanguageManager.GetLanguage(), GlobalVariables.TemnplatePathFolder);
+                richStore.RunPrintTemplate(Mps190001, this.DelegateRunPrinter);
             }
             catch (Exception ex)
             {

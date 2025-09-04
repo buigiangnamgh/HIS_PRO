@@ -62,6 +62,7 @@ namespace HIS.Desktop.Plugins.ServiceReqList
         private const string MPS000234 = "Mps000234";
         private const string MPS000204 = "Mps000204";
         private const string MPS000433 = "Mps000433";
+        private const string Mps190001 = "Mps190001";
         private const string PRINT_TYPE_CODE__PHIEU_THU_KIEM_YC_KHAM__MPS000420 = "Mps000420";
         private const int Thuoc = 1;
         private const int VatTu = 2;
@@ -338,6 +339,9 @@ namespace HIS.Desktop.Plugins.ServiceReqList
                         break;
                     case "Mps000494":
                         PrintMps494(printTypeCode, fileName, ref result);
+                        break;
+                    case Mps190001:
+                        PrintMps190001(printTypeCode, fileName, ref result);
                         break;
                     default:
                         break;
@@ -1079,6 +1083,38 @@ namespace HIS.Desktop.Plugins.ServiceReqList
             }
         }
 
+        private void PrintMps190001(string printTypeCode, string fileName, ref bool result)
+        {
+            try
+            {
+                if (this.listServiceReq != null && this.listServiceReq.Count > 0)
+                {
+                    AutoMapper.Mapper.CreateMap<ADO.ServiceReqADO, MPS.Processor.Mps190001.PDO.ServiceReqADO>();
+                    List<MPS.Processor.Mps190001.PDO.ServiceReqADO> listServiceReqADO = AutoMapper.Mapper.Map<List<MPS.Processor.Mps190001.PDO.ServiceReqADO>>(this.listServiceReq);
+                    MOS.Filter.HisSereServViewFilter filter = new HisSereServViewFilter();
+                    filter.SERVICE_REQ_IDs = listServiceReqADO.Select(o=>o.ID).Distinct().ToList();
+                    var sereServList = new BackendAdapter(new CommonParam()).Get<List<MOS.EFMODEL.DataModels.V_HIS_SERE_SERV>>("api/HisSereServ/GetView", ApiConsumers.MosConsumer, filter, new CommonParam());
+                    foreach (var item in listServiceReqADO)
+                    {
+                        var ssItem = sereServList.Where(o => o.SERVICE_REQ_ID == item.ID).ToList();
+                        if (ssItem != null && ssItem.Count() > 0)
+                        {
+                            item.LIST_SERVICE_NAME = String.Join("; ", ssItem.Select(o => o.TDL_SERVICE_NAME).Distinct().ToList());
+                        }
+                    }
+
+                    MPS.Processor.Mps190001.PDO.Mps190001PDO rdo = new MPS.Processor.Mps190001.PDO.Mps190001PDO(listServiceReqADO);
+
+                    RunPrint(printTypeCode, fileName, rdo, (Inventec.Common.FlexCelPrint.DelegateEventLog)EventLogPrint, result, currentModule.RoomId);
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+
+        }
+
         private void InPhieuYeuCauChiDinhTongHop(string printTypeCode)
         {
             try
@@ -1099,13 +1135,13 @@ namespace HIS.Desktop.Plugins.ServiceReqList
 
                     List<V_HIS_BED_LOG> listBedLogs = new List<V_HIS_BED_LOG>();
 
-                    HisBedLogViewFilter bedLogFilter = new HisBedLogViewFilter();
-                    bedLogFilter.TREATMENT_ID = data.hisTreatment.ID;
-                    var resultBedlog = new BackendAdapter(param).Get<List<V_HIS_BED_LOG>>("api/HisBedLog/GetView", ApiConsumers.MosConsumer, bedLogFilter, param);
-                    if (resultBedlog != null)
-                    {
-                        listBedLogs = resultBedlog;
-                    }
+                    //HisBedLogViewFilter bedLogFilter = new HisBedLogViewFilter();
+                    //bedLogFilter.TREATMENT_ID = data.hisTreatment.ID;
+                    //var resultBedlog = new BackendAdapter(param).Get<List<V_HIS_BED_LOG>>("api/HisBedLog/GetView", ApiConsumers.MosConsumer, bedLogFilter, param);
+                    //if (resultBedlog != null)
+                    //{
+                    //    listBedLogs = resultBedlog;
+                    //}
 
                     HisTreatmentWithPatientTypeInfoSDO HisTreatment = new HisTreatmentWithPatientTypeInfoSDO();
                     Inventec.Common.Mapper.DataObjectMapper.Map<HisTreatmentWithPatientTypeInfoSDO>(HisTreatment, data.hisTreatment);
@@ -2484,7 +2520,7 @@ namespace HIS.Desktop.Plugins.ServiceReqList
             {
                 if (data != null && data.vHisServiceReq2Print != null && this.listServiceReq != null && this.listServiceReq.Count > 0)
                 {
-                    data.vHisPatientTypeAlter = getPatientTypeAlter(data.vHisServiceReq2Print.TREATMENT_ID, 0);
+                    //data.vHisPatientTypeAlter = getPatientTypeAlter(data.vHisServiceReq2Print.TREATMENT_ID, 0);
 
                     data.listVHisSereServ = new List<V_HIS_SERE_SERV>();
                     foreach (var item in this.listServiceReq)
