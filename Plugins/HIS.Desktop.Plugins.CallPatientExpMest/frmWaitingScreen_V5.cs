@@ -659,13 +659,23 @@ namespace HIS.Desktop.Plugins.CallPatientExpMest
                 //HisExpMestView2Filter.HAS_EXECUTE = true;
                 HisExpMestView2Filter.CREATE_TIME_FROM = startDay;
                 HisExpMestView2Filter.CREATE_TIME_TO = endDay;
-                HisExpMestView2Filter.EXP_MEST_TYPE_IDs = new List<long> { IMSys.DbConfig.HIS_RS.HIS_EXP_MEST_TYPE.ID__DDT, IMSys.DbConfig.HIS_RS.HIS_EXP_MEST_TYPE.ID__DPK };
+                HisExpMestView2Filter.EXP_MEST_TYPE_IDs = new List<long> 
+                {IMSys.DbConfig.HIS_RS.HIS_EXP_MEST_TYPE.ID__DDT,
+                    IMSys.DbConfig.HIS_RS.HIS_EXP_MEST_TYPE.ID__DPK,
+                    IMSys.DbConfig.HIS_RS.HIS_EXP_MEST_TYPE.ID__THPK};
 
                 HisExpMestView2Filter.ORDER_FIELD = "MODIFY_TIME";
                 HisExpMestView2Filter.ORDER_DIRECTION = "DESC";
                 //HisExpMestView2Filter.ORDER_DIRECTION1 = "ASC";
                 //HisExpMestView2Filter.ORDER_DIRECTION2 = "DESC";
                 //HisExpMestView2Filter.ORDER_DIRECTION3 = "ASC";
+                HisExpMestView2Filter.HAS_AGGR = false;
+                HisExpMestView2Filter.DATA_DOMAIN_FILTER = true;
+                HisExpMestView2Filter.WORKING_ROOM_ID = this.room.ID;
+                if (serviceReqStts != null && serviceReqStts.Count > 0)
+                {
+                    HisExpMestView2Filter.EXP_MEST_STT_IDs = serviceReqStts.Select(o => o.ID).Distinct().ToList();
+                }
 
                 if (serviceReqStts != null && serviceReqStts.Count > 0)
                 {

@@ -45,7 +45,6 @@ namespace HIS.Desktop.Plugins.CallPatientExpMest
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             this.layoutControl1 = new DevExpress.XtraLayout.LayoutControl();
             this.lblRoomName = new DevExpress.XtraEditors.LabelControl();
             this.lblDoctorName = new DevExpress.XtraEditors.LabelControl();
@@ -89,12 +88,12 @@ namespace HIS.Desktop.Plugins.CallPatientExpMest
             this.layoutControlItem4 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem3 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem7 = new DevExpress.XtraLayout.LayoutControlItem();
-            this.timerForScrollListPatient = new System.Windows.Forms.Timer(this.components);
-            this.timerAutoLoadDataPatient = new System.Windows.Forms.Timer(this.components);
-            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
-            this.timerSetDataToGridControl = new System.Windows.Forms.Timer(this.components);
-            this.timerForHightLightCallPatientLayout = new System.Windows.Forms.Timer(this.components);
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.timerForScrollListPatient = new System.Windows.Forms.Timer();
+            this.timerAutoLoadDataPatient = new System.Windows.Forms.Timer();
+            this.imageList1 = new System.Windows.Forms.ImageList();
+            this.timerSetDataToGridControl = new System.Windows.Forms.Timer();
+            this.timerForHightLightCallPatientLayout = new System.Windows.Forms.Timer();
+            this.timer1 = new System.Windows.Forms.Timer();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).BeginInit();
             this.layoutControl1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl5)).BeginInit();
