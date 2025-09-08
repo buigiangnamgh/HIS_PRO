@@ -17,7 +17,6 @@
  */
 using HIS.Desktop.LocalStorage.BackendData;
 using HIS.Desktop.LocalStorage.HisConfig;
-using HIS.Desktop.LocalStorage.LisConfig;
 using HIS.Desktop.LocalStorage.LocalData;
 using Inventec.Common.Logging;
 using System;

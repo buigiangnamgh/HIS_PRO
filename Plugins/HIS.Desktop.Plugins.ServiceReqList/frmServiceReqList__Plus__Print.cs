@@ -1092,17 +1092,27 @@ namespace HIS.Desktop.Plugins.ServiceReqList
                     AutoMapper.Mapper.CreateMap<ADO.ServiceReqADO, MPS.Processor.Mps190001.PDO.ServiceReqADO>();
                     List<MPS.Processor.Mps190001.PDO.ServiceReqADO> listServiceReqADO = AutoMapper.Mapper.Map<List<MPS.Processor.Mps190001.PDO.ServiceReqADO>>(this.listServiceReq);
                     MOS.Filter.HisSereServViewFilter filter = new HisSereServViewFilter();
-                    filter.SERVICE_REQ_IDs = listServiceReqADO.Select(o=>o.ID).Distinct().ToList();
+                    filter.SERVICE_REQ_IDs = listServiceReqADO.Select(o => o.ID).Distinct().ToList();
                     var sereServList = new BackendAdapter(new CommonParam()).Get<List<MOS.EFMODEL.DataModels.V_HIS_SERE_SERV>>("api/HisSereServ/GetView", ApiConsumers.MosConsumer, filter, new CommonParam());
+
+                    MOS.Filter.HisTreatmentFilter HisTreatmentFilter = new HisTreatmentFilter();
+                    HisTreatmentFilter.IDs = listServiceReqADO.Select(o => o.TREATMENT_ID).Distinct().ToList();
+                    var treatmentList = new BackendAdapter(new CommonParam()).Get<List<MOS.EFMODEL.DataModels.HIS_TREATMENT>>("api/HisTreatment/Get", ApiConsumers.MosConsumer, HisTreatmentFilter, new CommonParam());
                     foreach (var item in listServiceReqADO)
                     {
-                        var ssItem = sereServList.Where(o => o.SERVICE_REQ_ID == item.ID).ToList();
+                        var ssItem = sereServList.Where(o => o.SERVICE_REQ_ID == item.ID).OrderBy(o => o.TDL_SERVICE_NAME).ToList();
                         if (ssItem != null && ssItem.Count() > 0)
                         {
+                            ssItem = ssItem.OrderBy(o => o.TDL_SERVICE_NAME).ToList();
                             item.LIST_SERVICE_NAME = String.Join("; ", ssItem.Select(o => o.TDL_SERVICE_NAME).Distinct().ToList());
                         }
+                        var trea = treatmentList.FirstOrDefault(o => o.ID == item.TREATMENT_ID);
+                        if (trea != null)
+                        {
+                            item.IN_TIME = trea.IN_TIME;
+                        }
                     }
-
+                    listServiceReqADO = listServiceReqADO.OrderBy(o => o.LIST_SERVICE_NAME).ThenBy(p => p.INTRUCTION_TIME).ThenBy(p => p.IN_TIME).ToList();
                     MPS.Processor.Mps190001.PDO.Mps190001PDO rdo = new MPS.Processor.Mps190001.PDO.Mps190001PDO(listServiceReqADO);
 
                     RunPrint(printTypeCode, fileName, rdo, (Inventec.Common.FlexCelPrint.DelegateEventLog)EventLogPrint, result, currentModule.RoomId);

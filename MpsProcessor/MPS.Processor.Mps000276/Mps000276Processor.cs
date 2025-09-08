@@ -41,6 +41,7 @@ namespace MPS.Processor.Mps000276
         private List<Mps000276ADO> _ListCashierRoom = new List<Mps000276ADO>();
         private List<Mps000276ADO> _ListSereServ = new List<Mps000276ADO>();
         private List<ServiceNumOderAdo> _ListServiceNumOder = new List<ServiceNumOderAdo>();
+
         public Mps000276Processor(CommonParam param, PrintData printData)
             : base(param, printData)
         {
@@ -85,7 +86,7 @@ namespace MPS.Processor.Mps000276
                             dicImage.Add(Mps000276ExtendSingleKey.BARCODE_TREATMENT_CODE, barcode);
                         }
 
-                        var xn = rdo._vServiceReqs.OrderByDescending(o=>o.INTRUCTION_TIME).First(o => o.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__XN);
+                        var xn = rdo._vServiceReqs.OrderByDescending(o => o.INTRUCTION_TIME).First(o => o.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__XN);
                         if (xn != null)
                         {
                             if (!String.IsNullOrEmpty(xn.BARCODE))
@@ -150,75 +151,140 @@ namespace MPS.Processor.Mps000276
                 singleTag.ProcessData(store, singleValueDictionary);
                 barCodeTag.ProcessData(store, dicImage);
                 List<VHisServiceReqAdo> listResult = new List<VHisServiceReqAdo>();
+                List<SereServADO> listSereServNew = new List<SereServADO>();
                 var serviceReqGroup = rdo._vServiceReqs.GroupBy(o => o.SERVICE_REQ_TYPE_ID).ToList();
+                MOS.Filter.HisSereServViewFilter filter = new HisSereServViewFilter();
+                filter.SERVICE_REQ_IDs = rdo._vServiceReqs.Select(o => o.ID).Distinct().ToList();
+                List<MOS.EFMODEL.DataModels.V_HIS_SERE_SERV> sereServList = new BackendAdapter(new CommonParam())
+                        .Get<List<MOS.EFMODEL.DataModels.V_HIS_SERE_SERV>>("api/HisSereServ/GetView", ApiConsumers.MosConsumer, filter, new CommonParam());
+                List<V_HIS_SERVICE> serviceList = HIS.Desktop.LocalStorage.BackendData.BackendDataWorker.Get<V_HIS_SERVICE>();
+                List<SereServADO> ListSereServAll = new List<SereServADO>();
+                foreach (var item in sereServList)
+                {
+                    SereServADO ss = new SereServADO(item);
+                    ss.PARENT_SERVICE_ID = item.TDL_SERVICE_REQ_TYPE_ID;
+                    var service = serviceList.FirstOrDefault(o => o.ID == ss.SERVICE_ID);
+                    if (item.TDL_SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__XN)
+                    {
+                        if (service != null && service.PARENT_ID.HasValue)
+                        {
+                            var serviceParent = serviceList.FirstOrDefault(o => o.ID == service.PARENT_ID.Value);
+                            if (serviceParent != null)
+                            {
+                                ss.EXECUTE_ROOM_NAME = serviceParent.SERVICE_NAME;
+                                ss.SERVICE_ID_LOCAL_PARENT = serviceParent.ID;
+                            }
+                        }
+                    }
+                    ListSereServAll.Add(ss);
+                }
+                ListSereServAll = ListSereServAll.OrderBy(o => o.TDL_SERVICE_REQ_TYPE_ID).ToList();
                 foreach (var item in serviceReqGroup)
                 {
+                    var sSItem = ListSereServAll.Where(o => item.Select(p => p.ID).Contains(o.SERVICE_REQ_ID ?? 0)).ToList();
+
                     VHisServiceReqAdo resultV = new VHisServiceReqAdo(item.FirstOrDefault());
                     if (resultV.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__XN)
                     {
                         resultV.NUM_ORDER_FIXED = 1;
-                        HisRoomSaroViewFilter hisRoomSaroViewFilter = new HisRoomSaroViewFilter();
-                        hisRoomSaroViewFilter.ROOM_ID = resultV.REQUEST_ROOM_ID;
-                        List<MOS.EFMODEL.DataModels.V_HIS_ROOM_SARO> hisRoomSaroList = new BackendAdapter(new CommonParam())
-                        .Get<List<MOS.EFMODEL.DataModels.V_HIS_ROOM_SARO>>("api/HisRoomSaro/GetView", ApiConsumers.MosConsumer, hisRoomSaroViewFilter, new CommonParam());
-                        if (hisRoomSaroList != null && hisRoomSaroList.Count() > 0)
+                        var groupSS = sSItem.GroupBy(o => o.SERVICE_ID_LOCAL_PARENT).ToList();
+                        if (groupSS != null && groupSS.Count > 0)
                         {
-                            resultV.EXECUTE_ROOM_ADDRESS = hisRoomSaroList.FirstOrDefault().SAMPLE_ROOM_NAME;
-                            resultV.EXECUTE_ROOM_NAME = hisRoomSaroList.FirstOrDefault().SAMPLE_ROOM_NAME;
+                            foreach (var ss in groupSS)
+                            {
+                                var firstItem = ss.FirstOrDefault();
+                                HisRoomSaroViewFilter hisRoomSaroViewFilter = new HisRoomSaroViewFilter();
+                                hisRoomSaroViewFilter.ROOM_ID = firstItem.TDL_REQUEST_ROOM_ID;
+                                List<MOS.EFMODEL.DataModels.V_HIS_ROOM_SARO> hisRoomSaroList = new BackendAdapter(new CommonParam())
+                                .Get<List<MOS.EFMODEL.DataModels.V_HIS_ROOM_SARO>>("api/HisRoomSaro/GetView", ApiConsumers.MosConsumer, hisRoomSaroViewFilter, new CommonParam());
+                                if (hisRoomSaroList != null && hisRoomSaroList.Count() > 0)
+                                {
+                                    firstItem.EXECUTE_ROOM_ADDRESS = hisRoomSaroList.FirstOrDefault().SAMPLE_ROOM_NAME;
+                                }
+                                else
+                                {
+                                    firstItem.EXECUTE_ROOM_ADDRESS = "";
+                                }
+                                if (firstItem.SERVICE_REQ_ID.HasValue && firstItem.SERVICE_REQ_ID.Value>0)
+                                {
+                                    var serviceReq = item.FirstOrDefault(o => o.ID == firstItem.SERVICE_REQ_ID);
+                                    firstItem.NUM_ORDER = serviceReq.CALL_SAMPLE_ORDER;
+                                    firstItem.BARCODE = serviceReq.BARCODE;
+                                }
+                              
+                                listSereServNew.Add(firstItem);
+                            }
                         }
-                        else
-                        {
-                            resultV.EXECUTE_ROOM_ADDRESS = resultV.EXECUTE_ROOM_ADDRESS;
-                            resultV.EXECUTE_ROOM_NAME = resultV.EXECUTE_ROOM_ADDRESS;
-                        }
+
                         resultV.NUM_ORDER = resultV.CALL_SAMPLE_ORDER;
                         listResult.Add(resultV);
                     }
                     else
                     {
-                        var group = item.GroupBy(o => o.EXECUTE_ROOM_ID).ToList();
+                        if (resultV.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__TDCN)
+                        {
+                            resultV.NUM_ORDER_FIXED = 2;
+                        }
+                        else if (resultV.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__SA)
+                        {
+                            resultV.NUM_ORDER_FIXED = 3;
+                        }
+                        else if (resultV.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__GPBL)
+                        {
+                            resultV.NUM_ORDER_FIXED = 4;
+                        }
+                        else if (resultV.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__NS)
+                        {
+                            resultV.NUM_ORDER_FIXED = 5;
+                        }
+                        else if (resultV.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__CDHA)
+                        {
+                            resultV.NUM_ORDER_FIXED = 6;
+                        }
+                        else if (resultV.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__PT)
+                        {
+                            resultV.NUM_ORDER_FIXED = 7;
+                        }
+                        else if (resultV.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__TT)
+                        {
+                            resultV.NUM_ORDER_FIXED = 8;
+                        }
+                        else if (resultV.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__KHAC)
+                        {
+                            resultV.NUM_ORDER_FIXED = 9;
+                        }
+                        var group = sSItem.GroupBy(o => o.TDL_EXECUTE_ROOM_ID).ToList();
                         foreach (var itemOther in group)
                         {
-                            VHisServiceReqAdo resultTher = new VHisServiceReqAdo(itemOther.FirstOrDefault());
-                            if (resultTher.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__TDCN)
+                            SereServADO resultTher = new SereServADO(itemOther.FirstOrDefault());
+                            resultTher.EXECUTE_ROOM_NAME = String.Format("{0} - {1}", itemOther.FirstOrDefault().EXECUTE_ROOM_NAME, string.Join("; ", itemOther.Select(o => o.TDL_SERVICE_NAME).ToList()));
+                            var room = HIS.Desktop.LocalStorage.BackendData.BackendDataWorker.Get<V_HIS_EXECUTE_ROOM>().FirstOrDefault(o => o.ROOM_ID == itemOther.FirstOrDefault().TDL_EXECUTE_ROOM_ID);
+                            if (room != null)
                             {
-                                resultTher.NUM_ORDER_FIXED = 2;
+                                resultTher.EXECUTE_ROOM_ADDRESS = room.ADDRESS;
                             }
-                            else if (resultTher.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__SA)
+                            if (resultTher.SERVICE_REQ_ID.HasValue && resultTher.SERVICE_REQ_ID.Value > 0)
                             {
-                                resultTher.NUM_ORDER_FIXED = 3;
+                                var serviceReq = item.FirstOrDefault(o => o.ID == resultTher.SERVICE_REQ_ID);
+                                resultTher.NUM_ORDER = serviceReq.NUM_ORDER;
+                                resultTher.BARCODE = serviceReq.BARCODE;
                             }
-                            else if (resultTher.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__GPBL)
-                            {
-                                resultTher.NUM_ORDER_FIXED = 4;
-                            }
-                            else if (resultTher.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__NS)
-                            {
-                                resultTher.NUM_ORDER_FIXED = 5;
-                            }
-                            else if (resultTher.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__CDHA)
-                            {
-                                resultTher.NUM_ORDER_FIXED = 6;
-                            }
-                            else if (resultTher.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__PT)
-                            {
-                                resultTher.NUM_ORDER_FIXED = 7;
-                            }
-                            else if (resultTher.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__TT)
-                            {
-                                resultTher.NUM_ORDER_FIXED = 8;
-                            }
-                            else if (resultTher.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__KHAC)
-                            {
-                                resultTher.NUM_ORDER_FIXED = 9;
-                            }
-                            listResult.Add(resultTher);
+                            listSereServNew.Add(resultTher);
                         }
+
+                        listResult.Add(resultV);
                     }
                 }
                 listResult = listResult.OrderBy(o => o.NUM_ORDER_FIXED).ToList();
                 rdo._SereServs = (rdo._SereServs != null && rdo._SereServs.Count > 0) ? rdo._SereServs.OrderBy(p => p.ID).ToList() : rdo._SereServs;
+                Inventec.Common.Logging.LogSystem.Debug("Data ServiceReqs thuc hien huy yeu cau dich vu null: " + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => listResult), listResult));
+                Inventec.Common.Logging.LogSystem.Debug("Data listSereServNew thuc hien huy yeu cau dich vu null: " + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => listSereServNew), listSereServNew));
                 objectTag.AddObjectData(store, "ServiceReqs", listResult);
+                objectTag.AddObjectData(store, "listSereServNew", listSereServNew);
+                objectTag.AddRelationship(store, "ServiceReqs", "listSereServNew", "SERVICE_REQ_TYPE_ID", "TDL_SERVICE_REQ_TYPE_ID");
+                objectTag.SetUserFunction(store, "FuncSameTitleRow", new CustomerFuncMergeSameData(listSereServNew, 1));
+                objectTag.SetUserFunction(store, "FuncSameTitleCol", new CustomerFuncMergeSameData(listSereServNew, 2));
+
                 objectTag.AddObjectData(store, "CashierRooms", this._ListCashierRoom);
                 objectTag.AddObjectData(store, "SereServs", this._ListSereServ);
                 objectTag.AddObjectData(store, "ServiceNumOrder", this._ListServiceNumOder.Distinct().ToList());
@@ -238,6 +304,62 @@ namespace MPS.Processor.Mps000276
 
             return result;
         }
+
+        #region Orders Implementation
+        class CustomerFuncMergeSameData : TFlexCelUserFunction
+        {
+            List<SereServADO> ListCares;
+            int SameType;
+            public CustomerFuncMergeSameData(List<SereServADO> listCare, int sameType)
+            {
+                ListCares = listCare;
+                SameType = sameType;
+            }
+            public override object Evaluate(object[] parameters)
+            {
+                if (parameters == null || parameters.Length <= 0)
+                    throw new ArgumentException("Bad parameter count in call to Orders() user-defined function");
+
+                bool result = false;
+                try
+                {
+                    int rowIndex = (int)parameters[0];
+                    if (rowIndex >= 0)
+                    {
+                        switch (SameType)
+                        {
+                            case 1: // Merge theo địa chỉ phòng
+                                string currentAddress = ListCares[rowIndex].EXECUTE_ROOM_ADDRESS;
+                                string prevAddress = ListCares[rowIndex - 1].EXECUTE_ROOM_ADDRESS;
+
+                                if (!string.IsNullOrEmpty(currentAddress) &&
+                                    currentAddress == prevAddress)
+                                {
+                                    result = true;
+                                }
+                                break;
+
+                            case 2: // Merge theo loại dịch vụ
+                                string currentService = ListCares[rowIndex].TDL_SERVICE_NAME;
+                                string prevService = ListCares[rowIndex - 1].TDL_SERVICE_NAME;
+
+                                if (!string.IsNullOrEmpty(currentService) &&
+                                    currentService == prevService)
+                                {
+                                    result = true;
+                                }
+                                break;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                }
+
+                return result;
+            }
+        }
+        #endregion
 
         void ProcessListData()
         {

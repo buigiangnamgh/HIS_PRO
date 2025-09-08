@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 
 namespace MPS.Processor.Mps000276
 {
-    public class VHisServiceReqAdo:MOS.EFMODEL.DataModels.V_HIS_SERVICE_REQ
+    public class VHisServiceReqAdo : MOS.EFMODEL.DataModels.V_HIS_SERVICE_REQ
     {
         public long NUM_ORDER_FIXED { get; set; }
 
