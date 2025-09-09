@@ -179,6 +179,15 @@ namespace MPS.Processor.Mps000276
                     ListSereServAll.Add(ss);
                 }
                 ListSereServAll = ListSereServAll.OrderBy(o => o.TDL_SERVICE_REQ_TYPE_ID).ToList();
+                var listSsTest = ListSereServAll.Where(o => o.TDL_SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__XN).ToList();
+                List<MOS.EFMODEL.DataModels.V_HIS_ROOM_SARO> hisRoomSaroList = new List<V_HIS_ROOM_SARO>();
+                if (listSsTest != null && listSsTest.Count > 0)
+                {
+                    HisRoomSaroViewFilter hisRoomSaroViewFilter = new HisRoomSaroViewFilter();
+                    hisRoomSaroViewFilter.ROOM_IDs = listSsTest.Select(o => o.TDL_REQUEST_ROOM_ID).Distinct().ToList();
+                    hisRoomSaroList = new BackendAdapter(new CommonParam())
+                    .Get<List<MOS.EFMODEL.DataModels.V_HIS_ROOM_SARO>>("api/HisRoomSaro/GetView", ApiConsumers.MosConsumer, hisRoomSaroViewFilter, new CommonParam());
+                }
                 foreach (var item in serviceReqGroup)
                 {
                     var sSItem = ListSereServAll.Where(o => item.Select(p => p.ID).Contains(o.SERVICE_REQ_ID ?? 0)).ToList();
@@ -193,25 +202,19 @@ namespace MPS.Processor.Mps000276
                             foreach (var ss in groupSS)
                             {
                                 var firstItem = ss.FirstOrDefault();
-                                HisRoomSaroViewFilter hisRoomSaroViewFilter = new HisRoomSaroViewFilter();
-                                hisRoomSaroViewFilter.ROOM_ID = firstItem.TDL_REQUEST_ROOM_ID;
-                                List<MOS.EFMODEL.DataModels.V_HIS_ROOM_SARO> hisRoomSaroList = new BackendAdapter(new CommonParam())
-                                .Get<List<MOS.EFMODEL.DataModels.V_HIS_ROOM_SARO>>("api/HisRoomSaro/GetView", ApiConsumers.MosConsumer, hisRoomSaroViewFilter, new CommonParam());
+
                                 if (hisRoomSaroList != null && hisRoomSaroList.Count() > 0)
-                                {
-                                    firstItem.EXECUTE_ROOM_ADDRESS = hisRoomSaroList.FirstOrDefault().SAMPLE_ROOM_NAME;
-                                }
+                                    firstItem.EXECUTE_ROOM_ADDRESS = hisRoomSaroList.FirstOrDefault(o => o.ROOM_ID == firstItem.TDL_REQUEST_ROOM_ID).SAMPLE_ROOM_NAME;
                                 else
-                                {
                                     firstItem.EXECUTE_ROOM_ADDRESS = "";
-                                }
-                                if (firstItem.SERVICE_REQ_ID.HasValue && firstItem.SERVICE_REQ_ID.Value>0)
+
+                                if (firstItem.SERVICE_REQ_ID.HasValue && firstItem.SERVICE_REQ_ID.Value > 0)
                                 {
                                     var serviceReq = item.FirstOrDefault(o => o.ID == firstItem.SERVICE_REQ_ID);
                                     firstItem.NUM_ORDER = serviceReq.CALL_SAMPLE_ORDER;
                                     firstItem.BARCODE = serviceReq.BARCODE;
                                 }
-                              
+                                firstItem.EXECUTE_ROOM_NAME = firstItem.EXECUTE_ROOM_NAME + "\n";
                                 listSereServNew.Add(firstItem);
                             }
                         }
@@ -269,6 +272,7 @@ namespace MPS.Processor.Mps000276
                                 resultTher.NUM_ORDER = serviceReq.NUM_ORDER;
                                 resultTher.BARCODE = serviceReq.BARCODE;
                             }
+                            resultTher.EXECUTE_ROOM_NAME = resultTher.EXECUTE_ROOM_NAME + "\n";
                             listSereServNew.Add(resultTher);
                         }
 
@@ -285,6 +289,8 @@ namespace MPS.Processor.Mps000276
                 objectTag.SetUserFunction(store, "FuncSameTitleRow", new CustomerFuncMergeSameData(listSereServNew, 1));
                 objectTag.SetUserFunction(store, "FuncSameTitleCol", new CustomerFuncMergeSameData(listSereServNew, 2));
 
+
+                // code cũ
                 objectTag.AddObjectData(store, "CashierRooms", this._ListCashierRoom);
                 objectTag.AddObjectData(store, "SereServs", this._ListSereServ);
                 objectTag.AddObjectData(store, "ServiceNumOrder", this._ListServiceNumOder.Distinct().ToList());
