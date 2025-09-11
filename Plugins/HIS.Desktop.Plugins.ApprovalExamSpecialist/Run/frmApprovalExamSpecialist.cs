@@ -29,8 +29,6 @@ namespace HIS.Desktop.Plugins.ApprovalExamSpecialist.Run
 {
     public partial class frmApprovalExamSpecialist : FormBase
     {
-        MOS.EFMODEL.DataModels.HIS_TRACKING currentVHisTracking = null;
-        MOS.EFMODEL.DataModels.HIS_SPECIALIST_EXAM currentVHisSpecialist = null;
         internal L_HIS_TREATMENT_BED_ROOM RowCellClickBedRoom { get; set; }
         private Inventec.Desktop.Common.Modules.Module currentModule;
         internal ServiceReqGroupByDateADO rowClickByDate { get; set; }
@@ -70,6 +68,10 @@ namespace HIS.Desktop.Plugins.ApprovalExamSpecialist.Run
 
                 this.treatmentID = treatmentID;
                 this.currentSpecialistExam = currentSpecialistExam;
+                if (this.treatmentID == 0)
+                {
+                    this.treatmentID = currentSpecialistExam.TREATMENT_ID ?? 0;
+                }
                 this.currentModule = currentModule;
                 this.wkRoomId = this.currentModule != null ? this.currentModule.RoomId : 0;
                 this.wkRoomTypeId = this.currentModule != null ? this.currentModule.RoomTypeId : 0;
@@ -86,6 +88,8 @@ namespace HIS.Desktop.Plugins.ApprovalExamSpecialist.Run
                 this.KeyPreview = true;
                 this.ActiveControl = gridControl1;
                 this.SetCaptionByLanguageKey();
+                CheckConfigIsMaterial();
+                InitConfigAcs();
                 this.InitComboDoctor();
                 AddUc();
                 gridViewTreatment.FocusedRowHandle = -1;
@@ -347,7 +351,7 @@ namespace HIS.Desktop.Plugins.ApprovalExamSpecialist.Run
 
         private void btnPrint_Click(object sender, EventArgs e)
         {
-            IsSign = false;
+            checksign = false;
             PrintMps500();
         }
         private bool DeletegatePrintTemplate(string printCode, string fileName)
@@ -406,7 +410,7 @@ namespace HIS.Desktop.Plugins.ApprovalExamSpecialist.Run
 
                 Inventec.Common.SignLibrary.ADO.InputADO inputADO = new HIS.Desktop.Plugins.Library.EmrGenerate.EmrGenerateProcessor().GenerateInputADOWithPrintTypeCode((this.currentSpecialistExam.TREATMENT_CODE ?? ""), printTypeCode, currentModuleBase.RoomId);
                 WaitingManager.Hide();
-                if (IsSign)
+                if (checksign)
                 {
                     result = MPS.MpsPrinter.Run(new MPS.ProcessorBase.Core.PrintData(printTypeCode, fileName, pdo, MPS.ProcessorBase.PrintConfig.PreviewType.EmrSignNow, printerName) { EmrInputADO = inputADO });
                 }
@@ -470,14 +474,14 @@ namespace HIS.Desktop.Plugins.ApprovalExamSpecialist.Run
                 datamapper.IS_APPROVAL = 1;
                 datamapper.REJECT_APPROVAL_REASON = null;
 
-                var rs = new Inventec.Common.Adapter.BackendAdapter(param).Post<HIS_SPECIALIST_EXAM>("api/HisSpecialistExam/Update", ApiConsumers.MosConsumer, datamapper, param);
+                HIS_SPECIALIST_EXAM rsSpecialExam = new Inventec.Common.Adapter.BackendAdapter(param).Post<HIS_SPECIALIST_EXAM>("api/HisSpecialistExam/Update", ApiConsumers.MosConsumer, datamapper, param);
 
-                if (rs != null && this.delegateRefresher != null)
+                if (rsSpecialExam != null && this.delegateRefresher != null)
                 {
                     this.delegateRefresher();
                 }
 
-                MessageManager.Show(this, param, rs != null);
+                MessageManager.Show(this, param, rsSpecialExam != null);
                 SessionManager.ProcessTokenLost(param);
             }
             catch (Exception ex)
@@ -757,12 +761,12 @@ namespace HIS.Desktop.Plugins.ApprovalExamSpecialist.Run
             }
         }
 
-        bool IsSign = false;
+        bool checksign = false;
         private void btnSaveAndSign_Click(object sender, EventArgs e)
         {
-            IsSign = true;
+            checksign = true;
             btnSave_Click(null, null);
-            PrintMps500();
+            PrintProcess(PrintType.IN_TO_DIEU_TRI);
         }
 
     }
