@@ -32,43 +32,82 @@ namespace Inventec.Common.SignLibrary.FingerPrint
         {
             try
             {                
+                //if (!IsProcessOpen("Inventec.FingerPrintManager"))
+                //{
+                //    string pathSaveFolder = Path.Combine(Path.Combine(Application.StartupPath, "temp"), DateTime.Now.ToString("ddMMyyyy"), "STFingerPrintFile");
+                //    if (!Directory.Exists(pathSaveFolder))
+                //    {
+                //        Directory.CreateDirectory(pathSaveFolder);
+                //    }
+                //    DirectoryInfo dicInfo = new DirectoryInfo(pathSaveFolder);
+
+                //    string[] fileImage = Directory.GetFiles(dicInfo.FullName, "*");
+                //    if (fileImage != null && fileImage.Length > 0)
+                //    {
+                //        try
+                //        {
+                //            dicInfo.Delete(true);
+                //        }
+                //        catch (Exception exx)
+                //        {
+                //            LogSystem.Error(exx);
+                //        }
+                //    }
+
+                //    ProcessStartInfo startInfo = new ProcessStartInfo();
+                //    startInfo.FileName = Application.StartupPath + @"\Inventec.FingerPrintManager.exe";
+                //    Process.Start(startInfo);                    
+                //}
+
                 if (!IsProcessOpen("Inventec.FingerPrintManager"))
                 {
-                    string pathSaveFolder = Path.Combine(Path.Combine(Application.StartupPath, "temp"), DateTime.Now.ToString("ddMMyyyy"), "STFingerPrintFile");
-                    if (!Directory.Exists(pathSaveFolder))
-                    {
-                        Directory.CreateDirectory(pathSaveFolder);
-                    }
-                    DirectoryInfo dicInfo = new DirectoryInfo(pathSaveFolder);
+                    string pathSaveFolder = Path.Combine(Application.StartupPath, "temp", DateTime.Now.ToString("ddMMyyyy"), "STFingerPrintFile");
 
-                    string[] fileImage = Directory.GetFiles(dicInfo.FullName, "*");
-                    if (fileImage != null && fileImage.Length > 0)
+                    try
+                    {
+                        if (Directory.Exists(pathSaveFolder))
+                        {
+                            DirectoryInfo dicInfo = new DirectoryInfo(pathSaveFolder);
+                            if (dicInfo.GetFiles().Length > 0)
+                            {
+                                dicInfo.Delete(true);
+                            }
+                        }
+                        Directory.CreateDirectory(pathSaveFolder); // Đảm bảo thư mục luôn tồn tại
+                    }
+                    catch (Exception ex)
+                    {
+                        Inventec.Common.Logging.LogSystem.Error("Lỗi khi xử lý thư mục vân tay", ex);
+                    }
+
+                    string exePath = Path.Combine(Application.StartupPath, "Inventec.FingerPrintManager.exe");
+                    if (File.Exists(exePath))
                     {
                         try
                         {
-                            dicInfo.Delete(true);
+                            Process.Start(exePath);
                         }
-                        catch (Exception exx)
+                        catch (Exception ex)
                         {
-                            LogSystem.Error(exx);
+                            Inventec.Common.Logging.LogSystem.Error("Lỗi khởi động FingerPrintManager", ex);
                         }
                     }
-
-                    ProcessStartInfo startInfo = new ProcessStartInfo();
-                    startInfo.FileName = Application.StartupPath + @"\Inventec.FingerPrintManager.exe";
-                    Process.Start(startInfo);                    
+                    else
+                    {
+                        Inventec.Common.Logging.LogSystem.Error("Không tìm thấy file FingerPrintManager.exe tại: " + exePath);
+                    }
                 }
 
                 while (true)
                 {
                     if (IsProcessOpen("Inventec.FingerPrintManager"))
                     {
-                        //Inventec.Common.Logging.LogSystem.Debug("ISignBoard.Run.1");
+                        Inventec.Common.Logging.LogSystem.Debug("Inventec.FingerPrintManager.Run.1");
                         //Nothing...
                     }
                     else
                     {
-                        Inventec.Common.Logging.LogSystem.Debug("IFingerPrint.Run.2");
+                        Inventec.Common.Logging.LogSystem.Debug("Inventec.FingerPrintManager.Run.2");
                         string pathSaveFolder = Path.Combine(Path.Combine(Application.StartupPath, "temp"), DateTime.Now.ToString("ddMMyyyy"), "STFingerPrintFile");
                         DirectoryInfo dicInfo = new DirectoryInfo(pathSaveFolder);
 
@@ -79,12 +118,12 @@ namespace Inventec.Common.SignLibrary.FingerPrint
                         {
                             //TODO
                             this.SignPadImageData = Utils.FileToByte(fileImage[0]);
-                            Inventec.Common.Logging.LogSystem.Debug("IFingerPrint.Run.3");
+                            Inventec.Common.Logging.LogSystem.Debug("Inventec.FingerPrintManager.Run.3");
                             break;                              
                         }
                         else
                         {
-                            Inventec.Common.Logging.LogSystem.Debug("IFingerPrint.Run.4");
+                            Inventec.Common.Logging.LogSystem.Debug("Inventec.FingerPrintManager.Run.4");
                             break;
                         }
                     }

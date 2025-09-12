@@ -128,12 +128,24 @@ namespace Inventec.Common.SignLibrary
         public UCViewer()
         {
             InitializeComponent();
+            Inventec.Common.Logging.LogSystem.Debug("UCViewer.InitializeComponent.Nam.1");
         }
 
         private UCViewer(InputADO inputADO, EMR_SIGNER signer, EMR_TREATMENT treatment, string tokenCode)
         {
             Inventec.Common.Logging.LogSystem.Debug("UCViewer.InitializeComponent.1");
+            Inventec.Common.Logging.LogSystem.Debug("UCViewer.InitializeComponent.Nam.2");
             InitializeComponent();
+            if (inputADO.IsUsingSignPad.HasValue && inputADO.IsUsingSignPad.Value)
+            {
+                isUsingSignPad = true;
+                barCheckUsingSignPad.Checked = true;
+            }
+            if (GlobalStore.EMR__EMR_DOCUMENT__PATIENT_SIGN__OPTION == "3" || GlobalStore.EMR__EMR_DOCUMENT__PATIENT_SIGN__OPTION == "2")
+            {
+                isUsingSignPad = true;
+                barCheckUsingSignPad.Checked = true;
+            }
             isInitForm = true;
             this.inputADOWorking = inputADO;
             this.Signer = signer;
@@ -395,7 +407,7 @@ namespace Inventec.Common.SignLibrary
         internal UCViewer(string inputFile, InputADO inputADO, EMR_SIGNER signer, EMR_TREATMENT treatment, string tokenCode)
             : this(inputFile, FileType.Pdf, inputADO, signer, treatment, tokenCode, null, false)
         {
-
+            Inventec.Common.Logging.LogSystem.Debug("UCViewer.InitializeComponent.Nam.3");
         }
 
         internal UCViewer(string inputFile, FileType fileType, InputADO inputADO, EMR_SIGNER signer, EMR_TREATMENT treatment, string tokenCode, Action<string> _actionAfterSigned, bool _isSignNow, bool _isPrintDocSignedNow = false, Action<bool> _dlgCloseAfterSign = null)
@@ -422,11 +434,13 @@ namespace Inventec.Common.SignLibrary
                     ProcessSignPdf();
                 }
             }
+            Inventec.Common.Logging.LogSystem.Debug("UCViewer.InitializeComponent.Nam.4");
         }
 
         internal UCViewer(Stream inputStream, InputADO inputADO, EMR_SIGNER signer, EMR_TREATMENT treatment, string tokenCode)
             : this(inputADO, signer, treatment, tokenCode)
         {
+            Inventec.Common.Logging.LogSystem.Debug("UCViewer.InitializeComponent.Nam.5");
             this.inputStream = inputStream;
             this.readerWorking = new PdfReader(inputStream);
             EnableSignButton(true);
@@ -436,6 +450,7 @@ namespace Inventec.Common.SignLibrary
         internal UCViewer(byte[] inputByte, InputADO inputADO, EMR_SIGNER signer, EMR_TREATMENT treatment, string tokenCode)
             : this(inputADO, signer, treatment, tokenCode)
         {
+            Inventec.Common.Logging.LogSystem.Debug("UCViewer.InitializeComponent.Nam.6");
             this.fileType = FileType.Pdf;
             this.inputFileWork = Utils.GenerateTempFileWithin();
             Utils.ByteToFile(inputByte, this.inputFileWork);
@@ -449,6 +464,17 @@ namespace Inventec.Common.SignLibrary
         internal UCViewer(byte[] inputByte, FileType fileType, InputADO inputADO, EMR_SIGNER signer, EMR_TREATMENT treatment, string tokenCode)
             : this(inputADO, signer, treatment, tokenCode)
         {
+            Inventec.Common.Logging.LogSystem.Debug("UCViewer.InitializeComponent.Nam.7");
+            if (inputADO.IsUsingSignPad.HasValue && inputADO.IsUsingSignPad.Value)
+            {
+                isUsingSignPad = true;
+                barCheckUsingSignPad.Checked = true;
+            }
+            if (GlobalStore.EMR__EMR_DOCUMENT__PATIENT_SIGN__OPTION == "3" || GlobalStore.EMR__EMR_DOCUMENT__PATIENT_SIGN__OPTION == "2")
+            {
+                isUsingSignPad = true;
+                barCheckUsingSignPad.Checked = true;
+            }
             this.fileType = fileType;
             string ext = Utils.GetExtByFileType(fileType);
             Utils.ProcessFileInput(inputByte, ext, ref inputFileWork, inputADO.DocumentTypeCode);
@@ -469,10 +495,21 @@ namespace Inventec.Common.SignLibrary
         internal UCViewer(byte[] inputByte, FileType fileType, InputADO inputADO, EMR_SIGNER signer, EMR_TREATMENT treatment, string tokenCode, Action<string> _actionAfterSigned, bool _isSignNow, bool _isPrintDocSignedNow = false, Action<bool> _dlgCloseAfterSign = null)
             : this(inputByte, fileType, inputADO, signer, treatment, tokenCode)
         {
+            Inventec.Common.Logging.LogSystem.Debug("UCViewer.InitializeComponent.Nam.8");
             this.isSignNow = _isSignNow;
             this.isPrintDocSignedNow = _isPrintDocSignedNow;
             this.actionAfterSigned = _actionAfterSigned;
             this.closeAfterSign = _dlgCloseAfterSign;
+            if (inputADO.IsUsingSignPad.HasValue && inputADO.IsUsingSignPad.Value)
+            {
+                isUsingSignPad = true;
+                barCheckUsingSignPad.Checked = true;
+            }
+            if (GlobalStore.EMR__EMR_DOCUMENT__PATIENT_SIGN__OPTION == "3" || GlobalStore.EMR__EMR_DOCUMENT__PATIENT_SIGN__OPTION == "2")
+            {
+                isUsingSignPad = true;
+                barCheckUsingSignPad.Checked = true;
+            }
         }
 
         private void UCViewer1_Load(object sender, EventArgs e)
@@ -1266,7 +1303,8 @@ namespace Inventec.Common.SignLibrary
             try
             {
                 if (this.isUsingSignPad && GlobalStore.EMR_SIGN_BOARD__OPTION == "2"
-                && new Inventec.Common.SignLibrary.SignBoard.SignBoardUseBehavior(null, null).IsProcessOpen("Inventec.SignPadManager"))
+                && (new Inventec.Common.SignLibrary.SignBoard.SignBoardUseBehavior(null, null).IsProcessOpen("Inventec.SignPadManager")
+                || new Inventec.Common.SignLibrary.FingerPrint.FingerPrintUseBehavior(null, null).IsProcessOpen("Inventec.FingerPrintManager")))
                 {
                     valid = false;
                 }

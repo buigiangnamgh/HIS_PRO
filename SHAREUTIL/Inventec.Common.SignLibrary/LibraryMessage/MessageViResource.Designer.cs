@@ -19,7 +19,7 @@ namespace Inventec.Common.SignLibrary.LibraryMessage {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class MessageViResource {
@@ -295,7 +295,7 @@ namespace Inventec.Common.SignLibrary.LibraryMessage {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Không tìm thấy chữ ký khi sử dụng bảng ký.
+        ///   Looks up a localized string similar to Không tìm thấy chữ ký khi sử dụng thiết bị ký.
         /// </summary>
         internal static string KhongTimThayChuKyKhiSuDungBangKy {
             get {
@@ -466,7 +466,7 @@ namespace Inventec.Common.SignLibrary.LibraryMessage {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Tính năng ký sử dụng bảng ký chưa được hỗ trợ.
+        ///   Looks up a localized string similar to Tính năng ký sử dụng thiết bị ký chưa được hỗ trợ.
         /// </summary>
         internal static string TinhNangKySuDungBangKyChuaDuocHoTro {
             get {

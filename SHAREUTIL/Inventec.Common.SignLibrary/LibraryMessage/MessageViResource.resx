@@ -231,11 +231,11 @@
   <data name="TaiKhoanThieuThongTinAnhBanCoMuonBoHienThiAnh" xml:space="preserve">
     <value>Tài khoản thiếu thông tin ảnh, bạn có muốn bỏ hiển thị ảnh chữ ký không?</value>
   </data>
-	<data name="TuDongCapNhatChuKyThatBaiBanCoMuonTiepTucVaBoHienThiChuKy" xml:space="preserve">
+  <data name="TuDongCapNhatChuKyThatBaiBanCoMuonTiepTucVaBoHienThiChuKy" xml:space="preserve">
     <value>Tự động cập nhật ảnh chữ ký theo thông tin chứng thư thất bại.
 	Bạn có muốn tiếp tục ký và bỏ hiển thị ảnh chữ ký không?</value>
   </data>
-	<data name="TaiKhoanThieuThongTinAnhHeThongTuDongCapNhat" xml:space="preserve">
+  <data name="TaiKhoanThieuThongTinAnhHeThongTuDongCapNhat" xml:space="preserve">
     <value>Tài khoản thiếu thông tin ảnh chữ ký. Hệ thống sẽ tự động cập nhật ảnh chữ ký theo thông tin chứng thư</value>
   </data>
   <data name="ThongBao" xml:space="preserve">
@@ -266,9 +266,9 @@
     <value>Không nhập quan hệ của người nhà ký</value>
   </data>
   <data name="KhongTimThayChuKyKhiSuDungBangKy" xml:space="preserve">
-    <value>Không tìm thấy chữ ký khi sử dụng bảng ký</value>
+    <value>Không tìm thấy chữ ký khi sử dụng thiết bị ký</value>
   </data>
   <data name="TinhNangKySuDungBangKyChuaDuocHoTro" xml:space="preserve">
-    <value>Tính năng ký sử dụng bảng ký chưa được hỗ trợ</value>
+    <value>Tính năng ký sử dụng thiết bị ký chưa được hỗ trợ</value>
   </data>
 </root>
