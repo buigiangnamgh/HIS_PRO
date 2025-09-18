@@ -45,7 +45,6 @@ namespace HIS.Desktop.Plugins.ServiceReqList
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject1 = new DevExpress.Utils.SerializableAppearanceObject();
             DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject2 = new DevExpress.Utils.SerializableAppearanceObject();
             DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject3 = new DevExpress.Utils.SerializableAppearanceObject();
@@ -144,18 +143,18 @@ namespace HIS.Desktop.Plugins.ServiceReqList
             DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject96 = new DevExpress.Utils.SerializableAppearanceObject();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmServiceReqList));
             this.layoutControl1 = new DevExpress.XtraLayout.LayoutControl();
-            this.popupControlContainer1 = new DevExpress.XtraBars.PopupControlContainer(this.components);
+            this.popupControlContainer1 = new DevExpress.XtraBars.PopupControlContainer();
             this.layoutControl3 = new DevExpress.XtraLayout.LayoutControl();
             this.gridConfig = new DevExpress.XtraGrid.GridControl();
             this.gvConfig = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.gridColumn9 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumn10 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.repCheckConfig = new DevExpress.XtraEditors.Repository.RepositoryItemCheckEdit();
-            this.barManager1 = new DevExpress.XtraBars.BarManager(this.components);
+            this.barManager1 = new DevExpress.XtraBars.BarManager();
             this.bar1 = new DevExpress.XtraBars.Bar();
             this.bbtnRCFind = new DevExpress.XtraBars.BarButtonItem();
             this.barButtonPrintTemBarcode = new DevExpress.XtraBars.BarButtonItem();
-            this.imageCollection2 = new DevExpress.Utils.ImageCollection(this.components);
+            this.imageCollection2 = new DevExpress.Utils.ImageCollection();
             this.bbtnRCRefresh = new DevExpress.XtraBars.BarButtonItem();
             this.barDockControlTop = new DevExpress.XtraBars.BarDockControl();
             this.barDockControlBottom = new DevExpress.XtraBars.BarDockControl();
@@ -326,7 +325,7 @@ namespace HIS.Desktop.Plugins.ServiceReqList
             this.repositoryItemCheckEditMainExam = new DevExpress.XtraEditors.Repository.RepositoryItemCheckEdit();
             this.repositoryItemButtonEditAllowNotExecute_Disable = new DevExpress.XtraEditors.Repository.RepositoryItemButtonEdit();
             this.repositoryItemButtonEditIsConfirm_Dis = new DevExpress.XtraEditors.Repository.RepositoryItemButtonEdit();
-            this.tooltipServiceRequest = new DevExpress.Utils.ToolTipController(this.components);
+            this.tooltipServiceRequest = new DevExpress.Utils.ToolTipController();
             this.layoutControlGroup1 = new DevExpress.XtraLayout.LayoutControlGroup();
             this.layoutControlItem1 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem5 = new DevExpress.XtraLayout.LayoutControlItem();
@@ -350,10 +349,10 @@ namespace HIS.Desktop.Plugins.ServiceReqList
             this.layoutControlItem17 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem16 = new DevExpress.XtraLayout.LayoutControlItem();
             this.s = new DevExpress.XtraLayout.LayoutControlItem();
-            this.toolTipController1 = new DevExpress.Utils.ToolTipController(this.components);
-            this.imageListPriority = new System.Windows.Forms.ImageList(this.components);
-            this.imageListIcon = new System.Windows.Forms.ImageList(this.components);
-            this.imageListCheck = new System.Windows.Forms.ImageList(this.components);
+            this.toolTipController1 = new DevExpress.Utils.ToolTipController();
+            this.imageListPriority = new System.Windows.Forms.ImageList();
+            this.imageListIcon = new System.Windows.Forms.ImageList();
+            this.imageListCheck = new System.Windows.Forms.ImageList();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).BeginInit();
             this.layoutControl1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.popupControlContainer1)).BeginInit();
@@ -713,10 +712,10 @@ namespace HIS.Desktop.Plugins.ServiceReqList
             // 
             this.btnConfig.Image = ((System.Drawing.Image)(resources.GetObject("btnConfig.Image")));
             this.btnConfig.ImageLocation = DevExpress.XtraEditors.ImageLocation.MiddleCenter;
-            this.btnConfig.Location = new System.Drawing.Point(608, 684);
+            this.btnConfig.Location = new System.Drawing.Point(566, 684);
             this.btnConfig.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnConfig.Name = "btnConfig";
-            this.btnConfig.Size = new System.Drawing.Size(69, 27);
+            this.btnConfig.Size = new System.Drawing.Size(44, 27);
             this.btnConfig.StyleController = this.layoutControl1;
             this.btnConfig.TabIndex = 32;
             this.btnConfig.Click += new System.EventHandler(this.btnConfig_Click);
@@ -790,10 +789,10 @@ namespace HIS.Desktop.Plugins.ServiceReqList
             // 
             // btnPrintTemBarcode
             // 
-            this.btnPrintTemBarcode.Location = new System.Drawing.Point(1072, 684);
+            this.btnPrintTemBarcode.Location = new System.Drawing.Point(1028, 684);
             this.btnPrintTemBarcode.Margin = new System.Windows.Forms.Padding(4);
             this.btnPrintTemBarcode.Name = "btnPrintTemBarcode";
-            this.btnPrintTemBarcode.Size = new System.Drawing.Size(76, 27);
+            this.btnPrintTemBarcode.Size = new System.Drawing.Size(120, 27);
             this.btnPrintTemBarcode.StyleController = this.layoutControl1;
             this.btnPrintTemBarcode.TabIndex = 26;
             this.btnPrintTemBarcode.Text = "In tem (F7)";
@@ -801,11 +800,11 @@ namespace HIS.Desktop.Plugins.ServiceReqList
             // 
             // btnDropDownPrint
             // 
-            this.btnDropDownPrint.Location = new System.Drawing.Point(683, 684);
+            this.btnDropDownPrint.Location = new System.Drawing.Point(616, 684);
             this.btnDropDownPrint.Margin = new System.Windows.Forms.Padding(4);
             this.btnDropDownPrint.MenuManager = this.barManager1;
             this.btnDropDownPrint.Name = "btnDropDownPrint";
-            this.btnDropDownPrint.Size = new System.Drawing.Size(113, 27);
+            this.btnDropDownPrint.Size = new System.Drawing.Size(112, 27);
             this.btnDropDownPrint.StyleController = this.layoutControl1;
             this.btnDropDownPrint.TabIndex = 25;
             this.btnDropDownPrint.Text = "In phiếu";
@@ -813,10 +812,10 @@ namespace HIS.Desktop.Plugins.ServiceReqList
             // 
             // btnPrintMedicine
             // 
-            this.btnPrintMedicine.Location = new System.Drawing.Point(802, 684);
+            this.btnPrintMedicine.Location = new System.Drawing.Point(734, 684);
             this.btnPrintMedicine.Margin = new System.Windows.Forms.Padding(4);
             this.btnPrintMedicine.Name = "btnPrintMedicine";
-            this.btnPrintMedicine.Size = new System.Drawing.Size(126, 27);
+            this.btnPrintMedicine.Size = new System.Drawing.Size(150, 27);
             this.btnPrintMedicine.StyleController = this.layoutControl1;
             this.btnPrintMedicine.TabIndex = 23;
             this.btnPrintMedicine.Text = "In đơn thuốc TH";
@@ -824,7 +823,7 @@ namespace HIS.Desktop.Plugins.ServiceReqList
             // 
             // btnPrintTotal
             // 
-            this.btnPrintTotal.Location = new System.Drawing.Point(934, 684);
+            this.btnPrintTotal.Location = new System.Drawing.Point(890, 684);
             this.btnPrintTotal.Margin = new System.Windows.Forms.Padding(4);
             this.btnPrintTotal.Name = "btnPrintTotal";
             this.btnPrintTotal.Size = new System.Drawing.Size(132, 27);
@@ -855,7 +854,7 @@ namespace HIS.Desktop.Plugins.ServiceReqList
             this.groupControlInfo.Location = new System.Drawing.Point(1154, 3);
             this.groupControlInfo.Margin = new System.Windows.Forms.Padding(4);
             this.groupControlInfo.Name = "groupControlInfo";
-            this.groupControlInfo.Size = new System.Drawing.Size(767, 335);
+            this.groupControlInfo.Size = new System.Drawing.Size(767, 319);
             this.groupControlInfo.TabIndex = 20;
             this.groupControlInfo.Text = "Thông tin chung";
             // 
@@ -892,7 +891,7 @@ namespace HIS.Desktop.Plugins.ServiceReqList
             this.layoutControl2.Name = "layoutControl2";
             this.layoutControl2.OptionsCustomizationForm.DesignTimeCustomizationFormPositionAndSize = new System.Drawing.Rectangle(87, 215, 250, 350);
             this.layoutControl2.Root = this.Root;
-            this.layoutControl2.Size = new System.Drawing.Size(763, 308);
+            this.layoutControl2.Size = new System.Drawing.Size(763, 292);
             this.layoutControl2.TabIndex = 19;
             this.layoutControl2.Text = "layoutControl2";
             // 
@@ -1062,7 +1061,7 @@ namespace HIS.Desktop.Plugins.ServiceReqList
             // 
             // btnMobaCreate
             // 
-            this.btnMobaCreate.Location = new System.Drawing.Point(263, 278);
+            this.btnMobaCreate.Location = new System.Drawing.Point(263, 262);
             this.btnMobaCreate.Margin = new System.Windows.Forms.Padding(4);
             this.btnMobaCreate.Name = "btnMobaCreate";
             this.btnMobaCreate.Size = new System.Drawing.Size(241, 27);
@@ -1073,7 +1072,7 @@ namespace HIS.Desktop.Plugins.ServiceReqList
             // 
             // btnAggrExpMest
             // 
-            this.btnAggrExpMest.Location = new System.Drawing.Point(510, 278);
+            this.btnAggrExpMest.Location = new System.Drawing.Point(510, 262);
             this.btnAggrExpMest.Margin = new System.Windows.Forms.Padding(4);
             this.btnAggrExpMest.Name = "btnAggrExpMest";
             this.btnAggrExpMest.Size = new System.Drawing.Size(250, 27);
@@ -1189,7 +1188,7 @@ namespace HIS.Desktop.Plugins.ServiceReqList
             this.Root.Location = new System.Drawing.Point(0, 0);
             this.Root.Name = "Root";
             this.Root.Padding = new DevExpress.XtraLayout.Utils.Padding(0, 0, 0, 0);
-            this.Root.Size = new System.Drawing.Size(763, 308);
+            this.Root.Size = new System.Drawing.Size(763, 292);
             this.Root.TextVisible = false;
             // 
             // lciPatientName
@@ -1221,7 +1220,7 @@ namespace HIS.Desktop.Plugins.ServiceReqList
             // lciBtnAggrExpMest
             // 
             this.lciBtnAggrExpMest.Control = this.btnAggrExpMest;
-            this.lciBtnAggrExpMest.Location = new System.Drawing.Point(507, 275);
+            this.lciBtnAggrExpMest.Location = new System.Drawing.Point(507, 259);
             this.lciBtnAggrExpMest.Name = "lciBtnAggrExpMest";
             this.lciBtnAggrExpMest.Size = new System.Drawing.Size(256, 33);
             this.lciBtnAggrExpMest.TextSize = new System.Drawing.Size(0, 0);
@@ -1230,7 +1229,7 @@ namespace HIS.Desktop.Plugins.ServiceReqList
             // lciBtnMobaCreate
             // 
             this.lciBtnMobaCreate.Control = this.btnMobaCreate;
-            this.lciBtnMobaCreate.Location = new System.Drawing.Point(260, 275);
+            this.lciBtnMobaCreate.Location = new System.Drawing.Point(260, 259);
             this.lciBtnMobaCreate.Name = "lciBtnMobaCreate";
             this.lciBtnMobaCreate.Size = new System.Drawing.Size(247, 33);
             this.lciBtnMobaCreate.Text = "Tạo thu hồi";
@@ -1256,7 +1255,7 @@ namespace HIS.Desktop.Plugins.ServiceReqList
             this.emptySpaceItem2.AllowHotTrack = false;
             this.emptySpaceItem2.Location = new System.Drawing.Point(260, 234);
             this.emptySpaceItem2.Name = "emptySpaceItem2";
-            this.emptySpaceItem2.Size = new System.Drawing.Size(503, 41);
+            this.emptySpaceItem2.Size = new System.Drawing.Size(503, 25);
             this.emptySpaceItem2.TextSize = new System.Drawing.Size(0, 0);
             // 
             // emptySpaceItem1
@@ -1264,7 +1263,7 @@ namespace HIS.Desktop.Plugins.ServiceReqList
             this.emptySpaceItem1.AllowHotTrack = false;
             this.emptySpaceItem1.Location = new System.Drawing.Point(0, 234);
             this.emptySpaceItem1.Name = "emptySpaceItem1";
-            this.emptySpaceItem1.Size = new System.Drawing.Size(260, 74);
+            this.emptySpaceItem1.Size = new System.Drawing.Size(260, 58);
             this.emptySpaceItem1.TextSize = new System.Drawing.Size(0, 0);
             // 
             // lciRationTime
@@ -1662,7 +1661,7 @@ namespace HIS.Desktop.Plugins.ServiceReqList
             // grdSereServServiceReq
             // 
             this.grdSereServServiceReq.EmbeddedNavigator.Margin = new System.Windows.Forms.Padding(4);
-            this.grdSereServServiceReq.Location = new System.Drawing.Point(1154, 344);
+            this.grdSereServServiceReq.Location = new System.Drawing.Point(1154, 328);
             this.grdSereServServiceReq.MainView = this.grdViewSereServServiceReq;
             this.grdSereServServiceReq.Margin = new System.Windows.Forms.Padding(4);
             this.grdSereServServiceReq.Name = "grdSereServServiceReq";
@@ -1676,7 +1675,7 @@ namespace HIS.Desktop.Plugins.ServiceReqList
             this.repositoryItemButtonEditDeleteDis,
             this.repositoryItemButtonEditServiceConfirmEna,
             this.repositoryItemButtonEditServiceConfirmDis});
-            this.grdSereServServiceReq.Size = new System.Drawing.Size(767, 367);
+            this.grdSereServServiceReq.Size = new System.Drawing.Size(767, 383);
             this.grdSereServServiceReq.TabIndex = 12;
             this.grdSereServServiceReq.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.grdViewSereServServiceReq});
@@ -2072,7 +2071,7 @@ namespace HIS.Desktop.Plugins.ServiceReqList
             this.ucPaging1.Location = new System.Drawing.Point(3, 684);
             this.ucPaging1.Margin = new System.Windows.Forms.Padding(4);
             this.ucPaging1.Name = "ucPaging1";
-            this.ucPaging1.Size = new System.Drawing.Size(599, 22);
+            this.ucPaging1.Size = new System.Drawing.Size(557, 22);
             this.ucPaging1.TabIndex = 9;
             // 
             // gridControlServiceReq
@@ -2742,9 +2741,9 @@ namespace HIS.Desktop.Plugins.ServiceReqList
             // layoutControlItem5
             // 
             this.layoutControlItem5.Control = this.grdSereServServiceReq;
-            this.layoutControlItem5.Location = new System.Drawing.Point(1151, 341);
+            this.layoutControlItem5.Location = new System.Drawing.Point(1151, 325);
             this.layoutControlItem5.Name = "layoutControlItem5";
-            this.layoutControlItem5.Size = new System.Drawing.Size(773, 373);
+            this.layoutControlItem5.Size = new System.Drawing.Size(773, 389);
             this.layoutControlItem5.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem5.TextVisible = false;
             // 
@@ -2755,7 +2754,7 @@ namespace HIS.Desktop.Plugins.ServiceReqList
             this.lciServiceReqPaging.MaxSize = new System.Drawing.Size(0, 28);
             this.lciServiceReqPaging.MinSize = new System.Drawing.Size(104, 28);
             this.lciServiceReqPaging.Name = "lciServiceReqPaging";
-            this.lciServiceReqPaging.Size = new System.Drawing.Size(605, 33);
+            this.lciServiceReqPaging.Size = new System.Drawing.Size(563, 33);
             this.lciServiceReqPaging.SizeConstraintsType = DevExpress.XtraLayout.SizeConstraintsType.Custom;
             this.lciServiceReqPaging.TextSize = new System.Drawing.Size(0, 0);
             this.lciServiceReqPaging.TextVisible = false;
@@ -2765,14 +2764,14 @@ namespace HIS.Desktop.Plugins.ServiceReqList
             this.layoutControlItem6.Control = this.groupControlInfo;
             this.layoutControlItem6.Location = new System.Drawing.Point(1151, 0);
             this.layoutControlItem6.Name = "layoutControlItem6";
-            this.layoutControlItem6.Size = new System.Drawing.Size(773, 341);
+            this.layoutControlItem6.Size = new System.Drawing.Size(773, 325);
             this.layoutControlItem6.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem6.TextVisible = false;
             // 
             // layoutControlItem9
             // 
             this.layoutControlItem9.Control = this.btnPrintTotal;
-            this.layoutControlItem9.Location = new System.Drawing.Point(931, 681);
+            this.layoutControlItem9.Location = new System.Drawing.Point(887, 681);
             this.layoutControlItem9.Name = "layoutControlItem9";
             this.layoutControlItem9.Size = new System.Drawing.Size(138, 33);
             this.layoutControlItem9.TextSize = new System.Drawing.Size(0, 0);
@@ -2781,27 +2780,27 @@ namespace HIS.Desktop.Plugins.ServiceReqList
             // layoutControlItem10
             // 
             this.layoutControlItem10.Control = this.btnPrintMedicine;
-            this.layoutControlItem10.Location = new System.Drawing.Point(799, 681);
+            this.layoutControlItem10.Location = new System.Drawing.Point(731, 681);
             this.layoutControlItem10.Name = "layoutControlItem10";
-            this.layoutControlItem10.Size = new System.Drawing.Size(132, 33);
+            this.layoutControlItem10.Size = new System.Drawing.Size(156, 33);
             this.layoutControlItem10.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem10.TextVisible = false;
             // 
             // layoutControlItem13
             // 
             this.layoutControlItem13.Control = this.btnDropDownPrint;
-            this.layoutControlItem13.Location = new System.Drawing.Point(680, 681);
+            this.layoutControlItem13.Location = new System.Drawing.Point(613, 681);
             this.layoutControlItem13.Name = "layoutControlItem13";
-            this.layoutControlItem13.Size = new System.Drawing.Size(119, 33);
+            this.layoutControlItem13.Size = new System.Drawing.Size(118, 33);
             this.layoutControlItem13.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem13.TextVisible = false;
             // 
             // layoutControlItem12
             // 
             this.layoutControlItem12.Control = this.btnPrintTemBarcode;
-            this.layoutControlItem12.Location = new System.Drawing.Point(1069, 681);
+            this.layoutControlItem12.Location = new System.Drawing.Point(1025, 681);
             this.layoutControlItem12.Name = "layoutControlItem12";
-            this.layoutControlItem12.Size = new System.Drawing.Size(82, 33);
+            this.layoutControlItem12.Size = new System.Drawing.Size(126, 33);
             this.layoutControlItem12.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem12.TextVisible = false;
             // 
@@ -2957,9 +2956,9 @@ namespace HIS.Desktop.Plugins.ServiceReqList
             // s
             // 
             this.s.Control = this.btnConfig;
-            this.s.Location = new System.Drawing.Point(605, 681);
+            this.s.Location = new System.Drawing.Point(563, 681);
             this.s.Name = "s";
-            this.s.Size = new System.Drawing.Size(75, 33);
+            this.s.Size = new System.Drawing.Size(50, 33);
             this.s.TextSize = new System.Drawing.Size(0, 0);
             this.s.TextVisible = false;
             // 

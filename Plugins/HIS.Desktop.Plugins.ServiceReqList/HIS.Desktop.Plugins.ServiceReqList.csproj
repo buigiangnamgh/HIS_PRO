@@ -298,6 +298,10 @@
     <Reference Include="SAR.SDO">
       <HintPath>..\..\..\..\..\..\RELEASE\SAR\SAR.SDO.dll</HintPath>
     </Reference>
+    <Reference Include="Seagull.BarTender.Print, Version=11.0.7.1, Culture=neutral, PublicKeyToken=109ff779a1b4cbc7, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Seagull.BarTender.Print.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
@@ -393,6 +397,14 @@
       <Project>{6cb6757d-fea5-49cf-8bfd-2d4a69e7215a}</Project>
       <Name>MPS.Processor.Mps190001.PDO</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\HISUTIL\Bartender.PrintTemBloodServiceReq\Bartender.PrintTemBloodServiceReq.csproj">
+      <Project>{e62e94b8-33b4-439e-9765-eab57623a010}</Project>
+      <Name>Bartender.PrintTemBloodServiceReq</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\HISUTIL\Bartender.PrintTemGpblServiceReq\Bartender.PrintTemGpblServiceReq.csproj">
+      <Project>{70f1a329-1827-41c2-b4cc-54f777aadc40}</Project>
+      <Name>Bartender.PrintTemGpblServiceReq</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\HISUTIL\Bartender.PrintTemTestServiceReq\Bartender.PrintTemTestServiceReq.csproj">
       <Project>{dfed35a5-aebe-4473-b9ab-ff5f58b3a0b4}</Project>
       <Name>Bartender.PrintTemTestServiceReq</Name>
@@ -478,6 +490,7 @@
     <EmbeddedResource Include="frmTutorial.resx">
       <DependentUpon>frmTutorial.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

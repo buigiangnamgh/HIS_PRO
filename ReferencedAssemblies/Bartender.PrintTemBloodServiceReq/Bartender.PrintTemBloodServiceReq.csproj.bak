@@ -30,15 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="HIS.Desktop.LocalStorage.BackendData">
-      <HintPath>..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.Desktop.LocalStorage.BackendData.dll</HintPath>
-    </Reference>
-    <Reference Include="Inventec.Common.DateTime">
-      <HintPath>..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.DateTime.dll</HintPath>
-    </Reference>
-    <Reference Include="MOS.EFMODEL">
-      <HintPath>..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\MOS.EFMODEL.dll</HintPath>
-    </Reference>
     <Reference Include="Seagull.BarTender.Print">
       <HintPath>..\..\..\..\DkNA\HIS\2.276.0\Integrate\Bartender\Seagull.BarTender.Print.dll</HintPath>
     </Reference>

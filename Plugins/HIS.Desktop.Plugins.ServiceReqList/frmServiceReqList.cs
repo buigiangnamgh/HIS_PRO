@@ -68,6 +68,8 @@ using DevExpress.XtraRichEdit.API.Native;
 using HIS.Desktop.Plugins.ServiceReqList.Reason;
 using HIS.Desktop.Common;
 using HIS.Desktop.LocalStorage.HisConfig;
+using Seagull.BarTender.Print;
+using System.IO;
 
 namespace HIS.Desktop.Plugins.ServiceReqList
 {
@@ -6440,6 +6442,7 @@ namespace HIS.Desktop.Plugins.ServiceReqList
 
                 menu.Items.Add(new DevExpress.Utils.Menu.DXMenuItem("Phiếu in tổng hợp", new EventHandler(btnPrintNew_Click)));
                 menu.Items.Add(new DevExpress.Utils.Menu.DXMenuItem("Phiếu hướng dẫn bệnh nhân thực hiện CLS", new EventHandler(onClickPhieuHuongDan)));
+                menu.Items.Add(new DevExpress.Utils.Menu.DXMenuItem("In tem dự trù máu", new EventHandler(onClickInTemDuTruMau)));
 
                 btnDropDownPrint.DropDownControl = menu;
             }
@@ -6447,6 +6450,80 @@ namespace HIS.Desktop.Plugins.ServiceReqList
             {
                 Inventec.Common.Logging.LogSystem.Error(ex);
             }
+        }
+
+        private void onClickInTemDuTruMau(object sender, EventArgs e)
+        {
+            try
+            {
+                WaitingManager.Show();
+                List<ServiceReqADO> datas = gridControlServiceReq.DataSource as List<ServiceReqADO>;
+                if (datas == null || datas.Count <= 0)
+                {
+                    XtraMessageBox.Show("Không có chỉ định nào được lựa chọn", "Thông báo", DefaultBoolean.True);
+                    return;
+                }
+                var MauList = datas.Where(o => o.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__DONM && o.isCheck);
+                if (MauList != null && MauList.Count() > 0)
+                {
+                    InTemBarcodeMau(MauList.ToList());
+                }
+                WaitingManager.Hide();
+            }
+            catch (Exception ex)
+            {
+                WaitingManager.Hide();
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+        }
+
+        private void InTemBarcodeMau(List<ServiceReqADO> datas)
+        {
+            try
+            {
+                string txt = "";
+                if (datas != null && datas.Count > 0)
+                {
+                    foreach (var item in datas)
+                    {
+                        Inventec.Common.Logging.LogSystem.Info("BN: " + item.SERVICE_REQ_CODE);
+                        GenTextMau(item, ref txt);
+                    }
+                    string resultPrint = new Bartender.PrintBloodServiceReq.PrintBloodServiceReq().StartPrintBloodServiceReq(txt);
+
+                    if (!string.IsNullOrWhiteSpace(resultPrint))
+                    {
+                        Inventec.Common.Logging.LogSystem.Warn(resultPrint);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+
+        private void GenTextMau(ServiceReqADO serviceReq, ref string txt)
+        {
+            MOS.Filter.HisExpMestFilter filter = new HisExpMestFilter();
+            filter.SERVICE_REQ_ID = serviceReq.ID;
+            var expMestList = new BackendAdapter(new CommonParam()).Get<List<HIS_EXP_MEST>>("api/HisExpMest/Get", ApiConsumer.ApiConsumers.MosConsumer, filter, new CommonParam());
+            if (expMestList != null && expMestList.Count > 0)
+            {
+                txt += expMestList.FirstOrDefault().EXP_MEST_CODE;
+            }
+
+            txt += "," + serviceReq.TDL_PATIENT_NAME;
+            txt += "," + serviceReq.TDL_PATIENT_GENDER_NAME;
+            txt += "," + serviceReq.TDL_PATIENT_DOB;
+            txt += "," + (serviceReq.TDL_PATIENT_DOB > 10000000000000 ? serviceReq.TDL_PATIENT_DOB.ToString().Substring(0, 4) : "");
+            txt += "," + serviceReq.REQUEST_DEPARTMENT_NAME;
+            txt += "," + serviceReq.REQUEST_ROOM_NAME;
+            txt += "," + Inventec.Common.DateTime.Convert.TimeNumberToTimeStringWithoutSecond(Inventec.Common.DateTime.Get.Now() ?? 0);
+            txt += "," + serviceReq.TDL_TREATMENT_CODE;
+
+            // xuong dong (1 row trong db)
+            txt += "\n";
         }
 
         private void onClickPhieuHuongDan(object sender, EventArgs e)
@@ -6525,33 +6602,116 @@ namespace HIS.Desktop.Plugins.ServiceReqList
             try
             {
                 if (!btnPrintTemBarcode.Enabled) return;
-
+                WaitingManager.Show();
                 List<ServiceReqADO> datas = gridControlServiceReq.DataSource as List<ServiceReqADO>;
                 if (datas == null || datas.Count <= 0)
                 {
-                    XtraMessageBox.Show("Khong co Yêu cầu xét nghiệm nào được chọn", "Thông báo", DefaultBoolean.True);
+                    XtraMessageBox.Show("Khong co Yêu cầu nào được chọn", "Thông báo", DefaultBoolean.True);
                     return;
                 }
+                // in tem xn
                 var XNlist = datas.Where(o => o.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__XN && o.isCheck);
                 if (XNlist != null && XNlist.Count() > 0)
                 {
                     InTemBarcodeXN(XNlist.ToList());
                 }
-                WaitingManager.Show();
-                //ServiceReqADO ado = datas.FirstOrDefault();
-                //HisServiceReqFilter reqFilter = new HisServiceReqFilter();
-                //reqFilter.ID = ado.ID;
-                //List<HIS_SERVICE_REQ> sReqs = new BackendAdapter(new CommonParam()).Get<List<HIS_SERVICE_REQ>>("api/HisServiceReq/Get", ApiConsumers.MosConsumer, reqFilter, null);
-                //HIS_SERVICE_REQ req = sReqs != null ? sReqs.FirstOrDefault() : null;
-                //if (req != null)
-                //{
-                //    this.PrintBarcodeByBartender(req);
-                //}
+
+                // in tem máu
+                var Maulist = datas.Where(o => o.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__DONM && o.isCheck);
+                if (Maulist != null && Maulist.Count() > 0)
+                {
+                    InTemBarcodeMau(Maulist.ToList());
+                }
+                // in tem GPBL
+                var Gpbllist = datas.Where(o => o.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__GPBL && o.isCheck);
+                if (Gpbllist != null && Gpbllist.Count() > 0)
+                {
+                    InTemBarcodeGpbl(Gpbllist.ToList());
+                }
                 WaitingManager.Hide();
             }
             catch (Exception ex)
             {
                 Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+        }
+
+        private void InTemBarcodeGpbl(List<ServiceReqADO> datas)
+        {
+            try
+            {
+                string txt = "";
+                string resultPrint = "";
+                if (datas != null && datas.Count > 0)
+                {
+                    HisSereServFilter hisSereServFilter = new HisSereServFilter();
+                    hisSereServFilter.SERVICE_REQ_IDs = datas.Select(o => o.ID).ToList();
+                    var listHisSereServ = new BackendAdapter(param).Get<List<HIS_SERE_SERV>>("api/HisSereServ/Get", ApiConsumers.MosConsumer, hisSereServFilter, param);
+                    foreach (var item in datas)
+                    {
+                        Inventec.Common.Logging.LogSystem.Info("BN: " + item.SERVICE_REQ_CODE);
+                        var SereServBySRQ = listHisSereServ.Where(o => o.SERVICE_REQ_ID == item.ID).ToList();
+                        if (SereServBySRQ != null && SereServBySRQ.Count() > 0)
+                        {
+                            GenText_Gpbl(item, SereServBySRQ.FirstOrDefault(), ref txt);
+                            //List<HIS_SERVICE_REQ> reqList = datas.Select(x => (HIS_SERVICE_REQ)x).ToList();
+                        }
+                    }
+
+                    resultPrint = new Bartender.PrintGpblServiceReq.PrintGpblServiceReq().StartPrintGpblServiceReq(txt);
+                    if (!string.IsNullOrWhiteSpace(resultPrint))
+                    {
+                        Inventec.Common.Logging.LogSystem.Warn(resultPrint);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+
+        private void InTemBarcodeXN_New(List<ServiceReqADO> datas)
+        {
+            try
+            {
+                string txt = "";
+                if (datas != null && datas.Count > 0)
+                {
+                    HisSereServFilter hisSereServFilter = new HisSereServFilter();
+                    hisSereServFilter.SERVICE_REQ_IDs = datas.Select(o => o.ID).ToList();
+                    var listHisSereServ = new BackendAdapter(param).Get<List<HIS_SERE_SERV>>("api/HisSereServ/Get", ApiConsumers.MosConsumer, hisSereServFilter, param);
+                    foreach (var item in datas)
+                    {
+                        var SereServBySRQ = listHisSereServ.Where(o => o.SERVICE_REQ_ID == item.ID).ToList();
+                        Engine engine = new Engine(true); // bật BarTender engine
+                        LabelFormatDocument format = engine.Documents.Open(Directory.GetCurrentDirectory() + @"/Tmp/TempBartend/Mps000423/Mps000423.btw");
+                        // Gán dữ liệu động
+                        format.SubStrings["BARCODE"].Value = item.BARCODE;
+                        format.SubStrings["TDL_PATIENT_NAME"].Value = item.TDL_PATIENT_NAME;
+                        format.SubStrings["REQUEST_DEPARTMENT_NAME"].Value = item.REQUEST_DEPARTMENT_NAME;
+                        format.SubStrings["REQUEST_ROOM_NAME"].Value = item.REQUEST_ROOM_NAME;
+                        format.SubStrings["EXECUTE_ROOM_CODE"].Value = item.EXECUTE_ROOM_CODE;
+                        format.SubStrings["TDL_PATIENT_GENDER_NAME"].Value = item.TDL_PATIENT_GENDER_NAME;
+                        format.SubStrings["NAM_SINH"].Value = (item.TDL_PATIENT_DOB > 10000000000000 ? item.TDL_PATIENT_DOB.ToString().Substring(0, 4) : "");
+                        format.SubStrings["INTRUCTION_TIME"].Value = item.INTRUCTION_TIME.ToString();
+
+                        // In qua LAN
+                        //format.PrintSetup.PrinterName = @"\\localhost\Microsoft Print to PDF";
+                        format.Print();
+                        engine.Stop();
+                    }
+                    //string resultPrint = new Bartender.PrintTestServiceReq.PrintTestServiceReq().StartPrintTestServiceReq(txt);
+
+                    //if (!string.IsNullOrWhiteSpace(resultPrint))
+                    //{
+                    //    Inventec.Common.Logging.LogSystem.Warn(resultPrint);
+                    //}
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
             }
         }
 
@@ -6588,6 +6748,51 @@ namespace HIS.Desktop.Plugins.ServiceReqList
             }
         }
 
+        private void GenText_Gpbl(ServiceReqADO serviceReq, HIS_SERE_SERV sereServ, ref string txt)
+        {
+            var service = BackendDataWorker.Get<HIS_SERVICE>().FirstOrDefault(o => o.ID == sereServ.SERVICE_ID);
+            HIS_SERVICE servicePr = null;
+            if (service != null && service.PARENT_ID.HasValue && service.PARENT_ID.Value > 0)
+            {
+                servicePr = BackendDataWorker.Get<HIS_SERVICE>().FirstOrDefault(o => o.ID == service.PARENT_ID);
+            }
+            txt += serviceReq.SERVICE_REQ_CODE;
+            txt += "," + serviceReq.TDL_PATIENT_NAME;
+            txt += "," + serviceReq.TDL_PATIENT_GENDER_NAME;
+            txt += "," + serviceReq.TDL_PATIENT_DOB;
+            txt += "," + (serviceReq.TDL_PATIENT_DOB > 10000000000000 ? serviceReq.TDL_PATIENT_DOB.ToString().Substring(0, 4) : "");
+            txt += "," + serviceReq.REQUEST_DEPARTMENT_NAME;
+            txt += "," + serviceReq.REQUEST_USERNAME;
+            txt += "," + Inventec.Common.DateTime.Convert.TimeNumberToTimeStringWithoutSecond(Inventec.Common.DateTime.Get.Now() ?? 0);
+            txt += "," + serviceReq.TDL_TREATMENT_CODE;
+
+            if (serviceReq.TEST_SAMPLE_TYPE_ID.HasValue && serviceReq.TEST_SAMPLE_TYPE_ID.Value > 0)
+            {
+                var testSampleType = BackendDataWorker.Get<HIS_TEST_SAMPLE_TYPE>().FirstOrDefault(o => o.ID == serviceReq.TEST_SAMPLE_TYPE_ID);
+                if (testSampleType != null)
+                {
+                    txt += "," + testSampleType.TEST_SAMPLE_TYPE_NAME.Replace(",", ";");
+                }
+            }
+            else
+            {
+                txt += ",";
+            }
+
+            if (servicePr != null)
+            {
+                txt += "," + servicePr.SERVICE_NAME;
+            }
+            else
+            {
+                txt += ",";
+            }
+            txt += "," + serviceReq.EXECUTE_ROOM_CODE;
+
+            // xuong dong (1 row trong db)
+            txt += "\n";
+        }
+
         private void GenText(ServiceReqADO serviceReq, HIS_SERE_SERV sereServ, ref string txt)
         {
             var service = BackendDataWorker.Get<HIS_SERVICE>().FirstOrDefault(o => o.ID == sereServ.SERVICE_ID);
@@ -6611,7 +6816,7 @@ namespace HIS.Desktop.Plugins.ServiceReqList
                 var testSampleType = BackendDataWorker.Get<HIS_TEST_SAMPLE_TYPE>().FirstOrDefault(o => o.ID == serviceReq.TEST_SAMPLE_TYPE_ID);
                 if (testSampleType != null)
                 {
-                    txt += "," + testSampleType.TEST_SAMPLE_TYPE_NAME.Replace(",",";");
+                    txt += "," + testSampleType.TEST_SAMPLE_TYPE_NAME.Replace(",", ";");
                 }
             }
             else
