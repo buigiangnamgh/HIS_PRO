@@ -81,12 +81,30 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\LIBRARY\DevLib\DevExpress.XtraTreeList.v15.2.dll</HintPath>
     </Reference>
+    <Reference Include="EMR.EFMODEL">
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\EMR.EFMODEL.dll</HintPath>
+    </Reference>
+    <Reference Include="EMR.Filter">
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\EMR.Filter.dll</HintPath>
+    </Reference>
+    <Reference Include="EMR.SDO">
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\EMR.SDO.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.Common">
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.Desktop.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.LocalStorage.BackendData">
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.Desktop.LocalStorage.BackendData.dll</HintPath>
+    </Reference>
     <Reference Include="HIS.Desktop.Plugins.Library.AlertWarningFee">
       <HintPath>..\..\..\..\..\..\RELEASE\HIS\HIS.Desktop.Plugins.Library.AlertWarningFee\HIS.Desktop.Plugins.Library.AlertWarningFee.dll</HintPath>
     </Reference>
     <Reference Include="HIS.Desktop.Plugins.Library.CheckIcd, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\RELEASE\HIS\HIS.Desktop.Plugins.Library.CheckIcd\HIS.Desktop.Plugins.Library.CheckIcd.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.Plugins.Library.DrugInterventionInfo">
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.Desktop.Plugins.Library.DrugInterventionInfo.dll</HintPath>
     </Reference>
     <Reference Include="HIS.Desktop.Plugins.Library.PrintServiceReq">
       <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.Desktop.Plugins.Library.PrintServiceReq.dll</HintPath>
@@ -209,7 +227,7 @@
       <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Desktop\Inventec.Desktop.Core\Inventec.Desktop.Core.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Desktop.CustomControl">
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Desktop.CustomControl\Inventec.Desktop.CustomControl.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Desktop.CustomControl.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Token.ClientSystem, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -221,18 +239,18 @@
     </Reference>
     <Reference Include="MOS.EFMODEL, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\2.287.0\MOS.EFMODEL.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\MOS.EFMODEL.dll</HintPath>
     </Reference>
     <Reference Include="MOS.Filter, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\2.287.0\MOS.Filter.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\MOS.Filter.dll</HintPath>
     </Reference>
     <Reference Include="MOS.LibraryHein.Bhyt">
       <HintPath>..\..\..\..\..\..\RELEASE\MOS\MOS.LibraryHein.Bhyt.dll</HintPath>
     </Reference>
     <Reference Include="MOS.SDO, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\2.287.0\MOS.SDO.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\MOS.SDO.dll</HintPath>
     </Reference>
     <Reference Include="MOS.ServicePaty">
       <HintPath>..\..\..\..\..\..\RELEASE\MOS\MOS.ServicePaty.dll</HintPath>
@@ -246,6 +264,9 @@
     <Reference Include="MPS.Processor.Mps000446.PDO, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\RELEASE\MPSv2\MPS.PDO\MPS.Processor.Mps000446.PDO.dll</HintPath>
+    </Reference>
+    <Reference Include="MPS.Processor.Mps000498.PDO">
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\MPS.Processor.Mps000498.PDO.dll</HintPath>
     </Reference>
     <Reference Include="MPS.ProcessorBase">
       <HintPath>..\..\..\..\..\..\RELEASE\MPSv2\MPS.ProcessorBase\MPS.ProcessorBase.dll</HintPath>
@@ -279,6 +300,7 @@
     <Compile Include="ADO\ICDADO.cs" />
     <Compile Include="ADO\LoaiPhieuInADO.cs" />
     <Compile Include="ADO\MissingIcdADO.cs" />
+    <Compile Include="ADO\RequestAIADO.cs" />
     <Compile Include="ADO\ServiceGroupADO.cs" />
     <Compile Include="ADO\ShareCountADO.cs" />
     <Compile Include="ADO\TrackingAdo.cs" />
@@ -289,16 +311,34 @@
     <Compile Include="AssignService\frmAssignServiceHistory.Designer.cs">
       <DependentUpon>frmAssignServiceHistory.cs</DependentUpon>
     </Compile>
+    <Compile Include="AssignService\frmAssignService.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AssignService\frmAssignService.Designer.cs">
+      <DependentUpon>frmAssignService.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AssignService\frmAssignService__BuildTree.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="AssignService\frmAssignService__Dispose.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AssignService\frmAssignService__InitCombo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AssignService\frmAssignService__Load.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AssignService\frmAssignService__Print_v2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AssignService\frmAssignService__ReloadModuleByInputData .cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="AssignService\frmAssignService__Save.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AssignService\frmAssignService__UcIcdCause.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="AssignService\frmAssignService__UcIcdSub.cs">
+    <Compile Include="AssignService\frmAssignService__TabIndex.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="AssignService\frmAssignService__UcDate.cs">
@@ -307,13 +347,13 @@
     <Compile Include="AssignService\frmAssignService__UcIcd.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AssignService\frmAssignService.cs">
+    <Compile Include="AssignService\frmAssignService__UcIcdCause.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AssignService\frmAssignService.Designer.cs">
-      <DependentUpon>frmAssignService.cs</DependentUpon>
+    <Compile Include="AssignService\frmAssignService__UcIcdSub.cs">
+      <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AssignService\frmAssignService__ReloadModuleByInputData .cs">
+    <Compile Include="AssignService\frmAssignService__Validate.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="AssignService\frmMissingIcd.cs">
@@ -343,24 +383,6 @@
     <Compile Include="AssignServiceProcessor.cs" />
     <Compile Include="AssignService\AssignServiceBehavior.cs" />
     <Compile Include="AssignService\AssignServiceFactory.cs" />
-    <Compile Include="AssignService\frmAssignService__Print_v2.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="AssignService\frmAssignService__TabIndex.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="AssignService\frmAssignService__Load.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="AssignService\frmAssignService__InitCombo.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="AssignService\frmAssignService__BuildTree.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="AssignService\frmAssignService__Validate.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="AssignService\frmDetail.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -428,6 +450,10 @@
     <Compile Include="Validation\RequestUserValidationRule.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\HISUTIL\Bartender.PrintTemGpblServiceReq\Bartender.PrintTemGpblServiceReq.csproj">
+      <Project>{70f1a329-1827-41c2-b4cc-54f777aadc40}</Project>
+      <Name>Bartender.PrintTemGpblServiceReq</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\HISUTIL\Bartender.PrintTemTestServiceReq\Bartender.PrintTemTestServiceReq.csproj">
       <Project>{dfed35a5-aebe-4473-b9ab-ff5f58b3a0b4}</Project>
       <Name>Bartender.PrintTemTestServiceReq</Name>
@@ -448,10 +474,6 @@
       <Project>{ee6bba16-7e46-49bd-9707-a2069e480302}</Project>
       <Name>HIS.Desktop.ApplicationFont</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\HIS.Desktop.Common\HIS.Desktop.Common.csproj">
-      <Project>{59fdcba7-0f9f-4257-b95a-e37a1ccfe107}</Project>
-      <Name>HIS.Desktop.Common</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\HIS.Desktop.Control.Session\HIS.Desktop.Controls.Session.csproj">
       <Project>{9b4b505c-afa1-4974-8ac8-503f748bd5a2}</Project>
       <Name>HIS.Desktop.Controls.Session</Name>
@@ -467,10 +489,6 @@
     <ProjectReference Include="..\..\HIS.Desktop.LibraryMessage\HIS.Desktop.LibraryMessage.csproj">
       <Project>{48d9a44a-7120-4c9b-8923-b1af16b1992f}</Project>
       <Name>HIS.Desktop.LibraryMessage</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\HIS.Desktop.LocalStorage.BackendData\HIS.Desktop.LocalStorage.BackendData.csproj">
-      <Project>{86709a9c-a149-4ebb-a817-1bf8f4f4bc07}</Project>
-      <Name>HIS.Desktop.LocalStorage.BackendData</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\HIS.Desktop.LocalStorage.ConfigApplication\HIS.Desktop.LocalStorage.ConfigApplication.csproj">
       <Project>{3a2c932a-9d3a-483b-89a0-9f9c8225b283}</Project>
@@ -524,10 +542,15 @@
       <Project>{3a497f48-6aee-4534-b372-f4431993c6c4}</Project>
       <Name>HIS.Desktop.Plugins.Library.PrintBordereau</Name>
     </ProjectReference>
+    <ProjectReference Include="..\HIS.Desktop.Plugins.Library.PrintPrescription\HIS.Desktop.Plugins.Library.PrintPrescription.csproj">
+      <Project>{e34c646c-1959-4b1e-9ebd-6cc75a5470fa}</Project>
+      <Name>HIS.Desktop.Plugins.Library.PrintPrescription</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="AssignService\frmAssignService.resx">
       <DependentUpon>frmAssignService.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="AssignService\frmAssignServiceHistory.resx">
       <DependentUpon>frmAssignServiceHistory.cs</DependentUpon>
@@ -562,7 +585,7 @@
     <EmbeddedResource Include="frmServiceDebateConfirm.resx">
       <DependentUpon>frmServiceDebateConfirm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Properties\licenses.licx" />
+    <None Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

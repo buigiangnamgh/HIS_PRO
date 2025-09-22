@@ -1917,6 +1917,7 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                             if (checkTemXN !=null)
                             {
                                 InTemBarcodeXN();
+                                InTemBarcodeGpbl();
                             }
                         }
 
