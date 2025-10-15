@@ -45,13 +45,12 @@ namespace HIS.Desktop.Plugins.InfusionCreate
   /// </summary>
   private void InitializeComponent()
   {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmInfusionCreate));
             DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject1 = new DevExpress.Utils.SerializableAppearanceObject();
             DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject2 = new DevExpress.Utils.SerializableAppearanceObject();
             DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject3 = new DevExpress.Utils.SerializableAppearanceObject();
             DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject4 = new DevExpress.Utils.SerializableAppearanceObject();
-            this.barManager1 = new DevExpress.XtraBars.BarManager(this.components);
+            this.barManager1 = new DevExpress.XtraBars.BarManager();
             this.bar1 = new DevExpress.XtraBars.Bar();
             this.barButtonItem1 = new DevExpress.XtraBars.BarButtonItem();
             this.bar2 = new DevExpress.XtraBars.Bar();
@@ -186,8 +185,8 @@ namespace HIS.Desktop.Plugins.InfusionCreate
             this.layoutControlItem4 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlGroup1 = new DevExpress.XtraLayout.LayoutControlGroup();
             this.layoutControlItem1 = new DevExpress.XtraLayout.LayoutControlItem();
-            this.dxValidationProvider1 = new DevExpress.XtraEditors.DXErrorProvider.DXValidationProvider(this.components);
-            this.dxErrorProvider1 = new DevExpress.XtraEditors.DXErrorProvider.DXErrorProvider(this.components);
+            this.dxValidationProvider1 = new DevExpress.XtraEditors.DXErrorProvider.DXValidationProvider();
+            this.dxErrorProvider1 = new DevExpress.XtraEditors.DXErrorProvider.DXErrorProvider();
             ((System.ComponentModel.ISupportInitialize)(this.barManager1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).BeginInit();
             this.layoutControl1.SuspendLayout();
@@ -426,7 +425,7 @@ namespace HIS.Desktop.Plugins.InfusionCreate
             // 
             // chkSignForPrint
             // 
-            this.chkSignForPrint.Location = new System.Drawing.Point(1073, 3);
+            this.chkSignForPrint.Location = new System.Drawing.Point(1064, 3);
             this.chkSignForPrint.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.chkSignForPrint.MenuManager = this.barManager1;
             this.chkSignForPrint.Name = "chkSignForPrint";
@@ -442,7 +441,7 @@ namespace HIS.Desktop.Plugins.InfusionCreate
             this.btnCboPrint.Margin = new System.Windows.Forms.Padding(4);
             this.btnCboPrint.MenuManager = this.barManager1;
             this.btnCboPrint.Name = "btnCboPrint";
-            this.btnCboPrint.Size = new System.Drawing.Size(133, 27);
+            this.btnCboPrint.Size = new System.Drawing.Size(124, 27);
             this.btnCboPrint.StyleController = this.layoutControl5;
             this.btnCboPrint.TabIndex = 43;
             this.btnCboPrint.Text = "In ấn";
@@ -756,7 +755,7 @@ namespace HIS.Desktop.Plugins.InfusionCreate
             this.layoutControlItem28.AppearanceItemCaption.Options.UseTextOptions = true;
             this.layoutControlItem28.AppearanceItemCaption.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.layoutControlItem28.Control = this.chkSignForPrint;
-            this.layoutControlItem28.Location = new System.Drawing.Point(1035, 0);
+            this.layoutControlItem28.Location = new System.Drawing.Point(1026, 0);
             this.layoutControlItem28.Name = "layoutControlItem28";
             this.layoutControlItem28.Size = new System.Drawing.Size(60, 33);
             this.layoutControlItem28.Text = "Ký:";
@@ -769,18 +768,18 @@ namespace HIS.Desktop.Plugins.InfusionCreate
             this.layoutControlItem29.AppearanceItemCaption.Options.UseTextOptions = true;
             this.layoutControlItem29.AppearanceItemCaption.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.layoutControlItem29.Control = this.chkPrintDocumentSignedForPrint;
-            this.layoutControlItem29.Location = new System.Drawing.Point(1095, 0);
+            this.layoutControlItem29.Location = new System.Drawing.Point(1086, 0);
             this.layoutControlItem29.Name = "layoutControlItem29";
-            this.layoutControlItem29.Size = new System.Drawing.Size(109, 33);
+            this.layoutControlItem29.Size = new System.Drawing.Size(118, 33);
             this.layoutControlItem29.Text = "In văn bản ký:";
-            this.layoutControlItem29.TextSize = new System.Drawing.Size(81, 16);
+            this.layoutControlItem29.TextSize = new System.Drawing.Size(90, 17);
             // 
             // layoutControlItem27
             // 
             this.layoutControlItem27.Control = this.btnCboPrint;
             this.layoutControlItem27.Location = new System.Drawing.Point(896, 0);
             this.layoutControlItem27.Name = "layoutControlItem27";
-            this.layoutControlItem27.Size = new System.Drawing.Size(139, 33);
+            this.layoutControlItem27.Size = new System.Drawing.Size(130, 33);
             this.layoutControlItem27.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem27.TextVisible = false;
             // 

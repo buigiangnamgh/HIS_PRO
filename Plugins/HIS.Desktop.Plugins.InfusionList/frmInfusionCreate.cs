@@ -276,6 +276,16 @@ namespace HIS.Desktop.Plugins.InfusionCreate
             try
             {
                 lstAdo = new List<ComboSelectMedicineADO>();
+                HisServiceReqFilter svFilter = new HisServiceReqFilter();
+                svFilter.TREATMENT_ID = this.data.treatmentId;
+                if (dtDateInfusion.EditValue != null)
+                {
+                    svFilter.INTRUCTION_DATE__EQUAL = Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(dtDateInfusion.DateTime.Date) ?? 0;
+                }
+                var serviceReqList = new BackendAdapter(new CommonParam()).Get<List<HIS_SERVICE_REQ>>("api/HisServiceReq/Get", ApiConsumer.ApiConsumers.MosConsumer, svFilter, null);
+
+                Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData("serviceReqList____________________", serviceReqList));
+
                 HisExpMestMedicineView6Filter DS1Filter = new HisExpMestMedicineView6Filter();
                 DS1Filter.TDL_TREATMENT_ID = this.data.treatmentId;
 
@@ -292,6 +302,15 @@ namespace HIS.Desktop.Plugins.InfusionCreate
                     foreach (var item in lstExpMestMedicine6)
                     {
                         ComboSelectMedicineADO ado = new ComboSelectMedicineADO(item);
+                        if (serviceReqList != null && serviceReqList.Count > 0 && item.TDL_SERVICE_REQ_ID.HasValue)
+                        {
+                            var sv = serviceReqList.Where(o => o.ID == item.TDL_SERVICE_REQ_ID);
+                            if (sv != null)
+                            {
+                                ado.USE_TIME = sv.FirstOrDefault().USE_TIME;
+                                ado.USE_TIME_STR = Inventec.Common.DateTime.Convert.TimeNumberToTimeString(ado.USE_TIME ?? 0);
+                            }
+                        }
                         lstAdo.Add(ado);
                     }
                 }
@@ -310,6 +329,15 @@ namespace HIS.Desktop.Plugins.InfusionCreate
                     foreach (var item in lstServiceReqMety)
                     {
                         ComboSelectMedicineADO ado = new ComboSelectMedicineADO(item);
+                        if (serviceReqList != null && serviceReqList.Count > 0 )
+                        {
+                            var sv = serviceReqList.Where(o => o.ID == item.SERVICE_REQ_ID);
+                            if (sv != null)
+                            {
+                                ado.USE_TIME = sv.FirstOrDefault().USE_TIME;
+                                ado.USE_TIME_STR = Inventec.Common.DateTime.Convert.TimeNumberToTimeString(ado.USE_TIME ?? 0);
+                            }
+                        }
                         lstAdo.Add(ado);
                     }
                 }
@@ -348,9 +376,10 @@ namespace HIS.Desktop.Plugins.InfusionCreate
                         return obj;
                     }).ToList();
                     List<ColumnInfo> columnInfos = new List<ColumnInfo>();
-                    columnInfos.Add(new ColumnInfo("MEDICINE_TYPE_CODE", "Mã", 50, 1));
-                    columnInfos.Add(new ColumnInfo("MEDICINE_TYPE_NAME", "Tên", 150, 2));
-                    ControlEditorADO controlEditorADO = new ControlEditorADO("MEDICINE_TYPE_CODE", "MEDICINE_TYPE_ID", columnInfos, true, 200);
+                    columnInfos.Add(new ColumnInfo("MEDICINE_TYPE_CODE", "Mã", 150, 1));
+                    columnInfos.Add(new ColumnInfo("MEDICINE_TYPE_NAME", "Tên", 350, 2));
+                    columnInfos.Add(new ColumnInfo("USE_TIME_STR", "Thời gian sử dụng", 150, 3));
+                    ControlEditorADO controlEditorADO = new ControlEditorADO("MEDICINE_TYPE_CODE", "MEDICINE_TYPE_ID", columnInfos, true, 650);
                     controlEditorADO.ImmediatePopup = true;
                     ControlEditorLoader.Load(cboSelectMedicine, listAdoUpdate, controlEditorADO);
                 }
@@ -509,15 +538,15 @@ namespace HIS.Desktop.Plugins.InfusionCreate
             var data5s = acsUsers.Where(o => _loginNames.Contains(o.LOGINNAME)).OrderBy(p => p.LOGINNAME).ToList();
 
             List<ColumnInfo> columnInfos = new List<ColumnInfo>();
-            columnInfos.Add(new ColumnInfo("LOGINNAME", "LOGINNAME", 50, 1));
-            columnInfos.Add(new ColumnInfo("USERNAME", "USERNAME", 150, 2));
-            ControlEditorADO controlEditorADO = new ControlEditorADO("USERNAME", "LOGINNAME", columnInfos, true, 200);
+            columnInfos.Add(new ColumnInfo("LOGINNAME", "Tài khoản", 200, 1));
+            columnInfos.Add(new ColumnInfo("USERNAME", "Họ tên", 250, 2));
+            ControlEditorADO controlEditorADO = new ControlEditorADO("USERNAME", "LOGINNAME", columnInfos, true, 450);
             ControlEditorLoader.Load(lookUpEdit5, data5s, controlEditorADO);
 
             List<ColumnInfo> columnInfos2 = new List<ColumnInfo>();
-            columnInfos2.Add(new ColumnInfo("LOGINNAME", "LOGINNAME", 50, 1));
-            columnInfos2.Add(new ColumnInfo("USERNAME", "USERNAME", 150, 2));
-            ControlEditorADO controlEditorADO2 = new ControlEditorADO("USERNAME", "LOGINNAME", columnInfos2, true, 200);
+            columnInfos2.Add(new ColumnInfo("LOGINNAME", "Tài khoản", 200, 1));
+            columnInfos2.Add(new ColumnInfo("USERNAME", "Họ tên", 250, 2));
+            ControlEditorADO controlEditorADO2 = new ControlEditorADO("USERNAME", "LOGINNAME", columnInfos2, true, 450);
             ControlEditorLoader.Load(lookUpEdit6, acsUsers, controlEditorADO2);
 
         }
@@ -668,7 +697,7 @@ namespace HIS.Desktop.Plugins.InfusionCreate
                         }
                         if (ServiceReqOutList != null && ServiceReqOutList.Count() > 0 && exp.TDL_SERVICE_REQ_ID.HasValue)
                         {
-                            var sv = ServiceReqList.FirstOrDefault(o => o.ID == exp.TDL_SERVICE_REQ_ID);
+                            var sv = ServiceReqOutList.FirstOrDefault(o => o.ID == exp.TDL_SERVICE_REQ_ID);
                             if (sv != null)
                             {
                                 mEDITYPE.USE_TIME = sv.USE_TIME;
@@ -700,7 +729,7 @@ namespace HIS.Desktop.Plugins.InfusionCreate
                             mediType.INSTRUCTION_TIME = serq.INTRUCTION_TIME;
                             if (ServiceReqOutList != null && ServiceReqOutList.Count() > 0 && serq.SERVICE_REQ_ID > 0)
                             {
-                                var sv = ServiceReqList.FirstOrDefault(o => o.ID == serq.SERVICE_REQ_ID);
+                                var sv = ServiceReqOutList.FirstOrDefault(o => o.ID == serq.SERVICE_REQ_ID);
                                 if (sv != null)
                                 {
                                     mediType.USE_TIME = sv.USE_TIME;
@@ -736,7 +765,7 @@ namespace HIS.Desktop.Plugins.InfusionCreate
                 if (glstMedi != null)
                 {
                     glstMedi = (from m in glstMedi
-                                group m by new { m.ID, m.MEDICINE_ID, m.MEDICINE_TYPE_CODE, m.MEDICINE_TYPE_NAME, m.PACKAGE_NUMBER, m.SERVICE_UNIT_ID, m.EXPIRED_DATE, m.SPEED, m.SERVICE_UNIT_NAME, m.INSTRUCTION_TIME, m.LOGGINNAME,m.USE_TIME, m.INSTRUCTION_DATE_STR, m.ngoaikho } into g
+                                group m by new { m.ID, m.MEDICINE_ID, m.MEDICINE_TYPE_CODE, m.MEDICINE_TYPE_NAME, m.PACKAGE_NUMBER, m.SERVICE_UNIT_ID, m.EXPIRED_DATE, m.SPEED, m.SERVICE_UNIT_NAME, m.INSTRUCTION_TIME, m.LOGGINNAME, m.USE_TIME, m.INSTRUCTION_DATE_STR, m.ngoaikho } into g
                                 select new MEDITYPE
                                 {
                                     ID = g.Key.ID,
@@ -2660,7 +2689,7 @@ namespace HIS.Desktop.Plugins.InfusionCreate
 
                 cbo.Properties.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.Standard;
                 cbo.Properties.PopupFilterMode = DevExpress.XtraEditors.PopupFilterMode.Contains;
-                cbo.Properties.ImmediatePopup = true;
+                cbo.Properties.ImmediatePopup = true;                
                 cbo.ForceInitialize();
                 cbo.Properties.View.Columns.Clear();
 
@@ -2668,14 +2697,19 @@ namespace HIS.Desktop.Plugins.InfusionCreate
                 aColumnCode.Caption = "Mã";
                 aColumnCode.Visible = true;
                 aColumnCode.VisibleIndex = 1;
-                aColumnCode.Width = 50;
+                aColumnCode.Width = 200;
 
                 GridColumn aColumnName = cbo.Properties.View.Columns.AddField("MEDICINE_TYPE_NAME");
                 aColumnName.Caption = "Tên";
                 aColumnName.Visible = true;
                 aColumnName.VisibleIndex = 2;
-                aColumnName.Width = 150;
+                aColumnName.Width = 300;
 
+                GridColumn aColumnUseTime = cbo.Properties.View.Columns.AddField("USE_TIME_STR");
+                aColumnUseTime.Caption = "Thời gian sử dụng";
+                aColumnUseTime.Visible = true;
+                aColumnUseTime.VisibleIndex = 3;
+                aColumnUseTime.Width = 200;
 
             }
             catch (Exception ex)

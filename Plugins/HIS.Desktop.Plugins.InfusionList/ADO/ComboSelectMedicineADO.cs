@@ -41,6 +41,8 @@ namespace HIS.Desktop.Plugins.InfusionCreate.ADO
         public long isDisableVolume { get; set; }
         public long isDisableAmount { get; set; }
         public long isDisableUnitName { get; set; }
+        public long? USE_TIME { get; set; }
+        public string USE_TIME_STR { get; set; }
 
         public ComboSelectMedicineADO() { }
 
