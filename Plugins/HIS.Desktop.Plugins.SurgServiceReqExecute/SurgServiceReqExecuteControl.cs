@@ -3122,19 +3122,45 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
 
         private void cboPtttTemp_EditValueChanged(object sender, EventArgs e)
         {
+            //try
+            //{
+            //    HIS_SERE_SERV_PTTT_TEMP fillData = new HIS_SERE_SERV_PTTT_TEMP();
+            //    if (cboPtttTemp.EditValue != null)
+            //    {
+            //        fillData = BackendDataWorker.Get<HIS_SERE_SERV_PTTT_TEMP>().FirstOrDefault(o => o.ID == Inventec.Common.TypeConvert.Parse.ToInt64(cboPtttTemp.EditValue.ToString()));
+            //    }
+
+            //    FillDataToControlFromTemp(fillData);
+            //}
+            //catch (Exception ex)
+            //{
+            //    Inventec.Common.Logging.LogSystem.Error(ex);
+            //}
+
             try
             {
-                HIS_SERE_SERV_PTTT_TEMP fillData = new HIS_SERE_SERV_PTTT_TEMP();
+                HIS_SERE_SERV_PTTT_TEMP val = new HIS_SERE_SERV_PTTT_TEMP();
                 if (cboPtttTemp.EditValue != null)
                 {
-                    fillData = BackendDataWorker.Get<HIS_SERE_SERV_PTTT_TEMP>().FirstOrDefault(o => o.ID == Inventec.Common.TypeConvert.Parse.ToInt64(cboPtttTemp.EditValue.ToString()));
+                    val = (cboPtttTemp.Properties.DataSource as List<HIS_SERE_SERV_PTTT_TEMP>).FirstOrDefault((HIS_SERE_SERV_PTTT_TEMP o) => o.ID == Inventec.Common.TypeConvert.Parse.ToInt64(cboPtttTemp.EditValue.ToString()));
+                    if (val != null && !string.IsNullOrEmpty(val.TEXT_LIB_IDS))
+                    {
+                        List<string> textLibIds = (from a in val.TEXT_LIB_IDS.Split(new string[1] { "," }, StringSplitOptions.RemoveEmptyEntries)
+                                                   select a.Trim()).ToList();
+                        List<HIS_TEXT_LIB> list = (from o in BackendDataWorker.Get<HIS_TEXT_LIB>()
+                                                   where o.IS_ACTIVE == 1 && o.IS_DELETE != 1 && o.LIB_TYPE_ID == 2 && textLibIds.Contains(o.ID.ToString())
+                                                   select o).ToList();
+                        if (list != null && list.Any())
+                        {
+                            SelectListImageTemp(list);
+                        }
+                    }
                 }
-
-                FillDataToControlFromTemp(fillData);
+                FillDataToControlFromTemp(val);
             }
             catch (Exception ex)
             {
-                Inventec.Common.Logging.LogSystem.Error(ex);
+                LogSystem.Error(ex);
             }
         }
 

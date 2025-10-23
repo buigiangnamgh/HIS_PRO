@@ -2323,7 +2323,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
 
                 eyeSurgDesc.MO_VAO_TP_KINH_TUYEN = textEdit1.Text;
                 //- Mo_vao_tp_kinh_tuyen: (gio)
-                eyeSurgDesc.MO_VAO_TP_KICH_THUOC = spinEdit2.EditValue != null ? (decimal?)spinEdit2.Value : null;
+                eyeSurgDesc.MO_VAO_TP_KICH_THUOC = spinEdit2.EditValue != null ? spinEdit2.Value.ToString() : "";
                 //- Mo_vao_tp_kich_thuoc: (mm)
 
                 eyeSurgDesc.MO_VAO_TP_RACH_PHU = checkEdit12.Checked ? (short?)1 : (short?)0;
@@ -2419,7 +2419,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                     eyeSurgDesc.RACH_BAO_SAU = 1;
                     eyeSurgDesc.RACH_BAO_SAU_VI_TRI = txtViTriRachForraRachBaoSau.Text;
                     //- Rach_bao_sau_vi_tri:
-                    eyeSurgDesc.RACH_BAO_SAU_KICH_THUOC = spinKichThuocRachForraRachBaoSau.EditValue != null ? (decimal?)spinKichThuocRachForraRachBaoSau.Value : null;
+                    eyeSurgDesc.RACH_BAO_SAU_KICH_THUOC = spinKichThuocRachForraRachBaoSau.EditValue != null ? spinKichThuocRachForraRachBaoSau.Value.ToString() : "";
                     //- Rach_bao_sau_kich_thuoc:
                 }
                 //- Rach_bao_sau: 0: khong; 1: co

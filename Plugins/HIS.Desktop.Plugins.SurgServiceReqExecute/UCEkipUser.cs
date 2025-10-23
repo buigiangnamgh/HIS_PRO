@@ -370,13 +370,13 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
 
                 if (datas != null && datas.Count > 0)
                 {
-                    datas = datas.Where(p => p.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE && p.IS_DISABLE_IN_EKIP != IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE).ToList();
+                    datas = datas.Where(p => p.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE && p.IS_DISABLE_IN_EKIP != IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE && p.IS_SURGRY == (short)1).ToList();
                 }
 
                 List<ColumnInfo> columnInfos = new List<ColumnInfo>();
                 columnInfos.Add(new ColumnInfo("EXECUTE_ROLE_CODE", "", 150, 1));
                 columnInfos.Add(new ColumnInfo("EXECUTE_ROLE_NAME", "", 250, 2));
-                ControlEditorADO controlEditorADO = new ControlEditorADO("EXECUTE_ROLE_NAME", "ID", columnInfos, false, 250);
+                ControlEditorADO controlEditorADO = new ControlEditorADO("EXECUTE_ROLE_NAME", "ID", columnInfos, false, 250,30);
                 controlEditorADO.ImmediatePopup = true;
                 ControlEditorLoader.Load(cboPosition, datas, controlEditorADO);
             }
@@ -397,7 +397,8 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                     //this.grdControlInformationSurg.RefreshDataSource();
                     SetDepartment(data);
                     this.grdControlInformationSurg.RefreshDataSource();
-                }else if(e.Column.FieldName == "EXECUTE_ROLE_ID")
+                }
+                else if (e.Column.FieldName == "EXECUTE_ROLE_ID")
                 {
                     int visibleIndex = grdViewInformationSurg.FocusedColumn.VisibleIndex;
                     int newVisibleIndex = visibleIndex + 1;
@@ -507,6 +508,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 {
                     GridLookUpEdit editor = view.ActiveEditor as GridLookUpEdit;
                     List<string> loginNames = new List<string>();
+                    Inventec.Common.Logging.LogSystem.Debug("grdViewInformationSurg_ShownEditor data.EXECUTE_ROLE_ID " + data.EXECUTE_ROLE_ID);
                     if (data != null && data.EXECUTE_ROLE_ID > 0)
                     {
                         if (data.LOGINNAME != null)
@@ -515,6 +517,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                         if (executeRoleUserTemps != null && executeRoleUserTemps.Count > 0)
                         {
                             loginNames = executeRoleUserTemps.Select(o => o.LOGINNAME).Distinct().ToList();
+                            Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData("grdViewInformationSurg_ShownEditor loginNames ", loginNames));
                         }
                     }
 
@@ -846,7 +849,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 {
                     if (ekipUsers.Count > 1)
                     {
-                        ekipUsers.Remove(ekipUser);                       
+                        ekipUsers.Remove(ekipUser);
                     }
                     else if (ekipUsers.Count == 1)
                     {

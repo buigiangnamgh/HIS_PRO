@@ -1,6 +1,4 @@
 ﻿using DevExpress.Utils.Menu;
-using EMR_MAIN;
-using EMR_MAIN.DATABASE.BenhAn;
 using HIS.Desktop.ADO;
 using HIS.Desktop.ApiConsumer;
 using HIS.Desktop.LocalStorage.BackendData;
@@ -30,6 +28,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using EMR_MAIN;
+using EMR_MAIN.DATABASE.BenhAn;
 
 namespace HIS.Desktop.Plugins.SurgServiceReqExecute
 {

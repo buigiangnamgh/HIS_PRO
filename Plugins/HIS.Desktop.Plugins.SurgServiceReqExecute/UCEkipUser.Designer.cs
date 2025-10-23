@@ -40,8 +40,9 @@
             this.GridLookUpEdit_Department = new Inventec.Desktop.CustomControl.CustomGrid.RepositoryItemCustomGridLookUpEdit();
             this.repositoryItemCustomGridLookUpEdit1View = new Inventec.Desktop.CustomControl.CustomGrid.CustomGridView();
             this.gridColumn4 = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.btnAdd = new DevExpress.XtraEditors.Repository.RepositoryItemButtonEdit();
+            this.gridColumn6 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumn5 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.btnAdd = new DevExpress.XtraEditors.Repository.RepositoryItemButtonEdit();
             this.txtLogin = new DevExpress.XtraEditors.Repository.RepositoryItemTextEdit();
             this.btnDelete = new DevExpress.XtraEditors.Repository.RepositoryItemButtonEdit();
             this.repositoryItemGridLookUpEditUsername = new DevExpress.XtraEditors.Repository.RepositoryItemGridLookUpEdit();
@@ -50,7 +51,6 @@
             this.repositoryItemSearchLookUpEdit1View = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.layoutControlGroup1 = new DevExpress.XtraLayout.LayoutControlGroup();
             this.lciInformationSurg = new DevExpress.XtraLayout.LayoutControlItem();
-            this.gridColumn6 = new DevExpress.XtraGrid.Columns.GridColumn();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).BeginInit();
             this.layoutControl1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.grdControlInformationSurg)).BeginInit();
@@ -76,16 +76,19 @@
             this.layoutControl1.Controls.Add(this.grdControlInformationSurg);
             this.layoutControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.layoutControl1.Location = new System.Drawing.Point(0, 0);
+            this.layoutControl1.Margin = new System.Windows.Forms.Padding(4);
             this.layoutControl1.Name = "layoutControl1";
             this.layoutControl1.Root = this.layoutControlGroup1;
-            this.layoutControl1.Size = new System.Drawing.Size(742, 264);
+            this.layoutControl1.Size = new System.Drawing.Size(989, 325);
             this.layoutControl1.TabIndex = 0;
             this.layoutControl1.Text = "layoutControl1";
             // 
             // grdControlInformationSurg
             // 
-            this.grdControlInformationSurg.Location = new System.Drawing.Point(2, 2);
+            this.grdControlInformationSurg.EmbeddedNavigator.Margin = new System.Windows.Forms.Padding(4);
+            this.grdControlInformationSurg.Location = new System.Drawing.Point(3, 3);
             this.grdControlInformationSurg.MainView = this.grdViewInformationSurg;
+            this.grdControlInformationSurg.Margin = new System.Windows.Forms.Padding(4);
             this.grdControlInformationSurg.Name = "grdControlInformationSurg";
             this.grdControlInformationSurg.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
             this.btnAdd,
@@ -96,7 +99,7 @@
             this.GridLookUpEdit_Department,
             this.GridLookupEdit_UserName,
             this.cboPosition});
-            this.grdControlInformationSurg.Size = new System.Drawing.Size(738, 260);
+            this.grdControlInformationSurg.Size = new System.Drawing.Size(983, 319);
             this.grdControlInformationSurg.TabIndex = 4;
             this.grdControlInformationSurg.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.grdViewInformationSurg});
@@ -218,6 +221,24 @@
             this.gridColumn4.VisibleIndex = 3;
             this.gridColumn4.Width = 25;
             // 
+            // gridColumn6
+            // 
+            this.gridColumn6.Caption = "gridColumn6";
+            this.gridColumn6.FieldName = "BtnAdd";
+            this.gridColumn6.MaxWidth = 25;
+            this.gridColumn6.MinWidth = 25;
+            this.gridColumn6.Name = "gridColumn6";
+            this.gridColumn6.OptionsColumn.ShowCaption = false;
+            this.gridColumn6.Visible = true;
+            this.gridColumn6.VisibleIndex = 4;
+            this.gridColumn6.Width = 25;
+            // 
+            // gridColumn5
+            // 
+            this.gridColumn5.Caption = "gridColumn5";
+            this.gridColumn5.FieldName = "LOGINNAME";
+            this.gridColumn5.Name = "gridColumn5";
+            // 
             // btnAdd
             // 
             this.btnAdd.AutoHeight = false;
@@ -226,12 +247,6 @@
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.HideTextEditor;
             this.btnAdd.ButtonClick += new DevExpress.XtraEditors.Controls.ButtonPressedEventHandler(this.btnAdd_ButtonClick);
-            // 
-            // gridColumn5
-            // 
-            this.gridColumn5.Caption = "gridColumn5";
-            this.gridColumn5.FieldName = "LOGINNAME";
-            this.gridColumn5.Name = "gridColumn5";
             // 
             // txtLogin
             // 
@@ -287,7 +302,7 @@
             this.lciInformationSurg});
             this.layoutControlGroup1.Location = new System.Drawing.Point(0, 0);
             this.layoutControlGroup1.Name = "layoutControlGroup1";
-            this.layoutControlGroup1.Size = new System.Drawing.Size(742, 264);
+            this.layoutControlGroup1.Size = new System.Drawing.Size(989, 325);
             this.layoutControlGroup1.TextVisible = false;
             // 
             // lciInformationSurg
@@ -299,32 +314,21 @@
             this.lciInformationSurg.Control = this.grdControlInformationSurg;
             this.lciInformationSurg.Location = new System.Drawing.Point(0, 0);
             this.lciInformationSurg.Name = "lciInformationSurg";
-            this.lciInformationSurg.Size = new System.Drawing.Size(742, 264);
+            this.lciInformationSurg.Size = new System.Drawing.Size(989, 325);
             this.lciInformationSurg.Text = "Kíp thực hiện:";
             this.lciInformationSurg.TextAlignMode = DevExpress.XtraLayout.TextAlignModeItem.CustomSize;
             this.lciInformationSurg.TextSize = new System.Drawing.Size(0, 0);
             this.lciInformationSurg.TextToControlDistance = 0;
             this.lciInformationSurg.TextVisible = false;
             // 
-            // gridColumn6
-            // 
-            this.gridColumn6.Caption = "gridColumn6";
-            this.gridColumn6.FieldName = "BtnAdd";
-            this.gridColumn6.MaxWidth = 25;
-            this.gridColumn6.MinWidth = 25;
-            this.gridColumn6.Name = "gridColumn6";
-            this.gridColumn6.OptionsColumn.ShowCaption = false;
-            this.gridColumn6.Visible = true;
-            this.gridColumn6.VisibleIndex = 4;
-            this.gridColumn6.Width = 25;
-            // 
             // UCEkipUser
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.layoutControl1);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "UCEkipUser";
-            this.Size = new System.Drawing.Size(742, 264);
+            this.Size = new System.Drawing.Size(989, 325);
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).EndInit();
             this.layoutControl1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.grdControlInformationSurg)).EndInit();

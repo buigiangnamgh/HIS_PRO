@@ -1883,7 +1883,6 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 {
                     layoutControlItem17.AppearanceItemCaption.ForeColor = System.Drawing.Color.Black;
                     this.dxValidationProvider1.SetValidationRule(txtLoaiPT, null);
-
                 }
                 else
                 {
