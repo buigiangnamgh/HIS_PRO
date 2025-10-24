@@ -1622,10 +1622,12 @@
             this.tileViewColumnName,
             this.tileViewColumn4,
             this.tileViewColumnSTTImage});
-            contextButton1.Alignment = DevExpress.Utils.ContextItemAlignment.NearCenter;
+            contextButton1.Alignment = DevExpress.Utils.ContextItemAlignment.TopFar;
+            contextButton1.Glyph = ((System.Drawing.Image)(resources.GetObject("contextButton1.Glyph")));
             contextButton1.Id = new System.Guid("88ea6d15-29a4-41d6-acba-c6d819c9d374");
             contextButton1.Name = "btnDelete";
             contextButton1.Visibility = DevExpress.Utils.ContextItemVisibility.Visible;
+            contextButton1.Width = 40;
             this.tileView1.ContextButtons.Add(contextButton1);
             this.tileView1.GridControl = this.cardControl;
             this.tileView1.Name = "tileView1";

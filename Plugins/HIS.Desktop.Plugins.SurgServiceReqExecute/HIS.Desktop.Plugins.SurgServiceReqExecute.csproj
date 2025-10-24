@@ -66,8 +66,28 @@
     <Reference Include="DevExpress.XtraPrinting.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
     <Reference Include="DevExpress.XtraTreeList.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.XtraVerticalGrid.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
-    <Reference Include="EMR_MAIN">
-      <HintPath>..\..\..\..\..\..\RELEASE\EMRLinksoft\EMR_MAIN.dll</HintPath>
+    <Reference Include="EMR.EFMODEL, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\EMR.EFMODEL.dll</HintPath>
+    </Reference>
+    <Reference Include="EMR.Filter, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\EMR.Filter.dll</HintPath>
+    </Reference>
+    <Reference Include="EMR.SDO, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\EMR.SDO.dll</HintPath>
+    </Reference>
+    <Reference Include="EMR.TDO, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\EMR.TDO.dll</HintPath>
+    </Reference>
+    <Reference Include="EMR.UC.EmrFlow">
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\EMR.UC.EmrFlow.dll</HintPath>
+    </Reference>
+    <Reference Include="EMR_MAIN, Version=23.9.7.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\EMR_MAIN.dll</HintPath>
     </Reference>
     <Reference Include="HIS.Common.Treatment, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -424,6 +444,7 @@
     <Compile Include="Validate\SurgServiceReqExecuteControl__Validate.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Validate\ValidationRule\ConcludeValidationRule.cs" />
     <Compile Include="Validate\ValidationRule\FinishTimeValidationRule.cs" />
     <Compile Include="Validate\ValidationRule\InstructionDateCalendarValidationRule.cs" />
     <Compile Include="Validate\ValidationRule\InstructionDateFromValidationRule.cs" />
@@ -458,7 +479,7 @@
     <EmbeddedResource Include="frmMediMate.resx">
       <DependentUpon>frmMediMate.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Properties\licenses.licx" />
+    <None Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
