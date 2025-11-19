@@ -365,6 +365,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                 FillDatatoCDYHCT();
                 isWarning = false;
                 checkIcdManager = new CheckIcdManager(DlgIcdSubCode, treatment);
+                CheckConfigIsMaterial();
             }
             catch (Exception ex)
             {
@@ -2358,7 +2359,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                         treatmentFinishInitADO.ListEventsCausesDeath = dtEventsCausesDeath;
                     }
                     if (this.isTimeServer) treatmentFinishInitADO.Treatment.OUT_TIME = loadParam().Now;
-                    this.ucTreatmentFinish = (UserControl)treatmentFinishProcessor.Run(treatmentFinishInitADO,this.currentTreatmentExt);
+                    this.ucTreatmentFinish = (UserControl)treatmentFinishProcessor.Run(treatmentFinishInitADO, this.currentTreatmentExt);
                     LoadUCToPanelExecuteExt(this.ucTreatmentFinish, chkTreatmentFinish);
                     //
                     validTreatmentMethod();
@@ -2691,7 +2692,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                 GetUcIcdYHCT();
                 LogSystem.Debug("Valid ICD");
                 if (!ValidIcd(true)) return;
-                if (!ValidForSave())
+                if (!ValidForSave() || CreateTracking())
                 {
                     //MessageBox.Show(ResourceMessage.ChuaNhapDayDuThongTinBatBuoc, ResourceMessage.ThongBao, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
@@ -2880,7 +2881,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                     hisServiceReqSDO.IsFinish = true;
 
                     //ngant muon sua thanh null khi loi hoac co thong bao
-                    if(hisServiceReqSDO.TreatmentFinishSDO.TreatmentFinishTime > 0) hisServiceReqSDO.FinishTime = hisServiceReqSDO.TreatmentFinishSDO.TreatmentFinishTime;
+                    if (hisServiceReqSDO.TreatmentFinishSDO.TreatmentFinishTime > 0) hisServiceReqSDO.FinishTime = hisServiceReqSDO.TreatmentFinishSDO.TreatmentFinishTime;
                 }
                 else if (HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<int>("HIS.HIS_SERVICE_REQ.EXAM.AUTO_FINISH_AFTER_UNFINISH") == 1 && HisServiceReqView.IS_AUTO_FINISHED == 1)
                 {
@@ -3355,8 +3356,8 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                     isNotCheckValidateIcdUC = true;
                     result = treatmentFinishProcessor.Validate(ucTreatmentFinish, isNotCheckValidateIcdUC);
 
-                    
-                    
+
+
                 }
 
             }
@@ -3375,7 +3376,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                 ///kiểm tra chẩn đoán phụ và chẩn đoán phụ ra viện (nếu có) nếu vuoptjq quá 12 mã thì cảnh báo
 
                 var config = HisConfigs.Get<string>("HIS.Desktop.Plugins.IsCheckSubIcdExceedLimit");
-                
+
                 if (config == "1")
                 {
                     string[] arrIcdExtraCodes = this.txtIcdSubCode.Text.Trim().Split(this.icdSeparators, StringSplitOptions.RemoveEmptyEntries);
@@ -3546,6 +3547,63 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
             }
         }
 
+        private bool CreateTracking()
+        {
+            bool result = false;
+            try
+            {
+                if (HisServiceReqView.TDL_TREATMENT_TYPE_ID == 1)
+                {
+                    return false;
+                }
+                string text = HisConfigs.Get<string>("HIS.Desktop__ValidCheckTrackingOfDay");
+                if (text != "1" && text != "0")
+                {
+                    return false;
+                }
+                long? num = Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber((DateTime?)DateTime.Today);
+                CommonParam val = new CommonParam();
+                HisTrackingFilter val2 = new HisTrackingFilter();
+                val2.TREATMENT_ID = HisServiceReqView.TREATMENT_ID;
+                val2.TRACKING_TIME_FROM = num;
+                val2.TRACKING_TIME_TO = num + 235959;
+                List<HIS_TRACKING> list = ((AdapterBase)new BackendAdapter(val)).Get<List<HIS_TRACKING>>("api/HisTracking/Get", ApiConsumers.MosConsumer, (object)val2, val);
+                if (list == null || list.Count <= 0)
+                {
+                    if (XtraMessageBox.Show("Bệnh nhân trong ngày chưa được tạo tờ điều trị, Bạn có muốn tạo tờ điều tri hay không?", HIS.Desktop.LibraryMessage.MessageUtil.GetMessage((HIS.Desktop.LibraryMessage.Message.Enum)14), MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    {
+                        Inventec.Desktop.Common.Modules.Module val3 = GlobalVariables.currentModuleRaws.Where((Inventec.Desktop.Common.Modules.Module o) => o.ModuleLink == "HIS.Desktop.Plugins.TrackingCreate").FirstOrDefault();
+                        if (val3 == null)
+                        {
+                            LogSystem.Error("khong tim thay moduleLink = HIS.Desktop.Plugins.TrackingCreate");
+                        }
+                        if (val3.IsPlugin && val3.ExtensionInfo != null)
+                        {
+                            List<object> list2 = new List<object>();
+                            list2.Add(HisServiceReqView.TREATMENT_ID);
+                            list2.Add(PluginInstance.GetModuleWithWorkingRoom(val3, moduleData.RoomId, moduleData.RoomTypeId));
+                            object pluginInstance = PluginInstance.GetPluginInstance(PluginInstance.GetModuleWithWorkingRoom(val3, moduleData.RoomId, moduleData.RoomTypeId), list2);
+                            if (pluginInstance == null)
+                            {
+                                throw new ArgumentNullException("moduleData is null");
+                            }
+                            ((Form)pluginInstance).ShowDialog();
+                        }
+                        result = true;
+                    }
+                    else if (text != "1")
+                    {
+                        result = true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogSystem.Warn(ex);
+            }
+            return result;
+        }
+
         private void btnAssignService_Click(object sender, EventArgs e)
         {
             try
@@ -3565,7 +3623,10 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                 {
                     return;
                 }
-
+                if (CreateTracking())
+                {
+                    return;
+                }
                 GetUcIcdYHCT();
                 LogSystem.Debug("Valid ICD");
                 if (!ValidIcd(true)) return;
@@ -3694,6 +3755,10 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                 {
                     return;
                 }
+                if (CreateTracking())
+                {
+                    return;
+                }
                 GetUcIcdYHCT();
                 LogSystem.Debug("Valid ICD");
                 if (!ValidIcd(true)) return;
@@ -3711,6 +3776,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                 List<HisPreviousPrescriptionDetailSDO> previousPres = new BackendAdapter(param)
                 .Get<List<HisPreviousPrescriptionDetailSDO>>("api/HisPatient/GetPreviousPrescriptionDetail", ApiConsumers.MosConsumer, treatment.PATIENT_ID, param);
                 Inventec.Common.Logging.LogSystem.Debug("api/HisPatient/GetPreviousPrescriptionDetail output: " + Inventec.Common.Logging.LogUtil.TraceData("", previousPres));
+
                 if (previousPres != null && previousPres.Count > 0)
                 {
                     string note = "";
@@ -3808,6 +3874,8 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                             {
                                 assignServiceADO.DlgWhileAutoTreatmentEnd = WhileAutoTreatmentEnd;
                             }
+                            assignServiceADO.IsExecutePTTT = true;
+                            assignServiceADO.IsCabinet = true;
                             listArgs.Add(assignServiceADO);
                             Inventec.Common.Logging.LogSystem.Debug("ExamServiceReqExecute.btnAssignPre_Click.3");
                             //Inventec.Common.Logging.LogSystem.Debug("ExamServiceReqExecute.btnAssignPre_Click.4");
@@ -4104,6 +4172,10 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                 if (!ValidIcd(true)) return;
                 bool check = CheckIcd();
                 if (check == false)
+                {
+                    return;
+                }
+                if (CreateTracking())
                 {
                     return;
                 }
@@ -4416,6 +4488,10 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                 }
                 if ((HisConfigCFG.RequiredWeightHeight_Option == "1" || HisConfigCFG.RequiredWeightHeight_Option == "3") && !ValidDhstOption())
                     return;
+                if (CreateTracking())
+                {
+                    return;
+                }
                 ValiTemperatureOption();
                 if (!this.ValidForButtonOtherClick()) return;
                 btnSave_Click(null, null);
@@ -5014,8 +5090,8 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                                 {
                                     if (testIndex.CONVERT_RATIO_MLCT.HasValue)
                                         chiso *= (testIndex.CONVERT_RATIO_MLCT ?? 0);
-                                    decimal mlct = Inventec.Common.Calculate.Calculation.MucLocCauThan(this.HisServiceReqView.TDL_PATIENT_DOB, (decimal)spinWeight.Value, (decimal)spinHeight.Value, chiso, this.HisServiceReqView.TDL_PATIENT_GENDER_ID == IMSys.DbConfig.HIS_RS.HIS_GENDER.ID__MALE);
-                                    strIsToCalculateEgfr = mlct != 0 ? mlct.ToString() : "";
+                                    string mlct = Inventec.Common.Calculate.Calculation.MucLocCauThanCrCleGFR(this.HisServiceReqView.TDL_PATIENT_DOB, (decimal)spinWeight.Value, (decimal)spinHeight.Value, chiso, this.HisServiceReqView.TDL_PATIENT_GENDER_ID == IMSys.DbConfig.HIS_RS.HIS_GENDER.ID__MALE);
+                                    strIsToCalculateEgfr = mlct;
                                 }
                             }
                         }
@@ -6652,14 +6728,14 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                         this.ChangecboChanDoanTD();
                     else
                         if (lciIcdTextCause.Visible)
-                    {
-                        this.NextForcusSubIcd();
-                    }
-                    else
-                    {
-                        txtIcdSubCode.Focus();
-                        txtIcdSubCode.SelectionStart = txtIcdSubCode.Text.Length;
-                    }
+                        {
+                            this.NextForcusSubIcd();
+                        }
+                        else
+                        {
+                            txtIcdSubCode.Focus();
+                            txtIcdSubCode.SelectionStart = txtIcdSubCode.Text.Length;
+                        }
                 }
                 else
                     cboIcds.ShowPopup();
@@ -7774,19 +7850,44 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                 GetUcIcdYHCT();
                 LogSystem.Debug("Valid ICD");
                 if (!ValidIcd(true)) return;
+
                 CommonParam param = new CommonParam();
                 WaitingManager.Show();
+                MOS.Filter.HisTrackingFilter trackingFilter = new HisTrackingFilter();
+                trackingFilter.TREATMENT_ID = treatment.ID;
+                var trackings = new BackendAdapter(new CommonParam()).Get<List<HIS_TRACKING>>("api/HisTracking/Get", ApiConsumer.ApiConsumers.MosConsumer, trackingFilter, new CommonParam());
                 HisTrackingSDO sdo = new HisTrackingSDO();
                 sdo.WorkingRoomId = moduleData.RoomId;
                 //--tracking
                 sdo.Tracking = new HIS_TRACKING();
+                if (trackings != null && trackings.Count() > 0)
+                {
+                    sdo.Tracking = trackings.FirstOrDefault();
+                    //--ServiceReqs
+                    MOS.Filter.HisServiceReqFilter _reqFilter = new HisServiceReqFilter();
+                    _reqFilter.TRACKING_ID = sdo.Tracking.ID;
+                    var dataReqs = new BackendAdapter(param).Get<List<HIS_SERVICE_REQ>>("api/HisServiceReq/Get", ApiConsumers.MosConsumer, _reqFilter, param);
+                    if (dataReqs != null && dataReqs.Count > 0)
+                    {
+                        sdo.ServiceReqs = new List<TrackingServiceReq>();
+                        foreach (var item in dataReqs)
+                        {
+                            TrackingServiceReq ado = new TrackingServiceReq();
+                            ado.ServiceReqId = item.ID;
+                            ado.IsNotShowMedicine = false;
+                            ado.IsNotShowMaterial = false;
+                            ado.IsNotShowOutMedi = false;
+                            ado.IsNotShowOutMate = false;
+                            sdo.ServiceReqs.Add(ado);
+                        }
+                    }
+                }
                 sdo.Tracking.DEPARTMENT_ID = HIS.Desktop.LocalStorage.LocalData.WorkPlace.WorkPlaceSDO.FirstOrDefault(o => o.RoomId == moduleData.RoomId).DepartmentId;
-                sdo.Tracking.CREATOR = Inventec.UC.Login.Base.ClientTokenManagerStore.ClientTokenManager.GetLoginName();
+
                 sdo.Tracking.ICD_TEXT = txtIcdText.Text.Trim();
                 sdo.Tracking.ICD_SUB_CODE = txtIcdSubCode.Text.Trim();
                 sdo.Tracking.ICD_NAME = txtIcdMainText.Text.Trim();
                 sdo.Tracking.ICD_CODE = txtIcdCode.Text.Trim();
-                sdo.Tracking.TRACKING_TIME = Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(DateTime.Now) ?? 0;
                 sdo.Tracking.TREATMENT_ID = treatment.ID;
                 sdo.Tracking.CONTENT = txtPathologicalProcess.Text + "\r\n" + txtPathologicalHistory.Text + "\r\n"
                     + txtPathologicalHistoryFamily.Text + "\r\n" + txtKhamToanThan.Text + "\r\n" + txtKhamBoPhan.Text.Trim();
@@ -7821,40 +7922,56 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                     sdo.Dhst.WEIGHT = Inventec.Common.Number.Get.RoundCurrency(spinWeight.Value, 2);
                 if (spinSPO2.EditValue != null)
                     sdo.Dhst.SPO2 = Inventec.Common.Number.Get.RoundCurrency(spinSPO2.Value, 2) / 100;
-                //--ServiceReqs
-                MOS.Filter.HisServiceReqFilter _reqFilter = new HisServiceReqFilter();
-                _reqFilter.TREATMENT_ID = this.treatmentId;
-                _reqFilter.INTRUCTION_DATE__EQUAL = Int64.Parse(Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(DateTime.Now).ToString().Substring(0, 8) + "000000");
-                _reqFilter.REQUEST_LOGINNAME__EXACT = Inventec.UC.Login.Base.ClientTokenManagerStore.ClientTokenManager.GetLoginName();
-                _reqFilter.HAS_EXECUTE = true;
 
-                var dataReqs = new BackendAdapter(param).Get<List<HIS_SERVICE_REQ>>("api/HisServiceReq/Get", ApiConsumers.MosConsumer, _reqFilter, param);
-                dataReqs = dataReqs.Where(o => o.TRACKING_ID == null).ToList();
-                if (dataReqs != null && dataReqs.Count > 0)
+                bool success = false;
+                string uri = "";
+
+                if (trackings != null && trackings.Count > 0) // nếu đã có phiếu truyền dịch thì update
                 {
-                    sdo.ServiceReqs = new List<TrackingServiceReq>();
-                    foreach (var item in dataReqs)
+                    uri = "api/HisTracking/Update";
+                }
+                else
+                {
+                    sdo.Tracking.TRACKING_TIME = Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(DateTime.Now) ?? 0;
+                    sdo.Tracking.CREATOR = Inventec.UC.Login.Base.ClientTokenManagerStore.ClientTokenManager.GetLoginName();
+                    uri = "api/HisTracking/Create";
+                    //--ServiceReqs
+                    MOS.Filter.HisServiceReqFilter _reqFilter = new HisServiceReqFilter();
+                    _reqFilter.TREATMENT_ID = this.treatmentId;
+                    _reqFilter.INTRUCTION_DATE__EQUAL = Int64.Parse(Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(DateTime.Now).ToString().Substring(0, 8) + "000000");
+                    _reqFilter.REQUEST_LOGINNAME__EXACT = Inventec.UC.Login.Base.ClientTokenManagerStore.ClientTokenManager.GetLoginName();
+                    _reqFilter.HAS_EXECUTE = true;
+
+                    var dataReqs = new BackendAdapter(param).Get<List<HIS_SERVICE_REQ>>("api/HisServiceReq/Get", ApiConsumers.MosConsumer, _reqFilter, param);
+                    dataReqs = dataReqs.Where(o => o.TRACKING_ID == null).ToList();
+                    if (dataReqs != null && dataReqs.Count > 0)
                     {
-                        TrackingServiceReq ado = new TrackingServiceReq();
-                        ado.ServiceReqId = item.ID;
-                        ado.IsNotShowMedicine = false;
-                        ado.IsNotShowMaterial = false;
-                        ado.IsNotShowOutMedi = false;
-                        ado.IsNotShowOutMate = false;
-                        sdo.ServiceReqs.Add(ado);
+                        sdo.ServiceReqs = new List<TrackingServiceReq>();
+                        foreach (var item in dataReqs)
+                        {
+                            TrackingServiceReq ado = new TrackingServiceReq();
+                            ado.ServiceReqId = item.ID;
+                            ado.IsNotShowMedicine = false;
+                            ado.IsNotShowMaterial = false;
+                            ado.IsNotShowOutMedi = false;
+                            ado.IsNotShowOutMate = false;
+                            sdo.ServiceReqs.Add(ado);
+                        }
                     }
                 }
-                bool success = false;
+
                 Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => sdo), sdo));
 
-                var resultData = new BackendAdapter(param).Post<HIS_TRACKING>("api/HisTracking/Create", ApiConsumers.MosConsumer, sdo, param);
-                if (resultData != null)
+                this.currentTracking = new BackendAdapter(param).Post<HIS_TRACKING>(uri, ApiConsumers.MosConsumer, sdo, param);
+                if (currentTracking != null)
                 {
                     success = true;
+                    PrintProcess62(PrintType.IN_TO_DIEU_TRI);
                 }
                 WaitingManager.Hide();
                 #region Hien thi message thong bao
-                MessageManager.Show(param, success);
+                Inventec.Desktop.Common.Message.MessageManager.Show(this.ParentForm, param, success);
+                //MessageManager.Show(param, success);
                 #endregion
 
                 #region Neu phien lam viec bi mat, phan mem tu dong logout va tro ve trang login

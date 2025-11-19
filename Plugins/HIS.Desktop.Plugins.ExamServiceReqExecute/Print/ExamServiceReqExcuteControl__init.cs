@@ -422,7 +422,8 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
             TOM_TAT_Y_LENH_PTTT_VA_DON_THUOC,
             PHIEU_THU_THANH_TOAN,
             PHIEU_CHAN_DOAN_NGUYEN_NHAN_TU_VONG,
-            IN_THE_BN
+            IN_THE_BN,
+            IN_TO_DIEU_TRI
         }
 
         private void onClickInPhieuKhamBenh(object sender, EventArgs e)

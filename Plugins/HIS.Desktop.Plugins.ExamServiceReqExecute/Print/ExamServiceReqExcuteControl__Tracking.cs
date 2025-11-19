@@ -37,31 +37,9 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
 
         V_HIS_TREATMENT_BED_ROOM _TreatmentBedRoom { get; set; }
 
-        List<HIS_SERVICE_REQ> _ServiceReqs { get; set; }
-        Dictionary<long, HIS_SERVICE_REQ> dicServiceReqs { get; set; }
-
-        List<HIS_SERE_SERV> _SereServs { get; set; }
-        Dictionary<long, List<HIS_SERE_SERV>> dicSereServs { get; set; }
-
-        List<HIS_EXP_MEST> _ExpMests { get; set; }
-        Dictionary<long, HIS_EXP_MEST> dicExpMests { get; set; }
-
-        List<HIS_EXP_MEST_MEDICINE> _ExpMestMedicines { get; set; }
-        Dictionary<long, List<HIS_EXP_MEST_MEDICINE>> dicExpMestMedicines { get; set; }
-
-        List<HIS_EXP_MEST_MATERIAL> _ExpMestMaterials { get; set; }
-        Dictionary<long, List<HIS_EXP_MEST_MATERIAL>> dicExpMestMaterials { get; set; }
-
-        Dictionary<long, List<HIS_SERVICE_REQ_METY>> dicServiceReqMetys { get; set; }
-        Dictionary<long, List<HIS_SERVICE_REQ_MATY>> dicServiceReqMatys { get; set; }
-
         internal List<HIS_IMP_MEST> _ImpMests_input { get; set; }
         internal List<V_HIS_IMP_MEST_MEDICINE> _ImpMestMedis { get; set; }
         internal List<V_HIS_IMP_MEST_MATERIAL> _ImpMestMates { get; set; }
-
-        List<HIS_SERE_SERV_EXT> _SereServExts { get; set; }
-
-        bool IsNotShowOutMediAndMate = false;
 
         private void CreateThreadLoadData(object param)
         {
@@ -113,6 +91,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                 bedFilter.ORDER_FIELD = "CREATE_TIME";
                 bedFilter.ORDER_DIRECTION = "DESC";
                 _TreatmentBedRoom = new BackendAdapter(param).Get<List<V_HIS_TREATMENT_BED_ROOM>>(HisRequestUriStore.HIS_TREATMENT_BED_ROOM_GETVIEW, ApiConsumers.MosConsumer, bedFilter, param).FirstOrDefault();
+
             }
             catch (Exception ex)
             {
@@ -244,11 +223,11 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
         }
 
         //VT Trong Kho
-        private void LoadDataExpMestMaterialNewThread(object param)
+        private void LoadDataExpMestMaterialNewThread62(object param)
         {
             try
             {
-                LoadDataExpMestMaterial((List<long>)param);
+                LoadDataExpMestMaterial62((List<long>)param);
             }
             catch (Exception ex)
             {
@@ -256,7 +235,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
             }
         }
 
-        private void LoadDataExpMestMaterial(List<long> _expMestIds)
+        private void LoadDataExpMestMaterial62(List<long> _expMestIds)
         {
             try
             {
