@@ -150,7 +150,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 ado.DelegateGetStoreStateValue = GetStateTratmentFinishCheck;
                 ado.DelegateSetStoreStateValue = SetStateTratmentFinishCheck;
 
-                this.ucTreatmentFinish = (UserControl)this.treatmentFinishProcessor.Run(ado);
+                this.ucTreatmentFinish = (UserControl)this.treatmentFinishProcessor.Run(ado, "01");
                 if (this.ucTreatmentFinish != null)
                 {
                     this.pnlUCPanelRightBottom.Controls.Clear();

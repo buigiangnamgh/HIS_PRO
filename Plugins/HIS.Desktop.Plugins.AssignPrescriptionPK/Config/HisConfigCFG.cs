@@ -153,7 +153,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Config
         private const string KEY_IsRequiredHtu = "HIS.Desktop.Plugins.AssignPrescription.IsRequiredHtu";
         internal static string IsRequiredHtu;
         internal static string IsCheckSubIcdExceedLimit;
-        internal static bool CheckSoNgay;
+        internal static long? CheckSoNgay;
         internal static string ASSIGN_SERVICE_SIMULTANEITY_OPTION;
         internal static string TuberculosisOption;
         internal static string OptionTreatmentEndTypeIsTransfer;
@@ -445,7 +445,15 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Config
             {
                 IsRequiredHtu = GetValue(KEY_IsRequiredHtu);
                 IsCheckSubIcdExceedLimit = GetValue(KEY_IsCheckSubIcdExceedLimit);
-                CheckSoNgay = GetValue(KEY_CheckSoNgay) == GlobalVariables.CommonStringTrue;
+                string soNgay = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(KEY_CheckSoNgay);// GetValue(KEY_CheckSoNgay);
+                if (!String.IsNullOrWhiteSpace(soNgay))
+                {
+                    CheckSoNgay = Inventec.Common.TypeConvert.Parse.ToInt64(soNgay);
+                }
+                else
+                {
+                    CheckSoNgay = null;
+                }
                 ASSIGN_SERVICE_SIMULTANEITY_OPTION = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(KEY_ASSIGN_SERVICE_SIMULTANEITY_OPTION);
                 TuberculosisOption = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(KEY_TuberculosisOption);
                 OptionTreatmentEndTypeIsTransfer = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(KEY_TreatmentEndTypeIsTransfer);

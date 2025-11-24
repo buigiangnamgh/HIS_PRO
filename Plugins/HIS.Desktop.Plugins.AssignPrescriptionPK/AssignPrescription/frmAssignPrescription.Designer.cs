@@ -1381,6 +1381,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.barDockControlTop.CausesValidation = false;
             this.barDockControlTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.barDockControlTop.Location = new System.Drawing.Point(0, 38);
+            this.barDockControlTop.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.barDockControlTop.Size = new System.Drawing.Size(1540, 0);
             // 
             // barDockControlBottom
@@ -1388,6 +1389,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.barDockControlBottom.CausesValidation = false;
             this.barDockControlBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.barDockControlBottom.Location = new System.Drawing.Point(0, 846);
+            this.barDockControlBottom.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.barDockControlBottom.Size = new System.Drawing.Size(1540, 0);
             // 
             // barDockControlLeft
@@ -1395,6 +1397,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.barDockControlLeft.CausesValidation = false;
             this.barDockControlLeft.Dock = System.Windows.Forms.DockStyle.Left;
             this.barDockControlLeft.Location = new System.Drawing.Point(0, 38);
+            this.barDockControlLeft.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.barDockControlLeft.Size = new System.Drawing.Size(0, 808);
             // 
             // barDockControlRight
@@ -1402,6 +1405,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.barDockControlRight.CausesValidation = false;
             this.barDockControlRight.Dock = System.Windows.Forms.DockStyle.Right;
             this.barDockControlRight.Location = new System.Drawing.Point(1540, 38);
+            this.barDockControlRight.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.barDockControlRight.Size = new System.Drawing.Size(0, 808);
             // 
             // layoutControl6
@@ -1479,7 +1483,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.layoutControl6.Controls.Add(this.cboExpMestReason);
             this.layoutControl6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.layoutControl6.Location = new System.Drawing.Point(0, 38);
-            this.layoutControl6.Margin = new System.Windows.Forms.Padding(4);
+            this.layoutControl6.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.layoutControl6.Name = "layoutControl6";
             this.layoutControl6.OptionsCustomizationForm.DesignTimeCustomizationFormPositionAndSize = new System.Drawing.Rectangle(0, 147, 490, 350);
             this.layoutControl6.OptionsFocus.EnableAutoTabOrder = false;
@@ -1494,7 +1498,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.popupContainerHtu.Controls.Add(this.layoutControl11);
             this.popupContainerHtu.Location = new System.Drawing.Point(1103, 380);
             this.popupContainerHtu.Manager = this.barManager1;
-            this.popupContainerHtu.Margin = new System.Windows.Forms.Padding(4);
+            this.popupContainerHtu.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.popupContainerHtu.Name = "popupContainerHtu";
             this.popupContainerHtu.Size = new System.Drawing.Size(345, 272);
             this.popupContainerHtu.TabIndex = 32;
@@ -1506,7 +1510,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.layoutControl11.Controls.Add(this.gridControlHtu);
             this.layoutControl11.Dock = System.Windows.Forms.DockStyle.Fill;
             this.layoutControl11.Location = new System.Drawing.Point(0, 0);
-            this.layoutControl11.Margin = new System.Windows.Forms.Padding(4);
+            this.layoutControl11.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.layoutControl11.Name = "layoutControl11";
             this.layoutControl11.Root = this.layoutControlGroup10;
             this.layoutControl11.Size = new System.Drawing.Size(345, 272);
@@ -1516,7 +1520,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // btnChooseHtu
             // 
             this.btnChooseHtu.Location = new System.Drawing.Point(257, 242);
-            this.btnChooseHtu.Margin = new System.Windows.Forms.Padding(4);
+            this.btnChooseHtu.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnChooseHtu.Name = "btnChooseHtu";
             this.btnChooseHtu.Size = new System.Drawing.Size(85, 27);
             this.btnChooseHtu.StyleController = this.layoutControl11;
@@ -1526,10 +1530,10 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             // gridControlHtu
             // 
-            this.gridControlHtu.EmbeddedNavigator.Margin = new System.Windows.Forms.Padding(4);
+            this.gridControlHtu.EmbeddedNavigator.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.gridControlHtu.Location = new System.Drawing.Point(3, 3);
             this.gridControlHtu.MainView = this.gridViewHtu;
-            this.gridControlHtu.Margin = new System.Windows.Forms.Padding(4);
+            this.gridControlHtu.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.gridControlHtu.MenuManager = this.barManager1;
             this.gridControlHtu.Name = "gridControlHtu";
             this.gridControlHtu.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
@@ -1624,7 +1628,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             0,
             0});
             this.spnPresPhaseNum.Location = new System.Drawing.Point(790, 59);
-            this.spnPresPhaseNum.Margin = new System.Windows.Forms.Padding(4);
+            this.spnPresPhaseNum.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.spnPresPhaseNum.MenuManager = this.barManager1;
             this.spnPresPhaseNum.Name = "spnPresPhaseNum";
             this.spnPresPhaseNum.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
@@ -1644,7 +1648,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // pnIcdTranditional
             // 
             this.pnIcdTranditional.Location = new System.Drawing.Point(0, 84);
-            this.pnIcdTranditional.Margin = new System.Windows.Forms.Padding(4);
+            this.pnIcdTranditional.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.pnIcdTranditional.Name = "pnIcdTranditional";
             this.pnIcdTranditional.Size = new System.Drawing.Size(784, 24);
             this.pnIcdTranditional.TabIndex = 148;
@@ -1652,7 +1656,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // pnSubIcdTranditional
             // 
             this.pnSubIcdTranditional.Location = new System.Drawing.Point(0, 108);
-            this.pnSubIcdTranditional.Margin = new System.Windows.Forms.Padding(4);
+            this.pnSubIcdTranditional.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.pnSubIcdTranditional.Name = "pnSubIcdTranditional";
             this.pnSubIcdTranditional.Size = new System.Drawing.Size(784, 24);
             this.pnSubIcdTranditional.TabIndex = 147;
@@ -1660,7 +1664,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // chkTemporayPres
             // 
             this.chkTemporayPres.Location = new System.Drawing.Point(854, 31);
-            this.chkTemporayPres.Margin = new System.Windows.Forms.Padding(4);
+            this.chkTemporayPres.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.chkTemporayPres.MenuManager = this.barManager1;
             this.chkTemporayPres.Name = "chkTemporayPres";
             this.chkTemporayPres.Properties.Caption = "";
@@ -1672,7 +1676,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // pbOpen
             // 
             this.pbOpen.Location = new System.Drawing.Point(1521, 328);
-            this.pbOpen.Margin = new System.Windows.Forms.Padding(4);
+            this.pbOpen.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.pbOpen.Name = "pbOpen";
             this.pbOpen.Size = new System.Drawing.Size(16, 24);
             this.pbOpen.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
@@ -1683,7 +1687,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // pbClose
             // 
             this.pbClose.Location = new System.Drawing.Point(1501, 328);
-            this.pbClose.Margin = new System.Windows.Forms.Padding(4);
+            this.pbClose.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.pbClose.Name = "pbClose";
             this.pbClose.Size = new System.Drawing.Size(14, 24);
             this.pbClose.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
@@ -1707,7 +1711,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.btnConfig.Image = ((System.Drawing.Image)(resources.GetObject("btnConfig.Image")));
             this.btnConfig.ImageLocation = DevExpress.XtraEditors.ImageLocation.MiddleCenter;
             this.btnConfig.Location = new System.Drawing.Point(942, 771);
-            this.btnConfig.Margin = new System.Windows.Forms.Padding(4);
+            this.btnConfig.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnConfig.MinimumSize = new System.Drawing.Size(13, 44);
             this.btnConfig.Name = "btnConfig";
             this.btnConfig.Size = new System.Drawing.Size(24, 44);
@@ -1720,7 +1724,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.btnLatentTuberCulosis.Enabled = false;
             this.btnLatentTuberCulosis.Location = new System.Drawing.Point(862, 771);
-            this.btnLatentTuberCulosis.Margin = new System.Windows.Forms.Padding(4);
+            this.btnLatentTuberCulosis.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnLatentTuberCulosis.Name = "btnLatentTuberCulosis";
             this.btnLatentTuberCulosis.Size = new System.Drawing.Size(74, 34);
             this.btnLatentTuberCulosis.StyleController = this.layoutControl6;
@@ -1734,7 +1738,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.panel2.Controls.Add(this.dtUseTime);
             this.panel2.Controls.Add(this.txtUseTime);
             this.panel2.Location = new System.Drawing.Point(481, 3);
-            this.panel2.Margin = new System.Windows.Forms.Padding(4);
+            this.panel2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(125, 22);
             this.panel2.TabIndex = 137;
@@ -1744,7 +1748,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.dtUseTime.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dtUseTime.EditValue = null;
             this.dtUseTime.Location = new System.Drawing.Point(0, 0);
-            this.dtUseTime.Margin = new System.Windows.Forms.Padding(4);
+            this.dtUseTime.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.dtUseTime.MenuManager = this.barManager1;
             this.dtUseTime.Name = "dtUseTime";
             this.dtUseTime.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
@@ -1766,7 +1770,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.txtUseTime.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtUseTime.Location = new System.Drawing.Point(0, 0);
-            this.txtUseTime.Margin = new System.Windows.Forms.Padding(4);
+            this.txtUseTime.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtUseTime.MenuManager = this.barManager1;
             this.txtUseTime.Name = "txtUseTime";
             this.txtUseTime.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
@@ -1780,7 +1784,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // txtInteractionReason
             // 
             this.txtInteractionReason.Location = new System.Drawing.Point(101, 356);
-            this.txtInteractionReason.Margin = new System.Windows.Forms.Padding(4);
+            this.txtInteractionReason.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtInteractionReason.MenuManager = this.barManager1;
             this.txtInteractionReason.Name = "txtInteractionReason";
             this.txtInteractionReason.Size = new System.Drawing.Size(603, 28);
@@ -1790,7 +1794,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // chkPDDT
             // 
             this.chkPDDT.Location = new System.Drawing.Point(394, 192);
-            this.chkPDDT.Margin = new System.Windows.Forms.Padding(4);
+            this.chkPDDT.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.chkPDDT.MenuManager = this.barManager1;
             this.chkPDDT.Name = "chkPDDT";
             this.chkPDDT.Properties.Caption = "";
@@ -1834,7 +1838,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // chkSignForDDT
             // 
             this.chkSignForDDT.Location = new System.Drawing.Point(158, 3);
-            this.chkSignForDDT.Margin = new System.Windows.Forms.Padding(4);
+            this.chkSignForDDT.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.chkSignForDDT.MenuManager = this.barManager1;
             this.chkSignForDDT.Name = "chkSignForDDT";
             this.chkSignForDDT.Properties.Caption = "";
@@ -1846,7 +1850,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // chkSignForDTT
             // 
             this.chkSignForDTT.Location = new System.Drawing.Point(158, 29);
-            this.chkSignForDTT.Margin = new System.Windows.Forms.Padding(4);
+            this.chkSignForDTT.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.chkSignForDTT.MenuManager = this.barManager1;
             this.chkSignForDTT.Name = "chkSignForDTT";
             this.chkSignForDTT.Properties.Caption = "";
@@ -1858,7 +1862,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // chkSignForDPK
             // 
             this.chkSignForDPK.Location = new System.Drawing.Point(158, 55);
-            this.chkSignForDPK.Margin = new System.Windows.Forms.Padding(4);
+            this.chkSignForDPK.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.chkSignForDPK.MenuManager = this.barManager1;
             this.chkSignForDPK.Name = "chkSignForDPK";
             this.chkSignForDPK.Properties.Caption = "";
@@ -1951,7 +1955,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.layoutControl9.Controls.Add(this.lblBMI);
             this.layoutControl9.Controls.Add(this.btnConnectBloodPressure);
             this.layoutControl9.Location = new System.Drawing.Point(1128, 358);
-            this.layoutControl9.Margin = new System.Windows.Forms.Padding(4);
+            this.layoutControl9.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.layoutControl9.Name = "layoutControl9";
             this.layoutControl9.Root = this.layoutControlGroup8;
             this.layoutControl9.Size = new System.Drawing.Size(409, 169);
@@ -1962,8 +1966,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.dtExecuteTime.EditValue = null;
             this.dtExecuteTime.Enabled = false;
-            this.dtExecuteTime.Location = new System.Drawing.Point(76, 4);
-            this.dtExecuteTime.Margin = new System.Windows.Forms.Padding(4);
+            this.dtExecuteTime.Location = new System.Drawing.Point(76, -46);
+            this.dtExecuteTime.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.dtExecuteTime.Name = "dtExecuteTime";
             this.dtExecuteTime.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
@@ -1986,8 +1990,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             0,
             0});
             this.spinPulse.Enabled = false;
-            this.spinPulse.Location = new System.Drawing.Point(76, 32);
-            this.spinPulse.Margin = new System.Windows.Forms.Padding(4);
+            this.spinPulse.Location = new System.Drawing.Point(76, -18);
+            this.spinPulse.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.spinPulse.Name = "spinPulse";
             this.spinPulse.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
             this.spinPulse.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
@@ -2013,8 +2017,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             0,
             0});
             this.spinBloodPressureMax.Enabled = false;
-            this.spinBloodPressureMax.Location = new System.Drawing.Point(75, 59);
-            this.spinBloodPressureMax.Margin = new System.Windows.Forms.Padding(4);
+            this.spinBloodPressureMax.Location = new System.Drawing.Point(75, 9);
+            this.spinBloodPressureMax.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.spinBloodPressureMax.Name = "spinBloodPressureMax";
             this.spinBloodPressureMax.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
             this.spinBloodPressureMax.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
@@ -2040,8 +2044,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             0,
             0});
             this.spinWeight.Enabled = false;
-            this.spinWeight.Location = new System.Drawing.Point(76, 84);
-            this.spinWeight.Margin = new System.Windows.Forms.Padding(4);
+            this.spinWeight.Location = new System.Drawing.Point(76, 34);
+            this.spinWeight.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.spinWeight.Name = "spinWeight";
             this.spinWeight.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
             this.spinWeight.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
@@ -2067,8 +2071,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             0,
             0});
             this.spinHeight.Enabled = false;
-            this.spinHeight.Location = new System.Drawing.Point(76, 112);
-            this.spinHeight.Margin = new System.Windows.Forms.Padding(4);
+            this.spinHeight.Location = new System.Drawing.Point(76, 62);
+            this.spinHeight.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.spinHeight.Name = "spinHeight";
             this.spinHeight.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
             this.spinHeight.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
@@ -2089,18 +2093,18 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // txtNote
             // 
             this.txtNote.Enabled = false;
-            this.txtNote.Location = new System.Drawing.Point(76, 140);
-            this.txtNote.Margin = new System.Windows.Forms.Padding(4);
+            this.txtNote.Location = new System.Drawing.Point(76, 90);
+            this.txtNote.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtNote.Name = "txtNote";
-            this.txtNote.Size = new System.Drawing.Size(67, 22);
+            this.txtNote.Size = new System.Drawing.Size(67, 49);
             this.txtNote.StyleController = this.layoutControl9;
             this.txtNote.TabIndex = 18;
             // 
             // lblBmiDisplayText
             // 
             this.lblBmiDisplayText.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
-            this.lblBmiDisplayText.Location = new System.Drawing.Point(132, 168);
-            this.lblBmiDisplayText.Margin = new System.Windows.Forms.Padding(4);
+            this.lblBmiDisplayText.Location = new System.Drawing.Point(132, 145);
+            this.lblBmiDisplayText.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.lblBmiDisplayText.Name = "lblBmiDisplayText";
             this.lblBmiDisplayText.Size = new System.Drawing.Size(22, 18);
             this.lblBmiDisplayText.StyleController = this.layoutControl9;
@@ -2109,8 +2113,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // lblLeatherArea
             // 
             this.lblLeatherArea.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
-            this.lblLeatherArea.Location = new System.Drawing.Point(231, 168);
-            this.lblLeatherArea.Margin = new System.Windows.Forms.Padding(4);
+            this.lblLeatherArea.Location = new System.Drawing.Point(231, 145);
+            this.lblLeatherArea.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.lblLeatherArea.Name = "lblLeatherArea";
             this.lblLeatherArea.Size = new System.Drawing.Size(60, 18);
             this.lblLeatherArea.StyleController = this.layoutControl9;
@@ -2120,8 +2124,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.labelControl13.Appearance.Font = new System.Drawing.Font("Tahoma", 7F);
             this.labelControl13.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
-            this.labelControl13.Location = new System.Drawing.Point(297, 168);
-            this.labelControl13.Margin = new System.Windows.Forms.Padding(4);
+            this.labelControl13.Location = new System.Drawing.Point(297, 145);
+            this.labelControl13.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.labelControl13.Name = "labelControl13";
             this.labelControl13.Size = new System.Drawing.Size(87, 18);
             this.labelControl13.StyleController = this.layoutControl9;
@@ -2130,11 +2134,11 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             // lblIsToCalculateEgfr
             // 
-            this.lblIsToCalculateEgfr.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
-            this.lblIsToCalculateEgfr.Location = new System.Drawing.Point(231, 140);
-            this.lblIsToCalculateEgfr.Margin = new System.Windows.Forms.Padding(4);
+            this.lblIsToCalculateEgfr.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.Vertical;
+            this.lblIsToCalculateEgfr.Location = new System.Drawing.Point(202, 90);
+            this.lblIsToCalculateEgfr.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.lblIsToCalculateEgfr.Name = "lblIsToCalculateEgfr";
-            this.lblIsToCalculateEgfr.Size = new System.Drawing.Size(153, 18);
+            this.lblIsToCalculateEgfr.Size = new System.Drawing.Size(182, 49);
             this.lblIsToCalculateEgfr.StyleController = this.layoutControl9;
             this.lblIsToCalculateEgfr.TabIndex = 27;
             // 
@@ -2142,8 +2146,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.labelControl5.Appearance.Font = new System.Drawing.Font("Tahoma", 7F);
             this.labelControl5.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
-            this.labelControl5.Location = new System.Drawing.Point(145, 112);
-            this.labelControl5.Margin = new System.Windows.Forms.Padding(4);
+            this.labelControl5.Location = new System.Drawing.Point(145, 62);
+            this.labelControl5.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.labelControl5.Name = "labelControl5";
             this.labelControl5.Size = new System.Drawing.Size(9, 18);
             this.labelControl5.StyleController = this.layoutControl9;
@@ -2154,8 +2158,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.labelControl12.Appearance.Font = new System.Drawing.Font("Tahoma", 7F);
             this.labelControl12.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
-            this.labelControl12.Location = new System.Drawing.Point(145, 84);
-            this.labelControl12.Margin = new System.Windows.Forms.Padding(4);
+            this.labelControl12.Location = new System.Drawing.Point(145, 34);
+            this.labelControl12.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.labelControl12.Name = "labelControl12";
             this.labelControl12.Size = new System.Drawing.Size(9, 18);
             this.labelControl12.StyleController = this.layoutControl9;
@@ -2170,8 +2174,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             0,
             0});
             this.spinBloodPressureMin.Enabled = false;
-            this.spinBloodPressureMin.Location = new System.Drawing.Point(110, 59);
-            this.spinBloodPressureMin.Margin = new System.Windows.Forms.Padding(4);
+            this.spinBloodPressureMin.Location = new System.Drawing.Point(110, 9);
+            this.spinBloodPressureMin.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.spinBloodPressureMin.Name = "spinBloodPressureMin";
             this.spinBloodPressureMin.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
             this.spinBloodPressureMin.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
@@ -2193,8 +2197,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.labelControl14.Appearance.Font = new System.Drawing.Font("Tahoma", 7F);
             this.labelControl14.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
-            this.labelControl14.Location = new System.Drawing.Point(145, 32);
-            this.labelControl14.Margin = new System.Windows.Forms.Padding(4);
+            this.labelControl14.Location = new System.Drawing.Point(145, -18);
+            this.labelControl14.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.labelControl14.Name = "labelControl14";
             this.labelControl14.Size = new System.Drawing.Size(9, 18);
             this.labelControl14.StyleController = this.layoutControl9;
@@ -2209,8 +2213,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             0,
             0});
             this.spinTemperature.Enabled = false;
-            this.spinTemperature.Location = new System.Drawing.Point(231, 32);
-            this.spinTemperature.Margin = new System.Windows.Forms.Padding(4);
+            this.spinTemperature.Location = new System.Drawing.Point(231, -18);
+            this.spinTemperature.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.spinTemperature.Name = "spinTemperature";
             this.spinTemperature.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
             this.spinTemperature.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
@@ -2231,8 +2235,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.labelControl10.Appearance.Font = new System.Drawing.Font("Tahoma", 7F);
             this.labelControl10.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
-            this.labelControl10.Location = new System.Drawing.Point(145, 60);
-            this.labelControl10.Margin = new System.Windows.Forms.Padding(4);
+            this.labelControl10.Location = new System.Drawing.Point(145, 10);
+            this.labelControl10.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.labelControl10.Name = "labelControl10";
             this.labelControl10.Size = new System.Drawing.Size(9, 18);
             this.labelControl10.StyleController = this.layoutControl9;
@@ -2247,8 +2251,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             0,
             0});
             this.spinSPO2.Enabled = false;
-            this.spinSPO2.Location = new System.Drawing.Point(231, 4);
-            this.spinSPO2.Margin = new System.Windows.Forms.Padding(4);
+            this.spinSPO2.Location = new System.Drawing.Point(231, -46);
+            this.spinSPO2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.spinSPO2.Name = "spinSPO2";
             this.spinSPO2.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
             this.spinSPO2.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
@@ -2282,8 +2286,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             0,
             0});
             this.spinBreathRate.Enabled = false;
-            this.spinBreathRate.Location = new System.Drawing.Point(231, 60);
-            this.spinBreathRate.Margin = new System.Windows.Forms.Padding(4);
+            this.spinBreathRate.Location = new System.Drawing.Point(231, 10);
+            this.spinBreathRate.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.spinBreathRate.Name = "spinBreathRate";
             this.spinBreathRate.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
             this.spinBreathRate.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
@@ -2308,8 +2312,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             0,
             0});
             this.spinChest.Enabled = false;
-            this.spinChest.Location = new System.Drawing.Point(231, 84);
-            this.spinChest.Margin = new System.Windows.Forms.Padding(4);
+            this.spinChest.Location = new System.Drawing.Point(231, 34);
+            this.spinChest.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.spinChest.Name = "spinChest";
             this.spinChest.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
             this.spinChest.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
@@ -2334,8 +2338,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             0,
             0});
             this.spinBelly.Enabled = false;
-            this.spinBelly.Location = new System.Drawing.Point(231, 112);
-            this.spinBelly.Margin = new System.Windows.Forms.Padding(4);
+            this.spinBelly.Location = new System.Drawing.Point(231, 62);
+            this.spinBelly.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.spinBelly.Name = "spinBelly";
             this.spinBelly.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
             this.spinBelly.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
@@ -2356,8 +2360,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.labelControl6.Appearance.Font = new System.Drawing.Font("Tahoma", 7F);
             this.labelControl6.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
-            this.labelControl6.Location = new System.Drawing.Point(245, 84);
-            this.labelControl6.Margin = new System.Windows.Forms.Padding(4);
+            this.labelControl6.Location = new System.Drawing.Point(245, 34);
+            this.labelControl6.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.labelControl6.Name = "labelControl6";
             this.labelControl6.Size = new System.Drawing.Size(139, 18);
             this.labelControl6.StyleController = this.layoutControl9;
@@ -2368,8 +2372,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.labelControl3.Appearance.Font = new System.Drawing.Font("Tahoma", 7F);
             this.labelControl3.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
-            this.labelControl3.Location = new System.Drawing.Point(297, 60);
-            this.labelControl3.Margin = new System.Windows.Forms.Padding(4);
+            this.labelControl3.Location = new System.Drawing.Point(297, 10);
+            this.labelControl3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.labelControl3.Name = "labelControl3";
             this.labelControl3.Size = new System.Drawing.Size(87, 18);
             this.labelControl3.StyleController = this.layoutControl9;
@@ -2380,8 +2384,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.labelControl1.Appearance.Font = new System.Drawing.Font("Tahoma", 7F);
             this.labelControl1.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
-            this.labelControl1.Location = new System.Drawing.Point(297, 32);
-            this.labelControl1.Margin = new System.Windows.Forms.Padding(4);
+            this.labelControl1.Location = new System.Drawing.Point(297, -18);
+            this.labelControl1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.labelControl1.Name = "labelControl1";
             this.labelControl1.Size = new System.Drawing.Size(87, 18);
             this.labelControl1.StyleController = this.layoutControl9;
@@ -2392,8 +2396,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.labelControl9.Appearance.Font = new System.Drawing.Font("Tahoma", 7F);
             this.labelControl9.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
-            this.labelControl9.Location = new System.Drawing.Point(297, 4);
-            this.labelControl9.Margin = new System.Windows.Forms.Padding(4);
+            this.labelControl9.Location = new System.Drawing.Point(297, -46);
+            this.labelControl9.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.labelControl9.Name = "labelControl9";
             this.labelControl9.Size = new System.Drawing.Size(87, 18);
             this.labelControl9.StyleController = this.layoutControl9;
@@ -2404,8 +2408,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.labelControl8.Appearance.Font = new System.Drawing.Font("Tahoma", 7F);
             this.labelControl8.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
-            this.labelControl8.Location = new System.Drawing.Point(297, 112);
-            this.labelControl8.Margin = new System.Windows.Forms.Padding(4);
+            this.labelControl8.Location = new System.Drawing.Point(297, 62);
+            this.labelControl8.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.labelControl8.Name = "labelControl8";
             this.labelControl8.Size = new System.Drawing.Size(87, 18);
             this.labelControl8.StyleController = this.layoutControl9;
@@ -2415,8 +2419,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // lblBMI
             // 
             this.lblBMI.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
-            this.lblBMI.Location = new System.Drawing.Point(76, 168);
-            this.lblBMI.Margin = new System.Windows.Forms.Padding(4);
+            this.lblBMI.Location = new System.Drawing.Point(76, 145);
+            this.lblBMI.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.lblBMI.Name = "lblBMI";
             this.lblBMI.Size = new System.Drawing.Size(50, 20);
             this.lblBMI.StyleController = this.layoutControl9;
@@ -2426,8 +2430,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.btnConnectBloodPressure.Image = ((System.Drawing.Image)(resources.GetObject("btnConnectBloodPressure.Image")));
             this.btnConnectBloodPressure.ImageLocation = DevExpress.XtraEditors.ImageLocation.MiddleCenter;
-            this.btnConnectBloodPressure.Location = new System.Drawing.Point(137, 1);
-            this.btnConnectBloodPressure.Margin = new System.Windows.Forms.Padding(4);
+            this.btnConnectBloodPressure.Location = new System.Drawing.Point(137, -49);
+            this.btnConnectBloodPressure.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnConnectBloodPressure.Name = "btnConnectBloodPressure";
             this.btnConnectBloodPressure.Size = new System.Drawing.Size(20, 24);
             this.btnConnectBloodPressure.StyleController = this.layoutControl9;
@@ -2441,10 +2445,10 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.layoutControlGroup8.GroupBordersVisible = false;
             this.layoutControlGroup8.Items.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] {
             this.lcgDHST});
-            this.layoutControlGroup8.Location = new System.Drawing.Point(0, 0);
+            this.layoutControlGroup8.Location = new System.Drawing.Point(0, -50);
             this.layoutControlGroup8.Name = "layoutControlGroup8";
             this.layoutControlGroup8.Padding = new DevExpress.XtraLayout.Utils.Padding(0, 0, 0, 0);
-            this.layoutControlGroup8.Size = new System.Drawing.Size(388, 192);
+            this.layoutControlGroup8.Size = new System.Drawing.Size(388, 219);
             this.layoutControlGroup8.TextVisible = false;
             // 
             // lcgDHST
@@ -2481,7 +2485,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.lcgDHST.Location = new System.Drawing.Point(0, 0);
             this.lcgDHST.Name = "lcgDHST";
             this.lcgDHST.Padding = new DevExpress.XtraLayout.Utils.Padding(0, 0, 0, 0);
-            this.lcgDHST.Size = new System.Drawing.Size(388, 192);
+            this.lcgDHST.Size = new System.Drawing.Size(388, 219);
             this.lcgDHST.Spacing = new DevExpress.XtraLayout.Utils.Padding(0, 0, 0, 0);
             this.lcgDHST.Text = "Dấu hiệu sinh tồn";
             this.lcgDHST.TextVisible = false;
@@ -2568,7 +2572,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.lciNote.CustomizationFormText = "Khác:";
             this.lciNote.Location = new System.Drawing.Point(0, 136);
             this.lciNote.Name = "lciNote";
-            this.lciNote.Size = new System.Drawing.Size(145, 28);
+            this.lciNote.Size = new System.Drawing.Size(145, 55);
             this.lciNote.Text = "Khác:";
             this.lciNote.TextAlignMode = DevExpress.XtraLayout.TextAlignModeItem.CustomSize;
             this.lciNote.TextSize = new System.Drawing.Size(70, 20);
@@ -2578,7 +2582,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.lciBMIDisplay.Control = this.lblBmiDisplayText;
             this.lciBMIDisplay.CustomizationFormText = "BMI:";
-            this.lciBMIDisplay.Location = new System.Drawing.Point(128, 164);
+            this.lciBMIDisplay.Location = new System.Drawing.Point(128, 191);
             this.lciBMIDisplay.MaxSize = new System.Drawing.Size(0, 24);
             this.lciBMIDisplay.MinSize = new System.Drawing.Size(14, 24);
             this.lciBMIDisplay.Name = "lciBMIDisplay";
@@ -2596,7 +2600,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.lciLeatherArea.AppearanceItemCaption.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.lciLeatherArea.Control = this.lblLeatherArea;
             this.lciLeatherArea.CustomizationFormText = "Diện tích da:";
-            this.lciLeatherArea.Location = new System.Drawing.Point(156, 164);
+            this.lciLeatherArea.Location = new System.Drawing.Point(156, 191);
             this.lciLeatherArea.MaxSize = new System.Drawing.Size(0, 24);
             this.lciLeatherArea.MinSize = new System.Drawing.Size(80, 24);
             this.lciLeatherArea.Name = "lciLeatherArea";
@@ -2611,7 +2615,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.layoutControlItem63.Control = this.labelControl13;
             this.layoutControlItem63.CustomizationFormText = "layoutControlItem63";
-            this.layoutControlItem63.Location = new System.Drawing.Point(293, 164);
+            this.layoutControlItem63.Location = new System.Drawing.Point(293, 191);
             this.layoutControlItem63.MaxSize = new System.Drawing.Size(0, 24);
             this.layoutControlItem63.MinSize = new System.Drawing.Size(14, 24);
             this.layoutControlItem63.Name = "layoutControlItem63";
@@ -2627,15 +2631,14 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.layoutControlItem32.Control = this.lblIsToCalculateEgfr;
             this.layoutControlItem32.CustomizationFormText = "MLCT:";
             this.layoutControlItem32.Location = new System.Drawing.Point(156, 136);
-            this.layoutControlItem32.MaxSize = new System.Drawing.Size(0, 24);
-            this.layoutControlItem32.MinSize = new System.Drawing.Size(80, 24);
+            this.layoutControlItem32.MinSize = new System.Drawing.Size(80, 55);
             this.layoutControlItem32.Name = "layoutControlItem32";
             this.layoutControlItem32.OptionsToolTip.ToolTip = "Mức lọc cầu thận";
-            this.layoutControlItem32.Size = new System.Drawing.Size(230, 28);
+            this.layoutControlItem32.Size = new System.Drawing.Size(230, 55);
             this.layoutControlItem32.SizeConstraintsType = DevExpress.XtraLayout.SizeConstraintsType.Custom;
             this.layoutControlItem32.Text = "MLCT:";
             this.layoutControlItem32.TextAlignMode = DevExpress.XtraLayout.TextAlignModeItem.CustomSize;
-            this.layoutControlItem32.TextSize = new System.Drawing.Size(69, 20);
+            this.layoutControlItem32.TextSize = new System.Drawing.Size(40, 20);
             this.layoutControlItem32.TextToControlDistance = 2;
             // 
             // layoutControlItem55
@@ -2860,7 +2863,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.lciBMI.AppearanceItemCaption.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.lciBMI.Control = this.lblBMI;
             this.lciBMI.CustomizationFormText = "BMI:";
-            this.lciBMI.Location = new System.Drawing.Point(0, 164);
+            this.lciBMI.Location = new System.Drawing.Point(0, 191);
             this.lciBMI.Name = "lciBMI";
             this.lciBMI.Size = new System.Drawing.Size(128, 26);
             this.lciBMI.Text = "BMI:";
@@ -2887,13 +2890,13 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.emptySpaceItem9.AllowHotTrack = false;
             this.emptySpaceItem9.Location = new System.Drawing.Point(145, 136);
             this.emptySpaceItem9.Name = "emptySpaceItem9";
-            this.emptySpaceItem9.Size = new System.Drawing.Size(11, 28);
+            this.emptySpaceItem9.Size = new System.Drawing.Size(11, 55);
             this.emptySpaceItem9.TextSize = new System.Drawing.Size(0, 0);
             // 
             // btnCreateVBA
             // 
             this.btnCreateVBA.Location = new System.Drawing.Point(782, 771);
-            this.btnCreateVBA.Margin = new System.Windows.Forms.Padding(4);
+            this.btnCreateVBA.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnCreateVBA.Name = "btnCreateVBA";
             this.btnCreateVBA.Size = new System.Drawing.Size(74, 34);
             this.btnCreateVBA.StyleController = this.layoutControl6;
@@ -2909,7 +2912,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.lblPhatSinh__MuaNgoai.Appearance.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblPhatSinh__MuaNgoai.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
             this.lblPhatSinh__MuaNgoai.Location = new System.Drawing.Point(792, 673);
-            this.lblPhatSinh__MuaNgoai.Margin = new System.Windows.Forms.Padding(4);
+            this.lblPhatSinh__MuaNgoai.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.lblPhatSinh__MuaNgoai.Name = "lblPhatSinh__MuaNgoai";
             this.lblPhatSinh__MuaNgoai.Size = new System.Drawing.Size(137, 18);
             this.lblPhatSinh__MuaNgoai.StyleController = this.layoutControl6;
@@ -2920,7 +2923,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.lblPhatSinh__KhacBHYT.Appearance.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblPhatSinh__KhacBHYT.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
             this.lblPhatSinh__KhacBHYT.Location = new System.Drawing.Point(585, 673);
-            this.lblPhatSinh__KhacBHYT.Margin = new System.Windows.Forms.Padding(4);
+            this.lblPhatSinh__KhacBHYT.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.lblPhatSinh__KhacBHYT.Name = "lblPhatSinh__KhacBHYT";
             this.lblPhatSinh__KhacBHYT.Size = new System.Drawing.Size(111, 18);
             this.lblPhatSinh__KhacBHYT.StyleController = this.layoutControl6;
@@ -2931,7 +2934,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.lblPhatSinh__BHYT.Appearance.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblPhatSinh__BHYT.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
             this.lblPhatSinh__BHYT.Location = new System.Drawing.Point(376, 673);
-            this.lblPhatSinh__BHYT.Margin = new System.Windows.Forms.Padding(4);
+            this.lblPhatSinh__BHYT.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.lblPhatSinh__BHYT.Name = "lblPhatSinh__BHYT";
             this.lblPhatSinh__BHYT.Size = new System.Drawing.Size(108, 18);
             this.lblPhatSinh__BHYT.StyleController = this.layoutControl6;
@@ -2946,7 +2949,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.panelControl1.Controls.Add(this.gridControlServiceProcess);
             this.panelControl1.Controls.Add(this.navBarControlChongChiDinhInfo);
             this.panelControl1.Location = new System.Drawing.Point(3, 390);
-            this.panelControl1.Margin = new System.Windows.Forms.Padding(4);
+            this.panelControl1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.panelControl1.Name = "panelControl1";
             this.panelControl1.Size = new System.Drawing.Size(1119, 277);
             this.panelControl1.TabIndex = 128;
@@ -2957,7 +2960,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.popupControlContainerOtherPaySource.Controls.Add(this.gridControlOtherPaySource);
             this.popupControlContainerOtherPaySource.Location = new System.Drawing.Point(85, 39);
             this.popupControlContainerOtherPaySource.Manager = this.barManager1;
-            this.popupControlContainerOtherPaySource.Margin = new System.Windows.Forms.Padding(4);
+            this.popupControlContainerOtherPaySource.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.popupControlContainerOtherPaySource.Name = "popupControlContainerOtherPaySource";
             this.popupControlContainerOtherPaySource.Size = new System.Drawing.Size(533, 222);
             this.popupControlContainerOtherPaySource.TabIndex = 135;
@@ -2966,10 +2969,10 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // gridControlOtherPaySource
             // 
             this.gridControlOtherPaySource.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.gridControlOtherPaySource.EmbeddedNavigator.Margin = new System.Windows.Forms.Padding(4);
+            this.gridControlOtherPaySource.EmbeddedNavigator.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.gridControlOtherPaySource.Location = new System.Drawing.Point(0, 0);
             this.gridControlOtherPaySource.MainView = this.gridViewOtherPaySource;
-            this.gridControlOtherPaySource.Margin = new System.Windows.Forms.Padding(4);
+            this.gridControlOtherPaySource.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.gridControlOtherPaySource.MenuManager = this.barManager1;
             this.gridControlOtherPaySource.Name = "gridControlOtherPaySource";
             this.gridControlOtherPaySource.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
@@ -3057,7 +3060,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.popupControlContainer1.Controls.Add(this.layoutControl12);
             this.popupControlContainer1.Location = new System.Drawing.Point(933, 44);
             this.popupControlContainer1.Manager = this.barManager1;
-            this.popupControlContainer1.Margin = new System.Windows.Forms.Padding(4);
+            this.popupControlContainer1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.popupControlContainer1.Name = "popupControlContainer1";
             this.popupControlContainer1.Size = new System.Drawing.Size(472, 142);
             this.popupControlContainer1.TabIndex = 142;
@@ -3069,7 +3072,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.layoutControl12.Controls.Add(this.gridControlConfig);
             this.layoutControl12.Dock = System.Windows.Forms.DockStyle.Fill;
             this.layoutControl12.Location = new System.Drawing.Point(0, 0);
-            this.layoutControl12.Margin = new System.Windows.Forms.Padding(4);
+            this.layoutControl12.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.layoutControl12.Name = "layoutControl12";
             this.layoutControl12.Root = this.layoutControlGroup11;
             this.layoutControl12.Size = new System.Drawing.Size(472, 142);
@@ -3078,10 +3081,10 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             // gridControlConfig
             // 
-            this.gridControlConfig.EmbeddedNavigator.Margin = new System.Windows.Forms.Padding(4);
+            this.gridControlConfig.EmbeddedNavigator.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.gridControlConfig.Location = new System.Drawing.Point(3, 3);
             this.gridControlConfig.MainView = this.gridViewConfig;
-            this.gridControlConfig.Margin = new System.Windows.Forms.Padding(4);
+            this.gridControlConfig.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.gridControlConfig.MenuManager = this.barManager1;
             this.gridControlConfig.Name = "gridControlConfig";
             this.gridControlConfig.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
@@ -3158,7 +3161,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.popupControlContainerMediMaty.Controls.Add(this.popupControlContainerTutorial);
             this.popupControlContainerMediMaty.Location = new System.Drawing.Point(43, 142);
             this.popupControlContainerMediMaty.Manager = this.barManager1;
-            this.popupControlContainerMediMaty.Margin = new System.Windows.Forms.Padding(4);
+            this.popupControlContainerMediMaty.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.popupControlContainerMediMaty.Name = "popupControlContainerMediMaty";
             this.popupControlContainerMediMaty.Size = new System.Drawing.Size(856, 135);
             this.popupControlContainerMediMaty.TabIndex = 15;
@@ -3171,7 +3174,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.layoutControl8.Controls.Add(this.gridControlMediMaty);
             this.layoutControl8.Dock = System.Windows.Forms.DockStyle.Fill;
             this.layoutControl8.Location = new System.Drawing.Point(0, 0);
-            this.layoutControl8.Margin = new System.Windows.Forms.Padding(4);
+            this.layoutControl8.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.layoutControl8.Name = "layoutControl8";
             this.layoutControl8.Root = this.layoutControlGroup7;
             this.layoutControl8.Size = new System.Drawing.Size(856, 135);
@@ -3180,10 +3183,10 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             // gridControlMediMaty
             // 
-            this.gridControlMediMaty.EmbeddedNavigator.Margin = new System.Windows.Forms.Padding(4);
+            this.gridControlMediMaty.EmbeddedNavigator.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.gridControlMediMaty.Location = new System.Drawing.Point(3, 3);
             this.gridControlMediMaty.MainView = this.gridViewMediMaty;
-            this.gridControlMediMaty.Margin = new System.Windows.Forms.Padding(4);
+            this.gridControlMediMaty.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.gridControlMediMaty.MenuManager = this.barManager1;
             this.gridControlMediMaty.Name = "gridControlMediMaty";
             this.gridControlMediMaty.Size = new System.Drawing.Size(850, 129);
@@ -3251,7 +3254,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.popupControlContainerTutorial.Controls.Add(this.gridControlTutorial);
             this.popupControlContainerTutorial.Location = new System.Drawing.Point(11, -39);
             this.popupControlContainerTutorial.Manager = this.barManager1;
-            this.popupControlContainerTutorial.Margin = new System.Windows.Forms.Padding(4);
+            this.popupControlContainerTutorial.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.popupControlContainerTutorial.Name = "popupControlContainerTutorial";
             this.popupControlContainerTutorial.Size = new System.Drawing.Size(733, 46);
             this.popupControlContainerTutorial.TabIndex = 16;
@@ -3260,10 +3263,10 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // gridControlTutorial
             // 
             this.gridControlTutorial.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.gridControlTutorial.EmbeddedNavigator.Margin = new System.Windows.Forms.Padding(4);
+            this.gridControlTutorial.EmbeddedNavigator.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.gridControlTutorial.Location = new System.Drawing.Point(0, 0);
             this.gridControlTutorial.MainView = this.gridViewTutorial;
-            this.gridControlTutorial.Margin = new System.Windows.Forms.Padding(4);
+            this.gridControlTutorial.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.gridControlTutorial.MenuManager = this.barManager1;
             this.gridControlTutorial.Name = "gridControlTutorial";
             this.gridControlTutorial.Size = new System.Drawing.Size(733, 46);
@@ -3285,10 +3288,10 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.gridControlServiceProcess.AllowDrop = true;
             this.gridControlServiceProcess.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.gridControlServiceProcess.EmbeddedNavigator.Margin = new System.Windows.Forms.Padding(4);
+            this.gridControlServiceProcess.EmbeddedNavigator.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.gridControlServiceProcess.Location = new System.Drawing.Point(0, 0);
             this.gridControlServiceProcess.MainView = this.gridViewServiceProcess;
-            this.gridControlServiceProcess.Margin = new System.Windows.Forms.Padding(4);
+            this.gridControlServiceProcess.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.gridControlServiceProcess.Name = "gridControlServiceProcess";
             this.gridControlServiceProcess.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
             this.repositoryItemcboPatientType_TabMedicine,
@@ -4660,7 +4663,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.nbgMail});
             this.navBarControlChongChiDinhInfo.HideGroupCaptions = true;
             this.navBarControlChongChiDinhInfo.Location = new System.Drawing.Point(772, 0);
-            this.navBarControlChongChiDinhInfo.Margin = new System.Windows.Forms.Padding(4);
+            this.navBarControlChongChiDinhInfo.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.navBarControlChongChiDinhInfo.Name = "navBarControlChongChiDinhInfo";
             this.navBarControlChongChiDinhInfo.NavigationPaneGroupClientHeight = 320;
             this.navBarControlChongChiDinhInfo.OptionsNavPane.ExpandedWidth = 347;
@@ -4694,7 +4697,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.navBarGroupControlContainer1.Appearance.BackColor = System.Drawing.SystemColors.Control;
             this.navBarGroupControlContainer1.Appearance.Options.UseBackColor = true;
             this.navBarGroupControlContainer1.Controls.Add(this.xtraScrollableControl1);
-            this.navBarGroupControlContainer1.Margin = new System.Windows.Forms.Padding(4);
+            this.navBarGroupControlContainer1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.navBarGroupControlContainer1.Name = "navBarGroupControlContainer1";
             this.navBarGroupControlContainer1.Size = new System.Drawing.Size(347, 240);
             this.navBarGroupControlContainer1.TabIndex = 0;
@@ -4704,7 +4707,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.xtraScrollableControl1.Controls.Add(this.txtThongTinChongChiDinhThuoc);
             this.xtraScrollableControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.xtraScrollableControl1.Location = new System.Drawing.Point(0, 0);
-            this.xtraScrollableControl1.Margin = new System.Windows.Forms.Padding(4);
+            this.xtraScrollableControl1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.xtraScrollableControl1.Name = "xtraScrollableControl1";
             this.xtraScrollableControl1.Size = new System.Drawing.Size(347, 240);
             this.xtraScrollableControl1.TabIndex = 127;
@@ -4719,7 +4722,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.txtThongTinChongChiDinhThuoc.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
             this.txtThongTinChongChiDinhThuoc.Dock = System.Windows.Forms.DockStyle.Top;
             this.txtThongTinChongChiDinhThuoc.Location = new System.Drawing.Point(0, 0);
-            this.txtThongTinChongChiDinhThuoc.Margin = new System.Windows.Forms.Padding(4);
+            this.txtThongTinChongChiDinhThuoc.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtThongTinChongChiDinhThuoc.Name = "txtThongTinChongChiDinhThuoc";
             this.txtThongTinChongChiDinhThuoc.Size = new System.Drawing.Size(326, 261);
             this.txtThongTinChongChiDinhThuoc.TabIndex = 126;
@@ -4729,7 +4732,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.lblConThua.Appearance.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblConThua.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
             this.lblConThua.Location = new System.Drawing.Point(148, 719);
-            this.lblConThua.Margin = new System.Windows.Forms.Padding(4);
+            this.lblConThua.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.lblConThua.Name = "lblConThua";
             this.lblConThua.Size = new System.Drawing.Size(82, 16);
             this.lblConThua.StyleController = this.layoutControl6;
@@ -4740,7 +4743,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.lblDaDong.Appearance.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblDaDong.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
             this.lblDaDong.Location = new System.Drawing.Point(148, 697);
-            this.lblDaDong.Margin = new System.Windows.Forms.Padding(4);
+            this.lblDaDong.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.lblDaDong.Name = "lblDaDong";
             this.lblDaDong.Size = new System.Drawing.Size(82, 16);
             this.lblDaDong.StyleController = this.layoutControl6;
@@ -4751,7 +4754,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.lblChiPhiBNPhaiTra.Appearance.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblChiPhiBNPhaiTra.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
             this.lblChiPhiBNPhaiTra.Location = new System.Drawing.Point(148, 743);
-            this.lblChiPhiBNPhaiTra.Margin = new System.Windows.Forms.Padding(4);
+            this.lblChiPhiBNPhaiTra.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.lblChiPhiBNPhaiTra.Name = "lblChiPhiBNPhaiTra";
             this.lblChiPhiBNPhaiTra.Size = new System.Drawing.Size(361, 16);
             this.lblChiPhiBNPhaiTra.StyleController = this.layoutControl6;
@@ -4760,7 +4763,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // layoutControlPrintAssignPrescriptionExt
             // 
             this.layoutControlPrintAssignPrescriptionExt.Location = new System.Drawing.Point(1085, 768);
-            this.layoutControlPrintAssignPrescriptionExt.Margin = new System.Windows.Forms.Padding(4);
+            this.layoutControlPrintAssignPrescriptionExt.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.layoutControlPrintAssignPrescriptionExt.Name = "layoutControlPrintAssignPrescriptionExt";
             this.layoutControlPrintAssignPrescriptionExt.Root = this.layoutControlGroup6;
             this.layoutControlPrintAssignPrescriptionExt.Size = new System.Drawing.Size(40, 40);
@@ -4790,7 +4793,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // chkPreviewBeforePrint
             // 
             this.chkPreviewBeforePrint.Location = new System.Drawing.Point(1039, 743);
-            this.chkPreviewBeforePrint.Margin = new System.Windows.Forms.Padding(4);
+            this.chkPreviewBeforePrint.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.chkPreviewBeforePrint.MenuManager = this.barManager1;
             this.chkPreviewBeforePrint.Name = "chkPreviewBeforePrint";
             this.chkPreviewBeforePrint.Properties.Caption = "";
@@ -4803,7 +4806,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.chkEyeInfo.Enabled = false;
             this.chkEyeInfo.Location = new System.Drawing.Point(765, 31);
-            this.chkEyeInfo.Margin = new System.Windows.Forms.Padding(4);
+            this.chkEyeInfo.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.chkEyeInfo.MenuManager = this.barManager1;
             this.chkEyeInfo.Name = "chkEyeInfo";
             this.chkEyeInfo.Properties.Caption = "";
@@ -4815,7 +4818,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // chkPrint
             // 
             this.chkPrint.Location = new System.Drawing.Point(854, 743);
-            this.chkPrint.Margin = new System.Windows.Forms.Padding(4);
+            this.chkPrint.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.chkPrint.MenuManager = this.barManager1;
             this.chkPrint.Name = "chkPrint";
             this.chkPrint.Properties.Caption = "";
@@ -4827,7 +4830,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // txtProvisionalDiagnosis
             // 
             this.txtProvisionalDiagnosis.Location = new System.Drawing.Point(511, 59);
-            this.txtProvisionalDiagnosis.Margin = new System.Windows.Forms.Padding(4);
+            this.txtProvisionalDiagnosis.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtProvisionalDiagnosis.MenuManager = this.barManager1;
             this.txtProvisionalDiagnosis.Name = "txtProvisionalDiagnosis";
             this.txtProvisionalDiagnosis.Properties.MaxLength = 1000;
@@ -4839,7 +4842,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.pnlUCDateForMedi.Controls.Add(this.layoutControl5);
             this.pnlUCDateForMedi.Location = new System.Drawing.Point(0, 327);
-            this.pnlUCDateForMedi.Margin = new System.Windows.Forms.Padding(4);
+            this.pnlUCDateForMedi.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.pnlUCDateForMedi.Name = "pnlUCDateForMedi";
             this.pnlUCDateForMedi.Size = new System.Drawing.Size(391, 26);
             this.pnlUCDateForMedi.TabIndex = 19;
@@ -4864,7 +4867,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.panel1.Controls.Add(this.dtInstructionTimeForMedi);
             this.panel1.Controls.Add(this.txtInstructionTimeForMedi);
             this.panel1.Location = new System.Drawing.Point(103, 3);
-            this.panel1.Margin = new System.Windows.Forms.Padding(4);
+            this.panel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(111, 22);
             this.panel1.TabIndex = 28;
@@ -4874,7 +4877,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.dtInstructionTimeForMedi.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dtInstructionTimeForMedi.EditValue = null;
             this.dtInstructionTimeForMedi.Location = new System.Drawing.Point(0, 0);
-            this.dtInstructionTimeForMedi.Margin = new System.Windows.Forms.Padding(4);
+            this.dtInstructionTimeForMedi.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.dtInstructionTimeForMedi.Name = "dtInstructionTimeForMedi";
             this.dtInstructionTimeForMedi.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
@@ -4894,7 +4897,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.txtInstructionTimeForMedi.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtInstructionTimeForMedi.Location = new System.Drawing.Point(0, 0);
-            this.txtInstructionTimeForMedi.Margin = new System.Windows.Forms.Padding(4);
+            this.txtInstructionTimeForMedi.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtInstructionTimeForMedi.Name = "txtInstructionTimeForMedi";
             this.txtInstructionTimeForMedi.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Glyph, "", -1, true, true, false, DevExpress.XtraEditors.ImageLocation.MiddleCenter, ((System.Drawing.Image)(resources.GetObject("txtInstructionTimeForMedi.Properties.Buttons"))), new DevExpress.Utils.KeyShortcut(System.Windows.Forms.Keys.None), serializableAppearanceObject81, serializableAppearanceObject82, serializableAppearanceObject83, serializableAppearanceObject84, "Giữ Ctrl để chọn nhiều ngày", null, null, true)});
@@ -4910,7 +4913,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.timeIntructionForMedi.EditValue = System.TimeSpan.Parse("00:00:00");
             this.timeIntructionForMedi.EnterMoveNextControl = true;
             this.timeIntructionForMedi.Location = new System.Drawing.Point(220, 3);
-            this.timeIntructionForMedi.Margin = new System.Windows.Forms.Padding(4);
+            this.timeIntructionForMedi.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.timeIntructionForMedi.Name = "timeIntructionForMedi";
             this.timeIntructionForMedi.Properties.AllowEditDays = false;
             this.timeIntructionForMedi.Properties.AllowEditSeconds = false;
@@ -4927,7 +4930,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // chkMultiIntructionTimeForMedi
             // 
             this.chkMultiIntructionTimeForMedi.Location = new System.Drawing.Point(276, 3);
-            this.chkMultiIntructionTimeForMedi.Margin = new System.Windows.Forms.Padding(4);
+            this.chkMultiIntructionTimeForMedi.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.chkMultiIntructionTimeForMedi.Name = "chkMultiIntructionTimeForMedi";
             this.chkMultiIntructionTimeForMedi.Properties.Caption = "Nhiều ngày";
             this.chkMultiIntructionTimeForMedi.Properties.FullFocusRect = true;
@@ -4988,7 +4991,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // chkShowLo
             // 
             this.chkShowLo.Location = new System.Drawing.Point(313, 192);
-            this.chkShowLo.Margin = new System.Windows.Forms.Padding(4);
+            this.chkShowLo.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.chkShowLo.MenuManager = this.barManager1;
             this.chkShowLo.Name = "chkShowLo";
             this.chkShowLo.Properties.Caption = "";
@@ -5008,7 +5011,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             0,
             0});
             this.spinKidneyCount.Location = new System.Drawing.Point(264, 59);
-            this.spinKidneyCount.Margin = new System.Windows.Forms.Padding(4);
+            this.spinKidneyCount.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.spinKidneyCount.MenuManager = this.barManager1;
             this.spinKidneyCount.Name = "spinKidneyCount";
             this.spinKidneyCount.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
@@ -5044,7 +5047,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.layoutControl1.Controls.Add(this.btnAdd);
             this.layoutControl1.Controls.Add(this.cboHtu);
             this.layoutControl1.Location = new System.Drawing.Point(3, 220);
-            this.layoutControl1.Margin = new System.Windows.Forms.Padding(4);
+            this.layoutControl1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.layoutControl1.Name = "layoutControl1";
             this.layoutControl1.OptionsFocus.EnableAutoTabOrder = false;
             this.layoutControl1.Root = this.layoutControlGroup1;
@@ -5056,7 +5059,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.txtPreviousUseDay.EditValue = "";
             this.txtPreviousUseDay.Location = new System.Drawing.Point(875, 6);
-            this.txtPreviousUseDay.Margin = new System.Windows.Forms.Padding(4);
+            this.txtPreviousUseDay.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtPreviousUseDay.MenuManager = this.barManager1;
             this.txtPreviousUseDay.Name = "txtPreviousUseDay";
             this.txtPreviousUseDay.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
@@ -5089,7 +5092,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.txtThoiGianTho.EditValue = "";
             this.txtThoiGianTho.Location = new System.Drawing.Point(207, 31);
-            this.txtThoiGianTho.Margin = new System.Windows.Forms.Padding(4);
+            this.txtThoiGianTho.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtThoiGianTho.MenuManager = this.barManager1;
             this.txtThoiGianTho.Name = "txtThoiGianTho";
             this.txtThoiGianTho.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
@@ -5109,7 +5112,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.txtTocDoTho.EditValue = "";
             this.txtTocDoTho.Location = new System.Drawing.Point(68, 31);
-            this.txtTocDoTho.Margin = new System.Windows.Forms.Padding(4);
+            this.txtTocDoTho.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtTocDoTho.MenuManager = this.barManager1;
             this.txtTocDoTho.Name = "txtTocDoTho";
             this.txtTocDoTho.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
@@ -5129,7 +5132,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.spinSang.EditValue = "";
             this.spinSang.Location = new System.Drawing.Point(58, 3);
-            this.spinSang.Margin = new System.Windows.Forms.Padding(4);
+            this.spinSang.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.spinSang.MenuManager = this.barManager1;
             this.spinSang.Name = "spinSang";
             this.spinSang.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
@@ -5149,7 +5152,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.spinTrua.EditValue = "";
             this.spinTrua.Location = new System.Drawing.Point(207, 3);
-            this.spinTrua.Margin = new System.Windows.Forms.Padding(4);
+            this.spinTrua.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.spinTrua.MenuManager = this.barManager1;
             this.spinTrua.Name = "spinTrua";
             this.spinTrua.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
@@ -5169,7 +5172,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.spinChieu.EditValue = "";
             this.spinChieu.Location = new System.Drawing.Point(333, 3);
-            this.spinChieu.Margin = new System.Windows.Forms.Padding(4);
+            this.spinChieu.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.spinChieu.MenuManager = this.barManager1;
             this.spinChieu.Name = "spinChieu";
             this.spinChieu.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
@@ -5189,7 +5192,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.spinToi.EditValue = "";
             this.spinToi.Location = new System.Drawing.Point(457, 3);
-            this.spinToi.Margin = new System.Windows.Forms.Padding(4);
+            this.spinToi.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.spinToi.MenuManager = this.barManager1;
             this.spinToi.Name = "spinToi";
             this.spinToi.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
@@ -5327,7 +5330,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             0,
             0});
             this.spinSoLuongNgay.Location = new System.Drawing.Point(100, 7);
-            this.spinSoLuongNgay.Margin = new System.Windows.Forms.Padding(4);
+            this.spinSoLuongNgay.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.spinSoLuongNgay.MenuManager = this.barManager1;
             this.spinSoLuongNgay.Name = "spinSoLuongNgay";
             this.spinSoLuongNgay.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
@@ -5359,7 +5362,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             0,
             0});
             this.spinTocDoTruyen.Location = new System.Drawing.Point(101, 40);
-            this.spinTocDoTruyen.Margin = new System.Windows.Forms.Padding(4);
+            this.spinTocDoTruyen.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.spinTocDoTruyen.MenuManager = this.barManager1;
             this.spinTocDoTruyen.Name = "spinTocDoTruyen";
             this.spinTocDoTruyen.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
@@ -5391,7 +5394,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.cboMedicineUseForm.Enabled = false;
             this.cboMedicineUseForm.EnterMoveNextControl = true;
             this.cboMedicineUseForm.Location = new System.Drawing.Point(428, 40);
-            this.cboMedicineUseForm.Margin = new System.Windows.Forms.Padding(4);
+            this.cboMedicineUseForm.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.cboMedicineUseForm.MenuManager = this.barManager1;
             this.cboMedicineUseForm.Name = "cboMedicineUseForm";
             this.cboMedicineUseForm.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
@@ -5421,7 +5424,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // txtTutorial
             // 
             this.txtTutorial.Location = new System.Drawing.Point(101, 68);
-            this.txtTutorial.Margin = new System.Windows.Forms.Padding(4);
+            this.txtTutorial.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtTutorial.MenuManager = this.barManager1;
             this.txtTutorial.Name = "txtTutorial";
             this.txtTutorial.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
@@ -5437,7 +5440,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // btnAddTutorial
             // 
             this.btnAddTutorial.Location = new System.Drawing.Point(745, 68);
-            this.btnAddTutorial.Margin = new System.Windows.Forms.Padding(4);
+            this.btnAddTutorial.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnAddTutorial.Name = "btnAddTutorial";
             this.btnAddTutorial.Size = new System.Drawing.Size(89, 27);
             this.btnAddTutorial.StyleController = this.layoutControl1;
@@ -5457,7 +5460,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             0,
             0});
             this.spinAmount.Location = new System.Drawing.Point(722, 40);
-            this.spinAmount.Margin = new System.Windows.Forms.Padding(4);
+            this.spinAmount.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.spinAmount.Name = "spinAmount";
             this.spinAmount.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
             this.spinAmount.Properties.Appearance.Options.UseTextOptions = true;
@@ -5478,7 +5481,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.btnAdd.ImageToTextAlignment = DevExpress.XtraEditors.ImageAlignToText.TopCenter;
             this.btnAdd.Location = new System.Drawing.Point(840, 40);
-            this.btnAdd.Margin = new System.Windows.Forms.Padding(4);
+            this.btnAdd.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(75, 44);
             this.btnAdd.StyleController = this.layoutControl1;
@@ -5489,7 +5492,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // cboHtu
             // 
             this.cboHtu.Location = new System.Drawing.Point(262, 40);
-            this.cboHtu.Margin = new System.Windows.Forms.Padding(4);
+            this.cboHtu.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.cboHtu.MenuManager = this.barManager1;
             this.cboHtu.Name = "cboHtu";
             this.cboHtu.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
@@ -5686,7 +5689,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // chkPreKidneyShift
             // 
             this.chkPreKidneyShift.Location = new System.Drawing.Point(103, 59);
-            this.chkPreKidneyShift.Margin = new System.Windows.Forms.Padding(4);
+            this.chkPreKidneyShift.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.chkPreKidneyShift.MenuManager = this.barManager1;
             this.chkPreKidneyShift.Name = "chkPreKidneyShift";
             this.chkPreKidneyShift.Properties.Caption = "";
@@ -5698,7 +5701,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // chkHomePres
             // 
             this.chkHomePres.Location = new System.Drawing.Point(645, 31);
-            this.chkHomePres.Margin = new System.Windows.Forms.Padding(4);
+            this.chkHomePres.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.chkHomePres.MenuManager = this.barManager1;
             this.chkHomePres.Name = "chkHomePres";
             this.chkHomePres.Properties.Caption = "";
@@ -5715,7 +5718,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             0,
             0});
             this.spinPrice.Location = new System.Drawing.Point(803, 192);
-            this.spinPrice.Margin = new System.Windows.Forms.Padding(4);
+            this.spinPrice.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.spinPrice.MenuManager = this.barManager1;
             this.spinPrice.Name = "spinPrice";
             this.spinPrice.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
@@ -5730,7 +5733,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.panelControlCauseIcd.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
             this.panelControlCauseIcd.Controls.Add(this.lcCause);
             this.panelControlCauseIcd.Location = new System.Drawing.Point(876, 28);
-            this.panelControlCauseIcd.Margin = new System.Windows.Forms.Padding(4);
+            this.panelControlCauseIcd.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.panelControlCauseIcd.Name = "panelControlCauseIcd";
             this.panelControlCauseIcd.Size = new System.Drawing.Size(664, 28);
             this.panelControlCauseIcd.TabIndex = 3;
@@ -5756,7 +5759,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.panelControl4.Controls.Add(this.txtIcdMainTextCause);
             this.panelControl4.Controls.Add(this.cboIcdsCause);
             this.panelControl4.Location = new System.Drawing.Point(197, 2);
-            this.panelControl4.Margin = new System.Windows.Forms.Padding(4);
+            this.panelControl4.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.panelControl4.Name = "panelControl4";
             this.panelControl4.Size = new System.Drawing.Size(410, 24);
             this.panelControl4.TabIndex = 6;
@@ -5765,7 +5768,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.txtIcdMainTextCause.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtIcdMainTextCause.Location = new System.Drawing.Point(0, 0);
-            this.txtIcdMainTextCause.Margin = new System.Windows.Forms.Padding(4);
+            this.txtIcdMainTextCause.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtIcdMainTextCause.Name = "txtIcdMainTextCause";
             this.txtIcdMainTextCause.Size = new System.Drawing.Size(410, 22);
             this.txtIcdMainTextCause.TabIndex = 0;
@@ -5776,7 +5779,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.cboIcdsCause.Dock = System.Windows.Forms.DockStyle.Fill;
             this.cboIcdsCause.EditValue = "";
             this.cboIcdsCause.Location = new System.Drawing.Point(0, 0);
-            this.cboIcdsCause.Margin = new System.Windows.Forms.Padding(4);
+            this.cboIcdsCause.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.cboIcdsCause.Name = "cboIcdsCause";
             this.cboIcdsCause.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
             this.cboIcdsCause.Properties.AutoComplete = false;
@@ -5801,7 +5804,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // chkEditIcdCause
             // 
             this.chkEditIcdCause.Location = new System.Drawing.Point(612, 3);
-            this.chkEditIcdCause.Margin = new System.Windows.Forms.Padding(4);
+            this.chkEditIcdCause.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.chkEditIcdCause.Name = "chkEditIcdCause";
             this.chkEditIcdCause.Properties.Caption = "Sửa";
             this.chkEditIcdCause.Size = new System.Drawing.Size(49, 21);
@@ -5813,7 +5816,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // txtIcdCodeCause
             // 
             this.txtIcdCodeCause.Location = new System.Drawing.Point(97, 2);
-            this.txtIcdCodeCause.Margin = new System.Windows.Forms.Padding(4);
+            this.txtIcdCodeCause.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtIcdCodeCause.Name = "txtIcdCodeCause";
             this.txtIcdCodeCause.Size = new System.Drawing.Size(100, 22);
             this.txtIcdCodeCause.StyleController = this.lcCause;
@@ -5878,7 +5881,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // cboNhaThuoc
             // 
             this.cboNhaThuoc.Location = new System.Drawing.Point(505, 159);
-            this.cboNhaThuoc.Margin = new System.Windows.Forms.Padding(4);
+            this.cboNhaThuoc.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.cboNhaThuoc.MenuManager = this.barManager1;
             this.cboNhaThuoc.Name = "cboNhaThuoc";
             this.cboNhaThuoc.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
@@ -5903,7 +5906,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // cboPatientType
             // 
             this.cboPatientType.Location = new System.Drawing.Point(987, 192);
-            this.cboPatientType.Margin = new System.Windows.Forms.Padding(4);
+            this.cboPatientType.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.cboPatientType.MenuManager = this.barManager1;
             this.cboPatientType.Name = "cboPatientType";
             this.cboPatientType.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
@@ -5928,7 +5931,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.lblNotice.Appearance.ForeColor = System.Drawing.Color.Maroon;
             this.lblNotice.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
             this.lblNotice.Location = new System.Drawing.Point(709, 330);
-            this.lblNotice.Margin = new System.Windows.Forms.Padding(4);
+            this.lblNotice.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.lblNotice.Name = "lblNotice";
             this.lblNotice.Size = new System.Drawing.Size(413, 20);
             this.lblNotice.StyleController = this.layoutControl6;
@@ -5938,7 +5941,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.btnDichVuHenKham.Enabled = false;
             this.btnDichVuHenKham.Location = new System.Drawing.Point(190, 771);
-            this.btnDichVuHenKham.Margin = new System.Windows.Forms.Padding(4);
+            this.btnDichVuHenKham.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnDichVuHenKham.Name = "btnDichVuHenKham";
             this.btnDichVuHenKham.Size = new System.Drawing.Size(94, 34);
             this.btnDichVuHenKham.StyleController = this.layoutControl6;
@@ -5950,7 +5953,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // cboEquipment
             // 
             this.cboEquipment.Location = new System.Drawing.Point(1002, 248);
-            this.cboEquipment.Margin = new System.Windows.Forms.Padding(4);
+            this.cboEquipment.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.cboEquipment.MenuManager = this.barManager1;
             this.cboEquipment.Name = "cboEquipment";
             this.cboEquipment.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
@@ -5975,7 +5978,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // btnBoSungPhacDo
             // 
             this.btnBoSungPhacDo.Location = new System.Drawing.Point(290, 771);
-            this.btnBoSungPhacDo.Margin = new System.Windows.Forms.Padding(4);
+            this.btnBoSungPhacDo.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnBoSungPhacDo.Name = "btnBoSungPhacDo";
             this.btnBoSungPhacDo.Size = new System.Drawing.Size(99, 34);
             this.btnBoSungPhacDo.StyleController = this.layoutControl6;
@@ -5987,7 +5990,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // cboPhieuDieuTri
             // 
             this.cboPhieuDieuTri.Location = new System.Drawing.Point(1002, 220);
-            this.cboPhieuDieuTri.Margin = new System.Windows.Forms.Padding(4);
+            this.cboPhieuDieuTri.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.cboPhieuDieuTri.MenuManager = this.barManager1;
             this.cboPhieuDieuTri.Name = "cboPhieuDieuTri";
             this.cboPhieuDieuTri.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
@@ -6015,7 +6018,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // txtMediMatyForPrescription
             // 
             this.txtMediMatyForPrescription.Location = new System.Drawing.Point(103, 192);
-            this.txtMediMatyForPrescription.Margin = new System.Windows.Forms.Padding(4);
+            this.txtMediMatyForPrescription.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtMediMatyForPrescription.MenuManager = this.barManager1;
             this.txtMediMatyForPrescription.Name = "txtMediMatyForPrescription";
             this.txtMediMatyForPrescription.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
@@ -6032,7 +6035,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // layoutControlPrintAssignPrescription
             // 
             this.layoutControlPrintAssignPrescription.Location = new System.Drawing.Point(969, 768);
-            this.layoutControlPrintAssignPrescription.Margin = new System.Windows.Forms.Padding(4);
+            this.layoutControlPrintAssignPrescription.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.layoutControlPrintAssignPrescription.Name = "layoutControlPrintAssignPrescription";
             this.layoutControlPrintAssignPrescription.Root = this.Root;
             this.layoutControlPrintAssignPrescription.Size = new System.Drawing.Size(116, 40);
@@ -6053,7 +6056,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.pnlUCPanelRightBottom.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
             this.pnlUCPanelRightBottom.Location = new System.Drawing.Point(1125, 640);
-            this.pnlUCPanelRightBottom.Margin = new System.Windows.Forms.Padding(4);
+            this.pnlUCPanelRightBottom.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.pnlUCPanelRightBottom.Name = "pnlUCPanelRightBottom";
             this.pnlUCPanelRightBottom.Size = new System.Drawing.Size(415, 168);
             this.pnlUCPanelRightBottom.TabIndex = 4;
@@ -6063,7 +6066,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.pnlUCDate.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
             this.pnlUCDate.Controls.Add(this.layoutControl2);
             this.pnlUCDate.Location = new System.Drawing.Point(0, 0);
-            this.pnlUCDate.Margin = new System.Windows.Forms.Padding(4);
+            this.pnlUCDate.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.pnlUCDate.Name = "pnlUCDate";
             this.pnlUCDate.Size = new System.Drawing.Size(423, 28);
             this.pnlUCDate.TabIndex = 0;
@@ -6087,7 +6090,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.pnlIntructionTime.Controls.Add(this.dtInstructionTime);
             this.pnlIntructionTime.Controls.Add(this.txtInstructionTime);
             this.pnlIntructionTime.Location = new System.Drawing.Point(103, 3);
-            this.pnlIntructionTime.Margin = new System.Windows.Forms.Padding(4);
+            this.pnlIntructionTime.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.pnlIntructionTime.Name = "pnlIntructionTime";
             this.pnlIntructionTime.Size = new System.Drawing.Size(140, 22);
             this.pnlIntructionTime.TabIndex = 0;
@@ -6097,7 +6100,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.dtInstructionTime.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dtInstructionTime.EditValue = null;
             this.dtInstructionTime.Location = new System.Drawing.Point(0, 0);
-            this.dtInstructionTime.Margin = new System.Windows.Forms.Padding(4);
+            this.dtInstructionTime.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.dtInstructionTime.Name = "dtInstructionTime";
             this.dtInstructionTime.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
@@ -6117,7 +6120,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.txtInstructionTime.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtInstructionTime.Location = new System.Drawing.Point(0, 0);
-            this.txtInstructionTime.Margin = new System.Windows.Forms.Padding(4);
+            this.txtInstructionTime.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtInstructionTime.Name = "txtInstructionTime";
             this.txtInstructionTime.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Glyph, "", -1, true, true, false, DevExpress.XtraEditors.ImageLocation.MiddleCenter, ((System.Drawing.Image)(resources.GetObject("txtInstructionTime.Properties.Buttons"))), new DevExpress.Utils.KeyShortcut(System.Windows.Forms.Keys.None), serializableAppearanceObject117, serializableAppearanceObject118, serializableAppearanceObject119, serializableAppearanceObject120, "Giữ Ctrl để chọn nhiều ngày", null, null, true)});
@@ -6133,7 +6136,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.timeIntruction.EditValue = System.TimeSpan.Parse("00:00:00");
             this.timeIntruction.EnterMoveNextControl = true;
             this.timeIntruction.Location = new System.Drawing.Point(249, 3);
-            this.timeIntruction.Margin = new System.Windows.Forms.Padding(4);
+            this.timeIntruction.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.timeIntruction.Name = "timeIntruction";
             this.timeIntruction.Properties.AllowEditDays = false;
             this.timeIntruction.Properties.AllowEditSeconds = false;
@@ -6153,7 +6156,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // chkMultiIntructionTime
             // 
             this.chkMultiIntructionTime.Location = new System.Drawing.Point(329, 3);
-            this.chkMultiIntructionTime.Margin = new System.Windows.Forms.Padding(4);
+            this.chkMultiIntructionTime.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.chkMultiIntructionTime.Name = "chkMultiIntructionTime";
             this.chkMultiIntructionTime.Properties.Caption = "Nhiều ngày";
             this.chkMultiIntructionTime.Properties.FullFocusRect = true;
@@ -6215,7 +6218,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.layoutControl3.Controls.Add(this.pnlUCPanelRightTop);
             this.layoutControl3.Location = new System.Drawing.Point(1128, 192);
-            this.layoutControl3.Margin = new System.Windows.Forms.Padding(4);
+            this.layoutControl3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.layoutControl3.Name = "layoutControl3";
             this.layoutControl3.Root = this.lcgPrevousPrescription;
             this.layoutControl3.Size = new System.Drawing.Size(409, 130);
@@ -6226,7 +6229,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.pnlUCPanelRightTop.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
             this.pnlUCPanelRightTop.Location = new System.Drawing.Point(0, 0);
-            this.pnlUCPanelRightTop.Margin = new System.Windows.Forms.Padding(4);
+            this.pnlUCPanelRightTop.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.pnlUCPanelRightTop.Name = "pnlUCPanelRightTop";
             this.pnlUCPanelRightTop.Size = new System.Drawing.Size(409, 130);
             this.pnlUCPanelRightTop.TabIndex = 0;
@@ -6265,7 +6268,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.layoutControl4.Controls.Add(this.lblGenderName);
             this.layoutControl4.Controls.Add(this.lblHeinCardNumberInfo);
             this.layoutControl4.Location = new System.Drawing.Point(1128, 533);
-            this.layoutControl4.Margin = new System.Windows.Forms.Padding(4);
+            this.layoutControl4.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.layoutControl4.Name = "layoutControl4";
             this.layoutControl4.Root = this.layoutControlGroup3;
             this.layoutControl4.Size = new System.Drawing.Size(409, 104);
@@ -6278,7 +6281,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.lblTreatmentTypeName.Appearance.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold);
             this.lblTreatmentTypeName.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
             this.lblTreatmentTypeName.Location = new System.Drawing.Point(278, 42);
-            this.lblTreatmentTypeName.Margin = new System.Windows.Forms.Padding(4);
+            this.lblTreatmentTypeName.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.lblTreatmentTypeName.Name = "lblTreatmentTypeName";
             this.lblTreatmentTypeName.Size = new System.Drawing.Size(129, 18);
             this.lblTreatmentTypeName.StyleController = this.layoutControl4;
@@ -6290,7 +6293,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.lblPatientTypeName.Appearance.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold);
             this.lblPatientTypeName.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
             this.lblPatientTypeName.Location = new System.Drawing.Point(72, 42);
-            this.lblPatientTypeName.Margin = new System.Windows.Forms.Padding(4);
+            this.lblPatientTypeName.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.lblPatientTypeName.Name = "lblPatientTypeName";
             this.lblPatientTypeName.Size = new System.Drawing.Size(142, 18);
             this.lblPatientTypeName.StyleController = this.layoutControl4;
@@ -6302,7 +6305,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.lblPatientName.Appearance.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold);
             this.lblPatientName.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
             this.lblPatientName.Location = new System.Drawing.Point(75, 0);
-            this.lblPatientName.Margin = new System.Windows.Forms.Padding(4);
+            this.lblPatientName.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.lblPatientName.Name = "lblPatientName";
             this.lblPatientName.Size = new System.Drawing.Size(332, 20);
             this.lblPatientName.StyleController = this.layoutControl4;
@@ -6314,7 +6317,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.lblDob.Appearance.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold);
             this.lblDob.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
             this.lblDob.Location = new System.Drawing.Point(72, 22);
-            this.lblDob.Margin = new System.Windows.Forms.Padding(4);
+            this.lblDob.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.lblDob.Name = "lblDob";
             this.lblDob.Size = new System.Drawing.Size(142, 18);
             this.lblDob.StyleController = this.layoutControl4;
@@ -6326,7 +6329,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.lblGenderName.Appearance.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold);
             this.lblGenderName.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
             this.lblGenderName.Location = new System.Drawing.Point(278, 22);
-            this.lblGenderName.Margin = new System.Windows.Forms.Padding(4);
+            this.lblGenderName.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.lblGenderName.Name = "lblGenderName";
             this.lblGenderName.Size = new System.Drawing.Size(129, 18);
             this.lblGenderName.StyleController = this.layoutControl4;
@@ -6339,7 +6342,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.lblHeinCardNumberInfo.Appearance.TextOptions.WordWrap = DevExpress.Utils.WordWrap.Wrap;
             this.lblHeinCardNumberInfo.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
             this.lblHeinCardNumberInfo.Location = new System.Drawing.Point(72, 62);
-            this.lblHeinCardNumberInfo.Margin = new System.Windows.Forms.Padding(4);
+            this.lblHeinCardNumberInfo.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.lblHeinCardNumberInfo.Name = "lblHeinCardNumberInfo";
             this.lblHeinCardNumberInfo.Size = new System.Drawing.Size(335, 28);
             this.lblHeinCardNumberInfo.StyleController = this.layoutControl4;
@@ -6467,7 +6470,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.panelControlSubIcd.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
             this.panelControlSubIcd.Controls.Add(this.layoutControl15);
             this.panelControlSubIcd.Location = new System.Drawing.Point(842, 56);
-            this.panelControlSubIcd.Margin = new System.Windows.Forms.Padding(4);
+            this.panelControlSubIcd.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.panelControlSubIcd.Name = "panelControlSubIcd";
             this.panelControlSubIcd.Size = new System.Drawing.Size(698, 28);
             this.panelControlSubIcd.TabIndex = 4;
@@ -6479,7 +6482,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.layoutControl15.Controls.Add(this.txtIcdSubCode);
             this.layoutControl15.Dock = System.Windows.Forms.DockStyle.Fill;
             this.layoutControl15.Location = new System.Drawing.Point(0, 0);
-            this.layoutControl15.Margin = new System.Windows.Forms.Padding(4);
+            this.layoutControl15.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.layoutControl15.Name = "layoutControl15";
             this.layoutControl15.Root = this.layoutControlGroup14;
             this.layoutControl15.Size = new System.Drawing.Size(698, 28);
@@ -6491,7 +6494,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.btnCheckIcd.Image = ((System.Drawing.Image)(resources.GetObject("btnCheckIcd.Image")));
             this.btnCheckIcd.ImageLocation = DevExpress.XtraEditors.ImageLocation.MiddleCenter;
             this.btnCheckIcd.Location = new System.Drawing.Point(668, 3);
-            this.btnCheckIcd.Margin = new System.Windows.Forms.Padding(4);
+            this.btnCheckIcd.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnCheckIcd.MaximumSize = new System.Drawing.Size(33, 25);
             this.btnCheckIcd.MinimumSize = new System.Drawing.Size(33, 25);
             this.btnCheckIcd.Name = "btnCheckIcd";
@@ -6507,7 +6510,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.panelControl5.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
             this.panelControl5.Controls.Add(this.txtIcdText);
             this.panelControl5.Location = new System.Drawing.Point(278, 2);
-            this.panelControl5.Margin = new System.Windows.Forms.Padding(4);
+            this.panelControl5.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.panelControl5.Name = "panelControl5";
             this.panelControl5.Size = new System.Drawing.Size(385, 22);
             this.panelControl5.TabIndex = 5;
@@ -6516,7 +6519,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.txtIcdText.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtIcdText.Location = new System.Drawing.Point(0, 0);
-            this.txtIcdText.Margin = new System.Windows.Forms.Padding(4);
+            this.txtIcdText.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtIcdText.Name = "txtIcdText";
             this.txtIcdText.Properties.MaxLength = 4000;
             this.txtIcdText.Properties.NullValuePrompt = "Nhấn F1 để chọn bệnh";
@@ -6532,7 +6535,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // txtIcdSubCode
             // 
             this.txtIcdSubCode.Location = new System.Drawing.Point(97, 2);
-            this.txtIcdSubCode.Margin = new System.Windows.Forms.Padding(4);
+            this.txtIcdSubCode.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtIcdSubCode.Name = "txtIcdSubCode";
             this.txtIcdSubCode.Properties.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
             this.txtIcdSubCode.Properties.MaxLength = 500;
@@ -6601,7 +6604,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.panelControlIcd.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
             this.panelControlIcd.Controls.Add(this.layoutControl13);
             this.panelControlIcd.Location = new System.Drawing.Point(856, 0);
-            this.panelControlIcd.Margin = new System.Windows.Forms.Padding(4);
+            this.panelControlIcd.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.panelControlIcd.Name = "panelControlIcd";
             this.panelControlIcd.Size = new System.Drawing.Size(684, 28);
             this.panelControlIcd.TabIndex = 2;
@@ -6627,7 +6630,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.panelControl3.Controls.Add(this.txtIcdMainText);
             this.panelControl3.Controls.Add(this.cboIcds);
             this.panelControl3.Location = new System.Drawing.Point(202, 2);
-            this.panelControl3.Margin = new System.Windows.Forms.Padding(4);
+            this.panelControl3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.panelControl3.Name = "panelControl3";
             this.panelControl3.Size = new System.Drawing.Size(423, 24);
             this.panelControl3.TabIndex = 1;
@@ -6636,7 +6639,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.txtIcdMainText.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtIcdMainText.Location = new System.Drawing.Point(0, 0);
-            this.txtIcdMainText.Margin = new System.Windows.Forms.Padding(4);
+            this.txtIcdMainText.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtIcdMainText.Name = "txtIcdMainText";
             this.txtIcdMainText.Size = new System.Drawing.Size(423, 22);
             this.txtIcdMainText.TabIndex = 1;
@@ -6647,7 +6650,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.cboIcds.Dock = System.Windows.Forms.DockStyle.Fill;
             this.cboIcds.EditValue = "";
             this.cboIcds.Location = new System.Drawing.Point(0, 0);
-            this.cboIcds.Margin = new System.Windows.Forms.Padding(4);
+            this.cboIcds.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.cboIcds.Name = "cboIcds";
             this.cboIcds.Properties.AutoComplete = false;
             this.cboIcds.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
@@ -6671,7 +6674,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // chkEditIcd
             // 
             this.chkEditIcd.Location = new System.Drawing.Point(630, 3);
-            this.chkEditIcd.Margin = new System.Windows.Forms.Padding(4);
+            this.chkEditIcd.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.chkEditIcd.Name = "chkEditIcd";
             this.chkEditIcd.Properties.Caption = "Sửa";
             this.chkEditIcd.Size = new System.Drawing.Size(51, 21);
@@ -6683,7 +6686,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // txtIcdCode
             // 
             this.txtIcdCode.Location = new System.Drawing.Point(97, 2);
-            this.txtIcdCode.Margin = new System.Windows.Forms.Padding(4);
+            this.txtIcdCode.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtIcdCode.Name = "txtIcdCode";
             this.txtIcdCode.Size = new System.Drawing.Size(105, 22);
             this.txtIcdCode.StyleController = this.layoutControl13;
@@ -6748,7 +6751,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // separatorControl1
             // 
             this.separatorControl1.Location = new System.Drawing.Point(3, 135);
-            this.separatorControl1.Margin = new System.Windows.Forms.Padding(4);
+            this.separatorControl1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.separatorControl1.Name = "separatorControl1";
             this.separatorControl1.Padding = new System.Windows.Forms.Padding(12, 11, 12, 11);
             this.separatorControl1.Size = new System.Drawing.Size(778, 18);
@@ -6757,7 +6760,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // rdOpionGroup
             // 
             this.rdOpionGroup.Location = new System.Drawing.Point(18, 159);
-            this.rdOpionGroup.Margin = new System.Windows.Forms.Padding(4);
+            this.rdOpionGroup.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.rdOpionGroup.MenuManager = this.barManager1;
             this.rdOpionGroup.Name = "rdOpionGroup";
             this.rdOpionGroup.Properties.Items.AddRange(new DevExpress.XtraEditors.Controls.RadioGroupItem[] {
@@ -6777,7 +6780,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // txtUnitOther
             // 
             this.txtUnitOther.Location = new System.Drawing.Point(700, 192);
-            this.txtUnitOther.Margin = new System.Windows.Forms.Padding(4);
+            this.txtUnitOther.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtUnitOther.MenuManager = this.barManager1;
             this.txtUnitOther.Name = "txtUnitOther";
             this.txtUnitOther.Properties.NullValuePrompt = "Đơn vị tính";
@@ -6790,7 +6793,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // txtMedicineTypeOther
             // 
             this.txtMedicineTypeOther.Location = new System.Drawing.Point(508, 192);
-            this.txtMedicineTypeOther.Margin = new System.Windows.Forms.Padding(4);
+            this.txtMedicineTypeOther.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtMedicineTypeOther.MenuManager = this.barManager1;
             this.txtMedicineTypeOther.Name = "txtMedicineTypeOther";
             this.txtMedicineTypeOther.Properties.NullValuePrompt = "Tên thuốc";
@@ -6806,7 +6809,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.lblPhatSinh.Appearance.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblPhatSinh.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
             this.lblPhatSinh.Location = new System.Drawing.Point(148, 673);
-            this.lblPhatSinh.Margin = new System.Windows.Forms.Padding(4);
+            this.lblPhatSinh.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.lblPhatSinh.Name = "lblPhatSinh";
             this.lblPhatSinh.Size = new System.Drawing.Size(82, 18);
             this.lblPhatSinh.StyleController = this.layoutControl6;
@@ -6815,7 +6818,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // txtLoginName
             // 
             this.txtLoginName.Location = new System.Drawing.Point(361, 30);
-            this.txtLoginName.Margin = new System.Windows.Forms.Padding(4);
+            this.txtLoginName.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtLoginName.MenuManager = this.barManager1;
             this.txtLoginName.Name = "txtLoginName";
             this.txtLoginName.Size = new System.Drawing.Size(84, 22);
@@ -6832,7 +6835,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             0,
             0});
             this.spinSoNgay.Location = new System.Drawing.Point(103, 31);
-            this.spinSoNgay.Margin = new System.Windows.Forms.Padding(4);
+            this.spinSoNgay.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.spinSoNgay.MenuManager = this.barManager1;
             this.spinSoNgay.Name = "spinSoNgay";
             this.spinSoNgay.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
@@ -6861,7 +6864,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // btnNew
             // 
             this.btnNew.Location = new System.Drawing.Point(692, 771);
-            this.btnNew.Margin = new System.Windows.Forms.Padding(4);
+            this.btnNew.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnNew.Name = "btnNew";
             this.btnNew.Size = new System.Drawing.Size(84, 34);
             this.btnNew.StyleController = this.layoutControl6;
@@ -6873,7 +6876,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // btnShowDetail
             // 
             this.btnShowDetail.Location = new System.Drawing.Point(395, 771);
-            this.btnShowDetail.Margin = new System.Windows.Forms.Padding(4);
+            this.btnShowDetail.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnShowDetail.Name = "btnShowDetail";
             this.btnShowDetail.Size = new System.Drawing.Size(88, 34);
             this.btnShowDetail.StyleController = this.layoutControl6;
@@ -6885,7 +6888,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // txtAdvise
             // 
             this.txtAdvise.Location = new System.Drawing.Point(882, 87);
-            this.txtAdvise.Margin = new System.Windows.Forms.Padding(4);
+            this.txtAdvise.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtAdvise.Name = "txtAdvise";
             this.txtAdvise.Properties.NullValuePrompt = "F5 để chọn thư viện nội dung\r\nF6 để lấy lời dặn từ đơn đã kê. (F7 để thiết lập đi" +
     "ều kiện lấy lời dặn)";
@@ -6899,7 +6902,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // btnSaveAndPrint
             // 
             this.btnSaveAndPrint.Location = new System.Drawing.Point(489, 771);
-            this.btnSaveAndPrint.Margin = new System.Windows.Forms.Padding(4);
+            this.btnSaveAndPrint.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnSaveAndPrint.Name = "btnSaveAndPrint";
             this.btnSaveAndPrint.Size = new System.Drawing.Size(94, 34);
             this.btnSaveAndPrint.StyleController = this.layoutControl6;
@@ -6911,7 +6914,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // txtLadder
             // 
             this.txtLadder.Location = new System.Drawing.Point(242, 31);
-            this.txtLadder.Margin = new System.Windows.Forms.Padding(4);
+            this.txtLadder.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtLadder.MenuManager = this.barManager1;
             this.txtLadder.Name = "txtLadder";
             this.txtLadder.Properties.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
@@ -6923,7 +6926,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // cboExpMestTemplate
             // 
             this.cboExpMestTemplate.Location = new System.Drawing.Point(1060, 275);
-            this.cboExpMestTemplate.Margin = new System.Windows.Forms.Padding(4);
+            this.cboExpMestTemplate.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.cboExpMestTemplate.Name = "cboExpMestTemplate";
             this.cboExpMestTemplate.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
             this.cboExpMestTemplate.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
@@ -6951,7 +6954,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             this.cboMediStockExport.EnterMoveNextControl = true;
             this.cboMediStockExport.Location = new System.Drawing.Point(677, 3);
-            this.cboMediStockExport.Margin = new System.Windows.Forms.Padding(4);
+            this.cboMediStockExport.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.cboMediStockExport.Name = "cboMediStockExport";
             this.cboMediStockExport.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
             this.cboMediStockExport.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
@@ -6975,7 +6978,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // btnSaveTemplate
             // 
             this.btnSaveTemplate.Location = new System.Drawing.Point(102, 771);
-            this.btnSaveTemplate.Margin = new System.Windows.Forms.Padding(4);
+            this.btnSaveTemplate.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnSaveTemplate.Name = "btnSaveTemplate";
             this.btnSaveTemplate.Size = new System.Drawing.Size(82, 34);
             this.btnSaveTemplate.StyleController = this.layoutControl6;
@@ -6987,7 +6990,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // btnSave
             // 
             this.btnSave.Location = new System.Drawing.Point(589, 771);
-            this.btnSave.Margin = new System.Windows.Forms.Padding(4);
+            this.btnSave.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(97, 34);
             this.btnSave.StyleController = this.layoutControl6;
@@ -6999,7 +7002,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // txtExpMestTemplateCode
             // 
             this.txtExpMestTemplateCode.Location = new System.Drawing.Point(1001, 275);
-            this.txtExpMestTemplateCode.Margin = new System.Windows.Forms.Padding(4);
+            this.txtExpMestTemplateCode.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtExpMestTemplateCode.Name = "txtExpMestTemplateCode";
             this.txtExpMestTemplateCode.Size = new System.Drawing.Size(59, 22);
             this.txtExpMestTemplateCode.StyleController = this.layoutControl6;
@@ -7009,7 +7012,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // cboUser
             // 
             this.cboUser.Location = new System.Drawing.Point(445, 30);
-            this.cboUser.Margin = new System.Windows.Forms.Padding(4);
+            this.cboUser.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.cboUser.Name = "cboUser";
             this.cboUser.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
@@ -7034,7 +7037,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // cboExpMestReason
             // 
             this.cboExpMestReason.Location = new System.Drawing.Point(1002, 302);
-            this.cboExpMestReason.Margin = new System.Windows.Forms.Padding(4);
+            this.cboExpMestReason.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.cboExpMestReason.MenuManager = this.barManager1;
             this.cboExpMestReason.Name = "cboExpMestReason";
             this.cboExpMestReason.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
@@ -8158,7 +8161,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.popupControlContainerCondition.Controls.Add(this.gridControlCondition);
             this.popupControlContainerCondition.Location = new System.Drawing.Point(11, 43);
             this.popupControlContainerCondition.Manager = this.barManager1;
-            this.popupControlContainerCondition.Margin = new System.Windows.Forms.Padding(4);
+            this.popupControlContainerCondition.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.popupControlContainerCondition.Name = "popupControlContainerCondition";
             this.popupControlContainerCondition.Size = new System.Drawing.Size(533, 297);
             this.popupControlContainerCondition.TabIndex = 130;
@@ -8167,10 +8170,10 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // gridControlCondition
             // 
             this.gridControlCondition.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.gridControlCondition.EmbeddedNavigator.Margin = new System.Windows.Forms.Padding(4);
+            this.gridControlCondition.EmbeddedNavigator.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.gridControlCondition.Location = new System.Drawing.Point(0, 0);
             this.gridControlCondition.MainView = this.gridViewCondition;
-            this.gridControlCondition.Margin = new System.Windows.Forms.Padding(4);
+            this.gridControlCondition.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.gridControlCondition.MenuManager = this.barManager1;
             this.gridControlCondition.Name = "gridControlCondition";
             this.gridControlCondition.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
@@ -8272,7 +8275,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.popupControlContainerSubIcdName.Controls.Add(this.popupControlContainer2);
             this.popupControlContainerSubIcdName.Location = new System.Drawing.Point(637, 345);
             this.popupControlContainerSubIcdName.Manager = this.barManager1;
-            this.popupControlContainerSubIcdName.Margin = new System.Windows.Forms.Padding(4);
+            this.popupControlContainerSubIcdName.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.popupControlContainerSubIcdName.Name = "popupControlContainerSubIcdName";
             this.popupControlContainerSubIcdName.Size = new System.Drawing.Size(267, 156);
             this.popupControlContainerSubIcdName.TabIndex = 135;
@@ -8285,7 +8288,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.layoutControl21.Controls.Add(this.customGridControlSubIcdName);
             this.layoutControl21.Dock = System.Windows.Forms.DockStyle.Fill;
             this.layoutControl21.Location = new System.Drawing.Point(0, 0);
-            this.layoutControl21.Margin = new System.Windows.Forms.Padding(4);
+            this.layoutControl21.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.layoutControl21.Name = "layoutControl21";
             this.layoutControl21.Root = this.layoutControlGroup22;
             this.layoutControl21.Size = new System.Drawing.Size(267, 156);
@@ -8294,10 +8297,10 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             // customGridControlSubIcdName
             // 
-            this.customGridControlSubIcdName.EmbeddedNavigator.Margin = new System.Windows.Forms.Padding(4);
+            this.customGridControlSubIcdName.EmbeddedNavigator.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.customGridControlSubIcdName.Location = new System.Drawing.Point(3, 3);
             this.customGridControlSubIcdName.MainView = this.customGridViewSubIcdName;
-            this.customGridControlSubIcdName.Margin = new System.Windows.Forms.Padding(4);
+            this.customGridControlSubIcdName.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.customGridControlSubIcdName.MenuManager = this.barManager1;
             this.customGridControlSubIcdName.Name = "customGridControlSubIcdName";
             this.customGridControlSubIcdName.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
@@ -8400,7 +8403,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.popupControlContainer2.Controls.Add(this.gridControl2);
             this.popupControlContainer2.Location = new System.Drawing.Point(11, -39);
             this.popupControlContainer2.Manager = this.barManager1;
-            this.popupControlContainer2.Margin = new System.Windows.Forms.Padding(4);
+            this.popupControlContainer2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.popupControlContainer2.Name = "popupControlContainer2";
             this.popupControlContainer2.Size = new System.Drawing.Size(733, 46);
             this.popupControlContainer2.TabIndex = 16;
@@ -8409,10 +8412,10 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // gridControl2
             // 
             this.gridControl2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.gridControl2.EmbeddedNavigator.Margin = new System.Windows.Forms.Padding(4);
+            this.gridControl2.EmbeddedNavigator.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.gridControl2.Location = new System.Drawing.Point(0, 0);
             this.gridControl2.MainView = this.gridView15;
-            this.gridControl2.Margin = new System.Windows.Forms.Padding(4);
+            this.gridControl2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.gridControl2.MenuManager = this.barManager1;
             this.gridControl2.Name = "gridControl2";
             this.gridControl2.Size = new System.Drawing.Size(733, 46);
@@ -8487,7 +8490,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.Controls.Add(this.barDockControlRight);
             this.Controls.Add(this.barDockControlBottom);
             this.Controls.Add(this.barDockControlTop);
-            this.Margin = new System.Windows.Forms.Padding(4);
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "frmAssignPrescription";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Kê đơn";

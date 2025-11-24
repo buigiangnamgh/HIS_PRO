@@ -2878,7 +2878,7 @@ o.SERVICE_ID == medi.SERVICE_ID && o.TDL_INTRUCTION_TIME.ToString().Substring(0,
                     return;
                 }
                 this.NoEdit = false;
-                if (HisConfigCFG.CheckSoNgay && this.spinSoLuongNgay.Value != 0 && !string.IsNullOrEmpty(this.spinAmount.Text))
+                if (HisConfigCFG.CheckSoNgay.HasValue && this.spinSoLuongNgay.Value != 0 && !string.IsNullOrEmpty(this.spinAmount.Text))
                 {
                     var amountSTCT = (this.GetValueSpin(this.spinSang.Text) + this.GetValueSpin(this.spinTrua.Text) + this.GetValueSpin(this.spinChieu.Text) + this.GetValueSpin(this.spinToi.Text));
                     var amountNeedCheck = (double)this.spinSoLuongNgay.Value * (amountSTCT > 0 ? amountSTCT : 1);
@@ -2899,8 +2899,12 @@ o.SERVICE_ID == medi.SERVICE_ID && o.TDL_INTRUCTION_TIME.ToString().Substring(0,
                     {
                         valueAmount = Convert.ToDouble(vl);
                     }
-
-                    if (amountNeedCheck != valueAmount && MessageBox.Show("Số ngày * (Sáng + Trưa + Chiều + Tối) khác Số lượng. Bạn có muốn tiếp tục?", "Cảnh báo", MessageBoxButtons.YesNo) != DialogResult.Yes)
+                    if (HisConfigCFG.CheckSoNgay == 2 && amountNeedCheck != valueAmount) // chặn luôn
+                    {
+                        MessageBox.Show("Số ngày * (Sáng + Trưa + Chiều + Tối) khác Số lượng");
+                        return;
+                    }
+                    else if (HisConfigCFG.CheckSoNgay == 1 && amountNeedCheck != valueAmount && MessageBox.Show("Số ngày * (Sáng + Trưa + Chiều + Tối) khác Số lượng. Bạn có muốn tiếp tục?", "Cảnh báo", MessageBoxButtons.YesNo) != DialogResult.Yes)
                     {
                         Inventec.Common.Logging.LogSystem.Debug(amountNeedCheck + "__" + valueAmount + " __Bo sung thuoc/vat tu that bai do khac so luong____");
                         return;
@@ -3640,9 +3644,9 @@ o.SERVICE_ID == medi.SERVICE_ID && o.TDL_INTRUCTION_TIME.ToString().Substring(0,
                         RebuildNhaThuocMediMatyWithInControlContainer();
                     else
                         if (HisConfigCFG.OutStockListItemInCaseOfNoStockChosenOption == "2") //#26617
-                        RebuildNhaThuocMediMatyWithInControlContainerWithConfig();
-                    else
-                        RebuildMedicineTypeWithInControlContainer();
+                            RebuildNhaThuocMediMatyWithInControlContainerWithConfig();
+                        else
+                            RebuildMedicineTypeWithInControlContainer();
 
 
                     Inventec.Common.Logging.LogSystem.Debug("cboNhaThuoc_Closed. 2" + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => this.currentMediStockNhaThuocSelecteds), this.currentMediStockNhaThuocSelecteds));
@@ -4797,7 +4801,7 @@ o.SERVICE_ID == medi.SERVICE_ID && o.TDL_INTRUCTION_TIME.ToString().Substring(0,
                     {
                         DataHtuListShow.ForEach(o => o.IsChecked = false);
                     }
-                        
+
                     gridControlHtu.DataSource = null;
                     gridControlHtu.DataSource = DataHtuListShow;
                     //popupContainerHtu.Visible = true;
@@ -10734,7 +10738,7 @@ o.SERVICE_ID == medi.SERVICE_ID && o.TDL_INTRUCTION_TIME.ToString().Substring(0,
                                     {
                                         if (testIndex.CONVERT_RATIO_MLCT.HasValue)
                                             chiso *= (testIndex.CONVERT_RATIO_MLCT ?? 0);
-                                        strIsToCalculateEgfr = Inventec.Common.Calculate.Calculation.MucLocCauThan(this.currentTreatmentWithPatientType.TDL_PATIENT_DOB, spinWeight.Value, spinHeight.Value, chiso, this.currentTreatmentWithPatientType.TDL_PATIENT_GENDER_ID == IMSys.DbConfig.HIS_RS.HIS_GENDER.ID__MALE).ToString();
+                                        strIsToCalculateEgfr = Inventec.Common.Calculate.Calculation.MucLocCauThanCrCleGFR(this.currentTreatmentWithPatientType.TDL_PATIENT_DOB, spinWeight.Value, spinHeight.Value, chiso, this.currentTreatmentWithPatientType.TDL_PATIENT_GENDER_ID == IMSys.DbConfig.HIS_RS.HIS_GENDER.ID__MALE).ToString();
                                     }
                                 }
                             }
@@ -11744,7 +11748,7 @@ o.SERVICE_ID == medi.SERVICE_ID && o.TDL_INTRUCTION_TIME.ToString().Substring(0,
                         continue;
                     icdSubNameQ += item.ICD_NAME + ";";
                 }
-                #region Xử lý dấu ; 
+                #region Xử lý dấu ;
                 if (!string.IsNullOrEmpty(icdSubCodeQ) && (icdSubCodeQ.StartsWith(";") || icdSubCodeQ.EndsWith(";")))
                 {
                     List<string> lstTmp = new List<string>();
