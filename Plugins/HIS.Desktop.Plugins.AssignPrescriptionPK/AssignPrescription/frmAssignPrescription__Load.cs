@@ -2178,28 +2178,28 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 LogSystem.Debug("LoadDataTracking => 1");
                 //Init Control
                 CommonParam param = new CommonParam();
-                if (!GlobalStore.IsTreatmentIn && !GlobalStore.IsCabinet)
-                {
-                    this.isInitTracking = false;
-                    lciPhieuDieuTri.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
-                    return;
-                }
+                //if (!GlobalStore.IsTreatmentIn && !GlobalStore.IsCabinet) nambg sửa 
+                //{
+                    //this.isInitTracking = false;
+                    //lciPhieuDieuTri.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
+                    //return;
+                //}
 
-                if (GlobalStore.IsCabinet)
-                {
-                    //Check đối tượng nội trú hoặc ngoại trú
-                    HisPatientTypeAlterViewAppliedFilter filterPatientTypeAlter = new HisPatientTypeAlterViewAppliedFilter();
-                    filterPatientTypeAlter.TreatmentId = this.treatmentId;
-                    filterPatientTypeAlter.InstructionTime = Inventec.Common.DateTime.Get.Now() ?? 0;
-                    V_HIS_PATIENT_TYPE_ALTER patientTypeAlter = await new BackendAdapter(param).GetAsync<MOS.EFMODEL.DataModels.V_HIS_PATIENT_TYPE_ALTER>(HisRequestUriStore.HIS_PATIENT_TYPE_ALTER_GET_APPLIED, ApiConsumers.MosConsumer, filterPatientTypeAlter, param);
-                    if (patientTypeAlter.TREATMENT_TYPE_ID != IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNOITRU
-                        && patientTypeAlter.TREATMENT_TYPE_ID != IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNGOAITRU)
-                    {
-                        this.isInitTracking = false;
-                        lciPhieuDieuTri.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
-                        return;
-                    }
-                }
+                //if (GlobalStore.IsCabinet)
+                //{
+                //    //Check đối tượng nội trú hoặc ngoại trú
+                //    HisPatientTypeAlterViewAppliedFilter filterPatientTypeAlter = new HisPatientTypeAlterViewAppliedFilter();
+                //    filterPatientTypeAlter.TreatmentId = this.treatmentId;
+                //    filterPatientTypeAlter.InstructionTime = Inventec.Common.DateTime.Get.Now() ?? 0;
+                //    V_HIS_PATIENT_TYPE_ALTER patientTypeAlter = await new BackendAdapter(param).GetAsync<MOS.EFMODEL.DataModels.V_HIS_PATIENT_TYPE_ALTER>(HisRequestUriStore.HIS_PATIENT_TYPE_ALTER_GET_APPLIED, ApiConsumers.MosConsumer, filterPatientTypeAlter, param);
+                //    if (patientTypeAlter.TREATMENT_TYPE_ID != IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNOITRU
+                //        && patientTypeAlter.TREATMENT_TYPE_ID != IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNGOAITRU)
+                //    {
+                //        this.isInitTracking = false;
+                //        lciPhieuDieuTri.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
+                //        return;
+                //    }
+                //}
 
                 HisTrackingFilter filter = new HisTrackingFilter();
                 filter.TREATMENT_ID = this.treatmentId;
