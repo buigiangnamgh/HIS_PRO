@@ -864,10 +864,37 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
 
                 datas = datas != null ? datas.Where(p => p.IS_ACTIVE == 1).ToList() : null;
 
+                if (this.sereServ != null && datas != null && datas.Count > 0)
+                {
+                    long execId = this.sereServ.TDL_EXECUTE_ROOM_ID;
+
+                    datas = datas
+                                     .Where(o =>
+                                     {
+                                         if (o.ROOM_IDS == null || o.ROOM_IDS.Trim() == "")
+                                             return false;
+
+                                         var items = o.ROOM_IDS.Split(',');
+
+                                         foreach (var item in items)
+                                         {
+                                             long val;
+                                             if (long.TryParse(item.Trim(), out val))
+                                             {
+                                                 if (val == execId)
+                                                     return true;
+                                             }
+                                         }
+
+                                         return false;
+                                     })
+                                     .ToList();
+                }
+
                 List<ColumnInfo> columnInfos = new List<ColumnInfo>();
-                columnInfos.Add(new ColumnInfo("MACHINE_CODE", "", 150, 1));
-                columnInfos.Add(new ColumnInfo("MACHINE_NAME", "", 250, 2));
-                ControlEditorADO controlEditorADO = new ControlEditorADO("MACHINE_NAME", "ID", columnInfos, false, 250);
+                columnInfos.Add(new ColumnInfo("MACHINE_CODE", "", 100, 1));
+                columnInfos.Add(new ColumnInfo("MACHINE_NAME", "", 550, 2));
+                ControlEditorADO controlEditorADO = new ControlEditorADO("MACHINE_NAME", "ID", columnInfos, false, 650);
                 controlEditorADO.ImmediatePopup = true;
                 ControlEditorLoader.Load(this.cboMachine, datas, controlEditorADO);
             }
