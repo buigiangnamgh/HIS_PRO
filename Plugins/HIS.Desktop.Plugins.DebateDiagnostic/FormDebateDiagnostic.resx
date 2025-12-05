@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+<resheader name="resmimetype"><value>text/microsoft-resx</value></resheader><resheader name="version"><value>1.3</value></resheader><resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader><resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader><data name="resource.ToolTip" xml:space="preserve"><value>Khi nhập thông tin người tham gia hệ thống sẽ tự động gửi thông báo mời tham gia hội chẩn đến các tài khoản được khai báo trong danh sách. Người nhận được thông báo có thể xem thông tin của BBHC và nhấn nút "Xác nhận" và nhập ý kiến ở ô "Nhận xét"</value></data>
+  <data name="rebtnFeedBackDisable.Buttons" mimetype="application/x-microsoft.net.object.binary.base64"><value>AAEAAAD/////AQAAAAAAAAAMAgAAAFFTeXN0ZW0uRHJhd2luZywgVmVyc2lvbj00LjAuMC4wLCBD
+dWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWIwM2Y1ZjdmMTFkNTBhM2EFAQAAABVTeXN0
+ZW0uRHJhd2luZy5CaXRtYXABAAAABERhdGEHAgIAAAAJAwAAAA8DAAAAVAEAAAKJUE5HDQoaCgAA
+AA1JSERSAAAAEAAAABAIBgAAAB/z/2EAAAAEZ0FNQQAAsY8L/GEFAAAAGXRFWHRTb2Z0d2FyZQBB
+ZG9iZSBJbWFnZVJlYWR5ccllPAAAACF0RVh0VGl0bGUAQXBwbHk7T0s7Q2hlY2s7QmFycztSaWJi
+b247ZGPIaAAAALlJREFUOE+lk8ENwyAQBF1KCtm3y7Lkf1yFi3E7llIA0ZwMOi4YlOQxEhy7Kzhg
+kjQFZkmbpEPSecGYGmuV3k8ekp6SXpLSDayhQVsFUNgbhjvQWkgOIDWKRuCxAM7V27ZndWM8MwE0
+JwpbrCkl9L62UaDDURwxcyPgoMA1VeI4d+YlrJ0fAZcwh/TMJaA6gjOMzGBHiE1csnFgBmti6xot
+ZGAu1with9QzQ3lI8PdTziE/fybPV9/5DSbJh+jt6xAtAAAAAElFTkSuQmCCCw==</value></data><data name="rebtnFeedBackEnable.Buttons" mimetype="application/x-microsoft.net.object.binary.base64"><value>AAEAAAD/////AQAAAAAAAAAMAgAAAFFTeXN0ZW0uRHJhd2luZywgVmVyc2lvbj00LjAuMC4wLCBD
+dWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWIwM2Y1ZjdmMTFkNTBhM2EFAQAAABVTeXN0
+ZW0uRHJhd2luZy5CaXRtYXABAAAABERhdGEHAgIAAAAJAwAAAA8DAAAAHQQAAAKJUE5HDQoaCgAA
+AA1JSERSAAAAEAAAABAIBgAAAB/z/2EAAAAEZ0FNQQAAsY8L/GEFAAAAIXRFWHRUaXRsZQBBcHBs
+eTtPSztDaGVjaztCYXJzO1JpYmJvbjtkY8hoAAADp0lEQVQ4T02Tf1DTdRjHH9NlBldBp9aZwUCO
+8Ws40O48go5QRk6iqKNYOIkmc2yUQPxKAw+cmHJZSwboyIxVM0bgEbhAkEVMfjSxbRDjQGTQxo/4
+IZDRX+/uO/OuP567z93neb2f93Of94cmVxpp7r6BiGgdEa3POMeJzlUH1xyrDRko1oYuFH/HHTiu
+CWnMqghMIqJHieiR+b+N5PzrGk2tNBA5V/UuODGLvTVTGaAvq9uLNrMCQw4t5la7MTxTB8PwJ1C2
+CFDwVXC/sNDHnxk0e//GAwEGFqR7PZPxWeCI1nAUk8vNGFmqgnVegVtzuRhaPI2xZTWcq61oMhUg
+v4Y7m5zvw2Wc2JfrXQIb3jvFaa43FsC2cAGdfxxGl1MMo1OKnmkZemfk6J2VoWVIhN/nK9FmOQX5
+50HmbTvc3F1rJ2b78I+pYzD0ZwVax4Vot4twY+pdGBxidDskuDktQdHlPdif6QXxWQ5si1Uo18Xj
+YJFfJjOc3v7Ir66xJx/X76bh2lgSWseT0T6Rgg67CIapQ5CUc5D3qRSjEw7wZVvx4/AhtA+WIk3h
+bySiTZRU6DvaYSvA1ZFEKFsjES3dhDx1KPR33kJOdQiKVDlwzi5BfjoBF9qE+OnOO7hpL0ZaGWeN
+iNzpzTzfZb0tHVpLLKIlbug3m5F/LgMxMg8XPDl9D2e/zobi21i0jovQYDuAn+0ypJ70R1CEx7P0
+Wrb3uKZPAK15L5RNCcgoeRWOmSU0d3VibHIR1rFbSMjdBv1oKnTDcfh+iA+d9XUIP/ZjHDxB8XJ2
+S3lTJC6Z9uDKoAAltTEoqZRi4d4aFlb+wcHi3bj8SxK0gzHQWKKg+e1FVFyPxhs5bBMRudHLou2i
+9DNcfGmKQGXfTlyxCJBVsQs1DWUwDFxF6hlfaC37cGngBVw0haP2dhSOnueBL36+mIg2Mjl4XCDz
+vn38Gy6q+8Kh6uFCaz6AlFJvREgIqo59qO7noaqfB/Wvu1Baz0PCB2yLuyfraSZMjMD68LgtvPhM
+n/kPawKg6gmFqpcLnTUJzSNHUGOKgKp3J6r7wlCoCUJiju9aWOzmSCJiddnfJzJMSBkRVljclt37
+pd6jKSd2oEgXAGV3MM73hOALYwhO/BCIVIUfXjniZeU9gBnr61xs513xw5+4wd2T5RmV/FxhrNjL
+KJCx4So5G/zDXuaXhNtPuj3J2swMY/oZzsU+PPwnxOzEqDM5f4qIPInIw/VcRI8x9//vZ+pfAkQR
+jwTcFaIAAAAASUVORK5CYIIL</value></data></root>
