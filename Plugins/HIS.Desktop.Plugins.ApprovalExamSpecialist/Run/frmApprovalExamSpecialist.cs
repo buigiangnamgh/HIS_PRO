@@ -478,6 +478,8 @@ namespace HIS.Desktop.Plugins.ApprovalExamSpecialist.Run
 
                 if (rsSpecialExam != null && this.delegateRefresher != null)
                 {
+                    this.currentSpecialistExam.TRACKING_ID = rsSpecialExam.TRACKING_ID;
+                    this.currentSpecialistExam.IS_APPROVAL = 1;
                     this.delegateRefresher();
                 }
 

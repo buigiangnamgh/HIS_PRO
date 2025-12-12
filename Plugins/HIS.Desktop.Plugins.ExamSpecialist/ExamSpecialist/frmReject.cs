@@ -59,6 +59,9 @@ namespace HIS.Desktop.Plugins.ExamSpecialist.ExamSpecialist
                 Inventec.Common.Logging.LogSystem.Debug("API Create Result: " + Inventec.Common.Logging.LogUtil.TraceData("DataA", result));
                 if (result != null)
                 {
+                    // xóa tracking
+                    var resultT = new Inventec.Common.Adapter.BackendAdapter(param).Post<bool>("api/HisTracking/Delete", ApiConsumers.MosConsumer, speciaListExam.TRACKING_ID, param);
+                    Inventec.Common.Logging.LogSystem.Debug("API delete tracking resultT: " + Inventec.Common.Logging.LogUtil.TraceData("resultT", resultT));
                     if (dlgRefresh != null)
                         dlgRefresh();
                     this.Close();

@@ -445,7 +445,7 @@ namespace HIS.Desktop.Plugins.ApprovalExamSpecialist.Run
                     inputADO.DocumentName += " " + "(" + _TrackingPrintsProcesss[0].SHEET_ORDER.ToString() + ")";
                 }
 
-                //Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => inputADO.MergeCode), inputADO.MergeCode));
+                Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => _TrackingPrintsProcesss), _TrackingPrintsProcesss));
                 var PatientTypeAlter = new BackendAdapter(new CommonParam()).Get<HIS_PATIENT_TYPE_ALTER>("api/HisPatientTypeAlter/GetLastByTreatmentId", ApiConsumers.MosConsumer, treatmentID, null);
 
                 #region Dòng thuốc
@@ -456,6 +456,7 @@ namespace HIS.Desktop.Plugins.ApprovalExamSpecialist.Run
                 List<HIS_DOSAGE_FORM> listDosage = new List<HIS_DOSAGE_FORM>();
                 listDosage = BackendDataWorker.Get<HIS_DOSAGE_FORM>();
                 #endregion
+
 
                 MPS.Processor.Mps000062.PDO.Mps000062PDO mps000062RDO = new MPS.Processor.Mps000062.PDO.Mps000062PDO(
                 _Treatment,
@@ -487,7 +488,8 @@ namespace HIS.Desktop.Plugins.ApprovalExamSpecialist.Run
                 this._ImpMestBlood_TL,
                 PatientTypeAlter,
                 listMedicineLine,
-                listDosage
+                listDosage,
+                null
                 );
                 WaitingManager.Hide();
                 MPS.ProcessorBase.Core.PrintData PrintData = null;
