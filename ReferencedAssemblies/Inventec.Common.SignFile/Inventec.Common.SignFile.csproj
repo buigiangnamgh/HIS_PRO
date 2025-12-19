@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{7EE9DE63-A6A2-4A7E-843E-C0A20949D46A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Inventec.Common.SignFile</RootNamespace>
+    <AssemblyName>Inventec.Common.SignFile</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Inventec.Common.Logging">
+      <HintPath>..\..\..\RELEASE\Inventec.Common\Inventec.Common.Logging\Inventec.Common.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp, Version=5.5.6.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Lib\itextsharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.JsonWebTokens">
+      <HintPath>Lib\Microsoft.IdentityModel.JsonWebTokens.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Tokens">
+      <HintPath>Lib\Microsoft.IdentityModel.Tokens.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IdentityModel.Tokens.Jwt">
+      <HintPath>Lib\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CertificateUtil.cs" />
+    <Compile Include="KeyStore.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="RSAKeys.cs" />
+    <Compile Include="SharedUtils.cs" />
+    <Compile Include="Constans.cs" />
+    <Compile Include="Dategates.cs" />
+    <Compile Include="DisplayConfig.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SignPdfAsynchronous.cs" />
+    <Compile Include="SignPdfFile.cs" />
+    <Compile Include="FontConfig.cs" />
+    <Compile Include="TimestampConfig.cs" />
+    <Compile Include="XmlConfig.cs" />
+    <Compile Include="XmlProcess\Common\Exceptions\InvalidDocumentException.cs" />
+    <Compile Include="XmlProcess\Common\Exceptions\InvalidParameterException.cs" />
+    <Compile Include="XmlProcess\Common\Exceptions\InvalidSignedDocumentException.cs" />
+    <Compile Include="XmlProcess\Common\ExtendedSignedXml.cs" />
+    <Compile Include="XmlProcess\Common\VerificationParameters.cs" />
+    <Compile Include="XmlProcess\Common\XmlPropertyDescriptor.cs" />
+    <Compile Include="XmlProcess\Schemas\SignatureSchemas.cs" />
+    <Compile Include="XmlProcess\Utils\ArrayHelper.cs" />
+    <Compile Include="XmlProcess\Utils\Certificates\CertificatesHelper.cs" />
+    <Compile Include="XmlProcess\Utils\Certificates\Exceptions\CertificateStoreAccessDeniedException.cs" />
+    <Compile Include="XmlProcess\Utils\Cryptography\CryptoHelper.cs" />
+    <Compile Include="XmlProcess\Utils\Xml\XmlHelper.cs" />
+    <Compile Include="XmlProcess\XAdES\Common\XAdESSignParameters.cs" />
+    <Compile Include="XmlProcess\XAdES\Dsl\XAdESSignDSL.cs" />
+    <Compile Include="XmlProcess\XAdES\Dsl\XadesVerifyDsl.cs" />
+    <Compile Include="XmlProcess\XAdES\Operations\XAdESSignOperation.cs" />
+    <Compile Include="XmlProcess\XAdES\Operations\XadesVerifyOperation.cs" />
+    <Compile Include="XmlProcess\XAdES\XAdESHelper.cs" />
+    <Compile Include="XmlProcess\XmlDsig\Common\VerificationResults.cs" />
+    <Compile Include="XmlProcess\XmlDsig\Common\XmlDsigSignatureFormat.cs" />
+    <Compile Include="XmlProcess\XmlDsig\Common\XmlDsigSignParameters.cs" />
+    <Compile Include="XmlProcess\XmlDsig\Dsl\BatchSignDSL.cs" />
+    <Compile Include="XmlProcess\XmlDsig\Dsl\SignDSL.cs" />
+    <Compile Include="XmlProcess\XmlDsig\Dsl\VerificationDSL.cs" />
+    <Compile Include="XmlProcess\XmlDsig\Helpers\XmlDsigNodesHelper.cs" />
+    <Compile Include="XmlProcess\XmlDsig\Operations\Signers\XmlDsigDetachedSignOperation.cs" />
+    <Compile Include="XmlProcess\XmlDsig\Operations\Signers\XmlDsigEnvelopedSignOperation.cs" />
+    <Compile Include="XmlProcess\XmlDsig\Operations\Signers\XmlDsigEnvelopingSignOperation.cs" />
+    <Compile Include="XmlProcess\XmlDsig\Operations\XmlDsigSignOperation.cs" />
+    <Compile Include="XmlProcess\XmlDsig\Operations\XmlDsigVerifyOperation.cs" />
+    <Compile Include="XmlProcess\XmlDsig\XmlDsigHelper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="XmlProcess\Data\XAdES.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="XmlProcess\Data\xades_zep.v1.0.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="XmlProcess\Data\xmldsig-core-schema.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="XmlProcess\Schemas\XAdES_1_3_2.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="XmlProcess\Schemas\xmldsig-core-schema.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="XmlProcess\Schemas\XMLSchema.dtd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="XmlProcess\Data\xades_zep-epes%28PSCA%29%28Pdf%29.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
