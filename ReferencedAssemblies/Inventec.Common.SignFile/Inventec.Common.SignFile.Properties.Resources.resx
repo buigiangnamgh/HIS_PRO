@@ -1,0 +1,1227 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+<resheader name="resmimetype"><value>text/microsoft-resx</value></resheader><resheader name="version"><value>1.3</value></resheader><resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader><resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader><data name="xmldsig_core_schema" xml:space="preserve"><value>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;!DOCTYPE schema
+  PUBLIC "-//W3C//DTD XMLSchema 200102//EN" "http://www.w3.org/2001/XMLSchema.dtd"
+ [
+   &lt;!ATTLIST schema 
+     xmlns:ds CDATA #FIXED "http://www.w3.org/2000/09/xmldsig#"&gt;
+   &lt;!ENTITY dsig 'http://www.w3.org/2000/09/xmldsig#'&gt;
+   &lt;!ENTITY % p ''&gt;
+   &lt;!ENTITY % s ''&gt;
+  ]&gt;
+
+&lt;!-- Schema for XML Signatures
+    http://www.w3.org/2000/09/xmldsig#
+    $Revision: 1.1 $ on $Date: 2002/02/08 20:32:26 $ by $Author: reagle $
+
+    Copyright 2001 The Internet Society and W3C (Massachusetts Institute
+    of Technology, Institut National de Recherche en Informatique et en
+    Automatique, Keio University). All Rights Reserved.
+    http://www.w3.org/Consortium/Legal/
+
+    This document is governed by the W3C Software License [1] as described
+    in the FAQ [2].
+
+    [1] http://www.w3.org/Consortium/Legal/copyright-software-19980720
+    [2] http://www.w3.org/Consortium/Legal/IPR-FAQ-20000620.html#DTD
+--&gt;
+
+
+&lt;schema xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+        targetNamespace="http://www.w3.org/2000/09/xmldsig#"
+        version="0.1" elementFormDefault="qualified"&gt; 
+
+&lt;!-- Basic Types Defined for Signatures --&gt;
+
+&lt;simpleType name="CryptoBinary"&gt;
+  &lt;restriction base="base64Binary"&gt;
+  &lt;/restriction&gt;
+&lt;/simpleType&gt;
+
+&lt;!-- Start Signature --&gt;
+
+&lt;element name="Signature" type="ds:SignatureType"/&gt;
+&lt;complexType name="SignatureType"&gt;
+  &lt;sequence&gt; 
+    &lt;element ref="ds:SignedInfo"/&gt; 
+    &lt;element ref="ds:SignatureValue"/&gt; 
+    &lt;element ref="ds:KeyInfo" minOccurs="0"/&gt; 
+    &lt;element ref="ds:Object" minOccurs="0" maxOccurs="unbounded"/&gt; 
+  &lt;/sequence&gt;  
+  &lt;attribute name="Id" type="ID" use="optional"/&gt;
+&lt;/complexType&gt;
+
+  &lt;element name="SignatureValue" type="ds:SignatureValueType"/&gt; 
+  &lt;complexType name="SignatureValueType"&gt;
+    &lt;simpleContent&gt;
+      &lt;extension base="base64Binary"&gt;
+        &lt;attribute name="Id" type="ID" use="optional"/&gt;
+      &lt;/extension&gt;
+    &lt;/simpleContent&gt;
+  &lt;/complexType&gt;
+
+&lt;!-- Start SignedInfo --&gt;
+
+&lt;element name="SignedInfo" type="ds:SignedInfoType"/&gt;
+&lt;complexType name="SignedInfoType"&gt;
+  &lt;sequence&gt; 
+    &lt;element ref="ds:CanonicalizationMethod"/&gt; 
+    &lt;element ref="ds:SignatureMethod"/&gt; 
+    &lt;element ref="ds:Reference" maxOccurs="unbounded"/&gt; 
+  &lt;/sequence&gt;  
+  &lt;attribute name="Id" type="ID" use="optional"/&gt; 
+&lt;/complexType&gt;
+
+  &lt;element name="CanonicalizationMethod" type="ds:CanonicalizationMethodType"/&gt; 
+  &lt;complexType name="CanonicalizationMethodType" mixed="true"&gt;
+    &lt;sequence&gt;
+      &lt;any namespace="##any" minOccurs="0" maxOccurs="unbounded"/&gt;
+      &lt;!-- (0,unbounded) elements from (1,1) namespace --&gt;
+    &lt;/sequence&gt;
+    &lt;attribute name="Algorithm" type="anyURI" use="required"/&gt; 
+  &lt;/complexType&gt;
+
+  &lt;element name="SignatureMethod" type="ds:SignatureMethodType"/&gt;
+  &lt;complexType name="SignatureMethodType" mixed="true"&gt;
+    &lt;sequence&gt;
+      &lt;element name="HMACOutputLength" minOccurs="0" type="ds:HMACOutputLengthType"/&gt;
+      &lt;any namespace="##other" minOccurs="0" maxOccurs="unbounded"/&gt;
+      &lt;!-- (0,unbounded) elements from (1,1) external namespace --&gt;
+    &lt;/sequence&gt;
+    &lt;attribute name="Algorithm" type="anyURI" use="required"/&gt; 
+  &lt;/complexType&gt;
+
+&lt;!-- Start Reference --&gt;
+
+&lt;element name="Reference" type="ds:ReferenceType"/&gt;
+&lt;complexType name="ReferenceType"&gt;
+  &lt;sequence&gt; 
+    &lt;element ref="ds:Transforms" minOccurs="0"/&gt; 
+    &lt;element ref="ds:DigestMethod"/&gt; 
+    &lt;element ref="ds:DigestValue"/&gt; 
+  &lt;/sequence&gt;
+  &lt;attribute name="Id" type="ID" use="optional"/&gt; 
+  &lt;attribute name="URI" type="anyURI" use="optional"/&gt; 
+  &lt;attribute name="Type" type="anyURI" use="optional"/&gt; 
+&lt;/complexType&gt;
+
+  &lt;element name="Transforms" type="ds:TransformsType"/&gt;
+  &lt;complexType name="TransformsType"&gt;
+    &lt;sequence&gt;
+      &lt;element ref="ds:Transform" maxOccurs="unbounded"/&gt;  
+    &lt;/sequence&gt;
+  &lt;/complexType&gt;
+
+  &lt;element name="Transform" type="ds:TransformType"/&gt;
+  &lt;complexType name="TransformType" mixed="true"&gt;
+    &lt;choice minOccurs="0" maxOccurs="unbounded"&gt; 
+      &lt;any namespace="##other" processContents="lax"/&gt;
+      &lt;!-- (1,1) elements from (0,unbounded) namespaces --&gt;
+      &lt;element name="XPath" type="string"/&gt; 
+    &lt;/choice&gt;
+    &lt;attribute name="Algorithm" type="anyURI" use="required"/&gt; 
+  &lt;/complexType&gt;
+
+&lt;!-- End Reference --&gt;
+
+&lt;element name="DigestMethod" type="ds:DigestMethodType"/&gt;
+&lt;complexType name="DigestMethodType" mixed="true"&gt; 
+  &lt;sequence&gt;
+    &lt;any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/&gt;
+  &lt;/sequence&gt;    
+  &lt;attribute name="Algorithm" type="anyURI" use="required"/&gt; 
+&lt;/complexType&gt;
+
+&lt;element name="DigestValue" type="ds:DigestValueType"/&gt;
+&lt;simpleType name="DigestValueType"&gt;
+  &lt;restriction base="base64Binary"/&gt;
+&lt;/simpleType&gt;
+
+&lt;!-- End SignedInfo --&gt;
+
+&lt;!-- Start KeyInfo --&gt;
+
+&lt;element name="KeyInfo" type="ds:KeyInfoType"/&gt; 
+&lt;complexType name="KeyInfoType" mixed="true"&gt;
+  &lt;choice maxOccurs="unbounded"&gt;     
+    &lt;element ref="ds:KeyName"/&gt; 
+    &lt;element ref="ds:KeyValue"/&gt; 
+    &lt;element ref="ds:RetrievalMethod"/&gt; 
+    &lt;element ref="ds:X509Data"/&gt; 
+    &lt;element ref="ds:PGPData"/&gt; 
+    &lt;element ref="ds:SPKIData"/&gt;
+    &lt;element ref="ds:MgmtData"/&gt;
+    &lt;any processContents="lax" namespace="##other"/&gt;
+    &lt;!-- (1,1) elements from (0,unbounded) namespaces --&gt;
+  &lt;/choice&gt;
+  &lt;attribute name="Id" type="ID" use="optional"/&gt; 
+&lt;/complexType&gt;
+
+  &lt;element name="KeyName" type="string"/&gt;
+  &lt;element name="MgmtData" type="string"/&gt;
+
+  &lt;element name="KeyValue" type="ds:KeyValueType"/&gt; 
+  &lt;complexType name="KeyValueType" mixed="true"&gt;
+   &lt;choice&gt;
+     &lt;element ref="ds:DSAKeyValue"/&gt;
+     &lt;element ref="ds:RSAKeyValue"/&gt;
+     &lt;any namespace="##other" processContents="lax"/&gt;
+   &lt;/choice&gt;
+  &lt;/complexType&gt;
+
+  &lt;element name="RetrievalMethod" type="ds:RetrievalMethodType"/&gt; 
+  &lt;complexType name="RetrievalMethodType"&gt;
+    &lt;sequence&gt;
+      &lt;element ref="ds:Transforms" minOccurs="0"/&gt; 
+    &lt;/sequence&gt;  
+    &lt;attribute name="URI" type="anyURI"/&gt;
+    &lt;attribute name="Type" type="anyURI" use="optional"/&gt;
+  &lt;/complexType&gt;
+
+&lt;!-- Start X509Data --&gt;
+
+&lt;element name="X509Data" type="ds:X509DataType"/&gt; 
+&lt;complexType name="X509DataType"&gt;
+  &lt;sequence maxOccurs="unbounded"&gt;
+    &lt;choice&gt;
+      &lt;element name="X509IssuerSerial" type="ds:X509IssuerSerialType"/&gt;
+      &lt;element name="X509SKI" type="base64Binary"/&gt;
+      &lt;element name="X509SubjectName" type="string"/&gt;
+      &lt;element name="X509Certificate" type="base64Binary"/&gt;
+      &lt;element name="X509CRL" type="base64Binary"/&gt;
+      &lt;any namespace="##other" processContents="lax"/&gt;
+    &lt;/choice&gt;
+  &lt;/sequence&gt;
+&lt;/complexType&gt;
+
+&lt;complexType name="X509IssuerSerialType"&gt; 
+  &lt;sequence&gt; 
+    &lt;element name="X509IssuerName" type="string"/&gt; 
+    &lt;element name="X509SerialNumber" type="integer"/&gt; 
+  &lt;/sequence&gt;
+&lt;/complexType&gt;
+
+&lt;!-- End X509Data --&gt;
+
+&lt;!-- Begin PGPData --&gt;
+
+&lt;element name="PGPData" type="ds:PGPDataType"/&gt; 
+&lt;complexType name="PGPDataType"&gt; 
+  &lt;choice&gt;
+    &lt;sequence&gt;
+      &lt;element name="PGPKeyID" type="base64Binary"/&gt; 
+      &lt;element name="PGPKeyPacket" type="base64Binary" minOccurs="0"/&gt; 
+      &lt;any namespace="##other" processContents="lax" minOccurs="0"
+       maxOccurs="unbounded"/&gt;
+    &lt;/sequence&gt;
+    &lt;sequence&gt;
+      &lt;element name="PGPKeyPacket" type="base64Binary"/&gt; 
+      &lt;any namespace="##other" processContents="lax" minOccurs="0"
+       maxOccurs="unbounded"/&gt;
+    &lt;/sequence&gt;
+  &lt;/choice&gt;
+&lt;/complexType&gt;
+
+&lt;!-- End PGPData --&gt;
+
+&lt;!-- Begin SPKIData --&gt;
+
+&lt;element name="SPKIData" type="ds:SPKIDataType"/&gt; 
+&lt;complexType name="SPKIDataType"&gt;
+  &lt;sequence maxOccurs="unbounded"&gt;
+    &lt;element name="SPKISexp" type="base64Binary"/&gt;
+    &lt;any namespace="##other" processContents="lax" minOccurs="0"/&gt;
+  &lt;/sequence&gt;
+&lt;/complexType&gt; 
+
+&lt;!-- End SPKIData --&gt;
+
+&lt;!-- End KeyInfo --&gt;
+
+&lt;!-- Start Object (Manifest, SignatureProperty) --&gt;
+
+&lt;element name="Object" type="ds:ObjectType"/&gt; 
+&lt;complexType name="ObjectType" mixed="true"&gt;
+  &lt;sequence minOccurs="0" maxOccurs="unbounded"&gt;
+    &lt;any namespace="##any" processContents="lax"/&gt;
+  &lt;/sequence&gt;
+  &lt;attribute name="Id" type="ID" use="optional"/&gt; 
+  &lt;attribute name="MimeType" type="string" use="optional"/&gt; &lt;!-- add a grep facet --&gt;
+  &lt;attribute name="Encoding" type="anyURI" use="optional"/&gt; 
+&lt;/complexType&gt;
+
+&lt;element name="Manifest" type="ds:ManifestType"/&gt; 
+&lt;complexType name="ManifestType"&gt;
+  &lt;sequence&gt;
+    &lt;element ref="ds:Reference" maxOccurs="unbounded"/&gt; 
+  &lt;/sequence&gt;
+  &lt;attribute name="Id" type="ID" use="optional"/&gt; 
+&lt;/complexType&gt;
+
+&lt;element name="SignatureProperties" type="ds:SignaturePropertiesType"/&gt; 
+&lt;complexType name="SignaturePropertiesType"&gt;
+  &lt;sequence&gt;
+    &lt;element ref="ds:SignatureProperty" maxOccurs="unbounded"/&gt; 
+  &lt;/sequence&gt;
+  &lt;attribute name="Id" type="ID" use="optional"/&gt; 
+&lt;/complexType&gt;
+
+   &lt;element name="SignatureProperty" type="ds:SignaturePropertyType"/&gt; 
+   &lt;complexType name="SignaturePropertyType" mixed="true"&gt;
+     &lt;choice maxOccurs="unbounded"&gt;
+       &lt;any namespace="##other" processContents="lax"/&gt;
+       &lt;!-- (1,1) elements from (1,unbounded) namespaces --&gt;
+     &lt;/choice&gt;
+     &lt;attribute name="Target" type="anyURI" use="required"/&gt; 
+     &lt;attribute name="Id" type="ID" use="optional"/&gt; 
+   &lt;/complexType&gt;
+
+&lt;!-- End Object (Manifest, SignatureProperty) --&gt;
+
+&lt;!-- Start Algorithm Parameters --&gt;
+
+&lt;simpleType name="HMACOutputLengthType"&gt;
+  &lt;restriction base="integer"/&gt;
+&lt;/simpleType&gt;
+
+&lt;!-- Start KeyValue Element-types --&gt;
+
+&lt;element name="DSAKeyValue" type="ds:DSAKeyValueType"/&gt;
+&lt;complexType name="DSAKeyValueType"&gt;
+  &lt;sequence&gt;
+    &lt;sequence minOccurs="0"&gt;
+      &lt;element name="P" type="ds:CryptoBinary"/&gt;
+      &lt;element name="Q" type="ds:CryptoBinary"/&gt;
+    &lt;/sequence&gt;
+    &lt;element name="G" type="ds:CryptoBinary" minOccurs="0"/&gt;
+    &lt;element name="Y" type="ds:CryptoBinary"/&gt;
+    &lt;element name="J" type="ds:CryptoBinary" minOccurs="0"/&gt;
+    &lt;sequence minOccurs="0"&gt;
+      &lt;element name="Seed" type="ds:CryptoBinary"/&gt;
+      &lt;element name="PgenCounter" type="ds:CryptoBinary"/&gt;
+    &lt;/sequence&gt;
+  &lt;/sequence&gt;
+&lt;/complexType&gt;
+
+&lt;element name="RSAKeyValue" type="ds:RSAKeyValueType"/&gt;
+&lt;complexType name="RSAKeyValueType"&gt;
+  &lt;sequence&gt;
+    &lt;element name="Modulus" type="ds:CryptoBinary"/&gt; 
+    &lt;element name="Exponent" type="ds:CryptoBinary"/&gt; 
+  &lt;/sequence&gt;
+&lt;/complexType&gt; 
+
+&lt;!-- End KeyValue Element-types --&gt;
+
+&lt;!-- End Signature --&gt;
+
+&lt;/schema&gt;
+</value></data>
+  <data name="XMLSchema" xml:space="preserve"><value>&lt;!-- DTD for XML Schemas: Part 1: Structures
+     Public Identifier: "-//W3C//DTD XMLSCHEMA 200102//EN"
+     Official Location: http://www.w3.org/2001/XMLSchema.dtd --&gt;
+&lt;!-- $Id: XMLSchema.dtd,v 1.31 2001/10/24 15:50:16 ht Exp $ --&gt;
+&lt;!-- Note this DTD is NOT normative, or even definitive. --&gt;           &lt;!--d--&gt;
+&lt;!-- prose copy in the structures REC is the definitive version --&gt;    &lt;!--d--&gt;
+&lt;!-- (which shouldn't differ from this one except for this --&gt;         &lt;!--d--&gt;
+&lt;!-- comment and entity expansions, but just in case) --&gt;              &lt;!--d--&gt;
+&lt;!-- With the exception of cases with multiple namespace
+     prefixes for the XML Schema namespace, any XML document which is
+     not valid per this DTD given redefinitions in its internal subset of the
+     'p' and 's' parameter entities below appropriate to its namespace
+     declaration of the XML Schema namespace is almost certainly not
+     a valid schema. --&gt;
+
+&lt;!-- The simpleType element and its constituent parts
+     are defined in XML Schema: Part 2: Datatypes --&gt;
+&lt;!ENTITY % xs-datatypes PUBLIC 'datatypes' 'datatypes.dtd' &gt;
+
+&lt;!ENTITY % p 'xs:'&gt; &lt;!-- can be overriden in the internal subset of a
+                         schema document to establish a different
+                         namespace prefix --&gt;
+&lt;!ENTITY % s ':xs'&gt; &lt;!-- if %p is defined (e.g. as foo:) then you must
+                         also define %s as the suffix for the appropriate
+                         namespace declaration (e.g. :foo) --&gt;
+
+&lt;!ENTITY % nds 'xmlns%s;'&gt;
+
+&lt;!-- Define all the element names, with optional prefix --&gt;
+&lt;!ENTITY % schema "%p;schema"&gt;
+&lt;!ENTITY % complexType "%p;complexType"&gt;
+&lt;!ENTITY % complexContent "%p;complexContent"&gt;
+&lt;!ENTITY % simpleContent "%p;simpleContent"&gt;
+&lt;!ENTITY % extension "%p;extension"&gt;
+&lt;!ENTITY % element "%p;element"&gt;
+&lt;!ENTITY % unique "%p;unique"&gt;
+&lt;!ENTITY % key "%p;key"&gt;
+&lt;!ENTITY % keyref "%p;keyref"&gt;
+&lt;!ENTITY % selector "%p;selector"&gt;
+&lt;!ENTITY % field "%p;field"&gt;
+&lt;!ENTITY % group "%p;group"&gt;
+&lt;!ENTITY % all "%p;all"&gt;
+&lt;!ENTITY % choice "%p;choice"&gt;
+&lt;!ENTITY % sequence "%p;sequence"&gt;
+
+&lt;!ENTITY % any "%p;any"&gt;
+&lt;!ENTITY % anyAttribute "%p;anyAttribute"&gt;
+&lt;!ENTITY % attribute "%p;attribute"&gt;
+&lt;!ENTITY % attributeGroup "%p;attributeGroup"&gt;
+&lt;!ENTITY % include "%p;include"&gt;
+&lt;!ENTITY % import "%p;import"&gt;
+&lt;!ENTITY % redefine "%p;redefine"&gt;
+&lt;!ENTITY % notation "%p;notation"&gt;
+
+&lt;!-- annotation elements --&gt;
+&lt;!ENTITY % annotation "%p;annotation"&gt;
+&lt;!ENTITY % appinfo "%p;appinfo"&gt;
+&lt;!ENTITY % documentation "%p;documentation"&gt;
+
+&lt;!-- Customisation entities for the ATTLIST of each element type.
+     Define one of these if your schema takes advantage of the
+     anyAttribute='##other' in the schema for schemas --&gt;
+
+&lt;!ENTITY % schemaAttrs ''&gt;
+&lt;!ENTITY % complexTypeAttrs ''&gt;
+&lt;!ENTITY % complexContentAttrs ''&gt;
+&lt;!ENTITY % simpleContentAttrs ''&gt;
+
+&lt;!ENTITY % extensionAttrs ''&gt;
+&lt;!ENTITY % elementAttrs ''&gt;
+&lt;!ENTITY % groupAttrs ''&gt;
+&lt;!ENTITY % allAttrs ''&gt;
+&lt;!ENTITY % choiceAttrs ''&gt;
+&lt;!ENTITY % sequenceAttrs ''&gt;
+&lt;!ENTITY % anyAttrs ''&gt;
+&lt;!ENTITY % anyAttributeAttrs ''&gt;
+&lt;!ENTITY % attributeAttrs ''&gt;
+&lt;!ENTITY % attributeGroupAttrs ''&gt;
+&lt;!ENTITY % uniqueAttrs ''&gt;
+&lt;!ENTITY % keyAttrs ''&gt;
+&lt;!ENTITY % keyrefAttrs ''&gt;
+&lt;!ENTITY % selectorAttrs ''&gt;
+&lt;!ENTITY % fieldAttrs ''&gt;
+&lt;!ENTITY % includeAttrs ''&gt;
+&lt;!ENTITY % importAttrs ''&gt;
+
+&lt;!ENTITY % redefineAttrs ''&gt;
+&lt;!ENTITY % notationAttrs ''&gt;
+&lt;!ENTITY % annotationAttrs ''&gt;
+&lt;!ENTITY % appinfoAttrs ''&gt;
+&lt;!ENTITY % documentationAttrs ''&gt;
+
+&lt;!ENTITY % complexDerivationSet "CDATA"&gt;
+      &lt;!-- #all or space-separated list drawn from derivationChoice --&gt;
+&lt;!ENTITY % blockSet "CDATA"&gt;
+      &lt;!-- #all or space-separated list drawn from
+                      derivationChoice + 'substitution' --&gt;
+
+&lt;!ENTITY % mgs '%all; | %choice; | %sequence;'&gt;
+&lt;!ENTITY % cs '%choice; | %sequence;'&gt;
+&lt;!ENTITY % formValues '(qualified|unqualified)'&gt;
+
+
+&lt;!ENTITY % attrDecls    '((%attribute;| %attributeGroup;)*,(%anyAttribute;)?)'&gt;
+
+&lt;!ENTITY % particleAndAttrs '((%mgs; | %group;)?, %attrDecls;)'&gt;
+
+&lt;!-- This is used in part2 --&gt;
+&lt;!ENTITY % restriction1 '((%mgs; | %group;)?)'&gt;
+
+%xs-datatypes;
+
+&lt;!-- the duplication below is to produce an unambiguous content model
+     which allows annotation everywhere --&gt;
+
+&lt;!ELEMENT %schema; ((%include; | %import; | %redefine; | %annotation;)*,
+                    ((%simpleType; | %complexType;
+                      | %element; | %attribute;
+                      | %attributeGroup; | %group;
+                      | %notation; ),
+                     (%annotation;)*)* )&gt;
+&lt;!ATTLIST %schema;
+   targetNamespace      %URIref;               #IMPLIED
+   version              CDATA                  #IMPLIED
+   %nds;                %URIref;               #FIXED 'http://www.w3.org/2001/XMLSchema'
+   xmlns                CDATA                  #IMPLIED
+   finalDefault         %complexDerivationSet; ''
+   blockDefault         %blockSet;             ''
+   id                   ID                     #IMPLIED
+   elementFormDefault   %formValues;           'unqualified'
+   attributeFormDefault %formValues;           'unqualified'
+   xml:lang             CDATA                  #IMPLIED
+   %schemaAttrs;&gt;
+&lt;!-- Note the xmlns declaration is NOT in the Schema for Schemas,
+     because at the Infoset level where schemas operate,
+     xmlns(:prefix) is NOT an attribute! --&gt;
+&lt;!-- The declaration of xmlns is a convenience for schema authors --&gt;
+ 
+&lt;!-- The id attribute here and below is for use in external references
+     from non-schemas using simple fragment identifiers.
+     It is NOT used for schema-to-schema reference, internal or
+     external. --&gt;
+
+&lt;!-- a type is a named content type specification which allows attribute
+     declarations--&gt;
+&lt;!-- --&gt;
+
+&lt;!ELEMENT %complexType; ((%annotation;)?,
+                         (%simpleContent;|%complexContent;|
+                          %particleAndAttrs;))&gt;
+
+&lt;!ATTLIST %complexType;
+          name      %NCName;                        #IMPLIED
+          id        ID                              #IMPLIED
+          abstract  %boolean;                       #IMPLIED
+          final     %complexDerivationSet;          #IMPLIED
+          block     %complexDerivationSet;          #IMPLIED
+          mixed (true|false) 'false'
+          %complexTypeAttrs;&gt;
+
+&lt;!-- particleAndAttrs is shorthand for a root type --&gt;
+&lt;!-- mixed is disallowed if simpleContent, overriden if complexContent
+     has one too. --&gt;
+
+&lt;!-- If anyAttribute appears in one or more referenced attributeGroups
+     and/or explicitly, the intersection of the permissions is used --&gt;
+
+&lt;!ELEMENT %complexContent; ((%annotation;)?, (%restriction;|%extension;))&gt;
+&lt;!ATTLIST %complexContent;
+          mixed (true|false) #IMPLIED
+          id    ID           #IMPLIED
+          %complexContentAttrs;&gt;
+
+&lt;!-- restriction should use the branch defined above, not the simple
+     one from part2; extension should use the full model  --&gt;
+
+&lt;!ELEMENT %simpleContent; ((%annotation;)?, (%restriction;|%extension;))&gt;
+&lt;!ATTLIST %simpleContent;
+          id    ID           #IMPLIED
+          %simpleContentAttrs;&gt;
+
+&lt;!-- restriction should use the simple branch from part2, not the 
+     one defined above; extension should have no particle  --&gt;
+
+&lt;!ELEMENT %extension; ((%annotation;)?, (%particleAndAttrs;))&gt;
+&lt;!ATTLIST %extension;
+          base  %QName;      #REQUIRED
+          id    ID           #IMPLIED
+          %extensionAttrs;&gt;
+
+&lt;!-- an element is declared by either:
+ a name and a type (either nested or referenced via the type attribute)
+ or a ref to an existing element declaration --&gt;
+
+&lt;!ELEMENT %element; ((%annotation;)?, (%complexType;| %simpleType;)?,
+                     (%unique; | %key; | %keyref;)*)&gt;
+&lt;!-- simpleType or complexType only if no type|ref attribute --&gt;
+&lt;!-- ref not allowed at top level --&gt;
+&lt;!ATTLIST %element;
+            name               %NCName;               #IMPLIED
+            id                 ID                     #IMPLIED
+            ref                %QName;                #IMPLIED
+            type               %QName;                #IMPLIED
+            minOccurs          %nonNegativeInteger;   #IMPLIED
+            maxOccurs          CDATA                  #IMPLIED
+            nillable           %boolean;              #IMPLIED
+            substitutionGroup  %QName;                #IMPLIED
+            abstract           %boolean;              #IMPLIED
+            final              %complexDerivationSet; #IMPLIED
+            block              %blockSet;             #IMPLIED
+            default            CDATA                  #IMPLIED
+            fixed              CDATA                  #IMPLIED
+            form               %formValues;           #IMPLIED
+            %elementAttrs;&gt;
+&lt;!-- type and ref are mutually exclusive.
+     name and ref are mutually exclusive, one is required --&gt;
+&lt;!-- In the absence of type AND ref, type defaults to type of
+     substitutionGroup, if any, else the ur-type, i.e. unconstrained --&gt;
+&lt;!-- default and fixed are mutually exclusive --&gt;
+
+&lt;!ELEMENT %group; ((%annotation;)?,(%mgs;)?)&gt;
+&lt;!ATTLIST %group; 
+          name        %NCName;               #IMPLIED
+          ref         %QName;                #IMPLIED
+          minOccurs   %nonNegativeInteger;   #IMPLIED
+          maxOccurs   CDATA                  #IMPLIED
+          id          ID                     #IMPLIED
+          %groupAttrs;&gt;
+
+&lt;!ELEMENT %all; ((%annotation;)?, (%element;)*)&gt;
+&lt;!ATTLIST %all;
+          minOccurs   (1)                    #IMPLIED
+          maxOccurs   (1)                    #IMPLIED
+          id          ID                     #IMPLIED
+          %allAttrs;&gt;
+
+&lt;!ELEMENT %choice; ((%annotation;)?, (%element;| %group;| %cs; | %any;)*)&gt;
+&lt;!ATTLIST %choice;
+          minOccurs   %nonNegativeInteger;   #IMPLIED
+          maxOccurs   CDATA                  #IMPLIED
+          id          ID                     #IMPLIED
+          %choiceAttrs;&gt;
+
+&lt;!ELEMENT %sequence; ((%annotation;)?, (%element;| %group;| %cs; | %any;)*)&gt;
+&lt;!ATTLIST %sequence;
+          minOccurs   %nonNegativeInteger;   #IMPLIED
+          maxOccurs   CDATA                  #IMPLIED
+          id          ID                     #IMPLIED
+          %sequenceAttrs;&gt;
+
+&lt;!-- an anonymous grouping in a model, or
+     a top-level named group definition, or a reference to same --&gt;
+
+&lt;!-- Note that if order is 'all', group is not allowed inside.
+     If order is 'all' THIS group must be alone (or referenced alone) at
+     the top level of a content model --&gt;
+&lt;!-- If order is 'all', minOccurs==maxOccurs==1 on element/any inside --&gt;
+&lt;!-- Should allow minOccurs=0 inside order='all' . . . --&gt;
+
+&lt;!ELEMENT %any; (%annotation;)?&gt;
+&lt;!ATTLIST %any;
+            namespace       CDATA                  '##any'
+            processContents (skip|lax|strict)      'strict'
+            minOccurs       %nonNegativeInteger;   '1'
+            maxOccurs       CDATA                  '1'
+            id              ID                     #IMPLIED
+            %anyAttrs;&gt;
+
+&lt;!-- namespace is interpreted as follows:
+                  ##any      - - any non-conflicting WFXML at all
+
+                  ##other    - - any non-conflicting WFXML from namespace other
+                                  than targetNamespace
+
+                  ##local    - - any unqualified non-conflicting WFXML/attribute
+                  one or     - - any non-conflicting WFXML from
+                  more URI        the listed namespaces
+                  references
+
+                  ##targetNamespace ##local may appear in the above list,
+                    with the obvious meaning --&gt;
+
+&lt;!ELEMENT %anyAttribute; (%annotation;)?&gt;
+&lt;!ATTLIST %anyAttribute;
+            namespace       CDATA              '##any'
+            processContents (skip|lax|strict)  'strict'
+            id              ID                 #IMPLIED
+            %anyAttributeAttrs;&gt;
+&lt;!-- namespace is interpreted as for 'any' above --&gt;
+
+&lt;!-- simpleType only if no type|ref attribute --&gt;
+&lt;!-- ref not allowed at top level, name iff at top level --&gt;
+&lt;!ELEMENT %attribute; ((%annotation;)?, (%simpleType;)?)&gt;
+&lt;!ATTLIST %attribute;
+          name      %NCName;      #IMPLIED
+          id        ID            #IMPLIED
+          ref       %QName;       #IMPLIED
+          type      %QName;       #IMPLIED
+          use       (prohibited|optional|required) #IMPLIED
+          default   CDATA         #IMPLIED
+          fixed     CDATA         #IMPLIED
+          form      %formValues;  #IMPLIED
+          %attributeAttrs;&gt;
+&lt;!-- type and ref are mutually exclusive.
+     name and ref are mutually exclusive, one is required --&gt;
+
+&lt;!-- default for use is optional when nested, none otherwise --&gt;
+&lt;!-- default and fixed are mutually exclusive --&gt;
+&lt;!-- type attr and simpleType content are mutually exclusive --&gt;
+
+&lt;!-- an attributeGroup is a named collection of attribute decls, or a
+     reference thereto --&gt;
+&lt;!ELEMENT %attributeGroup; ((%annotation;)?,
+                       (%attribute; | %attributeGroup;)*,
+                       (%anyAttribute;)?) &gt;
+&lt;!ATTLIST %attributeGroup;
+                 name       %NCName;       #IMPLIED
+                 id         ID             #IMPLIED
+                 ref        %QName;        #IMPLIED
+                 %attributeGroupAttrs;&gt;
+
+&lt;!-- ref iff no content, no name.  ref iff not top level --&gt;
+
+&lt;!-- better reference mechanisms --&gt;
+&lt;!ELEMENT %unique; ((%annotation;)?, %selector;, (%field;)+)&gt;
+&lt;!ATTLIST %unique;
+          name     %NCName;       #REQUIRED
+	  id       ID             #IMPLIED
+	  %uniqueAttrs;&gt;
+
+&lt;!ELEMENT %key;    ((%annotation;)?, %selector;, (%field;)+)&gt;
+&lt;!ATTLIST %key;
+          name     %NCName;       #REQUIRED
+	  id       ID             #IMPLIED
+	  %keyAttrs;&gt;
+
+&lt;!ELEMENT %keyref; ((%annotation;)?, %selector;, (%field;)+)&gt;
+&lt;!ATTLIST %keyref;
+          name     %NCName;       #REQUIRED
+	  refer    %QName;        #REQUIRED
+	  id       ID             #IMPLIED
+	  %keyrefAttrs;&gt;
+
+&lt;!ELEMENT %selector; ((%annotation;)?)&gt;
+&lt;!ATTLIST %selector;
+          xpath %XPathExpr; #REQUIRED
+          id    ID          #IMPLIED
+          %selectorAttrs;&gt;
+&lt;!ELEMENT %field; ((%annotation;)?)&gt;
+
+&lt;!ATTLIST %field;
+          xpath %XPathExpr; #REQUIRED
+          id    ID          #IMPLIED
+          %fieldAttrs;&gt;
+
+&lt;!-- Schema combination mechanisms --&gt;
+&lt;!ELEMENT %include; (%annotation;)?&gt;
+&lt;!ATTLIST %include;
+          schemaLocation %URIref; #REQUIRED
+          id             ID       #IMPLIED
+          %includeAttrs;&gt;
+
+&lt;!ELEMENT %import; (%annotation;)?&gt;
+&lt;!ATTLIST %import;
+          namespace      %URIref; #IMPLIED
+          schemaLocation %URIref; #IMPLIED
+          id             ID       #IMPLIED
+          %importAttrs;&gt;
+
+&lt;!ELEMENT %redefine; (%annotation; | %simpleType; | %complexType; |
+                      %attributeGroup; | %group;)*&gt;
+&lt;!ATTLIST %redefine;
+          schemaLocation %URIref; #REQUIRED
+          id             ID       #IMPLIED
+          %redefineAttrs;&gt;
+
+&lt;!ELEMENT %notation; (%annotation;)?&gt;
+&lt;!ATTLIST %notation;
+	  name        %NCName;    #REQUIRED
+	  id          ID          #IMPLIED
+	  public      CDATA       #REQUIRED
+	  system      %URIref;    #IMPLIED
+	  %notationAttrs;&gt;
+
+&lt;!-- Annotation is either application information or documentation --&gt;
+&lt;!-- By having these here they are available for datatypes as well
+     as all the structures elements --&gt;
+
+&lt;!ELEMENT %annotation; (%appinfo; | %documentation;)*&gt;
+&lt;!ATTLIST %annotation; %annotationAttrs;&gt;
+
+&lt;!-- User must define annotation elements in internal subset for this
+     to work --&gt;
+&lt;!ELEMENT %appinfo; ANY&gt;   &lt;!-- too restrictive --&gt;
+
+&lt;!ATTLIST %appinfo;
+          source     %URIref;      #IMPLIED
+          id         ID         #IMPLIED
+          %appinfoAttrs;&gt;
+&lt;!ELEMENT %documentation; ANY&gt;   &lt;!-- too restrictive --&gt;
+&lt;!ATTLIST %documentation;
+          source     %URIref;   #IMPLIED
+          id         ID         #IMPLIED
+          xml:lang   CDATA      #IMPLIED
+          %documentationAttrs;&gt;
+
+&lt;!NOTATION XMLSchemaStructures PUBLIC
+           'structures' 'http://www.w3.org/2001/XMLSchema.xsd' &gt;
+&lt;!NOTATION XML PUBLIC
+           'REC-xml-1998-0210' 'http://www.w3.org/TR/1998/REC-xml-19980210' &gt;
+</value></data>
+  <data name="XAdES_1_3_2" xml:space="preserve"><value>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;xsd:schema targetNamespace="http://uri.etsi.org/01903/v1.3.2#" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://uri.etsi.org/01903/v1.3.2#" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" elementFormDefault="qualified"&gt;
+	&lt;xsd:import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="http://www.w3.org/TR/2002/REC-xmldsig-core-20020212/xmldsig-core-schema.xsd"/&gt;
+	&lt;!-- Start auxiliary types definitions: AnyType, ObjectIdentifierType, 
+EncapsulatedPKIDataType and containers for time-stamp tokens --&gt;
+	&lt;!-- Start AnyType --&gt;
+	&lt;xsd:element name="Any" type="AnyType"/&gt;
+	&lt;xsd:complexType name="AnyType" mixed="true"&gt;
+		&lt;xsd:sequence minOccurs="0" maxOccurs="unbounded"&gt;
+			&lt;xsd:any namespace="##any" processContents="lax"/&gt;
+		&lt;/xsd:sequence&gt;
+		&lt;xsd:anyAttribute namespace="##any"/&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;!-- End AnyType --&gt;
+	&lt;!-- Start ObjectIdentifierType--&gt;
+	&lt;xsd:element name="ObjectIdentifier" type="ObjectIdentifierType"/&gt;
+	&lt;xsd:complexType name="ObjectIdentifierType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element name="Identifier" type="IdentifierType"/&gt;
+			&lt;xsd:element name="Description" type="xsd:string" minOccurs="0"/&gt;
+			&lt;xsd:element name="DocumentationReferences" type="DocumentationReferencesType" minOccurs="0"/&gt;
+		&lt;/xsd:sequence&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;xsd:complexType name="IdentifierType"&gt;
+		&lt;xsd:simpleContent&gt;
+			&lt;xsd:extension base="xsd:anyURI"&gt;
+				&lt;xsd:attribute name="Qualifier" type="QualifierType" use="optional"/&gt;
+			&lt;/xsd:extension&gt;
+		&lt;/xsd:simpleContent&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;xsd:simpleType name="QualifierType"&gt;
+		&lt;xsd:restriction base="xsd:string"&gt;
+			&lt;xsd:enumeration value="OIDAsURI"/&gt;
+			&lt;xsd:enumeration value="OIDAsURN"/&gt;
+		&lt;/xsd:restriction&gt;
+	&lt;/xsd:simpleType&gt;
+	&lt;xsd:complexType name="DocumentationReferencesType"&gt;
+		&lt;xsd:sequence maxOccurs="unbounded"&gt;
+			&lt;xsd:element name="DocumentationReference" type="xsd:anyURI"/&gt;
+		&lt;/xsd:sequence&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;!-- End ObjectIdentifierType--&gt;
+	&lt;!-- Start EncapsulatedPKIDataType--&gt;
+	&lt;xsd:element name="EncapsulatedPKIData" type="EncapsulatedPKIDataType"/&gt;
+	&lt;xsd:complexType name="EncapsulatedPKIDataType"&gt;
+		&lt;xsd:simpleContent&gt;
+			&lt;xsd:extension base="xsd:base64Binary"&gt;
+				&lt;xsd:attribute name="Id" type="xsd:ID" use="optional"/&gt;
+				&lt;xsd:attribute name="Encoding" type="xsd:anyURI" use="optional"/&gt;
+			&lt;/xsd:extension&gt;
+		&lt;/xsd:simpleContent&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;!-- End EncapsulatedPKIDataType --&gt;
+	&lt;!-- Start time-stamp containers types --&gt;
+	&lt;!-- Start GenericTimeStampType --&gt;
+	&lt;xsd:element name="Include" type="IncludeType"/&gt;
+	&lt;xsd:complexType name="IncludeType"&gt;
+		&lt;xsd:attribute name="URI" type="xsd:anyURI" use="required"/&gt;
+		&lt;xsd:attribute name="referencedData" type="xsd:boolean" use="optional"/&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;xsd:element name="ReferenceInfo" type="ReferenceInfoType"/&gt;
+	&lt;xsd:complexType name="ReferenceInfoType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element ref="ds:DigestMethod"/&gt;
+			&lt;xsd:element ref="ds:DigestValue"/&gt;
+		&lt;/xsd:sequence&gt;
+		&lt;xsd:attribute name="Id" type="xsd:ID" use="optional"/&gt;
+		&lt;xsd:attribute name="URI" type="xsd:anyURI" use="optional"/&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;xsd:complexType name="GenericTimeStampType" abstract="true"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:choice minOccurs="0"&gt;
+				&lt;xsd:element ref="Include" minOccurs="0" maxOccurs="unbounded"/&gt;
+				&lt;xsd:element ref="ReferenceInfo" maxOccurs="unbounded"/&gt;
+			&lt;/xsd:choice&gt;
+			&lt;xsd:element ref="ds:CanonicalizationMethod" minOccurs="0"/&gt;
+			&lt;xsd:choice maxOccurs="unbounded"&gt;
+				&lt;xsd:element name="EncapsulatedTimeStamp" type="EncapsulatedPKIDataType"/&gt;
+				&lt;xsd:element name="XMLTimeStamp" type="AnyType"/&gt;
+			&lt;/xsd:choice&gt;
+		&lt;/xsd:sequence&gt;
+		&lt;xsd:attribute name="Id" type="xsd:ID" use="optional"/&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;!-- End GenericTimeStampType --&gt;
+	&lt;!-- Start XAdESTimeStampType --&gt;
+	&lt;xsd:element name="XAdESTimeStamp" type="XAdESTimeStampType"/&gt;
+	&lt;xsd:complexType name="XAdESTimeStampType"&gt;
+		&lt;xsd:complexContent&gt;
+			&lt;xsd:restriction base="GenericTimeStampType"&gt;
+				&lt;xsd:sequence&gt;
+					&lt;xsd:element ref="Include" minOccurs="0" maxOccurs="unbounded"/&gt;
+					&lt;xsd:element ref="ds:CanonicalizationMethod" minOccurs="0"/&gt;
+					&lt;xsd:choice maxOccurs="unbounded"&gt;
+						&lt;xsd:element name="EncapsulatedTimeStamp" type="EncapsulatedPKIDataType"/&gt;
+						&lt;xsd:element name="XMLTimeStamp" type="AnyType"/&gt;
+					&lt;/xsd:choice&gt;
+				&lt;/xsd:sequence&gt;
+				&lt;xsd:attribute name="Id" type="xsd:ID" use="optional"/&gt;
+			&lt;/xsd:restriction&gt;
+		&lt;/xsd:complexContent&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;!-- End XAdESTimeStampType --&gt;
+	&lt;!-- Start OtherTimeStampType --&gt;
+	&lt;xsd:element name="OtherTimeStamp" type="OtherTimeStampType"/&gt;
+	&lt;xsd:complexType name="OtherTimeStampType"&gt;
+		&lt;xsd:complexContent&gt;
+			&lt;xsd:restriction base="GenericTimeStampType"&gt;
+				&lt;xsd:sequence&gt;
+					&lt;xsd:element ref="ReferenceInfo" maxOccurs="unbounded"/&gt;
+					&lt;xsd:element ref="ds:CanonicalizationMethod" minOccurs="0"/&gt;
+					&lt;xsd:choice&gt;
+						&lt;xsd:element name="EncapsulatedTimeStamp" type="EncapsulatedPKIDataType"/&gt;
+						&lt;xsd:element name="XMLTimeStamp" type="AnyType"/&gt;
+					&lt;/xsd:choice&gt;
+				&lt;/xsd:sequence&gt;
+				&lt;xsd:attribute name="Id" type="xsd:ID" use="optional"/&gt;
+			&lt;/xsd:restriction&gt;
+		&lt;/xsd:complexContent&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;!-- End OtherTimeStampType --&gt;
+	&lt;!-- End time-stamp containers types --&gt;
+	&lt;!-- End auxiliary types definitions--&gt;
+	&lt;!-- Start container types --&gt;
+	&lt;!-- Start QualifyingProperties --&gt;
+	&lt;xsd:element name="QualifyingProperties" type="QualifyingPropertiesType"/&gt;
+	&lt;xsd:complexType name="QualifyingPropertiesType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element name="SignedProperties" type="SignedPropertiesType" minOccurs="0"/&gt;
+			&lt;xsd:element name="UnsignedProperties" type="UnsignedPropertiesType" minOccurs="0"/&gt;
+		&lt;/xsd:sequence&gt;
+		&lt;xsd:attribute name="Target" type="xsd:anyURI" use="required"/&gt;
+		&lt;xsd:attribute name="Id" type="xsd:ID" use="optional"/&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;!-- End QualifyingProperties --&gt;
+	&lt;!-- Start SignedProperties--&gt;
+	&lt;xsd:element name="SignedProperties" type="SignedPropertiesType"/&gt;
+	&lt;xsd:complexType name="SignedPropertiesType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element name="SignedSignatureProperties" type="SignedSignaturePropertiesType" minOccurs="0"/&gt;
+			&lt;xsd:element name="SignedDataObjectProperties" type="SignedDataObjectPropertiesType" minOccurs="0"/&gt;
+		&lt;/xsd:sequence&gt;
+		&lt;xsd:attribute name="Id" type="xsd:ID" use="optional"/&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;!-- End SignedProperties--&gt;
+	&lt;!-- Start UnsignedProperties--&gt;
+	&lt;xsd:element name="UnsignedProperties" type="UnsignedPropertiesType"/&gt;
+	&lt;xsd:complexType name="UnsignedPropertiesType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element name="UnsignedSignatureProperties" type="UnsignedSignaturePropertiesType" minOccurs="0"/&gt;
+			&lt;xsd:element name="UnsignedDataObjectProperties" type="UnsignedDataObjectPropertiesType" minOccurs="0"/&gt;
+		&lt;/xsd:sequence&gt;
+		&lt;xsd:attribute name="Id" type="xsd:ID" use="optional"/&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;!-- End UnsignedProperties--&gt;
+	&lt;!-- Start SignedSignatureProperties--&gt;
+	&lt;xsd:element name="SignedSignatureProperties" type="SignedSignaturePropertiesType"/&gt;
+	&lt;xsd:complexType name="SignedSignaturePropertiesType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element name="SigningTime" type="xsd:dateTime" minOccurs="0"/&gt;
+			&lt;xsd:element name="SigningCertificate" type="CertIDListType" minOccurs="0"/&gt;
+			&lt;xsd:element name="SignaturePolicyIdentifier" type="SignaturePolicyIdentifierType" minOccurs="0"/&gt;
+			&lt;xsd:element name="SignatureProductionPlace" type="SignatureProductionPlaceType" minOccurs="0"/&gt;
+			&lt;xsd:element name="SignerRole" type="SignerRoleType" minOccurs="0"/&gt;
+		&lt;/xsd:sequence&gt;
+		&lt;xsd:attribute name="Id" type="xsd:ID" use="optional"/&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;!-- End SignedSignatureProperties--&gt;
+	&lt;!-- Start SignedDataObjectProperties--&gt;
+	&lt;xsd:element name="SignedDataObjectProperties" type="SignedDataObjectPropertiesType"/&gt;
+	&lt;xsd:complexType name="SignedDataObjectPropertiesType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element name="DataObjectFormat" type="DataObjectFormatType" minOccurs="0" maxOccurs="unbounded"/&gt;
+			&lt;xsd:element name="CommitmentTypeIndication" type="CommitmentTypeIndicationType" minOccurs="0" maxOccurs="unbounded"/&gt;
+			&lt;xsd:element name="AllDataObjectsTimeStamp" type="XAdESTimeStampType" minOccurs="0" maxOccurs="unbounded"/&gt;
+			&lt;xsd:element name="IndividualDataObjectsTimeStamp" type="XAdESTimeStampType" minOccurs="0" maxOccurs="unbounded"/&gt;
+		&lt;/xsd:sequence&gt;
+		&lt;xsd:attribute name="Id" type="xsd:ID" use="optional"/&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;!-- End SignedDataObjectProperties--&gt;
+	&lt;!-- Start UnsignedSignatureProperties--&gt;
+	&lt;xsd:element name="UnsignedSignatureProperties" type="UnsignedSignaturePropertiesType"/&gt;
+	&lt;xsd:complexType name="UnsignedSignaturePropertiesType"&gt;
+		&lt;xsd:choice maxOccurs="unbounded"&gt;
+			&lt;xsd:element name="CounterSignature" type="CounterSignatureType"/&gt;
+			&lt;xsd:element name="SignatureTimeStamp" type="XAdESTimeStampType"/&gt;
+			&lt;xsd:element name="CompleteCertificateRefs" type="CompleteCertificateRefsType"/&gt;
+			&lt;xsd:element name="CompleteRevocationRefs" type="CompleteRevocationRefsType"/&gt;
+			&lt;xsd:element name="AttributeCertificateRefs" type="CompleteCertificateRefsType"/&gt;
+			&lt;xsd:element name="AttributeRevocationRefs" type="CompleteRevocationRefsType"/&gt;
+			&lt;xsd:element name="SigAndRefsTimeStamp" type="XAdESTimeStampType"/&gt;
+			&lt;xsd:element name="RefsOnlyTimeStamp" type="XAdESTimeStampType"/&gt;
+			&lt;xsd:element name="CertificateValues" type="CertificateValuesType"/&gt;
+			&lt;xsd:element name="RevocationValues" type="RevocationValuesType"/&gt;
+			&lt;xsd:element name="AttrAuthoritiesCertValues" type="CertificateValuesType"/&gt;
+			&lt;xsd:element name="AttributeRevocationValues" type="RevocationValuesType"/&gt;
+			&lt;xsd:element name="ArchiveTimeStamp" type="XAdESTimeStampType"/&gt;
+			&lt;xsd:any namespace="##other"/&gt;
+		&lt;/xsd:choice&gt;
+		&lt;xsd:attribute name="Id" type="xsd:ID" use="optional"/&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;!-- End UnsignedSignatureProperties--&gt;
+	&lt;!-- Start UnsignedDataObjectProperties--&gt;
+	&lt;xsd:element name="UnsignedDataObjectProperties" type="UnsignedDataObjectPropertiesType"/&gt;
+	&lt;xsd:complexType name="UnsignedDataObjectPropertiesType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element name="UnsignedDataObjectProperty" type="AnyType" maxOccurs="unbounded"/&gt;
+		&lt;/xsd:sequence&gt;
+		&lt;xsd:attribute name="Id" type="xsd:ID" use="optional"/&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;!-- End UnsignedDataObjectProperties--&gt;
+	&lt;!-- Start QualifyingPropertiesReference--&gt;
+	&lt;xsd:element name="QualifyingPropertiesReference" type="QualifyingPropertiesReferenceType"/&gt;
+	&lt;xsd:complexType name="QualifyingPropertiesReferenceType"&gt;
+		&lt;xsd:attribute name="URI" type="xsd:anyURI" use="required"/&gt;
+		&lt;xsd:attribute name="Id" type="xsd:ID" use="optional"/&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;!-- End QualifyingPropertiesReference--&gt;
+	&lt;!-- End container types --&gt;
+	&lt;!-- Start SigningTime element --&gt;
+	&lt;xsd:element name="SigningTime" type="xsd:dateTime"/&gt;
+	&lt;!-- End SigningTime element --&gt;
+	&lt;!-- Start SigningCertificate --&gt;
+	&lt;xsd:element name="SigningCertificate" type="CertIDListType"/&gt;
+	&lt;xsd:complexType name="CertIDListType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element name="Cert" type="CertIDType" maxOccurs="unbounded"/&gt;
+		&lt;/xsd:sequence&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;xsd:complexType name="CertIDType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element name="CertDigest" type="DigestAlgAndValueType"/&gt;
+			&lt;xsd:element name="IssuerSerial" type="ds:X509IssuerSerialType"/&gt;
+		&lt;/xsd:sequence&gt;
+		&lt;xsd:attribute name="URI" type="xsd:anyURI" use="optional"/&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;xsd:complexType name="DigestAlgAndValueType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element ref="ds:DigestMethod"/&gt;
+			&lt;xsd:element ref="ds:DigestValue"/&gt;
+		&lt;/xsd:sequence&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;!-- End SigningCertificate --&gt;
+	&lt;!-- Start SignaturePolicyIdentifier --&gt;
+	&lt;xsd:element name="SignaturePolicyIdentifier" type="SignaturePolicyIdentifierType"/&gt;
+	&lt;xsd:complexType name="SignaturePolicyIdentifierType"&gt;
+		&lt;xsd:choice&gt;
+			&lt;xsd:element name="SignaturePolicyId" type="SignaturePolicyIdType"/&gt;
+			&lt;xsd:element name="SignaturePolicyImplied"/&gt;
+		&lt;/xsd:choice&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;xsd:complexType name="SignaturePolicyIdType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element name="SigPolicyId" type="ObjectIdentifierType"/&gt;
+			&lt;xsd:element ref="ds:Transforms" minOccurs="0"/&gt;
+			&lt;xsd:element name="SigPolicyHash" type="DigestAlgAndValueType"/&gt;
+			&lt;xsd:element name="SigPolicyQualifiers" type="SigPolicyQualifiersListType" minOccurs="0"/&gt;
+		&lt;/xsd:sequence&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;xsd:complexType name="SigPolicyQualifiersListType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element name="SigPolicyQualifier" type="AnyType" maxOccurs="unbounded"/&gt;
+		&lt;/xsd:sequence&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;xsd:element name="SPURI" type="xsd:anyURI"/&gt;
+	&lt;xsd:element name="SPUserNotice" type="SPUserNoticeType"/&gt;
+	&lt;xsd:complexType name="SPUserNoticeType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element name="NoticeRef" type="NoticeReferenceType" minOccurs="0"/&gt;
+			&lt;xsd:element name="ExplicitText" type="xsd:string" minOccurs="0"/&gt;
+		&lt;/xsd:sequence&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;xsd:complexType name="NoticeReferenceType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element name="Organization" type="xsd:string"/&gt;
+			&lt;xsd:element name="NoticeNumbers" type="IntegerListType"/&gt;
+		&lt;/xsd:sequence&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;xsd:complexType name="IntegerListType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element name="int" type="xsd:integer" minOccurs="0" maxOccurs="unbounded"/&gt;
+		&lt;/xsd:sequence&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;!-- End SignaturePolicyIdentifier --&gt;
+	&lt;!-- Start CounterSignature --&gt;
+	&lt;xsd:element name="CounterSignature" type="CounterSignatureType"/&gt;
+	&lt;xsd:complexType name="CounterSignatureType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element ref="ds:Signature"/&gt;
+		&lt;/xsd:sequence&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;!-- End CounterSignature --&gt;
+	&lt;!-- Start DataObjectFormat --&gt;
+	&lt;xsd:element name="DataObjectFormat" type="DataObjectFormatType"/&gt;
+	&lt;xsd:complexType name="DataObjectFormatType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element name="Description" type="xsd:string" minOccurs="0"/&gt;
+			&lt;xsd:element name="ObjectIdentifier" type="ObjectIdentifierType" minOccurs="0"/&gt;
+			&lt;xsd:element name="MimeType" type="xsd:string" minOccurs="0"/&gt;
+			&lt;xsd:element name="Encoding" type="xsd:anyURI" minOccurs="0"/&gt;
+		&lt;/xsd:sequence&gt;
+		&lt;xsd:attribute name="ObjectReference" type="xsd:anyURI" use="required"/&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;!-- End DataObjectFormat --&gt;
+	&lt;!-- Start CommitmentTypeIndication --&gt;
+	&lt;xsd:element name="CommitmentTypeIndication" type="CommitmentTypeIndicationType"/&gt;
+	&lt;xsd:complexType name="CommitmentTypeIndicationType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element name="CommitmentTypeId" type="ObjectIdentifierType"/&gt;
+			&lt;xsd:choice&gt;
+				&lt;xsd:element name="ObjectReference" type="xsd:anyURI" maxOccurs="unbounded"/&gt;
+				&lt;xsd:element name="AllSignedDataObjects"/&gt;
+			&lt;/xsd:choice&gt;
+			&lt;xsd:element name="CommitmentTypeQualifiers" type="CommitmentTypeQualifiersListType" minOccurs="0"/&gt;
+		&lt;/xsd:sequence&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;xsd:complexType name="CommitmentTypeQualifiersListType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element name="CommitmentTypeQualifier" type="AnyType" minOccurs="0" maxOccurs="unbounded"/&gt;
+		&lt;/xsd:sequence&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;!-- End CommitmentTypeIndication --&gt;
+	&lt;!-- Start SignatureProductionPlace --&gt;
+	&lt;xsd:element name="SignatureProductionPlace" type="SignatureProductionPlaceType"/&gt;
+	&lt;xsd:complexType name="SignatureProductionPlaceType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element name="City" type="xsd:string" minOccurs="0"/&gt;
+			&lt;xsd:element name="StateOrProvince" type="xsd:string" minOccurs="0"/&gt;
+			&lt;xsd:element name="PostalCode" type="xsd:string" minOccurs="0"/&gt;
+			&lt;xsd:element name="CountryName" type="xsd:string" minOccurs="0"/&gt;
+		&lt;/xsd:sequence&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;!-- End SignatureProductionPlace --&gt;
+	&lt;!-- Start SignerRole --&gt;
+	&lt;xsd:element name="SignerRole" type="SignerRoleType"/&gt;
+	&lt;xsd:complexType name="SignerRoleType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element name="ClaimedRoles" type="ClaimedRolesListType" minOccurs="0"/&gt;
+			&lt;xsd:element name="CertifiedRoles" type="CertifiedRolesListType" minOccurs="0"/&gt;
+		&lt;/xsd:sequence&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;xsd:complexType name="ClaimedRolesListType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element name="ClaimedRole" type="AnyType" maxOccurs="unbounded"/&gt;
+		&lt;/xsd:sequence&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;xsd:complexType name="CertifiedRolesListType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element name="CertifiedRole" type="EncapsulatedPKIDataType" maxOccurs="unbounded"/&gt;
+		&lt;/xsd:sequence&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;!-- End SignerRole --&gt;
+	&lt;xsd:element name="AllDataObjectsTimeStamp" type="XAdESTimeStampType"/&gt;
+	&lt;xsd:element name="IndividualDataObjectsTimeStamp" type="XAdESTimeStampType"/&gt;
+	&lt;xsd:element name="SignatureTimeStamp" type="XAdESTimeStampType"/&gt;
+	&lt;!-- Start CompleteCertificateRefs --&gt;
+	&lt;xsd:element name="CompleteCertificateRefs" type="CompleteCertificateRefsType"/&gt;
+	&lt;xsd:complexType name="CompleteCertificateRefsType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element name="CertRefs" type="CertIDListType"/&gt;
+		&lt;/xsd:sequence&gt;
+		&lt;xsd:attribute name="Id" type="xsd:ID" use="optional"/&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;!-- End CompleteCertificateRefs --&gt;
+	&lt;!-- Start CompleteRevocationRefs--&gt;
+	&lt;xsd:element name="CompleteRevocationRefs" type="CompleteRevocationRefsType"/&gt;
+	&lt;xsd:complexType name="CompleteRevocationRefsType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element name="CRLRefs" type="CRLRefsType" minOccurs="0"/&gt;
+			&lt;xsd:element name="OCSPRefs" type="OCSPRefsType" minOccurs="0"/&gt;
+			&lt;xsd:element name="OtherRefs" type="OtherCertStatusRefsType" minOccurs="0"/&gt;
+		&lt;/xsd:sequence&gt;
+		&lt;xsd:attribute name="Id" type="xsd:ID" use="optional"/&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;xsd:complexType name="CRLRefsType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element name="CRLRef" type="CRLRefType" maxOccurs="unbounded"/&gt;
+		&lt;/xsd:sequence&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;xsd:complexType name="CRLRefType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element name="DigestAlgAndValue" type="DigestAlgAndValueType"/&gt;
+			&lt;xsd:element name="CRLIdentifier" type="CRLIdentifierType" minOccurs="0"/&gt;
+		&lt;/xsd:sequence&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;xsd:complexType name="CRLIdentifierType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element name="Issuer" type="xsd:string"/&gt;
+			&lt;xsd:element name="IssueTime" type="xsd:dateTime"/&gt;
+			&lt;xsd:element name="Number" type="xsd:integer" minOccurs="0"/&gt;
+		&lt;/xsd:sequence&gt;
+		&lt;xsd:attribute name="URI" type="xsd:anyURI" use="optional"/&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;xsd:complexType name="OCSPRefsType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element name="OCSPRef" type="OCSPRefType" maxOccurs="unbounded"/&gt;
+		&lt;/xsd:sequence&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;xsd:complexType name="OCSPRefType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element name="OCSPIdentifier" type="OCSPIdentifierType"/&gt;
+			&lt;xsd:element name="DigestAlgAndValue" type="DigestAlgAndValueType" minOccurs="0"/&gt;
+		&lt;/xsd:sequence&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;xsd:complexType name="ResponderIDType"&gt;
+		&lt;xsd:choice&gt;
+			&lt;xsd:element name="ByName" type="xsd:string"/&gt;
+			&lt;xsd:element name="ByKey" type="xsd:base64Binary"/&gt;
+		&lt;/xsd:choice&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;xsd:complexType name="OCSPIdentifierType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element name="ResponderID" type="ResponderIDType"/&gt;
+			&lt;xsd:element name="ProducedAt" type="xsd:dateTime"/&gt;
+		&lt;/xsd:sequence&gt;
+		&lt;xsd:attribute name="URI" type="xsd:anyURI" use="optional"/&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;xsd:complexType name="OtherCertStatusRefsType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element name="OtherRef" type="AnyType" maxOccurs="unbounded"/&gt;
+		&lt;/xsd:sequence&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;!-- End CompleteRevocationRefs--&gt;
+	&lt;xsd:element name="AttributeCertificateRefs" type="CompleteCertificateRefsType"/&gt;
+	&lt;xsd:element name="AttributeRevocationRefs" type="CompleteRevocationRefsType"/&gt;
+	&lt;xsd:element name="SigAndRefsTimeStamp" type="XAdESTimeStampType"/&gt;
+	&lt;xsd:element name="RefsOnlyTimeStamp" type="XAdESTimeStampType"/&gt;
+	&lt;!-- Start CertificateValues --&gt;
+	&lt;xsd:element name="CertificateValues" type="CertificateValuesType"/&gt;
+	&lt;xsd:complexType name="CertificateValuesType"&gt;
+		&lt;xsd:choice minOccurs="0" maxOccurs="unbounded"&gt;
+			&lt;xsd:element name="EncapsulatedX509Certificate" type="EncapsulatedPKIDataType"/&gt;
+			&lt;xsd:element name="OtherCertificate" type="AnyType"/&gt;
+		&lt;/xsd:choice&gt;
+		&lt;xsd:attribute name="Id" type="xsd:ID" use="optional"/&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;!-- End CertificateValues --&gt;
+	&lt;!-- Start RevocationValues--&gt;
+	&lt;xsd:element name="RevocationValues" type="RevocationValuesType"/&gt;
+	&lt;xsd:complexType name="RevocationValuesType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element name="CRLValues" type="CRLValuesType" minOccurs="0"/&gt;
+			&lt;xsd:element name="OCSPValues" type="OCSPValuesType" minOccurs="0"/&gt;
+			&lt;xsd:element name="OtherValues" type="OtherCertStatusValuesType" minOccurs="0"/&gt;
+		&lt;/xsd:sequence&gt;
+		&lt;xsd:attribute name="Id" type="xsd:ID" use="optional"/&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;xsd:complexType name="CRLValuesType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element name="EncapsulatedCRLValue" type="EncapsulatedPKIDataType" maxOccurs="unbounded"/&gt;
+		&lt;/xsd:sequence&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;xsd:complexType name="OCSPValuesType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element name="EncapsulatedOCSPValue" type="EncapsulatedPKIDataType" maxOccurs="unbounded"/&gt;
+		&lt;/xsd:sequence&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;xsd:complexType name="OtherCertStatusValuesType"&gt;
+		&lt;xsd:sequence&gt;
+			&lt;xsd:element name="OtherValue" type="AnyType" maxOccurs="unbounded"/&gt;
+		&lt;/xsd:sequence&gt;
+	&lt;/xsd:complexType&gt;
+	&lt;!-- End RevocationValues--&gt;
+	&lt;xsd:element name="AttrAuthoritiesCertValues" type="CertificateValuesType"/&gt;
+	&lt;xsd:element name="AttributeRevocationValues" type="RevocationValuesType"/&gt;
+	&lt;xsd:element name="ArchiveTimeStamp" type="XAdESTimeStampType"/&gt;
+&lt;/xsd:schema&gt;
+</value></data>
+  </root>

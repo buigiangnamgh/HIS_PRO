@@ -1,789 +1,777 @@
-﻿using iTextSharp.text;
-using iTextSharp.text.pdf;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq.Expressions;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Security;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Windows.Forms;
-using X509Certificate = Org.BouncyCastle.X509.X509Certificate;
+using Inventec.Common.Logging;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
+using Org.BouncyCastle.X509;
 
 namespace Inventec.Common.SignFile
 {
-    public class SharedUtils
-    {
-        // Methods
-        public static string ConvertTVKhongDau(string str)
-        {
-            string[] strArray = new string[] {
-            "\x00e0", "\x00e1", "ạ", "ả", "\x00e3", "\x00e2", "ầ", "ấ", "ậ", "ẩ", "ẫ", "ă", "ằ", "ắ", "ặ", "ẳ",
-            "ẵ"
-         };
-            string[] strArray2 = new string[] {
-            "\x00c0", "\x00c1", "Ạ", "Ả", "\x00c3", "\x00c2", "Ầ", "Ấ", "Ậ", "Ẩ", "Ẫ", "Ă", "Ằ", "Ắ", "Ặ", "Ẳ",
-            "Ẵ"
-         };
-            string[] strArray3 = new string[] { "\x00e8", "\x00e9", "ẹ", "ẻ", "ẽ", "\x00ea", "ề", "ế", "ệ", "ể", "ễ" };
-            string[] strArray4 = new string[] { "\x00c8", "\x00c9", "Ẹ", "Ẻ", "Ẽ", "\x00ca", "Ề", "Ế", "Ệ", "Ể", "Ễ" };
-            string[] strArray5 = new string[] { "\x00ec", "\x00ed", "ị", "ỉ", "ĩ" };
-            string[] strArray6 = new string[] { "\x00cc", "\x00cd", "Ị", "Ỉ", "Ĩ" };
-            string[] strArray7 = new string[] {
-            "\x00f2", "\x00f3", "ọ", "ỏ", "\x00f5", "\x00f4", "ồ", "ố", "ộ", "ổ", "ỗ", "ơ", "ờ", "ớ", "ợ", "ở",
-            "ỡ"
-         };
-            string[] strArray8 = new string[] {
-            "\x00d2", "\x00d3", "Ọ", "Ỏ", "\x00d5", "\x00d4", "Ồ", "Ố", "Ộ", "Ổ", "Ỗ", "Ơ", "Ờ", "Ớ", "Ợ", "Ở",
-            "Ỡ"
-         };
-            string[] strArray9 = new string[] { "\x00f9", "\x00fa", "ụ", "ủ", "ũ", "ư", "ừ", "ứ", "ự", "ử", "ữ" };
-            string[] strArray10 = new string[] { "\x00d9", "\x00da", "Ụ", "Ủ", "Ũ", "Ư", "Ừ", "Ứ", "Ự", "Ử", "Ữ" };
-            string[] strArray11 = new string[] { "ỳ", "\x00fd", "ỵ", "ỷ", "ỹ" };
-            string[] strArray12 = new string[] { "Ỳ", "\x00dd", "Ỵ", "Ỷ", "Ỹ" };
-            str = str.Replace("đ", "d");
-            str = str.Replace("Đ", "D");
-            foreach (string str2 in strArray)
-            {
-                str = str.Replace(str2, "a");
-            }
-            foreach (string str3 in strArray2)
-            {
-                str = str.Replace(str3, "A");
-            }
-            foreach (string str4 in strArray3)
-            {
-                str = str.Replace(str4, "e");
-            }
-            foreach (string str5 in strArray4)
-            {
-                str = str.Replace(str5, "E");
-            }
-            foreach (string str6 in strArray5)
-            {
-                str = str.Replace(str6, "i");
-            }
-            foreach (string str7 in strArray6)
-            {
-                str = str.Replace(str7, "I");
-            }
-            foreach (string str8 in strArray7)
-            {
-                str = str.Replace(str8, "o");
-            }
-            foreach (string str9 in strArray8)
-            {
-                str = str.Replace(str9, "O");
-            }
-            foreach (string str10 in strArray9)
-            {
-                str = str.Replace(str10, "u");
-            }
-            foreach (string str11 in strArray10)
-            {
-                str = str.Replace(str11, "U");
-            }
-            foreach (string str12 in strArray11)
-            {
-                str = str.Replace(str12, "y");
-            }
-            foreach (string str13 in strArray12)
-            {
-                str = str.Replace(str13, "Y");
-            }
-            return str;
-        }
-
-        public static string GenerateTempFile()
-        {
-            try
-            {
-                string pathFolderTemp = GenerateTempFolderWithin();
-                return Path.Combine(pathFolderTemp, Guid.NewGuid().ToString() + ".pdf");
-            }
-            catch (IOException exception)
-            {
-                Console.WriteLine("Error create temp file: " + exception.Message);
-                return "";
-            }
-        }
-
-        public static string GenerateTempFile(string ext)
-        {
-            try
-            {
-                string pathFolderTemp = GenerateTempFolderWithin();
-                return Path.Combine(pathFolderTemp, Guid.NewGuid().ToString() + (!String.IsNullOrEmpty(ext) ? ext : ".pdf"));
-            }
-            catch (IOException exception)
-            {
-                Console.WriteLine("Error create temp file: " + exception.Message);
-                return "";
-            }
-        }
-
-
-        internal static string GenerateTempFolderWithin()
-        {
-            try
-            {
-                string pathFolderTemp = GenerateTempFolderWithinByDate();
-                //if (treatment != null && !String.IsNullOrEmpty(treatment.TREATMENT_CODE))
-                //{
-                //    pathFolderTemp = Path.Combine(pathFolderTemp, treatment.TREATMENT_CODE);
-                //}
-                if (!Directory.Exists(pathFolderTemp))
-                {
-                    Directory.CreateDirectory(pathFolderTemp);
-                }
-                return pathFolderTemp;
-            }
-            catch (IOException exception)
-            {
-                Inventec.Common.Logging.LogSystem.Warn("Error create temp file: " + exception.Message);
-                return "";
-            }
-        }
-
-        internal static string GenerateTempFolderWithinByDate()
-        {
-            try
-            {
-                string pathFolderTemp = Path.Combine(ParentTempFolder(), DateTime.Now.ToString("ddMMyyyy"));
-                if (!Directory.Exists(pathFolderTemp))
-                {
-                    Directory.CreateDirectory(pathFolderTemp);
-                }
-                return pathFolderTemp;
-            }
-            catch (IOException exception)
-            {
-                Inventec.Common.Logging.LogSystem.Warn("Error create temp file: " + exception.Message);
-                return "";
-            }
-        }
-
-        internal static string ParentTempFolder()
-        {
-            try
-            {
-                string pathFolderTemp = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "temp");
-                return pathFolderTemp;
-            }
-            catch (IOException exception)
-            {
-                Inventec.Common.Logging.LogSystem.Warn("Error create temp file: " + exception.Message);
-                return AppDomain.CurrentDomain.BaseDirectory;
-            }
-        }
-
-
-        public static void CreatePdf(PdfReader[] readers, ref string outFilePath)
-        {
-            Document document = new Document();
-            outFilePath = GenerateTempFile();
-            PdfCopy copy = new PdfCopy(document, File.Open(outFilePath, FileMode.Create));
-            copy.SetMergeFields();
-            document.Open();
-            foreach (PdfReader reader in readers)
-            {
-                copy.AddDocument(reader);
-            }
-            document.Close();
-            foreach (PdfReader reader in readers)
-            {
-                //reader.Close();
-            }
-        }
-
-        public static void CreatePdf(string inFilePath, ref string outFilePath)
-        {
-            Document document = new Document();
-            outFilePath = GenerateTempFile();
-            PdfCopy copy = new PdfCopy(document, File.Open(outFilePath, FileMode.Create));
-            copy.SetMergeFields();
-            document.Open();
-            PdfReader reader = new PdfReader(inFilePath);
-            copy.AddDocument(reader);
-            document.Close();
-            reader.Close();
-        }
-
-        public static bool SaveNewFileFromReader(PdfReader reader, ref string outFilePath, bool isCloseReader)
-        {
-            bool flag = false;
-            try
-            {
-                outFilePath = GenerateTempFile();
-
-                using (FileStream fs_ = File.Open(outFilePath, FileMode.Create))
-                {
-                    PdfReader pdfReader = new PdfReader(reader);
-
-                    var pdfConcat = new PdfConcatenate(fs_);
-                    var pages = new List<int>();
-                    for (int i = 0; i <= pdfReader.NumberOfPages; i++)
-                    {
-                        pages.Add(i);
-                    }
-                    pdfReader.SelectPages(pages);
-                    pdfConcat.AddPages(pdfReader);
-
-                    pdfReader.Close();
-                    pdfConcat.Close();
-                }
-
-                flag = true;
-            }
-            catch (Exception exception)
-            {
-                Console.WriteLine("Error insertSignature: " + exception.Message);
-                flag = false;
-            }
-            finally
-            {
-                if (isCloseReader && reader != null)
-                {
-                    reader.Close();
-                }
-            }
-            return flag;
-        }
-
-        public static bool SaveNewFileFromReader(string filename, ref string outFilePath)
-        {
-            bool flag = false;
-            try
-            {
-                outFilePath = GenerateTempFile();               
-                var pdfReader = new PdfReader(filename);
-                var pages = new List<int>();
-                for (int i = 0; i <= pdfReader.NumberOfPages; i++)
-                {
-                    pages.Add(i);
-                }
-                pdfReader.SelectPages(pages);
-
-                PdfStamper stp = new PdfStamper(pdfReader, new FileStream(outFilePath, FileMode.Create));
-                stp.Close();
-                pdfReader.Close();
-
-                flag = true;
-            }
-            catch (Exception exception)
-            {
-                Console.WriteLine("Error insertSignature: " + exception.Message);
-                flag = false;
-            }
-            finally
-            {
-
-            }
-            return flag;
-        }
-
-        public static bool SaveNewFileFromReader(byte[] bfile, ref string outFilePath, string ext = ".pdf")
-        {
-            bool flag = false;
-            try
-            {
-                outFilePath = GenerateTempFile(ext);
-                if (ext == ".pdf")
-                {
-                    using (FileStream fs_ = File.Open(outFilePath, FileMode.Create, FileAccess.ReadWrite))
-                    {
-                        var pdfConcat = new PdfConcatenate(fs_);
-
-                        PdfReader pdfReader = new PdfReader(bfile);
-                        var pages = new List<int>();
-                        for (int i = 0; i <= pdfReader.NumberOfPages; i++)
-                        {
-                            pages.Add(i);
-                        }
-                        pdfReader.SelectPages(pages);
-                        pdfConcat.AddPages(pdfReader);
-
-                        pdfReader.Close();
-                        pdfConcat.Close();
-                    }
-                }
-                else
-                {
-                    ByteToFile(bfile, outFilePath);
-                }
-
-                flag = true;
-            }
-            catch (Exception exception)
-            {
-                Console.WriteLine("Error insertSignature: " + exception.Message);
-                flag = false;
-            }
-            finally
-            {
-
-            }
-            return flag;
-        }
-
-
-        public static bool SaveNewFileFromReader(Stream sfile, ref string outFilePath)
-        {
-            bool flag = false;
-            try
-            {
-                outFilePath = GenerateTempFile();
-
-                ByteToFile(StreamToByte(sfile), outFilePath);
-                //using (FileStream fs_ = File.Open(outFilePath, FileMode.Create))
-                //{
-                //    sfile.Position = 0;
-                //    var pdfConcat = new PdfConcatenate(fs_);
-
-                //    PdfReader pdfReader = new PdfReader(sfile);
-                //    var pages = new List<int>();
-                //    for (int i = 0; i <= pdfReader.NumberOfPages; i++)
-                //    {
-                //        pages.Add(i);
-                //    }
-                //    pdfReader.SelectPages(pages);
-                //    pdfConcat.AddPages(pdfReader);
-
-                //    pdfReader.Close();
-                //    pdfConcat.Close();
-
-
-                //    //PdfReader readerTmpn = new PdfReader(sfile);
-                //    //using (PdfStamper stam = new PdfStamper(readerTmpn, fs_))
-                //    //{
-                //    //}
-                //    //readerTmpn.Close();
-                //}
-
-                flag = true;
-            }
-            catch (Exception exception)
-            {
-                Console.WriteLine("Error insertSignature: " + exception.Message);
-                try
-                {
-                    File.Delete(outFilePath);
-                }
-                catch { }
-                flag = false;
-            }
-            finally
-            {
-
-            }
-            return flag;
-        }
-
-        public static byte[] GetBytes(string str)
-        {
-            try
-            {
-                byte[] dst = new byte[str.Length * 2];
-                Buffer.BlockCopy(str.ToCharArray(), 0, dst, 0, dst.Length);
-                return dst;
-            }
-            catch (Exception exception)
-            {
-                Console.WriteLine("Error get Byte from string: " + exception.Message);
-                return null;
-            }
-        }
-
-        public static string GetCN(X509Certificate cert)
-        {
-            try
-            {
-                return GetCNFromDN(GetSubject(cert));
-            }
-            catch (Exception exception)
-            {
-                Console.WriteLine("Error getCN: " + exception.Message);
-                return null;
-            }
-        }
-
-        public static string GetCNFromDN(string dn)
-        {
-            try
-            {
-                char[] separator = new char[] { ',' };
-                string[] strArray = dn.Split(separator);
-                string str = "";
-                for (int i = 0; i < strArray.Length; i++)
-                {
-                    if (strArray[i].IndexOf("CN=") != -1)
-                    {
-                        char[] chArray2 = new char[] { '=' };
-                        str = strArray[i].Split(chArray2)[1];
-                    }
-                }
-                //if (str != "")
-                //{
-                //    return ConvertTVKhongDau(str);
-                //}
-                return str;
-            }
-            catch (Exception exception)
-            {
-                Console.WriteLine("Error GetCNFromDN: " + exception.Message);
-                return "";
-            }
-        }
-
-        public static double GetCurrentMilli()
-        {
-            try
-            {
-                DateTime time = new DateTime(0x7b2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-                TimeSpan span = (TimeSpan)(DateTime.UtcNow - time);
-                return (double)((long)span.TotalMilliseconds);
-            }
-            catch (Exception exception)
-            {
-                Console.WriteLine("Error get current milli: " + exception.Message);
-                return 0.0;
-            }
-        }
-
-        public static string GetLocation(X509Certificate certificate)
-        {
-            try
-            {
-                return GetLocationFromDN(GetSubject(certificate));
-            }
-            catch (Exception exception)
-            {
-                Console.WriteLine("Error getLocation: " + exception.Message);
-                return null;
-            }
-        }
-
-        public static string GetLocationFromDN(string dn)
-        {
-            try
-            {
-                char[] separator = new char[] { ',' };
-                string[] strArray = dn.Split(separator);
-                string str = "";
-                for (int i = 0; i < strArray.Length; i++)
-                {
-                    if (strArray[i].IndexOf("L=") != -1)
-                    {
-                        char[] chArray2 = new char[] { '=' };
-                        str = strArray[i].Split(chArray2)[1];
-                    }
-                }
-                if (str != "")
-                {
-                    return ConvertTVKhongDau(str);
-                }
-                return str;
-            }
-            catch (Exception exception)
-            {
-                Console.WriteLine("Error GetLocationFromDN: " + exception.Message);
-                return "";
-            }
-        }
-
-        public static string getSignName()
-        {
-            return (GetCurrentMilli().ToString());
-        }
-
-        public static string GetSubject(X509Certificate certificate)
-        {
-            try
-            {
-                return certificate.SubjectDN.ToString();
-            }
-            catch (Exception exception)
-            {
-                Console.WriteLine("Error getSubject: " + exception.Message);
-                return null;
-            }
-        }
-
-        public static BaseFont GetBaseFont()
-        {
-            string TAHOMA_TFF = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Fonts), "tahoma.ttf");
-
-            //Create a base font object making sure to specify IDENTITY-H
-            return BaseFont.CreateFont(TAHOMA_TFF, BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
-        }
-
-        internal static SecureString GetSecurePin(string PinCode)
-        {
-            SecureString pwd = new SecureString();
-            foreach (var c in PinCode.ToCharArray()) pwd.AppendChar(c);
-            return pwd;
-        }
-
-        internal static string GetFileContentHash(string fileContent)
-        {
-            try
-            {
-                using (HashAlgorithm hash = HashAlgorithm.Create())
-                {
-                    byte[] hashByte = hash.ComputeHash(Encoding.UTF8.GetBytes(fileContent));//哈希算法根据文本得到哈希码的字节数组                  
-                    string str1 = BitConverter.ToString(hashByte);//将字节数组装换为字符串
-
-                    return (str1).Replace("-", String.Empty);//比较哈希码
-
-                }
-            }
-            catch (Exception ex)
-            {
-                Inventec.Common.Logging.LogSystem.Warn(ex);
-            }
-
-            return "";
-            //HashAlgorithm hash = HashAlgorithm.Create();
-            //FileStream file = new FileStream(filePath, FileMode.Open);
-            //byte[] hashByte = hash.ComputeHash(file);//哈希算法根据文本得到哈希码的字节数组
-            //string str1 = BitConverter.ToString(hashByte);//将字节数组装换为字符串
-            //file.Close();
-            //return str1;
-        }
-
-        internal static byte[] StreamToByte(Stream input)
-        {
-            byte[] buffer = new byte[16 * 1024];
-            using (MemoryStream ms = new MemoryStream())
-            {
-                int read;
-                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
-                {
-                    ms.Write(buffer, 0, read);
-                }
-                return ms.ToArray();
-            }
-        }
-
-        internal static byte[] FileToByte(string input)
-        {
-            return File.ReadAllBytes(input);
-        }
-
-        internal static void ByteToFile(byte[] arrInFile, string saveFile)
-        {
-            File.WriteAllBytes(saveFile, arrInFile);
-        }
-
-        internal static void UpdateimageCell(float widthRectangle, float heightRectangle, Image instance, float SignaltureImageWidth, float widthImagePercent, float plusH)
-        {
-
-            float imgTotalWidth = 0;
-            if (instance != null)
-            {
-                //float plusH = ProcessHeightPlus(widthImagePercent, displayConfig);
-                float heightRecModPlus = heightRectangle - plusH;
-                float heighRectangleModPlus1 = (heightRecModPlus > 0 ? heightRecModPlus : heightRectangle);
-                if (instance.Width > widthRectangle || instance.Height > heightRectangle || (instance.Height > heightRecModPlus && heightRecModPlus > 0))
-                {
-                    float weightImgRealPercentTH1 = (instance.Width > widthRectangle ? widthRectangle / instance.Width : 0);
-                    float heightImgRealPercentTH1 = (instance.Height > heighRectangleModPlus1 ? heighRectangleModPlus1 / (instance.Height) : 0);
-                    if (weightImgRealPercentTH1 > 0 && heightImgRealPercentTH1 > 0)
-                    {
-                        imgTotalWidth = (float)(instance.Width * widthImagePercent * (weightImgRealPercentTH1 < heightImgRealPercentTH1 ? weightImgRealPercentTH1 : heightImgRealPercentTH1) / 100);//80
-                    }
-                    else if (heightImgRealPercentTH1 > 0)
-                    {
-                        imgTotalWidth = (float)(instance.Width * widthImagePercent * heightImgRealPercentTH1 / 100);//80
-                    }
-                    else if (weightImgRealPercentTH1 > 0)
-                    {
-                        imgTotalWidth = (float)(instance.Width * widthImagePercent * weightImgRealPercentTH1 / 100);//80
-                    }
-                    Inventec.Common.Logging.LogSystem.Info("2__"
-                        + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => weightImgRealPercentTH1), weightImgRealPercentTH1)
-                        + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => heightImgRealPercentTH1), heightImgRealPercentTH1)
-                        + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => imgTotalWidth), imgTotalWidth)
-                        + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => plusH), plusH));
-                }
-                else
-                {
-                    float newHeightImagePercent = (((heightRecModPlus > 0 ? heightRecModPlus : heightRectangle)) / instance.Height);
-                    imgTotalWidth = (float)(instance.Width * widthImagePercent * newHeightImagePercent / 100);//80
-                    Inventec.Common.Logging.LogSystem.Info("3__" +
-                        Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => newHeightImagePercent), newHeightImagePercent)
-                        + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => imgTotalWidth), imgTotalWidth)
-                        + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => plusH), plusH));
-                }
-            }
-            else
-            {
-                imgTotalWidth = (float)(widthRectangle * widthImagePercent / 100);//80
-                Inventec.Common.Logging.LogSystem.Info("4__" +
-                        Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => imgTotalWidth), imgTotalWidth)
-                       + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => widthImagePercent), widthImagePercent));
-            }
-
-
-            //foreach (IElement element in imageCell.CompositeElements)
-            //{
-            //    // The inserted image is stored in a PdfPTable, so when you find 
-            //    // the table element just set the table width with the image width, and lock it.
-            //    PdfPTable tblImg = element as PdfPTable;
-            //    if (tblImg != null)
-            //    {
-            //        tblImg.TotalWidth = imgTotalWidth;
-            //        tblImg.LockedWidth = true;
-
-            //        float widthPercentageImage = (imgTotalWidth > widthRectangle ? widthRectangle * 100 / imgTotalWidth : (imgTotalWidth < widthRectangle ? imgTotalWidth * 100 / widthRectangle : 100));
-            //        float imgHeightNew = (widthPercentageImage / 100) * instance.Height;
-            //        Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => imgHeightNew), imgHeightNew));
-            //    }
-            //}
-        }
-
-        public static float CalculateWidthPercent(float widthRectangle, float heightRectangle, Image instance, float SignaltureImageWidth, float widthImagePercent, float plusH)
-        {
-
-            //// thay doi kich thuoc anh cho phu hop voi khung ky
-            ////tuong ung voi khung hinh
-            //// Now find the Image element in the cell and resize it
-            //foreach (IElement element in imageCell.CompositeElements)
-            //{
-            //    // The inserted image is stored in a PdfPTable, so when you find 
-            //    // the table element just set the table width with the image width, and lock it.
-            //    PdfPTable tblImg = element as PdfPTable;
-            //    if (tblImg != null)
-            //    {
-            //        tblImg.TotalWidth = imgTotalWidth;
-            //        tblImg.LockedWidth = true;
-
-            //        float widthPercentageImage = (imgTotalWidth > widthRectangle ? widthRectangle * 100 / imgTotalWidth : (imgTotalWidth < widthRectangle ? imgTotalWidth * 100 / widthRectangle : 100));
-            //        float imgHeightNew = (widthPercentageImage / 100) * instance.Height;
-            //        Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => imgHeightNew), imgHeightNew));
-            //    }
-            //}
-
-
-            float imgTotalWidth = instance.Width;
-            if (instance != null)
-            {
-                float heightRecModPlus = heightRectangle - plusH;
-                float heighRectangleModPlus1 = (heightRecModPlus > 0 ? heightRecModPlus : heightRectangle);
-                if (instance.Width > widthRectangle || instance.Height > heightRectangle || (instance.Height > heightRecModPlus && heightRecModPlus > 0))
-                {
-                    float weightImgRealPercentTH1 = (instance.Width > widthRectangle ? widthRectangle / instance.Width : 0);
-                    float heightImgRealPercentTH1 = (instance.Height > heighRectangleModPlus1 ? heighRectangleModPlus1 / (instance.Height) : 0);
-                    if (weightImgRealPercentTH1 > 0 && heightImgRealPercentTH1 > 0)
-                    {
-                        imgTotalWidth = (float)(instance.Width * widthImagePercent * (weightImgRealPercentTH1 < heightImgRealPercentTH1 ? weightImgRealPercentTH1 : heightImgRealPercentTH1) / 100);//80
-                    }
-                    else if (heightImgRealPercentTH1 > 0)
-                    {
-                        imgTotalWidth = (float)(instance.Width * widthImagePercent * heightImgRealPercentTH1 / 100);//80
-                    }
-                    else if (weightImgRealPercentTH1 > 0)
-                    {
-                        imgTotalWidth = (float)(instance.Width * widthImagePercent * weightImgRealPercentTH1 / 100);//80
-                    }
-                    Inventec.Common.Logging.LogSystem.Info("2__"
-                        + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => weightImgRealPercentTH1), weightImgRealPercentTH1)
-                        + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => heightImgRealPercentTH1), heightImgRealPercentTH1)
-                        + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => widthRectangle), widthRectangle)
-                        + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => heightRectangle), heightRectangle)
-                        + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => imgTotalWidth), imgTotalWidth)
-                        + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => heightRecModPlus), heightRecModPlus)
-                        + Inventec.Common.Logging.LogUtil.TraceData("instance.Height", instance.Height)
-                        + Inventec.Common.Logging.LogUtil.TraceData("instance.Width", instance.Width)
-                        + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => plusH), plusH));
-                }
-                else
-                {
-                    float newHeightImagePercent = (((heightRecModPlus > 0 ? heightRecModPlus : heightRectangle)) / instance.Height);
-                    imgTotalWidth = (float)(instance.Width * widthImagePercent * newHeightImagePercent / 100);//80
-                    Inventec.Common.Logging.LogSystem.Info("3__" +
-                        Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => newHeightImagePercent), newHeightImagePercent)
-                        + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => widthRectangle), widthRectangle)
-                        + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => heightRectangle), heightRectangle)
-                        + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => imgTotalWidth), imgTotalWidth)
-                        + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => heightRecModPlus), heightRecModPlus)
-                        + Inventec.Common.Logging.LogUtil.TraceData("instance.Height", instance.Height)
-                        + Inventec.Common.Logging.LogUtil.TraceData("instance.Width", instance.Width)
-                        + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => plusH), plusH));
-                }
-            }
-            else
-            {
-                imgTotalWidth = (float)(widthRectangle * widthImagePercent / 100);//80
-                Inventec.Common.Logging.LogSystem.Info("4__"
-                        + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => widthRectangle), widthRectangle)
-                        + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => heightRectangle), heightRectangle)
-                        + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => imgTotalWidth), imgTotalWidth)
-                        + Inventec.Common.Logging.LogUtil.TraceData("instance.Height", instance.Height)
-                        + Inventec.Common.Logging.LogUtil.TraceData("instance.Width", instance.Width)
-                        + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => widthImagePercent), widthImagePercent));
-            }
-
-
-            float fwidth = widthRectangle;
-            float fwidthP = (imgTotalWidth > instance.Width ? instance.Width : imgTotalWidth);
-            if (SignaltureImageWidth > 0)
-            {
-                fwidth = SignaltureImageWidth;
-            }
-            else if (widthRectangle >= 100)
-            {
-                fwidth = 100;
-                if (fwidthP < 140)
-                {
-                    float ftemp = 0;
-                    ftemp = fwidth;
-                    fwidth = fwidthP;
-                    fwidthP = ftemp * 2;
-                }
-            }
-            else
-            {
-                fwidth = widthRectangle;
-
-                if (fwidthP < widthRectangle)
-                {
-                    float ftemp = 0;
-                    ftemp = fwidth;
-                    fwidth = fwidthP;
-                    fwidthP = ftemp;
-                }
-            }
-
-
-            float WidthPercentage = 100 * (fwidth / fwidthP);
-            return WidthPercentage;
-        }
-
-        internal class CertManager
-        {
-            // note that both *.pfx location and the password are hardcoded!
-            // please customize it in a production code
-            private static System.Security.Cryptography.X509Certificates.X509Certificate2 _certificate;
-            internal static System.Security.Cryptography.X509Certificates.X509Certificate2 Certificate
-            {
-                get
-                {
-                    if (_certificate == null)
-                    {
-                        using (FileStream fs =
-                           File.Open(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "3dcb620b-e826-436e-a018-6826b0b4ed7f.pfx"), FileMode.Open))
-                        using (BinaryReader br = new BinaryReader(fs))
-                        {
-                            _certificate =
-                                new System.Security.Cryptography.X509Certificates.X509Certificate2(
-                                   br.ReadBytes((int)br.BaseStream.Length), "@123");
-                        }
-                    }
-
-                    return _certificate;
-                }
-            }
-        }
-    }
+	public class SharedUtils
+	{
+		internal class CertManager
+		{
+			private static X509Certificate2 _certificate;
+
+			internal static X509Certificate2 Certificate
+			{
+				get
+				{
+					if (_certificate == null)
+					{
+						string text = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "3dcb620b-e826-436e-a018-6826b0b4ed7f.pfx");
+						LogSystem.Info(text);
+						if (!File.Exists(text))
+						{
+							throw new FileNotFoundException("Certificate file not found: " + text);
+						}
+						byte[] rawData = File.ReadAllBytes(text);
+						_certificate = new X509Certificate2(rawData, "@123", X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet);
+					}
+					return _certificate;
+				}
+			}
+		}
+
+		[CompilerGenerated]
+		private sealed class _003C_003Ec__DisplayClass27_0
+		{
+			public float imgTotalWidth;
+
+			public float plusH;
+
+			public float widthImagePercent;
+		}
+
+		public static string ConvertTVKhongDau(string str)
+		{
+			string[] array = new string[17]
+			{
+				"à", "á", "ạ", "ả", "ã", "â", "ầ", "ấ", "ậ", "ẩ",
+				"ẫ", "ă", "ằ", "ắ", "ặ", "ẳ", "ẵ"
+			};
+			string[] array2 = new string[17]
+			{
+				"À", "Á", "Ạ", "Ả", "Ã", "Â", "Ầ", "Ấ", "Ậ", "Ẩ",
+				"Ẫ", "Ă", "Ằ", "Ắ", "Ặ", "Ẳ", "Ẵ"
+			};
+			string[] array3 = new string[11]
+			{
+				"è", "é", "ẹ", "ẻ", "ẽ", "ê", "ề", "ế", "ệ", "ể",
+				"ễ"
+			};
+			string[] array4 = new string[11]
+			{
+				"È", "É", "Ẹ", "Ẻ", "Ẽ", "Ê", "Ề", "Ế", "Ệ", "Ể",
+				"Ễ"
+			};
+			string[] array5 = new string[5] { "ì", "í", "ị", "ỉ", "ĩ" };
+			string[] array6 = new string[5] { "Ì", "Í", "Ị", "Ỉ", "Ĩ" };
+			string[] array7 = new string[17]
+			{
+				"ò", "ó", "ọ", "ỏ", "õ", "ô", "ồ", "ố", "ộ", "ổ",
+				"ỗ", "ơ", "ờ", "ớ", "ợ", "ở", "ỡ"
+			};
+			string[] array8 = new string[17]
+			{
+				"Ò", "Ó", "Ọ", "Ỏ", "Õ", "Ô", "Ồ", "Ố", "Ộ", "Ổ",
+				"Ỗ", "Ơ", "Ờ", "Ớ", "Ợ", "Ở", "Ỡ"
+			};
+			string[] array9 = new string[11]
+			{
+				"ù", "ú", "ụ", "ủ", "ũ", "ư", "ừ", "ứ", "ự", "ử",
+				"ữ"
+			};
+			string[] array10 = new string[11]
+			{
+				"Ù", "Ú", "Ụ", "Ủ", "Ũ", "Ư", "Ừ", "Ứ", "Ự", "Ử",
+				"Ữ"
+			};
+			string[] array11 = new string[5] { "ỳ", "ý", "ỵ", "ỷ", "ỹ" };
+			string[] array12 = new string[5] { "Ỳ", "Ý", "Ỵ", "Ỷ", "Ỹ" };
+			str = str.Replace("đ", "d");
+			str = str.Replace("Đ", "D");
+			string[] array13 = array;
+			foreach (string oldValue in array13)
+			{
+				str = str.Replace(oldValue, "a");
+			}
+			string[] array14 = array2;
+			foreach (string oldValue2 in array14)
+			{
+				str = str.Replace(oldValue2, "A");
+			}
+			string[] array15 = array3;
+			foreach (string oldValue3 in array15)
+			{
+				str = str.Replace(oldValue3, "e");
+			}
+			string[] array16 = array4;
+			foreach (string oldValue4 in array16)
+			{
+				str = str.Replace(oldValue4, "E");
+			}
+			string[] array17 = array5;
+			foreach (string oldValue5 in array17)
+			{
+				str = str.Replace(oldValue5, "i");
+			}
+			string[] array18 = array6;
+			foreach (string oldValue6 in array18)
+			{
+				str = str.Replace(oldValue6, "I");
+			}
+			string[] array19 = array7;
+			foreach (string oldValue7 in array19)
+			{
+				str = str.Replace(oldValue7, "o");
+			}
+			string[] array20 = array8;
+			foreach (string oldValue8 in array20)
+			{
+				str = str.Replace(oldValue8, "O");
+			}
+			string[] array21 = array9;
+			foreach (string oldValue9 in array21)
+			{
+				str = str.Replace(oldValue9, "u");
+			}
+			string[] array22 = array10;
+			foreach (string oldValue10 in array22)
+			{
+				str = str.Replace(oldValue10, "U");
+			}
+			string[] array23 = array11;
+			foreach (string oldValue11 in array23)
+			{
+				str = str.Replace(oldValue11, "y");
+			}
+			string[] array24 = array12;
+			foreach (string oldValue12 in array24)
+			{
+				str = str.Replace(oldValue12, "Y");
+			}
+			return str;
+		}
+
+		public static string GenerateTempFile()
+		{
+			try
+			{
+				string path = GenerateTempFolderWithin();
+				return Path.Combine(path, Guid.NewGuid().ToString() + ".pdf");
+			}
+			catch (IOException ex)
+			{
+				Console.WriteLine("Error create temp file: " + ex.Message);
+				return "";
+			}
+		}
+
+		public static string GenerateTempFile(string ext)
+		{
+			try
+			{
+				string path = GenerateTempFolderWithin();
+				return Path.Combine(path, Guid.NewGuid().ToString() + ((!string.IsNullOrEmpty(ext)) ? ext : ".pdf"));
+			}
+			catch (IOException ex)
+			{
+				Console.WriteLine("Error create temp file: " + ex.Message);
+				return "";
+			}
+		}
+
+		internal static string GenerateTempFolderWithin()
+		{
+			try
+			{
+				string text = GenerateTempFolderWithinByDate();
+				if (!Directory.Exists(text))
+				{
+					Directory.CreateDirectory(text);
+				}
+				return text;
+			}
+			catch (IOException ex)
+			{
+				LogSystem.Warn("Error create temp file: " + ex.Message);
+				return "";
+			}
+		}
+
+		internal static string GenerateTempFolderWithinByDate()
+		{
+			try
+			{
+				string text = Path.Combine(ParentTempFolder(), DateTime.Now.ToString("ddMMyyyy"));
+				if (!Directory.Exists(text))
+				{
+					Directory.CreateDirectory(text);
+				}
+				try
+				{
+					string path = Path.Combine(ParentTempFolder(), DateTime.Now.AddDays(-1.0).ToString("ddMMyyyy"));
+					if (Directory.Exists(path))
+					{
+						Directory.Delete(path, true);
+					}
+				}
+				catch (Exception ex)
+				{
+					LogSystem.Warn("Error .Delete temp pre folder: " + ex.Message);
+				}
+				return text;
+			}
+			catch (IOException ex2)
+			{
+				LogSystem.Warn("Error create temp file: " + ex2.Message);
+				return "";
+			}
+		}
+
+		internal static string ParentTempFolder()
+		{
+			try
+			{
+				return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "temp");
+			}
+			catch (IOException ex)
+			{
+				LogSystem.Warn("Error create temp file: " + ex.Message);
+				return AppDomain.CurrentDomain.BaseDirectory;
+			}
+		}
+
+		public static void CreatePdf(PdfReader[] readers, ref string outFilePath)
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0007: Expected O, but got Unknown
+			//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001d: Expected O, but got Unknown
+			Document val = new Document();
+			outFilePath = GenerateTempFile();
+			PdfCopy val2 = new PdfCopy(val, (Stream)File.Open(outFilePath, FileMode.Create));
+			val2.SetMergeFields();
+			val.Open();
+			foreach (PdfReader val3 in readers)
+			{
+				val2.AddDocument(val3);
+			}
+			val.Close();
+			foreach (PdfReader val4 in readers)
+			{
+			}
+		}
+
+		public static void CreatePdf(string inFilePath, ref string outFilePath)
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0007: Expected O, but got Unknown
+			//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001d: Expected O, but got Unknown
+			//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0032: Expected O, but got Unknown
+			Document val = new Document();
+			outFilePath = GenerateTempFile();
+			PdfCopy val2 = new PdfCopy(val, (Stream)File.Open(outFilePath, FileMode.Create));
+			val2.SetMergeFields();
+			val.Open();
+			PdfReader val3 = new PdfReader(inFilePath);
+			val2.AddDocument(val3);
+			val.Close();
+			val3.Close();
+		}
+
+		public static bool SaveNewFileFromReader(PdfReader reader, ref string outFilePath, bool isCloseReader)
+		{
+			//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001c: Expected O, but got Unknown
+			//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0023: Expected O, but got Unknown
+			bool result = false;
+			try
+			{
+				outFilePath = GenerateTempFile();
+				using (FileStream fileStream = File.Open(outFilePath, FileMode.Create))
+				{
+					PdfReader val = new PdfReader(reader);
+					PdfConcatenate val2 = new PdfConcatenate((Stream)fileStream);
+					List<int> list = new List<int>();
+					for (int i = 0; i <= val.NumberOfPages; i++)
+					{
+						list.Add(i);
+					}
+					val.SelectPages((ICollection<int>)list);
+					val2.AddPages(val);
+					val.Close();
+					val2.Close();
+				}
+				result = true;
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("Error insertSignature: " + ex.Message);
+				result = false;
+			}
+			finally
+			{
+				if (isCloseReader && reader != null)
+				{
+					reader.Close();
+				}
+			}
+			return result;
+		}
+
+		public static bool SaveNewFileFromReader(string filename, ref string outFilePath)
+		{
+			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0012: Expected O, but got Unknown
+			//IL_0052: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0058: Expected O, but got Unknown
+			bool result = false;
+			try
+			{
+				outFilePath = GenerateTempFile();
+				PdfReader val = new PdfReader(filename);
+				List<int> list = new List<int>();
+				for (int i = 0; i <= val.NumberOfPages; i++)
+				{
+					list.Add(i);
+				}
+				val.SelectPages((ICollection<int>)list);
+				PdfStamper val2 = new PdfStamper(val, (Stream)new FileStream(outFilePath, FileMode.Create));
+				val2.Close();
+				val.Close();
+				result = true;
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("Error insertSignature: " + ex.Message);
+				result = false;
+			}
+			finally
+			{
+			}
+			return result;
+		}
+
+		public static bool SaveNewFileFromReader(byte[] bfile, ref string outFilePath, string ext = ".pdf")
+		{
+			//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0031: Expected O, but got Unknown
+			//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0039: Expected O, but got Unknown
+			bool result = false;
+			try
+			{
+				outFilePath = GenerateTempFile(ext);
+				if (ext == ".pdf")
+				{
+					using (FileStream fileStream = File.Open(outFilePath, FileMode.Create, FileAccess.ReadWrite))
+					{
+						PdfConcatenate val = new PdfConcatenate((Stream)fileStream);
+						PdfReader val2 = new PdfReader(bfile);
+						List<int> list = new List<int>();
+						for (int i = 0; i <= val2.NumberOfPages; i++)
+						{
+							list.Add(i);
+						}
+						val2.SelectPages((ICollection<int>)list);
+						val.AddPages(val2);
+						val2.Close();
+						val.Close();
+					}
+				}
+				else
+				{
+					ByteToFile(bfile, outFilePath);
+				}
+				result = true;
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("Error insertSignature: " + ex.Message);
+				result = false;
+			}
+			finally
+			{
+			}
+			return result;
+		}
+
+		public static bool SaveNewFileFromReaderExt(byte[] bfile, ref string outFilePath, string ext = ".pdf")
+		{
+			//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0031: Expected O, but got Unknown
+			//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0039: Expected O, but got Unknown
+			bool result = false;
+			try
+			{
+				outFilePath = GenerateTempFile(ext);
+				if (ext == ".pdf")
+				{
+					using (FileStream fileStream = File.Open(outFilePath, FileMode.Create, FileAccess.ReadWrite))
+					{
+						PdfConcatenate val = new PdfConcatenate((Stream)fileStream);
+						PdfReader val2 = new PdfReader(bfile);
+						List<int> list = new List<int>();
+						for (int i = 0; i <= val2.NumberOfPages; i++)
+						{
+							list.Add(i);
+						}
+						val2.SelectPages((ICollection<int>)list);
+						val.AddPages(val2);
+						val2.Close();
+						val.Close();
+					}
+				}
+				else
+				{
+					ByteToFile(bfile, outFilePath);
+				}
+				result = true;
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("Error insertSignature: " + ex.Message);
+				result = false;
+			}
+			finally
+			{
+			}
+			return result;
+		}
+
+		public static bool SaveNewFileFromReader(Stream sfile, ref string outFilePath)
+		{
+			bool result = false;
+			try
+			{
+				outFilePath = GenerateTempFile();
+				ByteToFile(StreamToByte(sfile), outFilePath);
+				result = true;
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("Error SaveNewFileFromReader: " + ex.Message);
+				try
+				{
+					File.Delete(outFilePath);
+				}
+				catch
+				{
+				}
+				result = false;
+			}
+			finally
+			{
+			}
+			return result;
+		}
+
+		public static byte[] GetBytes(string str)
+		{
+			try
+			{
+				byte[] array = new byte[str.Length * 2];
+				Buffer.BlockCopy(str.ToCharArray(), 0, array, 0, array.Length);
+				return array;
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("Error get Byte from string: " + ex.Message);
+				return null;
+			}
+		}
+
+        public static string GetCN(Org.BouncyCastle.X509.X509Certificate cert)
+		{
+			try
+			{
+				return GetCNFromDN(GetSubject(cert));
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("Error getCN: " + ex.Message);
+				return null;
+			}
+		}
+
+		public static string GetCNFromDN(string dn)
+		{
+			try
+			{
+				char[] separator = new char[1] { ',' };
+				string[] array = dn.Split(separator);
+				string result = "";
+				for (int i = 0; i < array.Length; i++)
+				{
+					if (array[i].IndexOf("CN=") != -1)
+					{
+						char[] separator2 = new char[1] { '=' };
+						result = array[i].Split(separator2)[1];
+					}
+				}
+				return result;
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("Error GetCNFromDN: " + ex.Message);
+				return "";
+			}
+		}
+
+		public static double GetCurrentMilli()
+		{
+			try
+			{
+				DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+				return (long)(DateTime.UtcNow - dateTime).TotalMilliseconds;
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("Error get current milli: " + ex.Message);
+				return 0.0;
+			}
+		}
+
+        public static string GetLocation(Org.BouncyCastle.X509.X509Certificate certificate)
+		{
+			try
+			{
+				return GetLocationFromDN(GetSubject(certificate));
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("Error getLocation: " + ex.Message);
+				return null;
+			}
+		}
+
+		public static string GetLocationFromDN(string dn)
+		{
+			try
+			{
+				char[] separator = new char[1] { ',' };
+				string[] array = dn.Split(separator);
+				string text = "";
+				for (int i = 0; i < array.Length; i++)
+				{
+					if (array[i].IndexOf("L=") != -1)
+					{
+						char[] separator2 = new char[1] { '=' };
+						text = array[i].Split(separator2)[1];
+					}
+				}
+				if (text != "")
+				{
+					return ConvertTVKhongDau(text);
+				}
+				return text;
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("Error GetLocationFromDN: " + ex.Message);
+				return "";
+			}
+		}
+
+		public static string getSignName()
+		{
+			return GetCurrentMilli().ToString();
+		}
+
+        public static string GetSubject(Org.BouncyCastle.X509.X509Certificate certificate)
+		{
+			try
+			{
+				return ((object)certificate.SubjectDN).ToString();
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("Error getSubject: " + ex.Message);
+				return null;
+			}
+		}
+
+		public static BaseFont GetBaseFont()
+		{
+			string text = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Fonts), "tahoma.ttf");
+			return BaseFont.CreateFont(text, "Identity-H", false);
+		}
+
+		internal static SecureString GetSecurePin(string PinCode)
+		{
+			SecureString secureString = new SecureString();
+			char[] array = PinCode.ToCharArray();
+			foreach (char c in array)
+			{
+				secureString.AppendChar(c);
+			}
+			return secureString;
+		}
+
+		internal static string GetFileContentHash(string fileContent)
+		{
+			try
+			{
+				using (HashAlgorithm hashAlgorithm = HashAlgorithm.Create())
+				{
+					byte[] array = hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(fileContent));
+					string text = BitConverter.ToString(array);
+					return text.Replace("-", string.Empty);
+				}
+			}
+			catch (Exception ex)
+			{
+				LogSystem.Warn(ex);
+			}
+			return "";
+		}
+
+		internal static byte[] StreamToByte(Stream input)
+		{
+			byte[] array = new byte[16384];
+			using (MemoryStream memoryStream = new MemoryStream())
+			{
+				int count;
+				while ((count = input.Read(array, 0, array.Length)) > 0)
+				{
+					memoryStream.Write(array, 0, count);
+				}
+				return memoryStream.ToArray();
+			}
+		}
+
+		internal static byte[] FileToByte(string input)
+		{
+			return File.ReadAllBytes(input);
+		}
+
+		internal static void ByteToFile(byte[] arrInFile, string saveFile)
+		{
+			File.WriteAllBytes(saveFile, arrInFile);
+		}
+
+		internal static void UpdateimageCell(float widthRectangle, float heightRectangle, Image instance, float SignaltureImageWidth, float widthImagePercent, float plusH)
+		{
+			_003C_003Ec__DisplayClass27_0 CS_0024_003C_003E8__locals26 = new _003C_003Ec__DisplayClass27_0();
+			CS_0024_003C_003E8__locals26.plusH = plusH;
+			CS_0024_003C_003E8__locals26.widthImagePercent = widthImagePercent;
+			CS_0024_003C_003E8__locals26.imgTotalWidth = 0f;
+			if (instance != null)
+			{
+				float num = heightRectangle - CS_0024_003C_003E8__locals26.plusH;
+				float num2 = ((num > 0f) ? num : heightRectangle);
+				if (((Rectangle)instance).Width > widthRectangle || ((Rectangle)instance).Height > heightRectangle || (((Rectangle)instance).Height > num && num > 0f))
+				{
+					float weightImgRealPercentTH1 = ((((Rectangle)instance).Width > widthRectangle) ? (widthRectangle / ((Rectangle)instance).Width) : 0f);
+					float heightImgRealPercentTH1 = ((((Rectangle)instance).Height > num2) ? (num2 / ((Rectangle)instance).Height) : 0f);
+					if (weightImgRealPercentTH1 > 0f && heightImgRealPercentTH1 > 0f)
+					{
+						CS_0024_003C_003E8__locals26.imgTotalWidth = ((Rectangle)instance).Width * CS_0024_003C_003E8__locals26.widthImagePercent * ((weightImgRealPercentTH1 < heightImgRealPercentTH1) ? weightImgRealPercentTH1 : heightImgRealPercentTH1) / 100f;
+					}
+					else if (heightImgRealPercentTH1 > 0f)
+					{
+						CS_0024_003C_003E8__locals26.imgTotalWidth = ((Rectangle)instance).Width * CS_0024_003C_003E8__locals26.widthImagePercent * heightImgRealPercentTH1 / 100f;
+					}
+					else if (weightImgRealPercentTH1 > 0f)
+					{
+						CS_0024_003C_003E8__locals26.imgTotalWidth = ((Rectangle)instance).Width * CS_0024_003C_003E8__locals26.widthImagePercent * weightImgRealPercentTH1 / 100f;
+					}
+					LogSystem.Info("2__" + LogUtil.TraceData(LogUtil.GetMemberName<float>((Expression<Func<float>>)(() => weightImgRealPercentTH1)), (object)weightImgRealPercentTH1) + LogUtil.TraceData(LogUtil.GetMemberName<float>((Expression<Func<float>>)(() => heightImgRealPercentTH1)), (object)heightImgRealPercentTH1) + LogUtil.TraceData(LogUtil.GetMemberName<float>((Expression<Func<float>>)(() => CS_0024_003C_003E8__locals26.imgTotalWidth)), (object)CS_0024_003C_003E8__locals26.imgTotalWidth) + LogUtil.TraceData(LogUtil.GetMemberName<float>((Expression<Func<float>>)(() => CS_0024_003C_003E8__locals26.plusH)), (object)CS_0024_003C_003E8__locals26.plusH));
+				}
+				else
+				{
+					float newHeightImagePercent = ((num > 0f) ? num : heightRectangle) / ((Rectangle)instance).Height;
+					CS_0024_003C_003E8__locals26.imgTotalWidth = ((Rectangle)instance).Width * CS_0024_003C_003E8__locals26.widthImagePercent * newHeightImagePercent / 100f;
+                    //LogSystem.Info("3__" + LogUtil.TraceData(LogUtil.GetMemberName<float>((Expression<Func<float>>)(() => newHeightImagePercent)), (object)newHeightImagePercent) + LogUtil.TraceData(LogUtil.GetMemberName<float>((Expression<Func<float>>)(() => CS_0024_003C_003E8__locals26.imgTotalWidth)), (object)CS_0024_003C_003E8__locals26.imgTotalWidth) + LogUtil.TraceData(LogUtil.GetMemberName<float>(Expression.Lambda<Func<float>>(Expression.Field(Expression.Constant(CS_0024_003C_003E8__locals26, typeof(_003C_003Ec__DisplayClass27_0)), FieldInfo.GetFieldFromHandle((RuntimeFieldHandle)/*OpCode not supported: LdMemberToken*/)), new ParameterExpression[0])), (object)CS_0024_003C_003E8__locals26.plusH));
+				}
+			}
+			else
+			{
+				CS_0024_003C_003E8__locals26.imgTotalWidth = widthRectangle * CS_0024_003C_003E8__locals26.widthImagePercent / 100f;
+                //LogSystem.Info("4__" + LogUtil.TraceData(LogUtil.GetMemberName<float>((Expression<Func<float>>)(() => CS_0024_003C_003E8__locals26.imgTotalWidth)), (object)CS_0024_003C_003E8__locals26.imgTotalWidth) + LogUtil.TraceData(LogUtil.GetMemberName<float>(Expression.Lambda<Func<float>>(Expression.Field(Expression.Constant(CS_0024_003C_003E8__locals26, typeof(_003C_003Ec__DisplayClass27_0)), FieldInfo.GetFieldFromHandle((RuntimeFieldHandle)/*OpCode not supported: LdMemberToken*/)), new ParameterExpression[0])), (object)CS_0024_003C_003E8__locals26.widthImagePercent));
+			}
+		}
+
+		public static float CalculateWidthPercent(float widthRectangle, float heightRectangle, Image instance, float SignaltureImageWidth, float widthImagePercent, float plusH)
+		{
+			float imgTotalWidth = ((Rectangle)instance).Width;
+			if (instance != null)
+			{
+				float heightRecModPlus = heightRectangle - plusH;
+				float num = ((heightRecModPlus > 0f) ? heightRecModPlus : heightRectangle);
+				if (((Rectangle)instance).Width > widthRectangle || ((Rectangle)instance).Height > heightRectangle || (((Rectangle)instance).Height > heightRecModPlus && heightRecModPlus > 0f))
+				{
+					float weightImgRealPercentTH1 = ((((Rectangle)instance).Width > widthRectangle) ? (widthRectangle / ((Rectangle)instance).Width) : 0f);
+					float heightImgRealPercentTH1 = ((((Rectangle)instance).Height > num) ? (num / ((Rectangle)instance).Height) : 0f);
+					if (weightImgRealPercentTH1 > 0f && heightImgRealPercentTH1 > 0f)
+					{
+						imgTotalWidth = ((Rectangle)instance).Width * widthImagePercent * ((weightImgRealPercentTH1 < heightImgRealPercentTH1) ? weightImgRealPercentTH1 : heightImgRealPercentTH1) / 100f;
+					}
+					else if (heightImgRealPercentTH1 > 0f)
+					{
+						imgTotalWidth = ((Rectangle)instance).Width * widthImagePercent * heightImgRealPercentTH1 / 100f;
+					}
+					else if (weightImgRealPercentTH1 > 0f)
+					{
+						imgTotalWidth = ((Rectangle)instance).Width * widthImagePercent * weightImgRealPercentTH1 / 100f;
+					}
+					LogSystem.Info("2__" + LogUtil.TraceData(LogUtil.GetMemberName<float>((Expression<Func<float>>)(() => weightImgRealPercentTH1)), (object)weightImgRealPercentTH1) + LogUtil.TraceData(LogUtil.GetMemberName<float>((Expression<Func<float>>)(() => heightImgRealPercentTH1)), (object)heightImgRealPercentTH1) + LogUtil.TraceData(LogUtil.GetMemberName<float>((Expression<Func<float>>)(() => widthRectangle)), (object)widthRectangle) + LogUtil.TraceData(LogUtil.GetMemberName<float>((Expression<Func<float>>)(() => heightRectangle)), (object)heightRectangle) + LogUtil.TraceData(LogUtil.GetMemberName<float>((Expression<Func<float>>)(() => imgTotalWidth)), (object)imgTotalWidth) + LogUtil.TraceData(LogUtil.GetMemberName<float>((Expression<Func<float>>)(() => heightRecModPlus)), (object)heightRecModPlus) + LogUtil.TraceData("instance.Height", (object)((Rectangle)instance).Height) + LogUtil.TraceData("instance.Width", (object)((Rectangle)instance).Width) + LogUtil.TraceData(LogUtil.GetMemberName<float>((Expression<Func<float>>)(() => plusH)), (object)plusH));
+				}
+				else
+				{
+					float newHeightImagePercent = ((heightRecModPlus > 0f) ? heightRecModPlus : heightRectangle) / ((Rectangle)instance).Height;
+					imgTotalWidth = ((Rectangle)instance).Width * widthImagePercent * newHeightImagePercent / 100f;
+					LogSystem.Info("3__" + LogUtil.TraceData(LogUtil.GetMemberName<float>((Expression<Func<float>>)(() => newHeightImagePercent)), (object)newHeightImagePercent) + LogUtil.TraceData(LogUtil.GetMemberName<float>((Expression<Func<float>>)(() => widthRectangle)), (object)widthRectangle) + LogUtil.TraceData(LogUtil.GetMemberName<float>((Expression<Func<float>>)(() => heightRectangle)), (object)heightRectangle) + LogUtil.TraceData(LogUtil.GetMemberName<float>((Expression<Func<float>>)(() => imgTotalWidth)), (object)imgTotalWidth) + LogUtil.TraceData(LogUtil.GetMemberName<float>((Expression<Func<float>>)(() => heightRecModPlus)), (object)heightRecModPlus) + LogUtil.TraceData("instance.Height", (object)((Rectangle)instance).Height) + LogUtil.TraceData("instance.Width", (object)((Rectangle)instance).Width) + LogUtil.TraceData(LogUtil.GetMemberName<float>((Expression<Func<float>>)(() => plusH)), (object)plusH));
+				}
+			}
+			else
+			{
+				imgTotalWidth = widthRectangle * widthImagePercent / 100f;
+				LogSystem.Info("4__" + LogUtil.TraceData(LogUtil.GetMemberName<float>((Expression<Func<float>>)(() => widthRectangle)), (object)widthRectangle) + LogUtil.TraceData(LogUtil.GetMemberName<float>((Expression<Func<float>>)(() => heightRectangle)), (object)heightRectangle) + LogUtil.TraceData(LogUtil.GetMemberName<float>((Expression<Func<float>>)(() => imgTotalWidth)), (object)imgTotalWidth) + LogUtil.TraceData("instance.Height", (object)((Rectangle)instance).Height) + LogUtil.TraceData("instance.Width", (object)((Rectangle)instance).Width) + LogUtil.TraceData(LogUtil.GetMemberName<float>((Expression<Func<float>>)(() => widthImagePercent)), (object)widthImagePercent));
+			}
+			float num2 = widthRectangle;
+			float num3 = ((imgTotalWidth > ((Rectangle)instance).Width) ? ((Rectangle)instance).Width : imgTotalWidth);
+			if (SignaltureImageWidth > 0f)
+			{
+				num2 = SignaltureImageWidth;
+			}
+			else if (widthRectangle >= 100f)
+			{
+				num2 = 100f;
+				if (num3 < 140f)
+				{
+					float num4 = 0f;
+					num4 = num2;
+					num2 = num3;
+					num3 = num4 * 2f;
+				}
+			}
+			else
+			{
+				num2 = widthRectangle;
+				if (num3 < widthRectangle)
+				{
+					float num5 = 0f;
+					num5 = num2;
+					num2 = num3;
+					num3 = num5;
+				}
+			}
+			return 100f * (num2 / num3);
+		}
+	}
 }
