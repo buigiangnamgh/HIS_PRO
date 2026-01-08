@@ -3103,10 +3103,11 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                     .GetAsync<List<MOS.EFMODEL.DataModels.HIS_EKIP_TEMP>>("/api/HisEkipTemp/Get", ApiConsumers.MosConsumer, filter, param);
                 if (ekipTemps != null && ekipTemps.Count > 0)
                 {
-                    ekipTemps = ekipTemps.Where(o => (o.IS_PUBLIC == 1 || o.CREATOR == logginName || (o.IS_PUBLIC_IN_DEPARTMENT == 1 && o.DEPARTMENT_ID == DepartmentID)) && o.IS_ACTIVE == 1).OrderByDescending(o => o.CREATE_TIME).ToList();
+                    //ekipTemps = ekipTemps.Where(o => (o.IS_PUBLIC == 1 || o.CREATOR == logginName || (o.IS_PUBLIC_IN_DEPARTMENT == 1 && o.DEPARTMENT_ID == DepartmentID)) && o.IS_ACTIVE == 1).OrderByDescending(o => o.CREATE_TIME).ToList();
+                    ekipTemps = ekipTemps.Where(o => o.CREATOR == logginName && o.IS_ACTIVE == 1).OrderByDescending(o => o.CREATE_TIME).ToList();
                 }
                 List<ColumnInfo> columnInfos = new List<ColumnInfo>();
-                columnInfos.Add(new ColumnInfo("EKIP_TEMP_NAME", "", 250, 1));
+                columnInfos.Add(new ColumnInfo("EKIP_TEMP_NAME", "Tên", 250, 1));
                 ControlEditorADO controlEditorADO = new ControlEditorADO("EKIP_TEMP_NAME", "ID", columnInfos, false, 250);
                 ControlEditorLoader.Load(cbo, ekipTemps, controlEditorADO);
             }

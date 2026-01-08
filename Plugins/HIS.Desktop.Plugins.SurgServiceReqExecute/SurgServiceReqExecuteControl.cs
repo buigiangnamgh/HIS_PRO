@@ -700,6 +700,12 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                     }
                 }
 
+                if (cboMachine.EditValue == null && XtraMessageBox.Show("Bạn chưa chọn máy thực hiện. Bạn có muốn tiếp tục không?", ResourceMessage.ThongBao, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                {
+                    cboMachine.ShowPopup();
+                    return false;
+                }
+
                 if (chkSaveGroup.Checked)
                 {
                     // cập nhật "Cách thức" và “Phân loại” vào ram
