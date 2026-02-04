@@ -1,4 +1,21 @@
-﻿namespace HIS.Desktop.Plugins.AssignService
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+namespace HIS.Desktop.Plugins.AssignService
 {
     partial class frmDetailsSereServ
     {
@@ -132,8 +149,9 @@
             // gridColumn4
             // 
             this.gridColumn4.Caption = "Phòng chỉ định";
-            this.gridColumn4.FieldName = "REQUEST_ROOM_NAME";
+            this.gridColumn4.FieldName = "REQUEST_ROOM_NAME_STR";
             this.gridColumn4.Name = "gridColumn4";
+            this.gridColumn4.UnboundType = DevExpress.Data.UnboundColumnType.Object;
             this.gridColumn4.Visible = true;
             this.gridColumn4.VisibleIndex = 3;
             this.gridColumn4.Width = 130;
@@ -141,8 +159,9 @@
             // gridColumn5
             // 
             this.gridColumn5.Caption = "Phòng thực hiện";
-            this.gridColumn5.FieldName = "EXECUTE_ROOM_NAME";
+            this.gridColumn5.FieldName = "EXECUTE_ROOM_NAME_STR";
             this.gridColumn5.Name = "gridColumn5";
+            this.gridColumn5.UnboundType = DevExpress.Data.UnboundColumnType.Object;
             this.gridColumn5.Visible = true;
             this.gridColumn5.VisibleIndex = 4;
             this.gridColumn5.Width = 143;

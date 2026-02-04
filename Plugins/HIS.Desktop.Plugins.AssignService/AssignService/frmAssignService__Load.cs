@@ -1,4 +1,21 @@
-﻿using DevExpress.Data;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using DevExpress.Data;
 using DevExpress.XtraEditors;
 using DevExpress.XtraEditors.Controls;
 using DevExpress.XtraEditors.DXErrorProvider;
@@ -31,6 +48,13 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using HIS.Desktop.IsAdmin;
 using DevExpress.XtraPrinting.Native;
+using HIS.Desktop.Controls.Session;
+using HIS.UC.Icd.ADO;
+using HIS.UC.SecondaryIcd.ADO;
+using System.Drawing;
+using DevExpress.XtraExport;
+using HIS.Desktop.Plugins.Library.MedicalExpenseGuarantee;
+using HIS.Desktop.Plugins.Library.MedicalExpenseGuarantee.ADO;
 
 namespace HIS.Desktop.Plugins.AssignService.AssignService
 {
@@ -77,6 +101,8 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
         {
             try
             {
+                Inventec.Common.Logging.LogSystem.Debug("thangdq LoadTotalSereServByHeinWithTreatment");
+                Inventec.Common.Logging.LogSystem.Debug("qtcode LoadTotalSereServByHeinWithTreatment");
                 CommonParam param = new CommonParam();
                 HisSereServFilter hisSereServFilter = new HisSereServFilter();
                 hisSereServFilter.TREATMENT_ID = treatmentId;
@@ -362,10 +388,11 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                     // - Trong trường hợp ĐỐI TƯỢNG BỆNH NHÂN được check "Không cho phép chỉ định dịch vụ nếu thiếu tiền" (HIS_PATIENT_TYPE có IS_CHECK_FEE_WHEN_ASSIGN = 1) và hồ sơ là "Khám" (HIS_TREATMENT có TDL_TREATMENT_TYPE_ID = IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__KHAM) thì kiểm tra:
                     //+ Nếu hồ sơ đang không thừa tiền "Còn thừa" = 0 hoặc hiển thị "Còn thiếu" thì hiển thị thông báo "Bệnh nhân đang nợ tiền, không cho phép chỉ định dịch vụ", người dùng nhấn "Đồng ý" thì tắt form chỉ định.
                     //+ Nếu hồ sơ đang thừa tiền ("Còn thừa" > 0), thì khi người dùng check chọn dịch vụ, nếu số tiền "Phát sinh" > "Còn thừa" thì hiển thị cảnh báo: "Không cho phép chỉ định dịch vụ vượt quá số tiền còn thừa" và không cho phép người dùng check chọn dịch vụ đó.
+                    //+ Bỏ qua kiểm tra nợ tiền nếu bệnh nhân là bệnh nhân bảo lãnh
                     if (this.patientTypeByPT != null && this.patientTypeByPT.IS_CHECK_FEE_WHEN_ASSIGN == 1
                             && this.currentHisPatientTypeAlter.TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__KHAM
                             && (
-                            this.transferTreatmentFee >= 0 ||
+                            this.transferTreatmentFee > 0 ||
                             (this.transferTreatmentFee < 0 && totalPriceServiceSelected > Math.Abs(this.transferTreatmentFee))
                             )
                         && this.currentModule.RoomTypeId != IMSys.DbConfig.HIS_RS.HIS_ROOM_TYPE.ID__TD
@@ -657,6 +684,11 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                     else if (this.allDataExecuteRooms != null && this.allDataExecuteRooms.Count > 0 && serviceRoomViews != null && serviceRoomViews.Count > 0)
                     {
                         arrExcuteRoomCode = serviceRoomViews.Where(o => sereServADOOld != null && o.SERVICE_ID == sereServADOOld.SERVICE_ID).ToList();
+                        if (HisConfigCFG.IsAssignRoomByPatientType && PatientTypeRooms != null && PatientTypeRooms.Count > 0 && PatientTypeRooms.Exists(o => o.PATIENT_TYPE_ID == sereServADOOld.PATIENT_TYPE_ID))
+                        {
+                            var RoomIds = PatientTypeRooms.Where(o => o.PATIENT_TYPE_ID == sereServADOOld.PATIENT_TYPE_ID).Select(o => o.ROOM_ID).ToList();
+                            arrExcuteRoomCode = arrExcuteRoomCode.Where(o => RoomIds.Contains(o.ROOM_ID)).ToList();
+                        }
                         dataCombo = ((arrExcuteRoomCode != null && arrExcuteRoomCode.Count > 0 && this.allDataExecuteRooms != null) ?
                             this.allDataExecuteRooms.Where(o => arrExcuteRoomCode.Select(p => p.ROOM_ID).Contains(o.ROOM_ID) && o.BRANCH_ID == this.requestRoom.BRANCH_ID).ToList()
                             : null);
@@ -674,15 +706,28 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                     long? intructionNumByType = null;
 
                     List<HIS_SERE_SERV> sameServiceType = this.sereServWithTreatment != null ? this.sereServWithTreatment.Where(o => o.TDL_SERVICE_TYPE_ID == sereServADOOld.SERVICE_TYPE_ID).ToList() : null;
+                    List<HIS_SERE_SERV> sameService = this.sereServWithTreatment != null ? this.sereServWithTreatment.Where(o => o.SERVICE_ID == sereServADOOld.SERVICE_ID).ToList() : null;
                     intructionNumByType = sameServiceType != null ? (long)sameServiceType.Count() + 1 : 1;
+                    var intructionNum = sameService != null ? (long)sameService.Count() + 1 : 1;
 
                     List<V_HIS_SERVICE_PATY> servicePaties = BranchDataWorker.ServicePatyWithListPatientType(sereServADOOld.SERVICE_ID, this.patientTypeIdAls);
+                    V_HIS_SERVICE_PATY oneServicePatyPrice = new V_HIS_SERVICE_PATY();
+                    if (HisConfigCFG.ServicePatyForServicePackage == "1")
+                    {
+                        //List<V_HIS_SERVICE_PATY> servicePatiesFirst = new List<V_HIS_SERVICE_PATY>();
+                        //servicePatiesFirst.Add(this.GetServicePaties(servicePaties, sereServADOOld.TDL_EXECUTE_BRANCH_ID, (sereServADOOld.TDL_EXECUTE_ROOM_ID > 0 ? (long?)sereServADOOld.TDL_EXECUTE_ROOM_ID : null), this.requestRoom.ID, this.requestRoom.DEPARTMENT_ID, instructionTime, this.currentHisTreatment.IN_TIME, sereServADOOld.SERVICE_ID, sereServADOOld.PATIENT_TYPE_ID, intructionNum, intructionNumByType, sereServADOOld.SERVICE_CONDITION_ID, this.currentHisTreatment.TDL_PATIENT_CLASSIFY_ID, null));
 
-                    V_HIS_SERVICE_PATY oneServicePatyPrice = MOS.ServicePaty.ServicePatyUtil.GetApplied(servicePaties, sereServADOOld.TDL_EXECUTE_BRANCH_ID, (sereServADOOld.TDL_EXECUTE_ROOM_ID > 0 ? (long?)sereServADOOld.TDL_EXECUTE_ROOM_ID : null), this.requestRoom.ID, this.requestRoom.DEPARTMENT_ID, instructionTime, this.currentHisTreatment.IN_TIME, sereServADOOld.SERVICE_ID, sereServADOOld.PATIENT_TYPE_ID, null, intructionNumByType, sereServADOOld.PackagePriceId, sereServADOOld.SERVICE_CONDITION_ID);
+                        oneServicePatyPrice = MOS.ServicePaty.ServicePatyUtil.GetApplied(servicePaties, sereServADOOld.TDL_EXECUTE_BRANCH_ID, (sereServADOOld.TDL_EXECUTE_ROOM_ID > 0 ? (long?)sereServADOOld.TDL_EXECUTE_ROOM_ID : null), this.requestRoom.ID, this.requestRoom.DEPARTMENT_ID, instructionTime, this.currentHisTreatment.IN_TIME, sereServADOOld.SERVICE_ID, sereServADOOld.PATIENT_TYPE_ID, intructionNum, intructionNumByType, null, sereServADOOld.SERVICE_CONDITION_ID, this.currentHisTreatment.TDL_PATIENT_CLASSIFY_ID, null);
+                    }
+                    else
+                    {
+                        oneServicePatyPrice = MOS.ServicePaty.ServicePatyUtil.GetApplied(servicePaties, sereServADOOld.TDL_EXECUTE_BRANCH_ID, (sereServADOOld.TDL_EXECUTE_ROOM_ID > 0 ? (long?)sereServADOOld.TDL_EXECUTE_ROOM_ID : null), this.requestRoom.ID, this.requestRoom.DEPARTMENT_ID, instructionTime, this.currentHisTreatment.IN_TIME, sereServADOOld.SERVICE_ID, sereServADOOld.PATIENT_TYPE_ID, intructionNum, intructionNumByType, sereServADOOld.PackagePriceId, sereServADOOld.SERVICE_CONDITION_ID, this.currentHisTreatment.TDL_PATIENT_CLASSIFY_ID, null);
+                    }
+
 
                     if (sereServADOOld.PRIMARY_PATIENT_TYPE_ID.HasValue)
                     {
-                        V_HIS_SERVICE_PATY primary = MOS.ServicePaty.ServicePatyUtil.GetApplied(servicePaties, sereServADOOld.TDL_EXECUTE_BRANCH_ID, (sereServADOOld.TDL_EXECUTE_ROOM_ID > 0 ? (long?)sereServADOOld.TDL_EXECUTE_ROOM_ID : null), this.requestRoom.ID, this.requestRoom.DEPARTMENT_ID, instructionTime, this.currentHisTreatment.IN_TIME, sereServADOOld.SERVICE_ID, sereServADOOld.PRIMARY_PATIENT_TYPE_ID.Value, null, intructionNumByType, sereServADOOld.PackagePriceId, sereServADOOld.SERVICE_CONDITION_ID);
+                        V_HIS_SERVICE_PATY primary = MOS.ServicePaty.ServicePatyUtil.GetApplied(servicePaties, sereServADOOld.TDL_EXECUTE_BRANCH_ID, (sereServADOOld.TDL_EXECUTE_ROOM_ID > 0 ? (long?)sereServADOOld.TDL_EXECUTE_ROOM_ID : null), this.requestRoom.ID, this.requestRoom.DEPARTMENT_ID, instructionTime, this.currentHisTreatment.IN_TIME, sereServADOOld.SERVICE_ID, sereServADOOld.PRIMARY_PATIENT_TYPE_ID.Value, intructionNum, intructionNumByType, sereServADOOld.PackagePriceId, sereServADOOld.SERVICE_CONDITION_ID, this.currentHisTreatment.TDL_PATIENT_CLASSIFY_ID, null);
                         if (oneServicePatyPrice == null || primary == null || (oneServicePatyPrice.PRICE * (1 + oneServicePatyPrice.VAT_RATIO)) >= (primary.PRICE * (1 + primary.VAT_RATIO)))
                         {
                             if (HisConfigCFG.IsSetPrimaryPatientType != "2")
@@ -729,6 +774,56 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
             }
 
             return resultData;
+        }
+
+        public V_HIS_SERVICE_PATY GetServicePaties(List<V_HIS_SERVICE_PATY> servicePaties, long executeBranchId, long? executeRoomId, long? requestRoomId, long? requestDepartmentId, long instructionTime, long treatmentTime, long serviceId, long patientTypeId, long? instructionNumber, long? instructionNumberByType, long? serviceConditionId, long? patientClassifyId, long? rationTimeId)
+        {
+            V_HIS_SERVICE_PATY result = null;
+            try
+            {
+                if (servicePaties != null && servicePaties.Count > 0)
+                {
+                    DateTime value = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(instructionTime).Value;
+                    int hour = int.Parse("1" + instructionTime.ToString().Substring(8, 4));
+                    int day = (int)(value.DayOfWeek + 1);
+                    string reqRoomIdStr = requestRoomId.HasValue
+                    ? string.Format(",{0},", requestRoomId.Value)
+                    : "";
+
+                    string requestDepartmentIdStr = requestDepartmentId.HasValue
+                        ? string.Format(",{0},", requestDepartmentId.Value)
+                        : "";
+
+                    string executeRoomIdStr = executeRoomId.HasValue
+                        ? string.Format(",{0},", executeRoomId.Value)
+                        : "";
+                    result = (from o in servicePaties
+                              where o.PATIENT_TYPE_ID == patientTypeId || (o.INHERIT_PATIENT_TYPE_IDS != null && ("," + o.INHERIT_PATIENT_TYPE_IDS + ",").Contains("," + patientTypeId + ","))
+                              where o.SERVICE_ID == serviceId && o.BRANCH_ID == executeBranchId && o.IS_ACTIVE == 1
+                              where ((!o.FROM_TIME.HasValue || o.FROM_TIME.Value <= instructionTime) && (!o.TO_TIME.HasValue || o.TO_TIME.Value >= instructionTime)) || ((!o.TREATMENT_FROM_TIME.HasValue || o.TREATMENT_FROM_TIME.Value <= treatmentTime) && (!o.TREATMENT_TO_TIME.HasValue || o.TREATMENT_TO_TIME.Value >= treatmentTime))
+                              where !instructionNumber.HasValue || ((!o.INTRUCTION_NUMBER_FROM.HasValue || o.INTRUCTION_NUMBER_FROM.Value <= instructionNumber.Value) && (!o.INTRUCTION_NUMBER_TO.HasValue || o.INTRUCTION_NUMBER_TO.Value >= instructionNumber.Value))
+                              where !instructionNumberByType.HasValue || ((!o.INSTR_NUM_BY_TYPE_FROM.HasValue || o.INSTR_NUM_BY_TYPE_FROM.Value <= instructionNumberByType.Value) && (!o.INSTR_NUM_BY_TYPE_TO.HasValue || o.INSTR_NUM_BY_TYPE_TO.Value >= instructionNumberByType.Value))
+                              where (o.HOUR_FROM == null || int.Parse("1" + o.HOUR_FROM) <= hour) && (o.HOUR_TO == null || int.Parse("1" + o.HOUR_TO) >= hour)
+                              where (!o.DAY_FROM.HasValue || o.DAY_FROM.Value <= day) && (!o.DAY_TO.HasValue || o.DAY_TO.Value >= day)
+                              where o.REQUEST_ROOM_IDS == null || ("," + o.REQUEST_ROOM_IDS + ",").Contains(reqRoomIdStr)
+                              where o.EXECUTE_ROOM_IDS == null || ("," + o.EXECUTE_ROOM_IDS + ",").Contains(executeRoomIdStr)
+                              where o.REQUEST_DEPARMENT_IDS == null || ("," + o.REQUEST_DEPARMENT_IDS + ",").Contains(requestDepartmentIdStr)
+                              where (!serviceConditionId.HasValue && !o.SERVICE_CONDITION_ID.HasValue) || (serviceConditionId.HasValue && o.SERVICE_CONDITION_ID == serviceConditionId)
+                              where !o.PATIENT_CLASSIFY_ID.HasValue || o.PATIENT_CLASSIFY_ID == patientClassifyId
+                              where !o.RATION_TIME_ID.HasValue || o.RATION_TIME_ID == rationTimeId
+                              orderby (!o.RATION_TIME_ID.HasValue || !rationTimeId.HasValue) ? 1 : 0
+                              orderby o.PRIORITY descending, o.ID descending
+                              select o).FirstOrDefault();
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                LogSystem.Error(ex);
+            }
+
+            return result;
         }
 
         private decimal? GetHeinLimitPriceByDataRow(SereServADO sereServADOOld)
@@ -1174,7 +1269,14 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
 
                                     if (this.allDataExecuteRooms != null && this.allDataExecuteRooms.Count > 0 && serviceRoomViews != null && serviceRoomViews.Count > 0)
                                     {
-                                        var arrExcuteRoomCode = serviceRoomViews.Where(o => item != null && o.SERVICE_ID == item.SERVICE_ID).Select(o => o.ROOM_ID).ToArray();
+                                        var arrExcuteRoom = serviceRoomViews.Where(o => item != null && o.SERVICE_ID == item.SERVICE_ID);
+
+                                        if (HisConfigCFG.IsAssignRoomByPatientType && PatientTypeRooms != null && PatientTypeRooms.Count > 0 && PatientTypeRooms.Exists(o => o.PATIENT_TYPE_ID == item.PATIENT_TYPE_ID))
+                                        {
+                                            var RoomIds = PatientTypeRooms.Where(o => o.PATIENT_TYPE_ID == item.PATIENT_TYPE_ID).Select(o => o.ROOM_ID).ToList();
+                                            arrExcuteRoom = arrExcuteRoom.Where(o => RoomIds.Contains(o.ROOM_ID)).ToList();
+                                        }
+                                        var arrExcuteRoomCode = arrExcuteRoom.Select(o => o.ROOM_ID).ToArray();
                                         dataCombo = ((arrExcuteRoomCode != null && arrExcuteRoomCode.Count() > 0 && this.allDataExecuteRooms != null) ? this.allDataExecuteRooms.Where(o => arrExcuteRoomCode.Contains(o.ROOM_ID)).ToList() : null);
                                     }
                                     var checkExecuteRoom = dataCombo != null && dataCombo.Count > 0 ? dataCombo.FirstOrDefault(o => o.BRANCH_ID == this.requestRoom.BRANCH_ID) : null;
@@ -1187,10 +1289,15 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                                         item.TDL_EXECUTE_BRANCH_ID = dataCombo != null && dataCombo.Count > 0 ? dataCombo.FirstOrDefault().BRANCH_ID : 0;
                                         item.TDL_EXECUTE_BRANCH_ID = item.TDL_EXECUTE_BRANCH_ID == 0 ? HIS.Desktop.LocalStorage.BackendData.BranchDataWorker.GetCurrentBranchId() : item.TDL_EXECUTE_BRANCH_ID;
                                     }
+
+                                    List<HIS_SERE_SERV> sameServiceType = this.sereServWithTreatment != null ? this.sereServWithTreatment.Where(o => o.TDL_SERVICE_TYPE_ID == item.SERVICE_TYPE_ID).ToList() : null;
+                                    List<HIS_SERE_SERV> sameService = this.sereServWithTreatment != null ? this.sereServWithTreatment.Where(o => o.SERVICE_ID == item.SERVICE_ID).ToList() : null;
+                                    var intructionNumByType = sameServiceType != null ? (long)sameServiceType.Count() + 1 : 1;
+                                    var intructionNum = sameService != null ? (long)sameService.Count() + 1 : 1;
                                     if (HisConfigCFG.IsSetPrimaryPatientType != "0"
                                         && item.PRIMARY_PATIENT_TYPE_ID.HasValue && !patientTypeId.HasValue)
                                     {
-                                        data_ServicePrice = MOS.ServicePaty.ServicePatyUtil.GetApplied(servicePaties, item.TDL_EXECUTE_BRANCH_ID, null, this.requestRoom.ID, this.requestRoom.DEPARTMENT_ID, instructionTime, this.currentHisTreatment.IN_TIME, item.SERVICE_ID, item.PRIMARY_PATIENT_TYPE_ID.Value, null);
+                                        data_ServicePrice = MOS.ServicePaty.ServicePatyUtil.GetApplied(servicePaties, item.TDL_EXECUTE_BRANCH_ID, null, this.requestRoom.ID, this.requestRoom.DEPARTMENT_ID, instructionTime, this.currentHisTreatment.IN_TIME, item.SERVICE_ID, item.PRIMARY_PATIENT_TYPE_ID.Value, intructionNum, intructionNumByType, item.PackagePriceId, item.SERVICE_CONDITION_ID, this.currentHisTreatment.TDL_PATIENT_CLASSIFY_ID, null);
                                         if (item.HEIN_LIMIT_RATIO.HasValue
                                             && item.HEIN_LIMIT_RATIO.Value > 0
                                             && data_ServicePrice != null)
@@ -1204,7 +1311,7 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                                     }
                                     else
                                     {
-                                        data_ServicePrice = MOS.ServicePaty.ServicePatyUtil.GetApplied(servicePaties, item.TDL_EXECUTE_BRANCH_ID, null, this.requestRoom.ID, this.requestRoom.DEPARTMENT_ID, instructionTime, this.currentHisTreatment.IN_TIME, item.SERVICE_ID, item.PATIENT_TYPE_ID, null);
+                                        data_ServicePrice = MOS.ServicePaty.ServicePatyUtil.GetApplied(servicePaties, item.TDL_EXECUTE_BRANCH_ID, null, this.requestRoom.ID, this.requestRoom.DEPARTMENT_ID, instructionTime, this.currentHisTreatment.IN_TIME, item.SERVICE_ID, item.PATIENT_TYPE_ID, intructionNum, intructionNumByType, item.PackagePriceId, item.SERVICE_CONDITION_ID, this.currentHisTreatment.TDL_PATIENT_CLASSIFY_ID, null);
 
                                     }
                                 }
@@ -1260,7 +1367,7 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                 decimal totalPrimary = 0, tmp = 0;
                 decimal totalPrice = GetDefaultSerServTotalPrice(ref totalPrimary);
                 this.lblTotalServicePrice.Text = Inventec.Common.Number.Convert.NumberToString(totalPrice, ConfigApplications.NumberSeperator);
-
+                UpdateTotalGuaranteePrice();
                 decimal totalPriceBhyt = GetDefaultSerServTotalPrice(ref tmp, HisConfigCFG.PatientTypeId__BHYT);
                 decimal totalChecnhBhyt = 0;
                 if (totalPrimary > 0 && totalPriceBhyt > 0)
@@ -1763,7 +1870,7 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                     bool LastOption = false;
                     long intructionTime = this.intructionTimeSelecteds.FirstOrDefault();
                     long treatmentTime = this.currentHisTreatment.IN_TIME;
-                    var patientTypeIdInSePas = BranchDataWorker.ServicePatyWithListPatientType(serviceId, this.patientTypeIdAls).Where(o => ((!o.TREATMENT_TO_TIME.HasValue || o.TREATMENT_TO_TIME.Value >= treatmentTime) || (!o.TO_TIME.HasValue || o.TO_TIME.Value >= intructionTime)) && ((!sereServADO.PackagePriceId.HasValue && !o.PACKAGE_ID.HasValue) || (sereServADO.PackagePriceId.HasValue && sereServADO.PackagePriceId.Value == o.PACKAGE_ID))).Select(o => o.PATIENT_TYPE_ID).ToList();
+                    var patientTypeIdInSePas = BranchDataWorker.ServicePatyWithListPatientType(serviceId, this.patientTypeIdAls).Where(o => ((!o.TREATMENT_TO_TIME.HasValue || o.TREATMENT_TO_TIME.Value >= treatmentTime) || (!o.TO_TIME.HasValue || o.TO_TIME.Value >= intructionTime)) && (HisConfigCFG.ServicePatyForServicePackage == "1" ? true : ((!sereServADO.PackagePriceId.HasValue && !o.PACKAGE_ID.HasValue) || (sereServADO.PackagePriceId.HasValue && sereServADO.PackagePriceId.Value == o.PACKAGE_ID)))).Select(o => o.PATIENT_TYPE_ID).ToList();
                     var patientTypeIdInSePasWithServices = BranchDataWorker.ServicePatyWithListPatientType(serviceId, this.patientTypeIdAls);
                     //Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => patientTypeIdInSePasWithServices), patientTypeIdInSePasWithServices));
                     //    + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => sereServADO.PackagePriceId), sereServADO.PackagePriceId));
@@ -1798,6 +1905,14 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                                 listResult = currentPatientTypeTemps.Where(o => (!this.isNotUseBhyt || (this.isNotUseBhyt && o.ID != HisConfigCFG.PatientTypeId__BHYT)) && o.ID == patientTypeAppointmentId.Value).ToList();
                             }
                             else if (HisConfigCFG.IsSetPrimaryPatientType != commonString__true
+                               && this.requestRoom.DEFAULT_INSTR_PATIENT_TYPE_ID.HasValue
+                               && this.requestRoom.DEFAULT_INSTR_PATIENT_TYPE_ID.Value != HisConfigCFG.PatientTypeId__BHYT
+                               && currentPatientTypeTemps.Exists(e => e.ID == this.requestRoom.DEFAULT_INSTR_PATIENT_TYPE_ID.Value))
+                            {
+                                Inventec.Common.Logging.LogSystem.Debug("ChoosePatientTypeDefaultlService. 6 currentRoom Has default instr patient type");
+                                listResult = currentPatientTypeTemps.Where(o => (!this.isNotUseBhyt || (this.isNotUseBhyt && o.ID != HisConfigCFG.PatientTypeId__BHYT)) && o.ID == this.requestRoom.DEFAULT_INSTR_PATIENT_TYPE_ID.Value).ToList();
+                            }
+                            else if (HisConfigCFG.IsSetPrimaryPatientType != commonString__true
                                 && this.currentDepartment.DEFAULT_INSTR_PATIENT_TYPE_ID.HasValue
                                 && this.currentDepartment.DEFAULT_INSTR_PATIENT_TYPE_ID.Value != HisConfigCFG.PatientTypeId__BHYT
                                 && currentPatientTypeTemps.Exists(e => e.ID == this.currentDepartment.DEFAULT_INSTR_PATIENT_TYPE_ID.Value))
@@ -1830,10 +1945,12 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                             else
                                 listResult = listResult.Where(o => o.ID != HisConfigCFG.PatientTypeId__BHYT).ToList();
                         }
-                        if (patientTypeId!= HisConfigCFG.PatientTypeId__BHYT)
+                        //result = (listResult != null && listResult.Count > 0) ? listResult.FirstOrDefault() : null; nambg
+
+                        if (patientTypeId != HisConfigCFG.PatientTypeId__BHYT)
                             result = (listResult != null && listResult.Count > 0) ? listResult.FirstOrDefault(o => o.ID != HisConfigCFG.PatientTypeId__BHYT) : null;
                         else
-                        result = (listResult != null && listResult.Count > 0) ? listResult.FirstOrDefault() : null;
+                            result = (listResult != null && listResult.Count > 0) ? listResult.FirstOrDefault() : null;
 
                         #region ĐTTT
                         if (HisConfigCFG.DefaultPatientTypeOption && this.serviceReqParentId != null && this.hisSereServForGetPatientType != null && !sereServADO.IsNotLoadDefaultPatientType)
@@ -1863,15 +1980,10 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                                 sereServADO.PATIENT_TYPE_ID = patientTypeIdInSePasWithServices.OrderBy(o => o.ID).ToList()[0].PATIENT_TYPE_ID;
                                 sereServADO.PATIENT_TYPE_CODE = currentPatientTypes.First(o => o.ID == patientTypeIdInSePasWithServices.OrderBy(p => p.PATIENT_TYPE_ID).ToList()[0].PATIENT_TYPE_ID).PATIENT_TYPE_CODE;
                                 sereServADO.PATIENT_TYPE_NAME = currentPatientTypes.First(o => o.ID == patientTypeIdInSePasWithServices.OrderBy(p => p.PATIENT_TYPE_ID).ToList()[0].PATIENT_TYPE_ID).PATIENT_TYPE_NAME;
-
-                                //sereServADO.PATIENT_TYPE_ID = 42;
-                                //sereServADO.PATIENT_TYPE_CODE = currentPatientTypes.First(o => o.ID == 42).PATIENT_TYPE_CODE;
-                                //sereServADO.PATIENT_TYPE_NAME = currentPatientTypes.First(o => o.ID == 42).PATIENT_TYPE_NAME;
                             }
                         }
                         else if (result != null && sereServADO != null)
                         {
-
                             sereServADO.PATIENT_TYPE_ID = result.ID;
                             sereServADO.PATIENT_TYPE_CODE = result.PATIENT_TYPE_CODE;
                             sereServADO.PATIENT_TYPE_NAME = result.PATIENT_TYPE_NAME;
@@ -1944,6 +2056,16 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                             //        Inventec.Common.Logging.LogSystem.Error(ex);
                             //    }
                             //}
+                        }
+                        else if (!notChangePrimary
+                           && HisConfigCFG.IsSetPrimaryPatientType == commonString__true
+                           && this.requestRoom.DEFAULT_INSTR_PATIENT_TYPE_ID.HasValue
+                           && this.requestRoom.DEFAULT_INSTR_PATIENT_TYPE_ID.Value != HisConfigCFG.PatientTypeId__BHYT
+                           && primaryPatientTypeTemps.Exists(e => e.ID == this.requestRoom.DEFAULT_INSTR_PATIENT_TYPE_ID.Value)
+                           && result.ID != this.requestRoom.DEFAULT_INSTR_PATIENT_TYPE_ID.Value)
+                        {
+                            var priPaty = primaryPatientTypeTemps.FirstOrDefault(o => o.ID == this.requestRoom.DEFAULT_INSTR_PATIENT_TYPE_ID.Value);
+                            sereServADO.PRIMARY_PATIENT_TYPE_ID = priPaty.ID;
                         }
                         else if (!notChangePrimary
                             && HisConfigCFG.IsSetPrimaryPatientType == commonString__true
@@ -2505,7 +2627,7 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                                     sereServADO.IsChecked = false;
                                     break;
                                 }
-
+                                this.SetAssignNumOrder(sereServADO);
                                 this.FillDataOtherPaySourceDataRow(sereServADO);
 
                                 List<V_HIS_EXECUTE_ROOM> executeRoomList = null;
@@ -2517,7 +2639,7 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                                     executeRoomId = this.SetDefaultExcuteRoom(executeRoomList);
 
                                 //data.TDL_EXECUTE_ROOM_ID = executeRoomDefault;
-                                if (sereServADO.TDL_EXECUTE_ROOM_ID <= 0)
+                                if (sereServADO.TDL_EXECUTE_ROOM_ID <= 0 && executeRoomId > 0)
                                 {
                                     sereServADO.TDL_EXECUTE_ROOM_ID = executeRoomId;
                                 }
@@ -2559,44 +2681,135 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
             }
             return rs;
         }
-
-        private async void FillDataToComboPriviousServiceReq(HisTreatmentWithPatientTypeInfoSDO currentHisTreatment)
+        int dfEndServiceReq = 10;
+        int rowCount = 0;
+        int dataTotal = 0;
+        int startPage = 0;
+        private void FillDataToComboPriviousServiceReq()
         {
             try
             {
-                WaitingManager.Show();
-                CommonParam param = new CommonParam(0, 10);
+                LoadPaging(new CommonParam(0, dfEndServiceReq));
+                CommonParam param = new CommonParam();
+                param.Limit = rowCount;
+                param.Count = dataTotal;
+                ucPaging1.Init(LoadPaging, param, dfEndServiceReq, this.gridControl3);
+                WaitingManager.Hide();
+            }
+            catch (Exception ex)
+            {
+                WaitingManager.Hide();
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+
+        private void LoadPaging(object commonParam)
+        {
+            try
+            {
+                startPage = ((CommonParam)commonParam).Start ?? 0;
+                int limit = ((CommonParam)commonParam).Limit ?? 0;
+
+                CommonParam param = new CommonParam(startPage, limit);
                 MOS.Filter.HisServiceReqView6Filter serviceReqFilter = new MOS.Filter.HisServiceReqView6Filter();
                 serviceReqFilter.TDL_PATIENT_ID = this.currentHisTreatment.PATIENT_ID;
                 serviceReqFilter.ORDER_DIRECTION = "DESC";
                 serviceReqFilter.ORDER_FIELD = "CREATE_TIME";
                 serviceReqFilter.SERVICE_REQ_TYPE_IDs = new List<long>();
                 //Nếu thêm một loại yêu cầu dv khác thì phải vào đây bổ sung
-                serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__G);
-                serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__CDHA);
-                serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__NS);
-                serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__SA);
-                serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__TDCN);
-                serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__PT);
-                serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__KHAC);
-                serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__PHCN);
-                serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__KH);
-                serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__TT);
-                serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__XN);
-                serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__GPBL);
+                if (indexServiceType == 0)
+                {
+                    serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__G);
+                    serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__CDHA);
+                    serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__NS);
+                    serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__SA);
+                    serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__TDCN);
+                    serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__PT);
+                    serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__KHAC);
+                    serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__PHCN);
+                    serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__KH);
+                    serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__TT);
+                    serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__XN);
+                    serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__GPBL);
+                }
+                else if (indexServiceType == 1)
+                {
+                    serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__KH);
+                }
+                else if (indexServiceType == 2)
+                {
+                    serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__XN);
+                }
+                else if (indexServiceType == 3)
+                {
+                    serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__CDHA);
+                }
+                else if (indexServiceType == 4)
+                {
+                    serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__TT);
+                }
+                else if (indexServiceType == 5)
+                {
+                    serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__TDCN);
+                }
+                else if (indexServiceType == 6)
+                {
+                    serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__G);
+                }
+                else if (indexServiceType == 7)
+                {
+                    serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__NS);
+                }
+                else if (indexServiceType == 8)
+                {
+                    serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__SA);
+                }
+                else if (indexServiceType == 9)
+                {
+                    serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__PT);
+                }
+                else if (indexServiceType == 10)
+                {
+                    serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__KHAC);
+                }
+                else if (indexServiceType == 11)
+                {
+                    serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__PHCN);
+                }
+                else if (indexServiceType == 12)
+                {
+                    serviceReqFilter.SERVICE_REQ_TYPE_IDs.Add(IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__GPBL);
+                }
                 Inventec.Common.Logging.LogSystem.Debug("begin call HisServiceReq/GetView6");
-                this.currentPreServiceReqs = await new BackendAdapter(param).GetAsync<List<MOS.EFMODEL.DataModels.V_HIS_SERVICE_REQ_6>>(RequestUriStore.HIS_SERVICE_REQ_GETVIEW_6, ApiConsumers.MosConsumer, serviceReqFilter, ProcessLostToken, param);
+                var apiResult = new BackendAdapter(param).GetRO<List<MOS.EFMODEL.DataModels.V_HIS_SERVICE_REQ_6>>(RequestUriStore.HIS_SERVICE_REQ_GETVIEW_6, ApiConsumers.MosConsumer, serviceReqFilter, ProcessLostToken, param);
                 Inventec.Common.Logging.LogSystem.Debug("end call HisServiceReq/GetView6");
-                List<ColumnInfo> columnInfos = new List<ColumnInfo>();
-                columnInfos.Add(new ColumnInfo("SERVICE_REQ_TYPE_NAME", "", 150, 1));
-                columnInfos.Add(new ColumnInfo("RENDERER_INTRUCTION_TIME", "", 150, 2));
-                ControlEditorADO controlEditorADO = new ControlEditorADO("RENDERER_INTRUCTION_TIME", "ID", columnInfos, false, 300);
-                ControlEditorLoader.Load(this.cboPriviousServiceReq, this.currentPreServiceReqs, controlEditorADO);
+                //List<ColumnInfo> columnInfos = new List<ColumnInfo>();
+                //columnInfos.Add(new ColumnInfo("SERVICE_REQ_TYPE_NAME", "", 250, 1));
+                //columnInfos.Add(new ColumnInfo("RENDERER_INTRUCTION_TIME", "", 150, 2));
+                //columnInfos.Add(new ColumnInfo("REQUEST_USERNAME ", "", 200, 3));
+                //ControlEditorADO controlEditorADO = new ControlEditorADO("RENDERER_INTRUCTION_TIME", "ID", columnInfos, false, 700);
+                //ControlEditorLoader.Load(this.cboPriviousServiceReq, this.currentPreServiceReqs, controlEditorADO);
+                //cboPriviousServiceReq.Properties.ImmediatePopup = true;
+                //cboPriviousServiceReq.Properties.PopupWidth = 700;
                 WaitingManager.Hide();
+                gridControl3.DataSource = null;
+                if (apiResult != null)
+                {
+                    currentPreServiceReqs = (List<MOS.EFMODEL.DataModels.V_HIS_SERVICE_REQ_6>)apiResult.Data;
+                    if (currentPreServiceReqs != null)
+                    {
+                        gridControl3.DataSource = currentPreServiceReqs;
+                        rowCount = (currentPreServiceReqs == null ? 0 : currentPreServiceReqs.Count);
+                        dataTotal = (apiResult.Param == null ? 0 : apiResult.Param.Count ?? 0);
+                    }
+                }
+
+                #region Process has exception
+                SessionManager.ProcessTokenLost(param);
+                #endregion
             }
             catch (Exception ex)
             {
-                WaitingManager.Hide();
                 Inventec.Common.Logging.LogSystem.Warn(ex);
             }
         }
@@ -2651,6 +2864,9 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                 this.chkIsNotRequireFee.Enabled = false;
                 this.chkIsNotRequireFee.CheckState = CheckState.Unchecked;
                 this.txtProvisionalDiagnosis.Text = this.provisionalDiagnosis;
+                this.dSignedList = new Dictionary<long, List<Inventec.Common.SignLibrary.DTO.DocumentSignedUpdateIGSysResultDTO>>();
+                this.repositoryItemSpinNumberOfTimes__Disable_TabService.ReadOnly = true;
+                this.repositoryItemSpinNumberOfTimes__Disable_TabService.Enabled = false;
                 //this.txtAssignRoomCode.Text = "";
                 //this.cboAssignRoom.EditValue = null;
 
@@ -2829,7 +3045,7 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                     this.gridColumn_Service_PrimaryPatientType.Visible = true;
                     this.gridColumn_Service_PrimaryPatientType.OptionsColumn.AllowEdit = true;
                 }
-                else if (HisConfigCFG.IsSetPrimaryPatientType == "2")
+                else if (HisConfigCFG.IsSetPrimaryPatientType == "2" && HisConfigCFG.ServicePatyForServicePackage != "1")
                 {
                     this.gridColumn_Service_PrimaryPatientType.Visible = true;
                     this.gridColumn_Service_PrimaryPatientType.OptionsColumn.AllowEdit = false;
@@ -2837,6 +3053,17 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                 else
                 {
                     this.gridColumn_Service_PrimaryPatientType.Visible = false;
+                }
+
+                //Ẩn hiện button Gợi ý chỉ định (AI)
+                bool isVisibilitylayoutControlItem36 = !string.IsNullOrEmpty(HisConfigCFG.SuggestAssignServicesInfo);
+                if (isVisibilitylayoutControlItem36)
+                {
+                    layoutControlItem36.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Always;
+                }
+                else
+                {
+                    layoutControlItem36.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
                 }
             }
             catch (Exception ex)
@@ -3029,6 +3256,7 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                     }
                 }
                 if (!btnEn) cboTracking.Enabled = false;
+                isInitTracking = false;
             }
             catch (Exception ex)
             {
@@ -3195,6 +3423,7 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                     {
                         cboUser.EditValue = AppointmentServices[0].CREATOR;
                         txtLoginName.Text = AppointmentServices[0].CREATOR;
+                        CheckAssignServiceSimultaneityOption();
                         var serviceIds = AppointmentServices.Select(o => o.SERVICE_ID).Distinct().ToArray();
                         allDatas = allDatas.Where(o => serviceIds.Contains(o.ID));
                         var resultData = allDatas.ToList();
@@ -3222,11 +3451,12 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                                     executeRoomId = this.SetDefaultExcuteRoom(executeRoomList);
 
                                 //data.TDL_EXECUTE_ROOM_ID = executeRoomDefault;
-                                if (sereServADO.TDL_EXECUTE_ROOM_ID <= 0)
+                                if (sereServADO.TDL_EXECUTE_ROOM_ID <= 0 && executeRoomId > 0)
                                 {
                                     sereServADO.TDL_EXECUTE_ROOM_ID = executeRoomId;
                                 }
                                 this.ValidServiceDetailProcessing(sereServADO);
+                                this.SetAssignNumOrder(sereServADO);
                             }
                             this.toggleSwitchDataChecked.EditValue = true;
                         }
@@ -3278,7 +3508,7 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                             sereServADO.IsChecked = false;
                             break;
                         }
-
+                        this.SetAssignNumOrder(sereServADO);
                         this.FillDataOtherPaySourceDataRow(sereServADO);
                         this.ValidServiceDetailProcessing(sereServADO);
                     }
@@ -3415,6 +3645,13 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                         var patientTypeAllow = this.currentPatientTypeAllows.Where(o => o.PATIENT_TYPE_ID == patientType.ID).Select(m => m.PATIENT_TYPE_ALLOW_ID).Distinct().ToList();
 
                         this.currentPatientTypeWithPatientTypeAlter = ((patientTypeAllow != null && patientTypeAllow.Count > 0) ? currentPatientTypes.Where(o => patientTypeAllow.Contains(o.ID)).OrderBy(o => o.PRIORITY).ToList() : new List<MOS.EFMODEL.DataModels.HIS_PATIENT_TYPE>());
+                        if (HisConfigCFG.IsAssignRoomByPatientType && currentPatientTypeWithPatientTypeAlter != null && currentPatientTypeWithPatientTypeAlter.Count > 0)
+                        {
+                            MOS.Filter.HisPatientTypeRoomFilter _patienttypeRoomFIlter = new MOS.Filter.HisPatientTypeRoomFilter();
+                            _patienttypeRoomFIlter.PATIENT_TYPE_IDs = currentPatientTypeWithPatientTypeAlter.Select(o => o.ID).ToList();
+                            _patienttypeRoomFIlter.IS_ACTIVE = (short)1;
+                            PatientTypeRooms = new Inventec.Common.Adapter.BackendAdapter(new CommonParam()).Get<List<HIS_PATIENT_TYPE_ROOM>>("api/HisPatientTypeRoom/Get", ApiConsumers.MosConsumer, _patienttypeRoomFIlter, null);
+                        }
                     }
                     else
                         throw new AggregateException("currentHisTreatment.PATIENT_TYPE_CODE is null");
@@ -3496,7 +3733,43 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                 Inventec.Common.Logging.LogSystem.Warn(ex);
             }
         }
-
+        private void LoadIcdTranditionalToControl(string icdCode, string icdName)
+        {
+            try
+            {
+                if (icdYhctProcessor != null)
+                {
+                    UC.Icd.ADO.IcdInputADO icdYhct = new UC.Icd.ADO.IcdInputADO();
+                    icdYhct.ICD_CODE = icdCode;
+                    icdYhct.ICD_NAME = icdName;
+                    if (ucIcdYhct != null)
+                    {
+                        this.icdYhctProcessor.Reload(ucIcdYhct, icdYhct);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+        private void LoadIcdSubTranditionalToControl(string icdCode, string icdName)
+        {
+            try
+            {
+                SecondaryIcdDataADO subYhctIcd = new SecondaryIcdDataADO();
+                subYhctIcd.ICD_SUB_CODE = icdCode;
+                subYhctIcd.ICD_TEXT = icdName;
+                if (ucSecondaryIcdYhct != null)
+                {
+                    subIcdYhctProcessor.Reload(ucSecondaryIcdYhct, subYhctIcd);
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
         /// <summary>
         /// Lay Chan doan mac dinh: Lay chan doan cuoi cung trong cac xu ly dich vu Kham benh
         /// </summary>
@@ -3507,6 +3780,23 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
             {
                 this.isNotProcessWhileChangedTextSubIcd = true;
                 Inventec.Common.Logging.LogSystem.Debug("LoadIcdDefault. 1");
+                if (tracking != null && !String.IsNullOrEmpty(tracking.TRADITIONAL_ICD_CODE) && HisConfigCFG.TrackingCreate__UpdateTreatmentIcd == "1")
+                {
+                    this.LoadIcdTranditionalToControl(tracking.TRADITIONAL_ICD_CODE, tracking.TRADITIONAL_ICD_NAME);
+                    this.LoadIcdSubTranditionalToControl(tracking.TRADITIONAL_ICD_SUB_CODE, tracking.TRADITIONAL_ICD_TEXT);
+                }
+                else if ((HisConfigCFG.IsloadIcdFromExamServiceExecute || (currentHisTreatment != null && String.IsNullOrEmpty(currentHisTreatment.TRADITIONAL_ICD_CODE))) && this.icdExam != null)
+                {
+                    this.LoadIcdTranditionalToControl(icdExam.TRADITIONAL_ICD_CODE, icdExam.TRADITIONAL_ICD_NAME);
+                    this.LoadIcdSubTranditionalToControl(icdExam.TRADITIONAL_ICD_SUB_CODE, icdExam.TRADITIONAL_ICD_TEXT);
+                }
+                else if (this.currentHisTreatment != null)
+                {
+                    this.LoadIcdTranditionalToControl(currentHisTreatment.TRADITIONAL_ICD_CODE, currentHisTreatment.TRADITIONAL_ICD_NAME);
+                    this.LoadIcdSubTranditionalToControl(currentHisTreatment.TRADITIONAL_ICD_SUB_CODE, currentHisTreatment.TRADITIONAL_ICD_TEXT);
+                }
+
+
                 if (this.tracking != null && !String.IsNullOrEmpty(this.tracking.ICD_CODE) && HisConfigCFG.TrackingCreate__UpdateTreatmentIcd == "1")
                 {
                     this.LoadIcdToControl(this.tracking.ICD_CODE, this.tracking.ICD_NAME);
@@ -3619,6 +3909,13 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                 {
                     cboTracking.Enabled = true;
                 }
+                else if (HisConfigCFG.IsRequiredTrackingPrescription && this.currentHisTreatment != null
+                    && (this.currentHisTreatment.IS_EMERGENCY == 1 || this.currentHisTreatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNOITRU))
+                {
+                    cboTracking.Enabled = true;
+                }
+
+
                 else
                 {
                     cboTracking.Enabled = false;
@@ -3643,7 +3940,7 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                 string patientInfo = "";
                 patientInfo += this.currentHisTreatment.TDL_PATIENT_NAME;
                 if (this.patientDob > 0)
-                    patientInfo += "    -    " + Inventec.Common.DateTime.Convert.TimeNumberToDateString(this.currentHisTreatment.TDL_PATIENT_DOB);
+                    patientInfo += "    -    " + Inventec.Common.DateTime.Convert.TimeNumberToDateString(this.currentHisTreatment.TDL_PATIENT_DOB) + " (" + MPS.AgeUtil.CalculateFullAge(currentHisTreatment.TDL_PATIENT_DOB) + ") ";
                 patientInfo += "    -    " + this.currentHisTreatment.TDL_PATIENT_GENDER_NAME;
 
                 if (this.currentHisPatientTypeAlter != null)
@@ -3657,6 +3954,379 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
             {
                 Inventec.Common.Logging.LogSystem.Warn(ex);
             }
+        }
+
+        // qtcode3
+        private async Task LoadGuaranteeInfo()
+        {
+            try
+            {
+                if (this.currentHisTreatment == null || string.IsNullOrEmpty(this.currentHisTreatment.GUARANTEE_CODE) || string.IsNullOrEmpty(this.currentHisTreatment.GUARANTEE_REQUEST_CODE))
+                {
+                    //HideGuaranteeLabel();
+                    return;
+                }
+
+                isLoadingGuaranteeInfo = true;
+
+                await Task.Run(() =>
+                {
+                    try
+                    {
+                        //ConfigApplicationWorker.Get<string>(AppConfigKeys.CONFIG_KEY_HIS_DESKTOP_ASSIGN_SERVICE_CLOSED_FORM_AFTER_PRINT);
+                        var guaranteeConnection = Config.HisConfigCFG.GuaranteeConnectionInfo;
+
+                        if (string.IsNullOrEmpty(guaranteeConnection))
+                        {
+                            Inventec.Common.Logging.LogSystem.Warn("Chưa cấu hình thông tin kết nối hệ thống bảo lãnh");
+                            this.guaranteeInfo = null;
+                            //return;
+                        }
+                        string[] parts = guaranteeConnection.Split('|');
+                        if (parts.Length < 3)
+                        {
+                            Inventec.Common.Logging.LogSystem.Warn("Cấu hình kết nối bảo lãnh không đúng định dạng");
+                            this.guaranteeInfo = null;
+                            return;
+                        }
+
+                        //  Địa chỉ
+                        string[] fullGuaranteeAddress = parts[0].Trim().Split(';');
+                        string guaranteeAddressHasUri = fullGuaranteeAddress.Length > 0 ? fullGuaranteeAddress[0] : "";
+                        string guaranteeAddressAcsUri = fullGuaranteeAddress.Length > 1 ? fullGuaranteeAddress[1] : "";
+
+                        // Mã ứng dụng:Tài khoản:Mật khẩu
+                        string[] credentials = parts[1].Split(':');
+                        string guaranteeAppCode = credentials.Length > 0 ? credentials[0].Trim() : "";
+                        string guaranteeUsername = credentials.Length > 1 ? credentials[1].Trim() : "";
+                        string guaranteePassword = credentials.Length > 2 ? credentials[2].Trim() : "";
+
+                        // Hạn mức đăng ký mặc định
+                        string guaranteeDefaultLimit = parts[2].Trim();
+
+                        string branchHeinMediOrgCode = HIS.Desktop.LocalStorage.BackendData.BranchDataWorker.Branch.HEIN_MEDI_ORG_CODE;
+
+                        MedicalExpenseGuaranteeProcessor medicalExpenseGuarantee = new MedicalExpenseGuaranteeProcessor();
+                        DataInput dataInput = new DataInput();
+                        dataInput.hasUri = guaranteeAddressHasUri;
+                        dataInput.acsUri = guaranteeAddressAcsUri;
+                        dataInput.applicationCode = guaranteeAppCode;
+                        dataInput.limet = guaranteeDefaultLimit;
+                        dataInput.cskcbbd = branchHeinMediOrgCode;
+                        dataInput.username = guaranteeUsername;
+                        dataInput.password = guaranteePassword;
+                        dataInput.registerUseRequest = new RegisterUseRequest
+                        {
+                            PatientFullName = this.currentHisTreatment.TDL_PATIENT_NAME.Trim(),
+                            PatientDateOfBirth = this.currentHisTreatment.TDL_PATIENT_DOB != 0 ? this.currentHisTreatment.TDL_PATIENT_DOB.ToString() : "",
+                            PatientCccd = this.currentHisTreatment.TDL_PATIENT_CCCD_NUMBER ?? this.currentHisTreatment.TDL_PATIENT_CMND_NUMBER,
+                            RequestAmount = guaranteeDefaultLimit,
+                            ApplicationCode = guaranteeAppCode,
+                            Remark = "Tra cứu hạn mức bảo lãnh",
+                            Signature = ""
+                        };
+
+                        dataInput.availableBalanceInfoRequest = new AvailableBalanceInfoRequest
+                        {
+                            RequestId = this.currentHisTreatment.GUARANTEE_REQUEST_CODE,
+                            PatientFullName = this.currentHisTreatment.TDL_PATIENT_NAME.Trim(),
+                            PatientDateOfBirth = this.currentHisTreatment.TDL_PATIENT_DOB.ToString(),
+                            PatientCccd = this.currentHisTreatment.TDL_PATIENT_CCCD_NUMBER ?? this.currentHisTreatment.TDL_PATIENT_CMND_NUMBER,
+                            ApplicationCode = guaranteeAppCode,
+                            Remark = "Tra cứu hạn mức bảo lãnh"
+                        };
+                        AvailableBalanceInfoResponse balanceInfoResponse = new AvailableBalanceInfoResponse();
+                        balanceInfoResponse = medicalExpenseGuarantee.GuaranteeAvailableBalanceInfoResponse(dataInput);
+                        if (balanceInfoResponse != null && balanceInfoResponse.Success == true)
+                        {
+                            decimal limit;
+                            decimal used;
+                            decimal remain;
+                            this.guaranteeInfo = new GuaranteeInfoADO
+                            {
+                                GUARANTEE_CODE = this.currentHisTreatment.GUARANTEE_CODE,
+                                GUARANTEE_REGISTER = decimal.TryParse(balanceInfoResponse.Data.RegisteredAmount, out limit) ? limit : 0,
+                                GUARANTEE_USED = decimal.TryParse(balanceInfoResponse.Data.UsedAmount, out used) ? used : 0,
+                                GUARANTEE_BALANCE = decimal.TryParse(balanceInfoResponse.Data.AvailableBalance, out remain) ? remain : 0
+                            };
+                        }
+                        else
+                        {
+                            Inventec.Common.Logging.LogSystem.Warn("Tra cứu bảo lãnh thất bại");
+                            this.guaranteeInfo = null;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Inventec.Common.Logging.LogSystem.Error(ex);
+                        this.guaranteeInfo = null;
+                    }
+                });
+
+                UpdateGuaranteeLabel();
+                UpdateTotalGuaranteePrice();
+                isLoadingGuaranteeInfo = false;
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+                isLoadingGuaranteeInfo = false;
+            }
+        }
+
+        private void UpdateGuaranteeLabel()
+        {
+            try
+            {
+                if (guaranteeInfo != null)
+                {
+
+                    if (this.InvokeRequired)
+                    {
+                        this.Invoke(new MethodInvoker(delegate
+                        {
+                            lblGuarantee.Text = Inventec.Common.Number.Convert.NumberToString(guaranteeInfo.GUARANTEE_BALANCE, ConfigApplications.NumberSeperator);
+                            lciGuarantee.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Always;
+                        }));
+                    }
+                    else
+                    {
+                        lblGuarantee.Text = Inventec.Common.Number.Convert.NumberToString(guaranteeInfo.GUARANTEE_BALANCE, ConfigApplications.NumberSeperator);
+                        lciGuarantee.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Always;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+        }
+        private bool ValidateGuaranteeAmount(ref string message)
+        {
+            try
+            {
+                // Nếu không có thông tin bảo lãnh hoặc không có GUARANTEE_CODE thì bỏ qua
+                if (this.guaranteeInfo == null || (this.currentHisTreatment != null && string.IsNullOrEmpty(this.currentHisTreatment.GUARANTEE_CODE)))
+                    return true;
+
+                // Lấy danh sách dịch vụ đã chọn và đánh dấu bảo lãnh
+                //var guaranteedServices = this.ServiceIsleafADOs?
+                //    .Where(o => o.IsChecked && o.IsGuarantee)
+                //    .ToList();
+
+                //if (guaranteedServices == null || guaranteedServices.Count == 0)
+                //    return true;
+
+                //decimal totalGuaranteeAmount = GetTotalGuaranteePrice();
+                //long? bhytPatientTypeId = GetBHYTPatientTypeId();
+
+                //foreach (var svc in guaranteedServices)
+                //{
+                //    // Tính tổng tiền bệnh nhân phải trả
+                //    decimal patientPrice = svc.PRICE * svc.AMOUNT;
+                //    totalGuaranteeAmount += patientPrice;
+                //    // Nếu là BHYT thì trừ đi phần BHYT thanh toán
+                //    //if (bhytPatientTypeId.HasValue && svc.PATIENT_TYPE_ID == bhytPatientTypeId.Value)
+                //    //{
+                //    //    decimal heinPrice = (svc.HEIN_LIMIT_PRICE ?? 0) * svc.AMOUNT * (svc.HEIN_LIMIT_RATIO ?? 0);
+                //    //    patientPrice = patientPrice - heinPrice;
+                //    //}
+
+                //    // Nếu là hao phí thì không tính vào bảo lãnh
+                //    //if (svc.IsExpend != true)
+                //    //{
+                //    //    totalGuaranteeAmount += patientPrice;
+                //    //}
+                //}
+
+                //decimal totalGuarantee;
+                //if (decimal.TryParse(lblTotalGuarantee.Text, out totalGuarantee) && (totalGuarantee - this.totalGuaranteeOriginal) > this.guaranteeInfo.GUARANTEE_BALANCE)
+                //{
+                //    message = "Tổng tiền dịch vụ đã vượt hạn mức bảo lãnh, vui lòng kiểm tra lại.";
+                //    return false;
+                //}
+                
+                if (this.totalGuaranteeArise > this.guaranteeInfo.GUARANTEE_BALANCE)
+                {
+                    message = "Tổng tiền dịch vụ đã vượt hạn mức bảo lãnh, vui lòng kiểm tra lại.";
+                    return false;
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogSystem.Error(ex);
+                return true;
+            }
+        }
+
+        private bool ValidateGuaranteeBeforeSave()
+        {
+            try
+            {
+                string guaranteeMessage = "";
+                if (!ValidateGuaranteeAmount(ref guaranteeMessage))
+                {
+                    XtraMessageBox.Show(
+                        guaranteeMessage,
+                        "Thông báo",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    return false;
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogSystem.Error(ex);
+                return true;
+            }
+        }
+        private void UpdateTotalGuaranteePrice()
+        {
+            try
+            {
+                Inventec.Common.Logging.LogSystem.Debug("qtcode UpdateTotalGuaranteePrice");
+                if (this.InvokeRequired)
+                {
+                    this.Invoke(new Action(UpdateTotalGuaranteePrice));
+                    return;
+                }
+
+                if (this.guaranteeInfo != null && this.currentHisTreatment != null && !string.IsNullOrEmpty(this.currentHisTreatment.GUARANTEE_CODE))
+                {
+                    decimal totalGuaranteePrice = GetTotalGuaranteePrice();
+                    lblTotalGuarantee.Text = Inventec.Common.Number.Convert.NumberToString(totalGuaranteePrice, ConfigApplications.NumberSeperator);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogSystem.Error(ex);
+            }
+        }
+
+        private decimal GetTotalGuaranteePrice() // lấy ra số tiền cần được bảo lãnh
+        {
+            Inventec.Common.Logging.LogSystem.Debug("thangdq GetTotalGuaranteePrice");
+            decimal totalGuaranteePrice = 0;
+            try
+            {
+                //if (this.guaranteeInfo == null || this.currentHisTreatment == null || string.IsNullOrEmpty(this.currentHisTreatment.GUARANTEE_CODE))
+                //    return 0;
+                if (this.currentHisTreatment == null || string.IsNullOrEmpty(this.currentHisTreatment.GUARANTEE_CODE))
+                    return 0;
+
+                long instructionTime = this.intructionTimeSelecteds != null && this.intructionTimeSelecteds.Count > 0 ? this.intructionTimeSelecteds.FirstOrDefault() : 0;
+
+                if (ServiceIsleafADOs != null && ServiceIsleafADOs.Count > 0)
+                {
+                    // Chỉ lấy dịch vụ được tích chọn VÀ được bảo lãnh
+                    var dataCheckeds = ServiceIsleafADOs.Where(o => o.IsChecked && o.IsGuarantee).ToList();
+
+                    if (dataCheckeds != null && dataCheckeds.Count > 0)
+                    {
+                        var serviceRoomViews = BackendDataWorker.Get<MOS.EFMODEL.DataModels.V_HIS_SERVICE_ROOM>();
+
+                        foreach (var item in dataCheckeds)
+                        {
+                            // Không tính dịch vụ hao phí
+                            //if (item.PATIENT_TYPE_ID != 0 && (item.IsExpend ?? false) == false)
+
+                            item.PATIENT_TYPE_ID = this.currentHisTreatment.TDL_PATIENT_TYPE_ID != null ? this.currentHisTreatment.TDL_PATIENT_TYPE_ID.Value : 0;
+                            if ((item.IsExpend ?? false) == false)
+                            {
+                                var servicePaties = HIS.Desktop.LocalStorage.BackendData.BranchDataWorker.ServicePatyWithListPatientType(item.SERVICE_ID, this.patientTypeIdAls);
+                                V_HIS_SERVICE_PATY data_ServicePrice = null;
+
+                                if (servicePaties != null && servicePaties.Count > 0 && this.requestRoom != null)
+                                {
+                                    List<MOS.EFMODEL.DataModels.V_HIS_EXECUTE_ROOM> dataCombo = new List<V_HIS_EXECUTE_ROOM>();
+
+                                    if (this.allDataExecuteRooms != null && this.allDataExecuteRooms.Count > 0 && serviceRoomViews != null && serviceRoomViews.Count > 0)
+                                    {
+                                        var arrExcuteRoom = serviceRoomViews.Where(o => item != null && o.SERVICE_ID == item.SERVICE_ID);
+
+                                        if (HisConfigCFG.IsAssignRoomByPatientType && PatientTypeRooms != null && PatientTypeRooms.Count > 0 && PatientTypeRooms.Exists(o => o.PATIENT_TYPE_ID == item.PATIENT_TYPE_ID))
+                                        {
+                                            var RoomIds = PatientTypeRooms.Where(o => o.PATIENT_TYPE_ID == item.PATIENT_TYPE_ID).Select(o => o.ROOM_ID).ToList();
+                                            arrExcuteRoom = arrExcuteRoom.Where(o => RoomIds.Contains(o.ROOM_ID)).ToList();
+                                        }
+                                        var arrExcuteRoomCode = arrExcuteRoom.Select(o => o.ROOM_ID).ToArray();
+                                        dataCombo = ((arrExcuteRoomCode != null && arrExcuteRoomCode.Count() > 0 && this.allDataExecuteRooms != null) ? this.allDataExecuteRooms.Where(o => arrExcuteRoomCode.Contains(o.ROOM_ID)).ToList() : null);
+                                    }
+
+                                    var checkExecuteRoom = dataCombo != null && dataCombo.Count > 0 ? dataCombo.FirstOrDefault(o => o.BRANCH_ID == this.requestRoom.BRANCH_ID) : null;
+                                    if (checkExecuteRoom != null)
+                                    {
+                                        item.TDL_EXECUTE_BRANCH_ID = checkExecuteRoom.BRANCH_ID;
+                                    }
+                                    else
+                                    {
+                                        item.TDL_EXECUTE_BRANCH_ID = dataCombo != null && dataCombo.Count > 0 ? dataCombo.FirstOrDefault().BRANCH_ID : 0;
+                                        item.TDL_EXECUTE_BRANCH_ID = item.TDL_EXECUTE_BRANCH_ID == 0 ? HIS.Desktop.LocalStorage.BackendData.BranchDataWorker.GetCurrentBranchId() : item.TDL_EXECUTE_BRANCH_ID;
+                                    }
+
+                                    List<HIS_SERE_SERV> sameServiceType = this.sereServWithTreatment != null ? this.sereServWithTreatment.Where(o => o.TDL_SERVICE_TYPE_ID == item.SERVICE_TYPE_ID).ToList() : null;
+                                    List<HIS_SERE_SERV> sameService = this.sereServWithTreatment != null ? this.sereServWithTreatment.Where(o => o.SERVICE_ID == item.SERVICE_ID).ToList() : null;
+                                    var intructionNumByType = sameServiceType != null ? (long)sameServiceType.Count() + 1 : 1;
+                                    var intructionNum = sameService != null ? (long)sameService.Count() + 1 : 1;
+
+                                    data_ServicePrice = MOS.ServicePaty.ServicePatyUtil.GetApplied(servicePaties, item.TDL_EXECUTE_BRANCH_ID, null, this.requestRoom.ID, this.requestRoom.DEPARTMENT_ID, instructionTime, this.currentHisTreatment.IN_TIME, item.SERVICE_ID, item.PATIENT_TYPE_ID, intructionNum, intructionNumByType, item.PackagePriceId, item.SERVICE_CONDITION_ID, this.currentHisTreatment.TDL_PATIENT_CLASSIFY_ID, null);
+                                }
+
+                                // Tính tổng tiền
+                                if (item.AssignSurgPriceEdit.HasValue && item.AssignSurgPriceEdit > 0)
+                                {
+                                    totalGuaranteePrice += item.AssignSurgPriceEdit.Value;
+                                }
+                                else
+                                {
+                                    if (item.PATIENT_TYPE_ID == HisConfigCFG.PatientTypeId__BHYT
+                                            && item.IsNoDifference.HasValue
+                                            && item.IsNoDifference.Value)
+                                    {
+                                        if (item.HEIN_LIMIT_PRICE.HasValue && item.HEIN_LIMIT_PRICE.Value > 0)
+                                        {
+                                            totalGuaranteePrice += item.AMOUNT * item.HEIN_LIMIT_PRICE.Value;
+                                        }
+                                        else if (item.HEIN_LIMIT_RATIO.HasValue && item.HEIN_LIMIT_RATIO.Value > 0 && data_ServicePrice != null)
+                                        {
+                                            totalGuaranteePrice += (item.AMOUNT * data_ServicePrice.PRICE * (1 + data_ServicePrice.VAT_RATIO) * item.HEIN_LIMIT_RATIO.Value);
+                                        }
+                                        else if (data_ServicePrice != null)
+                                        {
+                                            totalGuaranteePrice += (item.AMOUNT * data_ServicePrice.PRICE * (1 + data_ServicePrice.VAT_RATIO));
+                                        }
+                                    }
+                                    else if (data_ServicePrice != null)
+                                    {
+                                        totalGuaranteePrice += (item.AMOUNT * data_ServicePrice.PRICE * (1 + data_ServicePrice.VAT_RATIO));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogSystem.Error(ex);
+            }
+            if (this.ssGuarantee.Count == 0)
+            {
+                CommonParam param = new CommonParam();
+                HisSereServFilter hisSereServFilter = new HisSereServFilter();
+                hisSereServFilter.TREATMENT_ID = this.treatmentId;
+                //hisSereServFilter.PATIENT_TYPE_ID = HisConfigCFG.PatientTypeId__BHYT;
+                this.ssGuarantee = new BackendAdapter(param).Get<List<MOS.EFMODEL.DataModels.HIS_SERE_SERV>>(HisRequestUriStore.HIS_SERE_SERV_GET, ApiConsumers.MosConsumer, hisSereServFilter, param);
+            }
+            //var totalGuaranteeOriginal = sereServsInTreatmentRaw != null ? sereServsInTreatmentRaw.Where(o => o.IS_GUARANTEED == 1).Sum(o => o.PRICE) : 0;
+            if (this.totalGuaranteeOriginal == 0)
+                this.totalGuaranteeOriginal = this.ssGuarantee != null ? this.ssGuarantee.Where(o => o.IS_GUARANTEED == 1 && (o.IS_EXPEND == null || o.IS_EXPEND != 1)).Sum(o => o.PRICE) : 0;
+            this.totalGuaranteeArise = totalGuaranteePrice; 
+            totalGuaranteePrice += this.totalGuaranteeOriginal;
+            return totalGuaranteePrice;
         }
 
         private async Task LoadDataSereServWithTreatment(HisTreatmentWithPatientTypeInfoSDO treatment, DateTime? intructionTime)
@@ -3755,7 +4425,7 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
         {
             try
             {
-                if (((HisConfigCFG.IntegrationVersionValue == "1" && HisConfigCFG.IntegrationOptionValue != "1") || (HisConfigCFG.IntegrationVersionValue == "2" && HisConfigCFG.IntegrationTypeValue != "1")) && data.SERVICE_TYPE_ID > 0 && serviceTypeIdSplitReq != null && serviceTypeIdSplitReq.Count > 0 && serviceTypeIdSplitReq.Exists(o=>o==data.SERVICE_TYPE_ID))
+                if (((HisConfigCFG.IntegrationVersionValue == "1" && HisConfigCFG.IntegrationOptionValue != "1") || (HisConfigCFG.IntegrationVersionValue == "2" && HisConfigCFG.IntegrationTypeValue != "1")) && data.SERVICE_TYPE_ID > 0 && serviceTypeIdSplitReq != null && serviceTypeIdSplitReq.Count > 0 && serviceTypeIdSplitReq.Exists(o => o == data.SERVICE_TYPE_ID))
                 {
                     InitComboSampleType(sampleTypeCombo);
                 }
@@ -3812,7 +4482,10 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                     List<HIS_SERE_SERV> sameServiceType = this.sereServWithTreatment != null ? this.sereServWithTreatment.Where(o => o.TDL_SERVICE_TYPE_ID == data.SERVICE_TYPE_ID).ToList() : null;
                     long? intructionNumByType = sameServiceType != null ? (long)sameServiceType.Count() + 1 : 1;
                     List<V_HIS_SERVICE_PATY> servicePaties = BranchDataWorker.ServicePatyWithListPatientType(data.SERVICE_ID, this.patientTypeIdAls);
-                    var currentPaty = MOS.ServicePaty.ServicePatyUtil.GetApplied(servicePaties, data.TDL_EXECUTE_BRANCH_ID, null, this.requestRoom.ID, this.requestRoom.DEPARTMENT_ID, instructionTime, this.currentHisTreatment.IN_TIME, data.SERVICE_ID, data.PATIENT_TYPE_ID, null, intructionNumByType);
+
+                    List<HIS_SERE_SERV> sameService = this.sereServWithTreatment != null ? this.sereServWithTreatment.Where(o => o.SERVICE_ID == data.SERVICE_ID).ToList() : null;
+                    var intructionNum = sameService != null ? (long)sameService.Count() + 1 : 1;
+                    var currentPaty = MOS.ServicePaty.ServicePatyUtil.GetApplied(servicePaties, data.TDL_EXECUTE_BRANCH_ID, null, this.requestRoom.ID, this.requestRoom.DEPARTMENT_ID, instructionTime, this.currentHisTreatment.IN_TIME, data.SERVICE_ID, data.PATIENT_TYPE_ID, intructionNum, intructionNumByType, data.PackagePriceId, data.SERVICE_CONDITION_ID, this.currentHisTreatment.TDL_PATIENT_CLASSIFY_ID, null);
 
                     var patientTypePrimatyList = this.currentPatientTypeWithPatientTypeAlter.Where(o => o.IS_ADDITION == (short)1).ToList();
 
@@ -3824,7 +4497,7 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                         {
                             if (item == data.PATIENT_TYPE_ID)
                                 continue;
-                            var itemPaty = MOS.ServicePaty.ServicePatyUtil.GetApplied(servicePaties, data.TDL_EXECUTE_BRANCH_ID, null, this.requestRoom.ID, this.requestRoom.DEPARTMENT_ID, instructionTime, this.currentHisTreatment.IN_TIME, data.SERVICE_ID, item, null, intructionNumByType);
+                            var itemPaty = MOS.ServicePaty.ServicePatyUtil.GetApplied(servicePaties, data.TDL_EXECUTE_BRANCH_ID, null, this.requestRoom.ID, this.requestRoom.DEPARTMENT_ID, instructionTime, this.currentHisTreatment.IN_TIME, data.SERVICE_ID, item, intructionNum, intructionNumByType, data.PackagePriceId, data.SERVICE_CONDITION_ID, this.currentHisTreatment.TDL_PATIENT_CLASSIFY_ID, null);
                             if (itemPaty == null || currentPaty == null || (currentPaty.PRICE * (1 + currentPaty.VAT_RATIO)) >= (itemPaty.PRICE * (1 + itemPaty.VAT_RATIO)))
                                 continue;
                             dataCombo.Add(this.currentPatientTypeWithPatientTypeAlter.FirstOrDefault(o => o.ID == item));
@@ -3848,6 +4521,11 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                 if (excuteRoomCombo != null && this.allDataExecuteRooms != null && serviceRoomViews != null && serviceRoomViews.Count() > 0)
                 {
                     var arrExcuteRoom = serviceRoomViews.Where(o => data != null && o.SERVICE_ID == data.SERVICE_ID).ToList();
+                    if (HisConfigCFG.IsAssignRoomByPatientType && PatientTypeRooms != null && PatientTypeRooms.Count > 0 && PatientTypeRooms.Exists(o => o.PATIENT_TYPE_ID == data.PATIENT_TYPE_ID))
+                    {
+                        var RoomIds = PatientTypeRooms.Where(o => o.PATIENT_TYPE_ID == data.PATIENT_TYPE_ID).Select(o => o.ROOM_ID).ToList();
+                        arrExcuteRoom = arrExcuteRoom.Where(o => RoomIds.Contains(o.ROOM_ID)).ToList();
+                    }
                     var arrExcuteRoomIds = arrExcuteRoom.Select(o => o.ROOM_ID).ToArray();
                     var dataComboExcuteRooms = ((arrExcuteRoomIds != null && arrExcuteRoomIds.Count() > 0 && this.allDataExecuteRooms != null) ? this.allDataExecuteRooms.Where(o => arrExcuteRoomIds.Contains(o.ROOM_ID)).ToList() : null);
                     if (this.IsTreatmentInBedRoom)
@@ -3872,10 +4550,15 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                 if (this.allDataExecuteRooms != null && serviceRoomViews != null && serviceRoomViews.Count() > 0)
                 {
                     var arrExcuteRoom = serviceRoomViews.Where(o => data != null && o.SERVICE_ID == data.SERVICE_ID).ToList();
+                    if (HisConfigCFG.IsAssignRoomByPatientType && PatientTypeRooms != null && PatientTypeRooms.Count > 0 && PatientTypeRooms.Exists(o => o.PATIENT_TYPE_ID == data.PATIENT_TYPE_ID))
+                    {
+                        var RoomIds = PatientTypeRooms.Where(o => o.PATIENT_TYPE_ID == data.PATIENT_TYPE_ID).Select(o => o.ROOM_ID).ToList();
+                        arrExcuteRoom = arrExcuteRoom.Where(o => RoomIds.Contains(o.ROOM_ID)).ToList();
+                    }
                     var arrExcuteRoomIds = arrExcuteRoom.Select(o => o.ROOM_ID).ToArray();
                     executeRoomList = ((arrExcuteRoomIds != null && arrExcuteRoomIds.Count() > 0 && this.allDataExecuteRooms != null) ? this.allDataExecuteRooms.Where(o => arrExcuteRoomIds.Contains(o.ROOM_ID)).ToList() : null);
                     List<MOS.EFMODEL.DataModels.V_HIS_EXECUTE_ROOM> executeRoomFilters = ProcessExecuteRoom();
-                    executeRoomList = (executeRoomFilters != null && executeRoomFilters.Count > 0) ? executeRoomList.Where(p => executeRoomFilters.Select(o => o.ID).Distinct().Contains(p.ID)).ToList() : null;
+                    executeRoomList = (executeRoomFilters != null && executeRoomFilters.Count > 0 && executeRoomList != null && executeRoomList.Count > 0) ? executeRoomList.Where(p => executeRoomFilters.Select(o => o.ID).Distinct().Contains(p.ID)).ToList() : null;
                     if (this.IsTreatmentInBedRoom)
                     {
                         ProcessAddBedRoomToExecuteRoom(arrExcuteRoomIds.ToList(), ref executeRoomList);

@@ -1,4 +1,21 @@
-﻿using ACS.EFMODEL.DataModels;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using ACS.EFMODEL.DataModels;
 using HIS.Desktop.ApiConsumer;
 using HIS.Desktop.Controls.Session;
 using HIS.Desktop.LocalStorage.BackendData;
@@ -237,8 +254,7 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                 this.txtIcdCode.PreviewKeyDown -= new System.Windows.Forms.PreviewKeyDownEventHandler(this.txtIcdCode_PreviewKeyDown);
                 this.txtIcdCode.Validating -= new System.ComponentModel.CancelEventHandler(this.txtIcdCode_Validating);
                 this.txtLoginName.PreviewKeyDown -= new System.Windows.Forms.PreviewKeyDownEventHandler(this.txtLoginName_PreviewKeyDown);
-                this.cboPriviousServiceReq.GetNotInListValue -= new DevExpress.XtraEditors.Controls.GetNotInListValueEventHandler(this.cboPriviousServiceReq_GetNotInListValue);
-                this.cboPriviousServiceReq.Closed -= new DevExpress.XtraEditors.Controls.ClosedEventHandler(this.cboPriviousServiceReq_Closed);
+               
                 this.cboPriviousServiceReq.ButtonClick -= new DevExpress.XtraEditors.Controls.ButtonPressedEventHandler(this.cboPriviousServiceReq_ButtonClick);
                 this.cboPriviousServiceReq.KeyUp -= new System.Windows.Forms.KeyEventHandler(this.cboPriviousServiceReq_KeyUp);
                 this.cboPriviousServiceReq.Leave -= new System.EventHandler(this.cboPriviousServiceReq_Leave);

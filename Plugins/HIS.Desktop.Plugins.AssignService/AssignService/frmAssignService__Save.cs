@@ -1,4 +1,24 @@
-﻿using ACS.EFMODEL.DataModels;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using ACS.EFMODEL.DataModels;
+using DevExpress.Office.Utils;
+using DevExpress.XtraEditors;
+using EMR.Filter;
 using HIS.Desktop.ApiConsumer;
 using HIS.Desktop.Controls.Session;
 using HIS.Desktop.LocalStorage.BackendData;
@@ -11,8 +31,11 @@ using HIS.Desktop.Plugins.AssignService.Resources;
 using HIS.Desktop.Plugins.Library.AlertWarningFee;
 using HIS.Desktop.Print;
 using HIS.Desktop.Utilities.Extensions;
+using HIS.UC.Icd.ADO;
+using HIS.UC.SecondaryIcd.ADO;
 using Inventec.Common.Adapter;
 using Inventec.Common.Logging;
+using Inventec.Common.SignLibrary.DTO;
 using Inventec.Core;
 using Inventec.Desktop.Common.LibraryMessage;
 using Inventec.Desktop.Common.Message;
@@ -41,8 +64,17 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                 if (this.gridViewServiceProcess.FocusedRowModified)
                     this.gridViewServiceProcess.UpdateCurrentRow();
 
-                bool isValid = true;
+                // Validate bảo lãnh trước khi lưu
+                if (!ValidateGuaranteeBeforeSave())
+                {
+                    return;
+                }
 
+                bool isValid = true;
+                if (!CheckPackage())
+                {
+                    return;
+                }
                 List<SereServADO> serviceCheckeds__Send = this.ServiceIsleafADOs.FindAll(o => o.IsChecked);
                 if (serviceTypeIdRequired != null && serviceTypeIdRequired.Count > 0)
                 {
@@ -54,46 +86,58 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                         return;
                     }
                 }
+                if (ucIcdYhct != null)
+                    isValid = isValid && (bool)icdYhctProcessor.ValidationIcd(ucIcdYhct);
+                if (ucSecondaryIcdYhct != null)
+                    isValid = isValid && subIcdYhctProcessor.GetValidate(ucSecondaryIcdYhct);
                 isValid = isValid && this.Valid(serviceCheckeds__Send);
                 isValid = isValid && this.CheckIcd(new List<V_HIS_TREATMENT_BED_ROOM> { new V_HIS_TREATMENT_BED_ROOM() { TREATMENT_ID = currentTreatment.ID, ICD_CODE = txtIcdCode.Text.Trim(), ICD_SUB_CODE = txtIcdSubCode.Text.Trim() } });
-                List<HIS_ICD_SERVICE> icdServicePhacDos = null;
-                List<HIS_ICD> icdFromUc = GetIcdCodeListFromUcIcd();
-                if (icdFromUc != null && icdFromUc.Count > 0)
+                bool isValidICD = true;
+                if (HisConfigCFG.IsIcdServiceHasRequireCheckPatientBHYT && !this.CheckPatientTypeBHYT(new List<V_HIS_TREATMENT_BED_ROOM> { new V_HIS_TREATMENT_BED_ROOM() { TDL_PATIENT_TYPE_ID = currentTreatment.TDL_PATIENT_TYPE_ID } }))
                 {
-                    MOS.Filter.HisIcdServiceFilter icdServiceFilter = new HisIcdServiceFilter();
-                    icdServiceFilter.ICD_CODE__EXACTs = icdFromUc.Select(o => o.ICD_CODE).Distinct().ToList();
-                    icdServicePhacDos = new BackendAdapter(null).Get<List<HIS_ICD_SERVICE>>("api/HisIcdService/Get", ApiConsumer.ApiConsumers.MosConsumer, icdServiceFilter, null);
-
-                    //isValid = isValid && ValidServiceIcdForIcdSelected(icdServices, serviceCheckeds__Send);
-                    Inventec.Common.Logging.LogSystem.Debug("Valid3:" + isValid);
-                    isValid = isValid && ValidServiceIcdForServiceSelected(icdFromUc, icdServicePhacDos, serviceCheckeds__Send);
-                    Inventec.Common.Logging.LogSystem.Debug("Valid4:" + isValid);
-                    if (!isValid && HisConfigCFG.IcdServiceHasCheck == "4")
-                        return;
-                    if (isValid && HisConfigCFG.IcdServiceHasCheck == "5")
+                    isValidICD = false;
+                }
+                if (isValidICD)
+                {
+                    List<HIS_ICD_SERVICE> icdServicePhacDos = null;
+                    List<HIS_ICD> icdFromUc = GetIcdCodeListFromUcIcd();
+                    if (icdFromUc != null && icdFromUc.Count > 0)
                     {
-                        icdFromUc = GetIcdCodeListFromUcIcd();
-                        icdServiceFilter = new HisIcdServiceFilter();
+                        MOS.Filter.HisIcdServiceFilter icdServiceFilter = new HisIcdServiceFilter();
                         icdServiceFilter.ICD_CODE__EXACTs = icdFromUc.Select(o => o.ICD_CODE).Distinct().ToList();
                         icdServicePhacDos = new BackendAdapter(null).Get<List<HIS_ICD_SERVICE>>("api/HisIcdService/Get", ApiConsumer.ApiConsumers.MosConsumer, icdServiceFilter, null);
-                    }
-                }
-                else if (HisConfigCFG.IcdServiceHasCheck == "3" && serviceCheckeds__Send != null && serviceCheckeds__Send.Count > 0)
-                {
-                    MOS.Filter.HisIcdServiceFilter icdServiceFilter = new HisIcdServiceFilter();
-                    icdServiceFilter.SERVICE_IDs = serviceCheckeds__Send.Select(o => o.SERVICE_ID).Distinct().ToList();
-                    icdServicePhacDos = new BackendAdapter(new CommonParam()).Get<List<HIS_ICD_SERVICE>>("api/HisIcdService/Get", ApiConsumer.ApiConsumers.MosConsumer, icdServiceFilter, null);
 
-                    if (icdServicePhacDos != null && icdServicePhacDos.Count > 0 && icdFromUc != null && icdFromUc.Count > 0)
-                    {
-                        icdServicePhacDos = icdServicePhacDos.Where(o => !icdFromUc.Select(p => p.ICD_CODE).Contains(o.ICD_CODE)).ToList();
+                        //isValid = isValid && ValidServiceIcdForIcdSelected(icdServices, serviceCheckeds__Send);
+                        Inventec.Common.Logging.LogSystem.Debug("Valid3:" + isValid);
+                        isValid = isValid && ValidServiceIcdForServiceSelected(icdFromUc, icdServicePhacDos, serviceCheckeds__Send);
+                        Inventec.Common.Logging.LogSystem.Debug("Valid4:" + isValid);
+                        if (!isValid && HisConfigCFG.IcdServiceHasCheck == "4")
+                            return;
+                        if (isValid && HisConfigCFG.IcdServiceHasCheck == "5")
+                        {
+                            icdFromUc = GetIcdCodeListFromUcIcd();
+                            icdServiceFilter = new HisIcdServiceFilter();
+                            icdServiceFilter.ICD_CODE__EXACTs = icdFromUc.Select(o => o.ICD_CODE).Distinct().ToList();
+                            icdServicePhacDos = new BackendAdapter(null).Get<List<HIS_ICD_SERVICE>>("api/HisIcdService/Get", ApiConsumer.ApiConsumers.MosConsumer, icdServiceFilter, null);
+                        }
                     }
-                    if (icdServicePhacDos != null && icdServicePhacDos.Count > 0)
+                    else if (HisConfigCFG.IcdServiceHasCheck == "3" && serviceCheckeds__Send != null && serviceCheckeds__Send.Count > 0)
                     {
-                        frmMissingIcd frmWaringConfigIcdService = new frmMissingIcd(icdFromUc, serviceCheckeds__Send, this.currentModule, icdServicePhacDos, getDataFromMissingIcdDelegate);
-                        frmWaringConfigIcdService.ShowDialog();
-                        if (!isYes)
-                            isValid = false;
+                        MOS.Filter.HisIcdServiceFilter icdServiceFilter = new HisIcdServiceFilter();
+                        icdServiceFilter.SERVICE_IDs = serviceCheckeds__Send.Select(o => o.SERVICE_ID).Distinct().ToList();
+                        icdServicePhacDos = new BackendAdapter(new CommonParam()).Get<List<HIS_ICD_SERVICE>>("api/HisIcdService/Get", ApiConsumer.ApiConsumers.MosConsumer, icdServiceFilter, null);
+
+                        if (icdServicePhacDos != null && icdServicePhacDos.Count > 0 && icdFromUc != null && icdFromUc.Count > 0)
+                        {
+                            icdServicePhacDos = icdServicePhacDos.Where(o => !icdFromUc.Select(p => p.ICD_CODE).Contains(o.ICD_CODE)).ToList();
+                        }
+                        if (icdServicePhacDos != null && icdServicePhacDos.Count > 0)
+                        {
+                            frmMissingIcd frmWaringConfigIcdService = new frmMissingIcd(icdFromUc, serviceCheckeds__Send, this.currentModule, icdServicePhacDos, getDataFromMissingIcdDelegate);
+                            frmWaringConfigIcdService.ShowDialog();
+                            if (!isYes)
+                                isValid = false;
+                        }
                     }
                 }
                 List<string> lstIcd = new List<string>();
@@ -126,7 +170,7 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                 isValid = isValid && CheckMaxPatientbyDayOption(serviceCheckeds__Send);
                 Inventec.Common.Logging.LogSystem.Debug("Valid8__ValidSereServWithCondition:" + isValid);
                 if (lstIcd.Count > 0 || lstSubIcd.Count > 0)
-                    isValid = isValid && checkContraindicated(lstIcd, lstSubIcd, icdServicePhacDos, serviceCheckeds__Send);
+                    isValid = isValid && checkContraindicated(lstIcd, lstSubIcd, this.icdServicePhacDos, serviceCheckeds__Send);
                 Inventec.Common.Logging.LogSystem.Debug("Valid9__ValidSereServWithCondition:" + isValid);
                 isValid = isValid && ValidSereServWithOtherPaySource(serviceCheckeds__Send);
                 Inventec.Common.Logging.LogSystem.Debug("Valid10__ValidSereServWithOtherPaySource:" + isValid);
@@ -141,7 +185,19 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                 isValid = isValid && ValidFeeForExamTreatment();
                 Inventec.Common.Logging.LogSystem.Debug("Valid14__ValidFeeForExamTreatment:" + isValid);
                 isValid = isValid && CheckMaxAmount(serviceCheckeds__Send);
+                isValid = isValid && ValidICD();
                 Inventec.Common.Logging.LogSystem.Debug("Valid15__CheckMaxAmount:" + isValid);
+                if (this.USE_TIME != null && this.USE_TIME.Count > 0)
+                {
+                    var exits = serviceCheckeds__Send.Where(s => s.SERVICE_TYPE_ID == 1 || s.SERVICE_TYPE_ID == 12);
+                    if (exits.Any())
+                    {
+                        MessageBox.Show(this, "Dịch vụ loại khám và dịch vụ loại khác không cho phép dự trù");
+                        isValid = false;
+                        return;
+                    }
+
+                }
                 if (HisConfigCFG.IsCheckDepartmentInTimeWhenPresOrAssign && this.currentWorkingRoom != null && currentWorkingRoom.ROOM_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_ROOM_TYPE.ID__BUONG)
                 {
                     isValid = isValid && CheckTimeInDepartment(this.intructionTimeSelecteds);
@@ -155,6 +211,11 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                     ChangeLockButtonWhileProcess(false);
                     AssignServiceSDO serviceReqSDO = new AssignServiceSDO();
                     serviceReqSDO.ServiceReqDetails = new List<ServiceReqDetailSDO>();
+                    if (cboPackage.EditValue != null)
+                    {
+                        serviceReqSDO.PackageId = Convert.ToInt32(cboPackage.EditValue.ToString());
+                    }
+
                     bool isDupicate = false;
                     this.ProcessServiceReqSDO(serviceReqSDO, serviceCheckeds__Send, ref isDupicate, treatmentId, true);
                     if (isDupicate)
@@ -178,6 +239,7 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                         }
                         this.RefeshServiceDatasourceAfterSave(serviceCheckeds__Send);
                     }
+                    this.isCheckAssignServiceSimultaneityOption = false;
                     this.ChangeLockButtonWhileProcess(true);
                 }
             }
@@ -188,6 +250,74 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
             }
         }
 
+        private bool CheckPackage()
+        {
+            bool result = true;
+            try
+            {
+                if (cboPackage.EditValue != null)
+                {
+                    var package = this.packagesSdo.FirstOrDefault(o => o.ID == Convert.ToInt32(cboPackage.EditValue.ToString()));
+
+
+                    if (package.TOTAL_PACKAGE_USED.HasValue && package.MAX_PACKAGE_USAGE_PER_DAY.HasValue &&
+                        package.TOTAL_PACKAGE_USED.Value >= package.MAX_PACKAGE_USAGE_PER_DAY.Value && package.WARNING_OPTION == 2)
+                    {
+                        var check = XtraMessageBox.Show(
+                                string.Format("Gói {0} đã sử dụng {2} lần vượt quá số lượng sử dụng tối đa trong ngày {1}. Bạn có muốn tiếp tục không?", package.PACKAGE_NAME, package.MAX_PACKAGE_USAGE_PER_DAY, package.TOTAL_PACKAGE_USED),
+                                "Cảnh báo",
+                                MessageBoxButtons.YesNo,
+                                MessageBoxIcon.Warning
+                            );
+
+                        if (check == DialogResult.No)
+                        {
+                            // Người dùng chọn Không → dừng lại
+                            return false;
+                        }
+                    }
+                    else if (package.TOTAL_PACKAGE_USED.HasValue && package.MAX_PACKAGE_USAGE_PER_DAY.HasValue &&
+                             package.TOTAL_PACKAGE_USED.Value >= package.MAX_PACKAGE_USAGE_PER_DAY.Value && package.WARNING_OPTION == 1)
+                    {
+                        MessageBox.Show(
+                            string.Format("Gói {0} đã sử dụng {2} lần vượt quá số lượng sử dụng tối đa trong ngày {1}", package.PACKAGE_NAME, package.MAX_PACKAGE_USAGE_PER_DAY, package.TOTAL_PACKAGE_USED),
+                            "Thông báo",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Stop
+                        );
+                        return false;
+                    }
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+            return result;
+        }
+
+        V_HIS_SERVICE_REQ vServiceReq;
+        private void LoadVServiceReq()
+        {
+            try
+            {
+                if (serviceReqParentId == null)
+                    return;
+                CommonParam param = new CommonParam();
+                HisServiceReqViewFilter filter = new HisServiceReqViewFilter();
+                filter.ID = serviceReqParentId;
+                vServiceReq = new BackendAdapter(param)
+                        .Get<List<MOS.EFMODEL.DataModels.V_HIS_SERVICE_REQ>>("api/HisServiceReq/GetView", ApiConsumers.MosConsumer, filter, param).FirstOrDefault();
+
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
         private bool CheckMaxAmount(List<SereServADO> serviceCheckeds__Send, List<long> TreatmentIds = null)
         {
             bool IsValid = true;
@@ -506,7 +636,10 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                     // check tuổi từ - đến (DVKT)
                     var ageDate = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(this.currentHisTreatment.TDL_PATIENT_DOB);
                     //int age = DateTime.Now.Year - int.Parse(this.currentHisTreatment.TDL_PATIENT_DOB.ToString().Substring(0, 4));
-                    int ageMonth = (DateTime.Now - (ageDate ?? DateTime.Now)).Days / 30;
+                    TimeSpan timeSpan2 = System.DateTime.Now.Date - ageDate.Value.Date;
+                    long ticks = timeSpan2.Ticks;
+                    System.DateTime dateTime = new System.DateTime(ticks);
+                    int ageMonth = (dateTime.Year - 1) * 12 + dateTime.Month - 1;
                     //Inventec.Common.Logging.LogSystem.Debug("age: " + age);
                     var checkAge = serviceCheckeds__Send.Where(o => (o.AGE_FROM.HasValue && o.AGE_FROM > ageMonth) || (o.AGE_TO.HasValue && o.AGE_TO < ageMonth));
 
@@ -622,8 +755,7 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                            " (" + item.TDL_SERVICE_REQ_CODE +
                            "); ";
                     }
-
-                    if (HisConfigCFG.IsSereServMinDurationAlert)
+                    if (HisConfigCFG.IsSereServMinDurationAlert == 1)
                     {
                         if (MessageBox.Show(string.Format(ResourceMessage.SereServMinDurationAlert__BanCoMuonChuyenDoiDTTTSangVienPhi, sereServMinDurationStr), MessageUtil.GetMessage(Inventec.Desktop.Common.LibraryMessage.Message.Enum.TieuDeCuaSoThongBaoLaThongBao), MessageBoxButtons.YesNo) == DialogResult.Yes)
                         {
@@ -641,10 +773,30 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                             return false;
                         }
                     }
+                    else if (HisConfigCFG.IsSereServMinDurationAlert == 2)
+                    {
+                        if (MessageBox.Show(string.Format(ResourceMessage.DichVuCoThoiGianChiDinhNamTrongKhoangThoiGianKhongChoPhep, sereServMinDurationStr), MessageUtil.GetMessage(Inventec.Desktop.Common.LibraryMessage.Message.Enum.TieuDeCuaSoThongBaoLaThongBao), MessageBoxButtons.YesNo) == DialogResult.Yes)
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
                     else
                     {
-                        if (MessageBox.Show(string.Format(ResourceMessage.DichVuCoThoiGianChiDinhNamTrongKhoangThoiGianKhongChoPhep, sereServMinDurationStr), MessageUtil.GetMessage(Inventec.Desktop.Common.LibraryMessage.Message.Enum.TieuDeCuaSoThongBaoLaThongBao), MessageBoxButtons.YesNo) == DialogResult.No)
-                            return false;
+                        if (HisConfigCFG.IsSereServMinDurationAlert == 0 || (HisConfigCFG.IsSereServMinDurationAlert != 1 && HisConfigCFG.IsSereServMinDurationAlert != 2))
+                        {
+                            if (MessageBox.Show(string.Format(ResourceMessage.DichVuCoThoiGianChiDinhNamTrongKhoangThoiGianKhongChoPhep, sereServMinDurationStr), MessageUtil.GetMessage(Inventec.Desktop.Common.LibraryMessage.Message.Enum.TieuDeCuaSoThongBaoLaThongBao), MessageBoxButtons.YesNo) == DialogResult.Yes)
+                            {
+                                return true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
+                        }
                     }
                 }
             }
@@ -672,6 +824,24 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                     foreach (var item in serviceCheckeds__Send)
                     {
                         var dataCondition = BranchDataWorker.ServicePatyWithListPatientType(item.SERVICE_ID, new List<long> { item.PATIENT_TYPE_ID });
+                        List<V_HIS_SERVICE_PATY> dataSource = new List<V_HIS_SERVICE_PATY>();
+                        long instructionTime = this.intructionTimeSelecteds != null && this.intructionTimeSelecteds.Count > 0 ? this.intructionTimeSelecteds.FirstOrDefault() : 0;
+                        long? intructionNumByType = null;
+                        List<HIS_SERE_SERV> sameServiceType = this.sereServWithTreatment != null ? this.sereServWithTreatment.Where(o => o.TDL_SERVICE_TYPE_ID == item.SERVICE_TYPE_ID).ToList() : null;
+                        List<HIS_SERE_SERV> sameService = this.sereServWithTreatment != null ? this.sereServWithTreatment.Where(o => o.SERVICE_ID == item.SERVICE_ID).ToList() : null;
+                        intructionNumByType = sameServiceType != null ? (long)sameServiceType.Count() + 1 : 1;
+                        var intructionNum = sameService != null ? (long)sameService.Count() + 1 : 1;
+                        foreach (var con in dataCondition)
+                        {
+                            var dt = MOS.ServicePaty.ServicePatyUtil.GetApplied(new List<V_HIS_SERVICE_PATY>() { con }, item.TDL_EXECUTE_BRANCH_ID, item.TDL_EXECUTE_ROOM_ID, this.requestRoom.ID, this.requestRoom.DEPARTMENT_ID, instructionTime, this.currentHisTreatment.IN_TIME, item.SERVICE_ID, item.PATIENT_TYPE_ID, intructionNum, intructionNumByType, item.PackagePriceId, con.SERVICE_CONDITION_ID, this.currentHisTreatment.TDL_PATIENT_CLASSIFY_ID, null);
+                            if (dt != null)
+                                dataSource.Add(dt);
+                        }
+                        dataCondition = dataSource;
+                        if (dataCondition != null && dataCondition.Count > 0 && lstConditionService != null && lstConditionService.Count > 0)
+                        {
+                            dataCondition = dataCondition.Where(o => lstConditionService.Exists(p => p.SERVICE_ID == item.SERVICE_ID && p.ID == o.SERVICE_CONDITION_ID)).ToList();
+                        }
                         if (dataCondition != null && dataCondition.Count > 0 && dataCondition.Exists(t => t.SERVICE_CONDITION_ID.HasValue && t.SERVICE_CONDITION_ID > 0) && !dataCondition.Exists(t => t.SERVICE_CONDITION_ID == null || t.SERVICE_CONDITION_ID == 0))
                         {
                             dataCondition = dataCondition.Where(o => o.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE && o.SERVICE_CONDITION_ID.HasValue && o.SERVICE_CONDITION_ID > 0 && o.SERVICE_ID == item.SERVICE_ID).ToList();
@@ -815,8 +985,10 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                     MOS.Filter.HisIcdServiceFilter icdServiceFilter = new HisIcdServiceFilter();
                     icdServiceFilter.SERVICE_IDs = sereServAdoResult.Select(o => o.SERVICE_ID).Distinct().ToList();
                     List<HIS_ICD_SERVICE> icdServiceByServices = new BackendAdapter(new CommonParam()).Get<List<HIS_ICD_SERVICE>>("api/HisIcdService/Get", ApiConsumer.ApiConsumers.MosConsumer, icdServiceFilter, null);
-                    if (HisConfigCFG.IcdServiceHasCheck == "4" || HisConfigCFG.IcdServiceHasCheck == "5")
+                    if (HisConfigCFG.IcdServiceHasCheck == "4")
                         icdServiceByServices = icdServiceByServices.Where(o => o.IS_CONTRAINDICATION != IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE).ToList();
+                    else if (HisConfigCFG.IcdServiceHasCheck == "5")
+                        icdServiceByServices = icdServiceByServices.Where(o => o.IS_CONTRAINDICATION != IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE && o.IS_WARNING != IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE).ToList();
                     if (icdServiceByServices != null && icdServiceByServices.Count > 0 && icdFromUc != null && icdFromUc.Count > 0)
                     {
                         icdServiceByServices = icdServiceByServices.Where(o => !icdFromUc.Select(p => p.ICD_CODE).Contains(o.ICD_CODE)).ToList();
@@ -831,150 +1003,6 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                         else
                             valid = false;
                     }
-                }
-                else if (HisConfigCFG.IcdServiceHasCheck == "6" && !checkServiceIcd)
-                {
-                    List<string> mess = new List<string>();
-                    MOS.Filter.HisIcdServiceFilter icdServiceFilter = new HisIcdServiceFilter();
-                    icdServiceFilter.SERVICE_IDs = serviceCheckeds__Send.Where(p=>p.SERVICE_TYPE_ID!= IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__THUOC && p.SERVICE_TYPE_ID!= IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__VT).Select(o => o.SERVICE_ID).Distinct().ToList();
-                    var icdServicePD = new BackendAdapter(null).Get<List<HIS_ICD_SERVICE>>("api/HisIcdService/Get", ApiConsumer.ApiConsumers.MosConsumer, icdServiceFilter, null);
-                    Inventec.Common.Logging.LogSystem.Debug(" phac do dieu tri icd_service_check " + Inventec.Common.Logging.LogUtil.TraceData("ValidServiceIcdForServiceSelected icdServicePD", icdServicePD));
-                    if (icdServicePD == null || icdServicePD.Count == 0)
-                    {
-                        foreach (var item in icdServices)
-                        {
-                            mess.Add(item.ICD_CODE);
-                        }
-                    }
-                    else
-                    {
-                        foreach (var item in icdServices)
-                        {
-                            var icdCheck = icdServicePD.FirstOrDefault(o => o.ICD_CODE == item.ICD_CODE);
-                            Inventec.Common.Logging.LogSystem.Debug(" phac do dieu tri icd_service_check " + Inventec.Common.Logging.LogUtil.TraceData("ValidServiceIcdForServiceSelected icdCheck", icdCheck));
-                            if (icdCheck == null)
-                            {
-                                mess.Add(item.ICD_CODE);
-                            }
-                        }
-                    }
-                   
-                    if (mess != null && mess.Count > 0)
-                    {
-                        if (MessageBox.Show("Dịch vụ bạn chỉ định nằm ngoài phác đồ của " + String.Join("; ", mess.Distinct().ToList()) + " Bạn có muốn lưu không ?", "Thông báo", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
-                            valid = true;
-                        else
-                            valid = false;
-                    }
-                }
-                else if (HisConfigCFG.IcdServiceHasCheck == "7")
-                {
-                    List<HIS_ICD_SERVICE> mess = new List<HIS_ICD_SERVICE>();
-                    MOS.Filter.HisIcdServiceFilter icdServiceFilter = new HisIcdServiceFilter();
-                    icdServiceFilter.SERVICE_IDs = serviceCheckeds__Send.Where(p => p.SERVICE_TYPE_ID != IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__THUOC && p.SERVICE_TYPE_ID != IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__VT).Select(o => o.SERVICE_ID).Distinct().ToList();
-                    var ServicesSelectPDs = new BackendAdapter(null).Get<List<HIS_ICD_SERVICE>>("api/HisIcdService/Get", ApiConsumer.ApiConsumers.MosConsumer, icdServiceFilter, null);
-                    Inventec.Common.Logging.LogSystem.Debug(" phac do dieu tri icd_service_check " + Inventec.Common.Logging.LogUtil.TraceData("ValidServiceIcdForServiceSelected icdServicePD", ServicesSelectPDs));
-
-                    //TH1 icd BN có thiết lập phác đồ => ngoài thiết lập thì cảnh báo, Bạn có muốn chỉ định không?
-                    if (icdServices != null && icdServices.Count > 0)
-                    {
-                        if (ServicesSelectPDs == null || ServicesSelectPDs.Count == 0)
-                        {
-                            mess.AddRange(icdServices);
-                        }
-                        else
-                        {
-                            foreach (var item in icdServices)
-                            {
-                                var icdCheck = ServicesSelectPDs.FirstOrDefault(o => o.ICD_CODE == item.ICD_CODE);
-                                Inventec.Common.Logging.LogSystem.Debug(" phac do dieu tri icd_service_check " + Inventec.Common.Logging.LogUtil.TraceData("ValidServiceIcdForServiceSelected icdCheck", icdCheck));
-                                if (icdCheck == null)
-                                {
-                                    mess.Add(item);
-                                }
-                            }
-                        }
-
-                        if (mess != null && mess.Count > 0)
-                        {
-                            if (MessageBox.Show("Dịch vụ bạn chỉ định nằm ngoài phác đồ của " + String.Join("; ", mess.Select(o => o.ICD_CODE).Distinct().ToList()) + " Bạn có muốn lưu không ?", "Thông báo", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
-                                valid = true;
-                            else
-                                valid = false;
-                        }
-                    }
-                    else if (ServicesSelectPDs != null && ServicesSelectPDs.Count > 0) // TH2: icd BN không có thiết lập phác đồ => nếu dv có phác đồ thì hiển thị form để người dùng chọn
-                    {
-                        if (icdServices == null || icdServices.Count == 0)
-                        {
-                            mess.AddRange(ServicesSelectPDs);
-                        }
-                        else
-                        {
-                            foreach (var item in ServicesSelectPDs)
-                            {
-                                var icdCheck = icdServices.FirstOrDefault(o => o.ICD_CODE == item.ICD_CODE);
-                                Inventec.Common.Logging.LogSystem.Debug(" phac do dieu tri icd_service_check " + Inventec.Common.Logging.LogUtil.TraceData("ValidServiceIcdForServiceSelected icdCheck", icdCheck));
-                                if (icdCheck == null)
-                                {
-                                    mess.Add(item);
-                                }
-                            }
-                        }
-                       
-                        frmMissingIcd frmWaringConfigIcdService = new frmMissingIcd(icdFromUc, serviceCheckeds__Send, this.currentModule, mess, getDataFromMissingIcdDelegate, HisConfigCFG.IcdServiceHasCheck == "7", SkipIcd);
-                        frmWaringConfigIcdService.ShowDialog();
-                        if (isYes && HisConfigCFG.IcdServiceHasCheck == "7")
-                            valid = true;
-                        else
-                            valid = false;
-                    }
-
-                    //if (ServicesSelectPDs != null && ServicesSelectPDs.Count > 0) // TH2: icd BN không có thiết lập phác đồ => nếu dv có phác đồ thì hiển thị form để người dùng chọn
-                    //{
-                    //    foreach (var item in ServicesSelectPDs)
-                    //    {
-                    //        var icdCheck = icdServices.FirstOrDefault(o => o.ICD_CODE == item.ICD_CODE);
-                    //        Inventec.Common.Logging.LogSystem.Debug(" phac do dieu tri icd_service_check " + Inventec.Common.Logging.LogUtil.TraceData("ValidServiceIcdForServiceSelected icdCheck", icdCheck));
-                    //        if (icdCheck == null)
-                    //        {
-                    //            mess.Add(item);
-                    //        }
-                    //    }
-                    //    frmMissingIcd frmWaringConfigIcdService = new frmMissingIcd(icdFromUc, serviceCheckeds__Send, this.currentModule, mess, getDataFromMissingIcdDelegate, HisConfigCFG.IcdServiceHasCheck == "7", SkipIcd);
-                    //    frmWaringConfigIcdService.ShowDialog();
-                    //    if (isYes && HisConfigCFG.IcdServiceHasCheck == "7")
-                    //        valid = true;
-                    //    else
-                    //        valid = false;
-                    //}
-                    //else if (icdServices != null && icdServices.Count > 0)
-                    //{
-                    //    if (ServicesSelectPDs == null || ServicesSelectPDs.Count == 0)
-                    //    {
-                    //        mess.AddRange(icdServices);
-                    //    }
-                    //    else
-                    //    {
-                    //        foreach (var item in icdServices)
-                    //        {
-                    //            var icdCheck = ServicesSelectPDs.FirstOrDefault(o => o.ICD_CODE == item.ICD_CODE);
-                    //            Inventec.Common.Logging.LogSystem.Debug(" phac do dieu tri icd_service_check " + Inventec.Common.Logging.LogUtil.TraceData("ValidServiceIcdForServiceSelected icdCheck", icdCheck));
-                    //            if (icdCheck == null)
-                    //            {
-                    //                mess.Add(item);
-                    //            }
-                    //        }
-                    //    }
-
-                    //    if (mess != null && mess.Count > 0)
-                    //    {
-                    //        if (MessageBox.Show("Dịch vụ bạn chỉ định nằm ngoài phác đồ của " + String.Join("; ", mess.Select(o => o.ICD_CODE).Distinct().ToList()) + " Bạn có muốn lưu không ?", "Thông báo", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
-                    //            valid = true;
-                    //        else
-                    //            valid = false;
-                    //    }
-                    //}
                 }
             }
             catch (Exception ex)
@@ -1316,15 +1344,57 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
             List<HIS_SERE_SERV> listSereServResult = null;
             try
             {
-                if (serviceCheckeds != null && serviceCheckeds.Count > 0)
+                if (HisConfigCFG.IsSereServMinDurationAlert == 1 || HisConfigCFG.IsSereServMinDurationAlert == 2)
                 {
-                    List<SereServADO> sereServADOExistMinDUration = serviceCheckeds.Where(o => o.MIN_DURATION != null).ToList();
-                    if (icdServiceDuration != null && icdServiceDuration.Count > 0)
-                        sereServADOExistMinDUration = serviceCheckeds;//.Where(o => o.MIN_DURATION != null).ToList();
-                    if (sereServADOExistMinDUration != null && sereServADOExistMinDUration.Count > 0)
+                    if (serviceCheckeds != null && serviceCheckeds.Count > 0)
+                    {
+                        var bhytServices = serviceCheckeds.Where(o => o.PATIENT_TYPE_ID == HisConfigCFG.PatientTypeId__BHYT).ToList();
+                        List<SereServADO> sereServADOExistMinDUration = bhytServices.Where(o => o.MIN_DURATION != null).ToList();
+                        if (icdServiceDuration != null && icdServiceDuration.Count > 0)
+                            sereServADOExistMinDUration = bhytServices;
+                        if (sereServADOExistMinDUration != null && sereServADOExistMinDUration.Count > 0)
+                        {
+                            List<ServiceDuration> serviceDurations = new List<ServiceDuration>();
+                            foreach (var item in sereServADOExistMinDUration)
+                            {
+                                ServiceDuration serviceDuration = new ServiceDuration();
+                                serviceDuration.ServiceId = item.SERVICE_ID;
+                                if (icdServiceDuration != null && icdServiceDuration.Count > 0)
+                                    serviceDuration.MinDuration = icdServiceDuration.Where(o => o.SERVICE_ID == item.SERVICE_ID).Min(o => o.MIN_DURATION ?? 0);
+                                else
+                                    serviceDuration.MinDuration = (item.MIN_DURATION ?? 0);
+                                serviceDurations.Add(serviceDuration);
+                            }
+                            CommonParam param = new CommonParam();
+                            HisSereServMinDurationFilter filter = new HisSereServMinDurationFilter
+                            {
+                                ServiceDurations = serviceDurations,
+                                InstructionTime = this.isMultiDateState ? intructionTimeSelecteds.First() : intructionTimeSelecteds.First(),
+                                PatientId = patientId
+                            };
+                            var result = new BackendAdapter(param).Get<List<HIS_SERE_SERV>>("api/HisSereServ/GetExceedMinDuration", ApiConsumer.ApiConsumers.MosConsumer, filter, param);
+                            if (result != null && result.Any())
+                            {
+                                listSereServResult = result.GroupBy(o => o.SERVICE_ID).Select(g => g.OrderByDescending(x => x.TDL_INTRUCTION_TIME).First()).ToList();
+                            }
+                        }
+                        else
+                        {
+                            listSereServResult = null;
+                        }
+                    }
+                    else
+                    {
+                        listSereServResult = null;
+                    }
+                }
+                if (HisConfigCFG.IsSereServMinDurationAlert == 0 || (HisConfigCFG.IsSereServMinDurationAlert != 1 && HisConfigCFG.IsSereServMinDurationAlert != 2))
+                {
+                    var allServices = serviceCheckeds.Where(o => o.MIN_DURATION != null).ToList();
+                    if (allServices.Count > 0)
                     {
                         List<ServiceDuration> serviceDurations = new List<ServiceDuration>();
-                        foreach (var item in sereServADOExistMinDUration)
+                        foreach (var item in allServices)
                         {
                             ServiceDuration serviceDuration = new ServiceDuration();
                             serviceDuration.ServiceId = item.SERVICE_ID;
@@ -1334,43 +1404,19 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                                 serviceDuration.MinDuration = (item.MIN_DURATION ?? 0);
                             serviceDurations.Add(serviceDuration);
                         }
-                        // gọi api để lấy về thông báo
                         CommonParam param = new CommonParam();
-                        HisSereServMinDurationFilter hisSereServMinDurationFilter = new HisSereServMinDurationFilter();
-                        hisSereServMinDurationFilter.ServiceDurations = serviceDurations;
-                        if (this.isMultiDateState)
-                            hisSereServMinDurationFilter.InstructionTime = intructionTimeSelecteds.First();//TODO
-                        else
-                            hisSereServMinDurationFilter.InstructionTime = intructionTimeSelecteds.First();
-
-                        hisSereServMinDurationFilter.PatientId = patientId;
-                        //Inventec.Common.Logging.LogSystem.Error("du lieu dau vao khi goi api HisSereServ/GetExceedMinDuration: " + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => hisSereServMinDurationFilter), hisSereServMinDurationFilter));
-                        var result = new BackendAdapter(param).Get<List<HIS_SERE_SERV>>("api/HisSereServ/GetExceedMinDuration", ApiConsumer.ApiConsumers.MosConsumer, hisSereServMinDurationFilter, param);
-                        Inventec.Common.Logging.LogSystem.Error("ket qua tra ve khi goi api HisSereServ/GetExceedMinDuration: " + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => result), result));
-
-                        if (result == null || result.Count() == 0)
-                            return listSereServResult;
-
-                        //var listSereServResultTemp = from SereServResult in listSereServResult
-                        //                             group SereServResult by SereServResult.SERVICE_ID into g
-                        //                             orderby g.Key
-                        //                             select g.FirstOrDefault();
-                        listSereServResult = new List<HIS_SERE_SERV>();
-                        var listSSTemp = result.GroupBy(o => o.SERVICE_ID).ToList();
-                        foreach (var item in listSSTemp)
+                        HisSereServMinDurationFilter filter = new HisSereServMinDurationFilter
                         {
-                            var itemGroup = item.OrderByDescending(o => o.TDL_INTRUCTION_TIME).FirstOrDefault();
-                            listSereServResult.Add(itemGroup);
+                            ServiceDurations = serviceDurations,
+                            InstructionTime = this.isMultiDateState ? intructionTimeSelecteds.First() : intructionTimeSelecteds.First(),
+                            PatientId = patientId
+                        };
+                        var result = new BackendAdapter(param).Get<List<HIS_SERE_SERV>>("api/HisSereServ/GetExceedMinDuration", ApiConsumer.ApiConsumers.MosConsumer, filter, param);
+                        if (result != null && result.Any())
+                        {
+                            listSereServResult = result.GroupBy(o => o.SERVICE_ID).Select(g => g.OrderByDescending(x => x.TDL_INTRUCTION_TIME).First()).ToList();
                         }
                     }
-                    else
-                    {
-                        listSereServResult = null;
-                    }
-                }
-                else
-                {
-                    listSereServResult = null;
                 }
             }
             catch (Exception ex)
@@ -1388,6 +1434,8 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
             List<string> serviceErrs = new List<string>();
             try
             {
+                //qtcode
+                List<string> bhytWarnings = new List<string>();
                 List<ServiceReqDetailSDO> serviceReqDetailSDOTemp = new List<ServiceReqDetailSDO>();
                 List<V_HIS_SERVICE_FOLLOW> serviceFollows = BackendDataWorker.Get<MOS.EFMODEL.DataModels.V_HIS_SERVICE_FOLLOW>().Where(o => new List<long> { IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__MAU, IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__THUOC, IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__VT, IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__G, IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__AN }.Exists(p => p != o.FOLLOW_TYPE_ID) && (string.IsNullOrEmpty(o.TREATMENT_TYPE_IDS) || ("," + o.TREATMENT_TYPE_IDS + ",").Contains("," + currentTreatment.TDL_TREATMENT_TYPE_ID + ","))).ToList();
                 if (result.ServiceReqDetails != null && result.ServiceReqDetails.Count > 0
@@ -1398,14 +1446,31 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                     List<long> allowPatientTypeIds = this.currentPatientTypeAllows != null ? this.currentPatientTypeAllows
                         .Where(o => o.PATIENT_TYPE_ID == defaultPatientTypeId)
                         .Select(o => o.PATIENT_TYPE_ALLOW_ID).ToList() : null;
-
-                    foreach (ServiceReqDetailSDO sdo in result.ServiceReqDetails)
+                    //qtcode
+                    Dictionary<long, List<V_HIS_SERVICE_FOLLOW>> followByServiceId = new Dictionary<long, List<V_HIS_SERVICE_FOLLOW>>();
+                    foreach (ServiceReqDetailSDO sdo in result.ServiceReqDetails) // duyệt từng thằng dịch vụ mình chọn 
                     {
-                        List<V_HIS_SERVICE_FOLLOW> follows = serviceFollows.Where(o => o.SERVICE_ID == sdo.ServiceId && (o.CONDITIONED_AMOUNT == null || o.CONDITIONED_AMOUNT == sdo.Amount)).ToList();
+                        List<V_HIS_SERVICE_FOLLOW> follows = serviceFollows.Where(o => o.SERVICE_ID == sdo.ServiceId).ToList();
+                        // lọc ra các dịch vụ đi kèm có service_id = id của thằng dịch vụ mình chọn 
                         if (follows != null && follows.Count > 0)
                         {
+
                             foreach (V_HIS_SERVICE_FOLLOW f in follows)
                             {
+                                bool isBhyt = (defaultPatientTypeId == HisConfigCFG.PatientTypeId__BHYT);
+                                bool isDrugOrMaterial = (f.FOLLOW_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__THUOC ||
+                                                        f.FOLLOW_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__VT);
+                                //qtcode
+                                if (isBhyt && isDrugOrMaterial)
+                                {
+                                    if (!followByServiceId.ContainsKey(sdo.ServiceId))
+                                    {
+                                        followByServiceId[sdo.ServiceId] = new List<V_HIS_SERVICE_FOLLOW>();
+                                    }
+                                    followByServiceId[sdo.ServiceId].Add(f);
+                                    continue; // Bỏ qua việc thêm dịch vụ đi kèm này vào SDO
+                                }
+                                //qtcode
                                 bool hasServicePaty = BranchDataWorker.DicServicePatyInBranch.ContainsKey(f.FOLLOW_ID) ? BranchDataWorker.HasServicePatyWithListPatientType(f.FOLLOW_ID, new List<long>() { defaultPatientTypeId }) : false;
                                 long? patientTypeId = null;
                                 if (hasServicePaty)
@@ -1467,7 +1532,38 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                             }
                         }
                     }
+                    // cảnh báo BHYT
+                    if (followByServiceId.Count > 0)
+                    {//followByServiceId là dict có id là id của dịch vụ mà mình chọn và giá trị là các dịch vụ đi kèm 
+                        foreach (var serviceGroup in followByServiceId)
+                        {
+                            long serviceId = serviceGroup.Key;
+                            var follows = serviceGroup.Value; // các giá trị dịch vụ đi kèm
+                            var service = lstService.FirstOrDefault(o => o.ID == serviceId);
+                            if (service == null) continue;
 
+                            string serviceName = service.SERVICE_NAME; // tên dịch vụ chính 
+                            var followNames = follows.Select(f => string.Format("[{0}] {1}", f.AMOUNT, f.FOLLOW_NAME)).ToList();
+                            string warning = string.Format("{0} phải đi kèm {1}.", serviceName, string.Join(", ", followNames));
+                            bhytWarnings.Add(warning);
+                        }
+
+                        if (bhytWarnings.Count > 0)
+                        {
+                            string warningMessage = string.Format("{0}. Bạn có muốn tiếp tục không?", string.Join("; ", bhytWarnings));
+                            var rs = MessageBox.Show(
+                                warningMessage,
+                                Inventec.Desktop.Common.LibraryMessage.MessageUtil.GetMessage(
+                                    Inventec.Desktop.Common.LibraryMessage.Message.Enum.TieuDeCuaSoThongBaoLaThongBao
+                                ),
+                                MessageBoxButtons.YesNo
+                            );
+                            if (rs == DialogResult.No)
+                            {
+                                return false;
+                            }
+                        }
+                    }
                     if (serviceReqDetailSDOTemp != null && serviceReqDetailSDOTemp.Count > 0)
                     {
                         result.ServiceReqDetails.AddRange(serviceReqDetailSDOTemp);
@@ -1634,13 +1730,20 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                         sdo.RoomId = item.TDL_EXECUTE_ROOM_ID;
                         sdo.ServiceId = item.SERVICE_ID;
                         sdo.ParentId = null;
+                        sdo.MultipleExecute = item.NumberOfTimes;
                         sdo.InstructionNote = item.InstructionNote;
                         sdo.IsExpend = (item.IsExpend == true ? 1 : (short?)null);
                         sdo.IsOutParentFee = (item.IsOutKtcFee == true ? 1 : (short?)null);
                         sdo.ShareCount = item.ShareCount;
                         sdo.UserPrice = item.AssignSurgPriceEdit;
                         sdo.UserPackagePrice = item.AssignPackagePriceEdit;
-                        sdo.PackageId = item.PackagePriceId;
+                        // Thêm thông tin bảo lãnh
+                        if (item.IsGuarantee)
+                            sdo.IsGuaranteed = true;
+                        if (HisConfigCFG.ServicePatyForServicePackage != "1")
+                        {
+                            sdo.PackageId = item.PackagePriceId;
+                        }
                         if (item.OTHER_PAY_SOURCE_ID.HasValue)
                             sdo.OtherPaySourceId = item.OTHER_PAY_SOURCE_ID;
                         if (HisConfigCFG.IsSetPrimaryPatientType == commonString__true
@@ -1667,6 +1770,7 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                         sdo.BedFinishTime = item.BedFinishTime;
                         sdo.BedStartTime = item.BedStartTime;
                         sdo.IsNotUseBhyt = item.IsNotUseBhyt;
+                        sdo.AssignNumOrder = item.AssignNumOrder;
                         if (item.TEST_SAMPLE_TYPE_ID > 0)
                             sdo.SampleTypeCode = item.TEST_SAMPLE_TYPE_CODE;
                         serviceReqSDO.ServiceReqDetails.Add(sdo);
@@ -1717,6 +1821,20 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                 {
                     serviceReqSDO.IcdSubCode = subIcd.ICD_SUB_CODE;
                     serviceReqSDO.IcdText = subIcd.ICD_TEXT;
+                }
+
+
+                var icdTranditional = this.icdYhctProcessor.GetValue(this.ucIcdYhct);
+                if (icdTranditional != null && icdTranditional is IcdInputADO)
+                {
+                    serviceReqSDO.TraditionalIcdCode = ((IcdInputADO)icdTranditional).ICD_CODE;
+                    serviceReqSDO.TraditionalIcdName = ((IcdInputADO)icdTranditional).ICD_NAME;
+                }
+                var subIcdTranditional = subIcdYhctProcessor.GetValue(ucSecondaryIcdYhct);
+                if (subIcdTranditional != null && subIcdTranditional is SecondaryIcdDataADO)
+                {
+                    serviceReqSDO.TraditionalIcdSubCode = ((SecondaryIcdDataADO)subIcdTranditional).ICD_SUB_CODE;
+                    serviceReqSDO.TraditionalIcdText = ((SecondaryIcdDataADO)subIcdTranditional).ICD_TEXT;
                 }
             }
             catch (Exception ex)
@@ -1775,6 +1893,7 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                 serviceReqSDO.InstructionTime = intructionTimeSelecteds.First();
                 serviceReqSDO.InstructionTimes = intructionTimeSelecteds;//TODO
 
+                serviceReqSDO.UseTimes = this.USE_TIME;
                 //Trường hợp chỉ định từ màn hình xử lý pttt, cập nhật dữ liệu cùng kíp, khác kíp tương ứng
                 long sereservid = this.GetSereServInKip();
                 if (sereservid > 0)
@@ -1790,6 +1909,33 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                 {
                     serviceReqSDO.SessionCode = dicSessionCode[serviceReqSDO.TreatmentId];
                     Inventec.Common.Logging.LogSystem.Debug("Sua chi dinh SessionCode =" + serviceReqComboResultSDO.SessionCode);
+                    if (HisConfigCFG.AutoDeleteEmrDocumentWhenEditReq == "1" && dSignedList != null && dSignedList.Count > 0 && dSignedList.ContainsKey(serviceReqSDO.TreatmentId) && dSignedList[serviceReqSDO.TreatmentId] != null && dSignedList[serviceReqSDO.TreatmentId].Count > 0)
+                    {
+
+                        WaitingManager.Hide();
+                        if (DevExpress.XtraEditors.XtraMessageBox.Show("Y lệnh đã tồn tại văn bản ký, hệ thống sẽ tự động xóa văn bản ký hiện tại. Bạn có muốn tiếp tục?", HIS.Desktop.LibraryMessage.MessageUtil.GetMessage(LibraryMessage.Message.Enum.TieuDeCuaSoThongBaoLaCanhBao), MessageBoxButtons.YesNo) != DialogResult.Yes)
+                            return;
+                        List<DocumentSignedUpdateIGSysResultDTO> lst = new List<DocumentSignedUpdateIGSysResultDTO>();
+                        foreach (var item in dSignedList[serviceReqSDO.TreatmentId])
+                        {
+                            CommonParam paramEmr = new CommonParam();
+                            bool apiResult = new BackendAdapter(paramEmr).Post<bool>("api/EmrDocument/DeleteByCode", ApiConsumers.EmrConsumer, item.DocumentCode, paramEmr);
+                            if (apiResult)
+                            {
+                                lst.Add(item);
+                            }
+                            else
+                            {
+                                #region Hien thi message thong bao
+                                MessageManager.Show(this,paramEmr, apiResult);
+                                #endregion
+                            }
+                        }
+                        foreach (var item in lst)
+                        {
+                            dSignedList[serviceReqSDO.TreatmentId].Remove(item);
+                        }
+                    }
                 }
 
                 Inventec.Common.Logging.LogSystem.Debug("Luu chi dinh____Du lieu dau vao____" + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => serviceReqSDO), serviceReqSDO));
@@ -1798,7 +1944,7 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                 Inventec.Common.Logging.LogSystem.Info("this.serviceReqComboResultSDO: " + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => rs), rs));
 
                 if (rs != null)
-                {
+                {//qtcode
                     this.serviceReqComboResultSDO = rs;
                     dicSessionCode[serviceReqComboResultSDO.ServiceReqs[0].TREATMENT_ID] = serviceReqComboResultSDO.SessionCode;
                     dicServiceReqList[serviceReqComboResultSDO.ServiceReqs[0].TREATMENT_ID] = serviceReqComboResultSDO;
@@ -1841,7 +1987,111 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                     this.SetEnableButtonControl(this.actionType);
                     this.isSaveAndPrint = issaveandprint;
                     //this.RefeshSereServInTreatmentData();
+                    //qtcode
+                    if (chkPrintVBA.Checked && serviceReqComboResultSDO != null && serviceReqComboResultSDO.SereServs != null)
+                    {
+                        var sereServs = serviceReqComboResultSDO.SereServs;
+                        var services = BackendDataWorker.Get<V_HIS_SERVICE>()
+                            .Where(o => sereServs.Select(s => s.SERVICE_ID).Contains(o.ID))
+                            .ToList();
 
+                        // Sắp xếp theo thứ tự lưu dịch vụ
+                        var orderedSereServs = serviceReqSDO.ServiceReqDetails
+                            .Where(d => sereServs.Any(s => s.SERVICE_ID == d.ServiceId))
+                            .Select(d => sereServs.FirstOrDefault(s => s.SERVICE_ID == d.ServiceId))
+                            .Where(s => s != null)
+                            .ToList();
+
+                        var printGroups = orderedSereServs
+                            .Join(services,
+                                ss => ss.SERVICE_ID,
+                                s => s.ID,
+                                (ss, s) => new { SereServ = ss, Service = s })
+                            .Where(o => !string.IsNullOrEmpty(o.Service.ATTACH_ASSIGN_PRINT_TYPE_CODE))
+                            .GroupBy(o => o.Service.ATTACH_ASSIGN_PRINT_TYPE_CODE)
+                            .ToList();
+
+                        if (printGroups.Any())
+                        {
+                            HIS.Desktop.Plugins.Library.FormMedicalRecord.MediRecordMenuPopupProcessor processor = new HIS.Desktop.Plugins.Library.FormMedicalRecord.MediRecordMenuPopupProcessor();
+                            foreach (var group in printGroups)
+                            {
+                                var printTypeCode = group.Key;
+                                var ado = new Library.FormMedicalRecord.Base.EmrInputADO
+                                {
+                                    TreatmentId = this.treatmentId,
+                                    PatientId =this.currentHisTreatment!=null? this.currentHisTreatment.PATIENT_ID : 0,
+                                    roomId = this.currentModule.RoomId
+                                };
+
+                                
+                                if (currentTreatment!=null &&  currentTreatment.EMR_COVER_TYPE_ID != null)
+                                {
+                                    ado.EmrCoverTypeId = currentTreatment.EMR_COVER_TYPE_ID.Value;
+                                }
+                                else
+                                {
+                                    var data = BackendDataWorker.Get<HIS_EMR_COVER_CONFIG>()
+                                        .Where(o => o.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE
+                                            && o.ROOM_ID == this.currentModule.RoomId
+                                            && o.TREATMENT_TYPE_ID == (currentHisPatientTypeAlter!=null? currentHisPatientTypeAlter.TREATMENT_TYPE_ID : 0))
+                                        .ToList();
+                                    if (data != null && data.Count > 0)
+                                    {
+                                        if (data.Count == 1)
+                                        {
+                                            ado.EmrCoverTypeId = data.FirstOrDefault().EMR_COVER_TYPE_ID;
+                                        }
+                                        else
+                                        {
+                                            ado.lstEmrCoverTypeId = data.Select(o => o.EMR_COVER_TYPE_ID).ToList();
+                                        }
+                                    }
+                                    else
+                                    {
+                                        long departmentId = 0;
+
+                                        var workPlace = HIS.Desktop.LocalStorage.LocalData.WorkPlace.WorkPlaceSDO
+                                            .FirstOrDefault(o => o.RoomId == this.currentModule.RoomId);
+
+                                        if (workPlace != null)
+                                        {
+                                            departmentId = workPlace.DepartmentId;
+                                        }
+
+                                        long treatmentTypeId = 0;
+                                        if (currentHisPatientTypeAlter != null)
+                                        {
+                                            treatmentTypeId = currentHisPatientTypeAlter.TREATMENT_TYPE_ID;
+                                        }
+
+                                        var dataConfig = BackendDataWorker.Get<HIS_EMR_COVER_CONFIG>()
+                                            .Where(o =>
+                                                o.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE
+                                                && o.DEPARTMENT_ID == departmentId
+                                                && o.TREATMENT_TYPE_ID == treatmentTypeId
+                                            )
+                                            .ToList();
+                                        if (dataConfig != null && dataConfig.Count > 0)
+                                        {
+                                            if (dataConfig.Count == 1)
+                                            {
+                                                ado.EmrCoverTypeId = dataConfig.FirstOrDefault().EMR_COVER_TYPE_ID;
+                                            }
+                                            else
+                                            {
+                                                ado.lstEmrCoverTypeId = dataConfig.Select(o => o.EMR_COVER_TYPE_ID).ToList();
+                                            }
+                                        }
+                                    }
+                                }
+
+                                long emrCoverTypeId = ado.EmrCoverTypeId ?? 0;
+                                long emrCoverTypeIdSend = emrCoverTypeId <= 0 ? 0 : emrCoverTypeId;
+                                processor.FormOpenEmr(emrCoverTypeIdSend, ado, printTypeCode);
+                            }
+                        }
+                    }
                     //Nếu mở từ tiếp đón chưa có icd và có nhập icd thì cập nhật Icd để in ra
                     //Comment do code gây lỗi, không biết lý do code sử dụng hàm này
                     //this.UpdateIcdToCurrentHisTreatment();
@@ -1873,6 +2123,7 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                             isSaveAndShow = true;
                         }
                     }
+                    //InTamUng(isSaveAndShow, previewType);
                     Inventec.Common.Logging.LogSystem.Debug("SaveServiceReqCombo____" + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => previewType), previewType)
                         + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => isSaveAndPrint), isSaveAndPrint)
                         + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => isSign), isSign)
@@ -1897,28 +2148,42 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
 
                             var checkQR = this.lstLoaiPhieu.FirstOrDefault(o => o.Check == true && o.ID == "gridView7_3");
 
-                            var checkTemXN = this.lstLoaiPhieu.FirstOrDefault(o => o.Check == true && o.ID == "gridView7_4");
+                            var checkTH = this.lstLoaiPhieu.FirstOrDefault(o => o.Check == true && o.ID == "gridView7_4");
+
+                            var checkTemXN = this.lstLoaiPhieu.FirstOrDefault(o => o.Check == true && o.ID == "gridView7_5");
 
                             if (checkHDBN != null)
                             {
-                                InPhieuHuoangDanBenhNhan(isSaveAndShow);
+                                if (!isPrinted) InTamUng(isSaveAndShow, previewType);
+                                InPhieuHuoangDanBenhNhan(isSaveAndShow, previewType);
+
                             }
 
                             if (checkYCDV != null)
                             {
+                                if (!isPrinted) InTamUng(isSaveAndShow, previewType);
                                 InPhieuYeuCauDichVu(isSaveAndShow, previewType);
                             }
 
                             if (checkQR != null)
                             {
+                                if (!isPrinted) InTamUng(isSaveAndShow, previewType);
                                 InYeuCauThanhToanQR(isSaveAndPrint, isSign, isPrintPreview);
                             }
 
-                            if (checkTemXN !=null)
+                            if (checkTH != null)
                             {
-                                InTemBarcodeXN();
-                                InTemBarcodeGpbl();
+                                //if (chkSign.Checked == true) previewType = MPS.ProcessorBase.PrintConfig.PreviewType.EmrSignAndPrintNow;
+                                if (!isPrinted) InTamUng(isSaveAndShow, previewType);
+                                DelegateRunPrinter(PrintTypeCodeStore.PRINT_TYPE_CODE__IN__PHIEU_YEU_CAU_CHI_DINH_TONG_HOP__MPS000037, isSaveAndShow, previewType);
                             }
+
+                            if (checkTemXN != null)
+                            {
+                                InTemBarcodeGpbl();
+                                InTemBarcodeXN();
+                            }
+
                         }
 
                         //foreach (var item in this.lstLoaiPhieu)
@@ -1959,6 +2224,8 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                     #region Process has exception
                     SessionManager.ProcessTokenLost(param);
                     #endregion
+
+                    WaitingManager.Hide();
                 }
             }
             catch (Exception ex)
@@ -1967,6 +2234,90 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                 Inventec.Common.Logging.LogSystem.Fatal(ex);
             }
         }
+
+        private void ProcessOpenVoBenhAn(List<V_HIS_SERE_SERV> sereServs)
+        {
+            try
+            {
+                var emrFormsCodes = lstService.Where(o => sereServs.Exists(p => p.SERVICE_ID == o.ID) && !string.IsNullOrEmpty(o.EMR_FORM_CODES)).Select(o => o.EMR_FORM_CODES).ToList();
+                if (emrFormsCodes != null && emrFormsCodes.Count > 0 && serviceReqComboResultSDO != null)
+                {
+                    HIS.Desktop.Plugins.Library.FormMedicalRecord.Base.EmrInputADO emrInputAdo = new Library.FormMedicalRecord.Base.EmrInputADO();
+                    emrInputAdo.TreatmentId = serviceReqComboResultSDO.ServiceReqs.FirstOrDefault().TREATMENT_ID;
+                    emrInputAdo.PatientId = serviceReqComboResultSDO.ServiceReqs.FirstOrDefault().TDL_PATIENT_ID;
+                    emrInputAdo.roomId = this.currentModule.RoomId;
+                    if (currentTreatment.EMR_COVER_TYPE_ID != null)
+                    {
+                        emrInputAdo.EmrCoverTypeId = currentTreatment.EMR_COVER_TYPE_ID;
+                    }
+                    else
+                    {
+                        var data = BackendDataWorker.Get<HIS_EMR_COVER_CONFIG>().Where(o => o.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE
+                            && o.ROOM_ID == this.currentModule.RoomId
+                        && o.TREATMENT_TYPE_ID == currentTreatment.TDL_TREATMENT_TYPE_ID
+                        ).ToList();
+                        if (data != null && data.Count > 0)
+                        {
+                            if (data.Count == 1)
+                            {
+                                emrInputAdo.EmrCoverTypeId = data.FirstOrDefault().EMR_COVER_TYPE_ID;
+
+                            }
+                            else
+                            {
+                                emrInputAdo.lstEmrCoverTypeId = new List<long>();
+                                emrInputAdo.lstEmrCoverTypeId = data.Select(o => o.EMR_COVER_TYPE_ID).ToList();
+                            }
+                        }
+                        else
+                        {
+                            var DepartmentID = HIS.Desktop.LocalStorage.LocalData.WorkPlace.WorkPlaceSDO.FirstOrDefault(o => o.RoomId == this.currentModule.RoomId).DepartmentId;
+
+                            var DataConfig = BackendDataWorker.Get<HIS_EMR_COVER_CONFIG>().Where(o => o.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE
+                        && o.DEPARTMENT_ID == DepartmentID && o.TREATMENT_TYPE_ID == currentTreatment.TDL_TREATMENT_TYPE_ID).ToList();
+
+                            if (DataConfig != null && DataConfig.Count > 0)
+                            {
+                                if (DataConfig.Count == 1)
+                                {
+                                    emrInputAdo.EmrCoverTypeId = DataConfig.FirstOrDefault().EMR_COVER_TYPE_ID;
+                                }
+                                else
+                                {
+                                    emrInputAdo.lstEmrCoverTypeId = new List<long>();
+                                    emrInputAdo.lstEmrCoverTypeId = DataConfig.Select(o => o.EMR_COVER_TYPE_ID).ToList();
+                                }
+                            }
+                        }
+                    }
+
+                    HIS.Desktop.Plugins.Library.FormMedicalRecord.MediRecordMenuPopupProcessor processor = new Library.FormMedicalRecord.MediRecordMenuPopupProcessor();
+
+                    long EmrCoverTypeId_ = emrInputAdo.EmrCoverTypeId ?? 0;
+                    long EmrCoverTypeId_Send;
+
+                    if (EmrCoverTypeId_ <= 0)
+                    {
+                        EmrCoverTypeId_Send = 0;
+                    }
+                    else
+                    {
+                        EmrCoverTypeId_Send = EmrCoverTypeId_;
+                    }
+
+                    Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => emrInputAdo), emrInputAdo));
+
+                    Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => emrFormsCodes), emrFormsCodes));
+                    processor.FormOpenEmr(EmrCoverTypeId_Send, emrInputAdo, string.Join(",", emrFormsCodes));
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+
+        }
+
         private void CallTransReqCreateByService()
         {
             try

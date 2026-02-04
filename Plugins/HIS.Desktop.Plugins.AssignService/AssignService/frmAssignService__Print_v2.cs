@@ -1,4 +1,21 @@
-﻿using HIS.Desktop.LocalStorage.BackendData;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using HIS.Desktop.LocalStorage.BackendData;
 using HIS.Desktop.LocalStorage.ConfigApplication;
 using HIS.Desktop.LocalStorage.LocalData;
 using HIS.Desktop.Plugins.AssignService.Config;
@@ -7,10 +24,12 @@ using HIS.Desktop.Plugins.Library.PrintBordereau.ADO;
 using HIS.Desktop.Plugins.Library.PrintBordereau.Base;
 using HIS.Desktop.Print;
 using Inventec.Common.Adapter;
+using Inventec.Common.SignLibrary.DTO;
 using Inventec.Core;
 using Inventec.Desktop.Common.LanguageManager;
 using Inventec.Desktop.Common.Message;
 using MOS.EFMODEL.DataModels;
+using MPS.ProcessorBase;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +39,7 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
     public partial class frmAssignService : HIS.Desktop.Utility.FormBase
     {
         Library.PrintServiceReq.PrintServiceReqProcessor PrintServiceReqProcessor;
-
+        Dictionary<long, List<DocumentSignedUpdateIGSysResultDTO>> dSignedList = new Dictionary<long, List<DocumentSignedUpdateIGSysResultDTO>>();
         private void InitMenuToButtonPrint()
         {
             try
@@ -99,7 +118,7 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                     var bbtnItem = sender as DevExpress.XtraEditors.SimpleButton;
                     printTypeCode = (bbtnItem.Tag ?? "").ToString();
                 }
-                LogTheadInSessionInfo(() => DelegateRunPrinter(printTypeCode, false, null), "PrintRequestAggregateDesignation");
+                LogTheadInSessionInfo(() => DelegateRunPrinter(printTypeCode, true, null), "PrintRequestAggregateDesignation");
             }
             catch (Exception ex)
             {
@@ -208,11 +227,12 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
             return result;
         }
 
-        private void InPhieuHuoangDanBenhNhan(bool isSaveAndShow)
+        private void InPhieuHuoangDanBenhNhan(bool isSaveAndShow, PrintConfig.PreviewType? preview = null)
         {
             try
-            {
-                var PrintServiceReqProcessor = new HIS.Desktop.Plugins.Library.PrintServiceReqTreatment.PrintServiceReqTreatmentProcessor(this.serviceReqComboResultSDO.ServiceReqs, currentModule != null ? this.currentModule.RoomId : 0);
+            {                
+                var PrintServiceReqProcessor = new HIS.Desktop.Plugins.Library.PrintServiceReqTreatment.PrintServiceReqTreatmentProcessor(this.serviceReqComboResultSDO.ServiceReqs, currentModule != null ? this.currentModule.RoomId : 0, preview);
+                PrintServiceReqProcessor.DlgSendResultSigned = GetDocmentSigned;
                 PrintServiceReqProcessor.Print("Mps000276", true);
             }
             catch (Exception ex)
@@ -224,23 +244,52 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
 
         bool IsSaveAndShowMps000102 = true;
         MPS.ProcessorBase.PrintConfig.PreviewType? PreviewTypeMps000102 = null;
-
-        private void InPhieuYeuCauDichVu(bool isSaveAndShow, MPS.ProcessorBase.PrintConfig.PreviewType? previewType = 0)
+        bool isPrinted = false;
+        private void InTamUng(bool isSaveAndShow, MPS.ProcessorBase.PrintConfig.PreviewType? previewType)
         {
             try
             {
+                var countPrintConfig = this.lstLoaiPhieu.Where(s => s.Check == true).Distinct().ToList().Count;
+                // điều kiện in : có ít nhất 1 cấu hình và có giao dịch tạm ứng /// nếu có tạm ứng thì in trước
+                if (serviceReqComboResultSDO.SereServDeposits != null && serviceReqComboResultSDO.SereServDeposits.Count > 0 && countPrintConfig > 0)
+                {
+                    this.IsSaveAndShowMps000102 = isSaveAndShow;
+                    this.PreviewTypeMps000102 = previewType;
+                    Inventec.Common.RichEditor.RichEditorStore richEditorMain = new Inventec.Common.RichEditor.RichEditorStore(ApiConsumer.ApiConsumers.SarConsumer, HIS.Desktop.LocalStorage.ConfigSystem.ConfigSystems.URI_API_SAR, LanguageManager.GetLanguage(), LocalStorage.LocalData.GlobalVariables.TemnplatePathFolder);
+                    richEditorMain.RunPrintTemplate(PrintTypeCodeStore.PRINT_TYPE_CODE__MPS000102, ProcessPrintMps000102);
+                    isPrinted = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+        private void InPhieuYeuCauDichVu(bool isSaveAndShow, MPS.ProcessorBase.PrintConfig.PreviewType? previewType = null)
+        {
+            try
+            {                                
+                string configValue = HisConfigCFG.IsAllowSignaturePrint;
+
+                if (!string.IsNullOrWhiteSpace(configValue))
+                {
+                    var allowedModules = configValue
+                        .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                        .Select(x => x.Trim())
+                        .ToList();
+
+                    if (allowedModules.Contains("HIS.Desktop.Plugins.AssignService"))
+                    {
+                        previewType = MPS.ProcessorBase.PrintConfig.PreviewType.EmrSignAndPrintPreview;
+                    }
+                    else
+                    {
+                        previewType = MPS.ProcessorBase.PrintConfig.PreviewType.EmrSignNow;
+                    }
+                }
                 if (serviceReqComboResultSDO != null)
                 {
                     CommonParam param = new CommonParam();
-                    // nếu có tạm ứng dịch vụ thì in trước.
-                    if (serviceReqComboResultSDO.SereServDeposits != null && serviceReqComboResultSDO.SereServDeposits.Count > 0)
-                    {
-                        this.IsSaveAndShowMps000102 = isSaveAndShow;
-                        this.PreviewTypeMps000102 = previewType;
-                        Inventec.Common.RichEditor.RichEditorStore richEditorMain = new Inventec.Common.RichEditor.RichEditorStore(ApiConsumer.ApiConsumers.SarConsumer, HIS.Desktop.LocalStorage.ConfigSystem.ConfigSystems.URI_API_SAR, LanguageManager.GetLanguage(), LocalStorage.LocalData.GlobalVariables.TemnplatePathFolder);
-                        richEditorMain.RunPrintTemplate(PrintTypeCodeStore.PRINT_TYPE_CODE__MPS000102, ProcessPrintMps000102);
-                    }
-
                     List<V_HIS_BED_LOG> bedLogs = new List<V_HIS_BED_LOG>();
                     // get bedLog
                     if (this.currentHisTreatment != null && this.serviceReqComboResultSDO != null && this.serviceReqComboResultSDO.ServiceReqs != null && this.serviceReqComboResultSDO.ServiceReqs.Count > 0)
@@ -250,12 +299,13 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                         bedLogViewFilter.DEPARTMENT_IDs = this.serviceReqComboResultSDO.ServiceReqs.Select(o => o.REQUEST_DEPARTMENT_ID).Distinct().ToList();
                         bedLogs = new Inventec.Common.Adapter.BackendAdapter(param).Get<List<V_HIS_BED_LOG>>("api/HisBedLog/GetView", ApiConsumer.ApiConsumers.MosConsumer, bedLogViewFilter, param);
                     }
-                    var PrintServiceReqProcessor = previewType != null ? new Library.PrintServiceReq.PrintServiceReqProcessor(serviceReqComboResultSDO, currentHisTreatment, bedLogs, (currentModule != null ? currentModule.RoomId : 0), previewType.Value)
+                    var PrintServiceReqProcessor = previewType != null ? new Library.PrintServiceReq.PrintServiceReqProcessor(serviceReqComboResultSDO, currentHisTreatment, bedLogs, (currentModule != null ? currentModule.RoomId : 0), previewType.Value, GetDocmentSigned)
                         : new Library.PrintServiceReq.PrintServiceReqProcessor(serviceReqComboResultSDO, currentHisTreatment, bedLogs, (currentModule != null ? currentModule.RoomId : 0));
                     PrintServiceReqProcessor.SaveNPrint(isSaveAndShow);
-
+                                           
                     if (this.serviceReqComboResultSDO.SereServs != null)
                     {
+                        ProcessOpenVoBenhAn(serviceReqComboResultSDO.SereServs);
                         Inventec.Common.Logging.LogSystem.Debug("PRINT NOW serviceReqComboResultSDO.SereServs: " + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => this.serviceReqComboResultSDO.SereServs), this.serviceReqComboResultSDO.SereServs));
                     }
                 }
@@ -265,6 +315,21 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                 Inventec.Common.Logging.LogSystem.Warn(ex);
                 WaitingManager.Hide();
             }
+        }
+
+        private void GetDocmentSigned(DocumentSignedUpdateIGSysResultDTO dTO)
+        {
+            try
+            {
+                if (!dSignedList.ContainsKey(this.serviceReqComboResultSDO.ServiceReqs[0].TREATMENT_ID))
+                    dSignedList[this.serviceReqComboResultSDO.ServiceReqs[0].TREATMENT_ID] = new List<DocumentSignedUpdateIGSysResultDTO>();
+                dSignedList[this.serviceReqComboResultSDO.ServiceReqs[0].TREATMENT_ID].Add(dTO);
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+
         }
 
         private bool ProcessPrintMps000102(string printTypeCode, string fileName)
@@ -547,147 +612,17 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
             }
         }
 
-        private void InTemBarcodeXN()
-        {
-            try
-            {
-                var serviceReq_Test = this.serviceReqComboResultSDO.ServiceReqs.Where(o => o.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__XN).ToList();
-                string txt = "";
-                if (serviceReq_Test != null && serviceReq_Test.Count > 0)
-                {
-
-                    foreach (var item in serviceReq_Test)
-                    {
-                        var SereServBySRQ = this.serviceReqComboResultSDO.SereServs.Where(o => o.SERVICE_REQ_ID == item.ID).ToList();
-                        //int amount = (int)itemSS.AMOUNT;
-                        GenText(item, SereServBySRQ, ref txt);
-                        txt += "\n";
-                    }
-                    string resultPrint = new Bartender.PrintTestServiceReq.PrintTestServiceReq().StartPrintTestServiceReq(txt);
-
-                    if (!string.IsNullOrWhiteSpace(resultPrint))
-                    {
-                        Inventec.Common.Logging.LogSystem.Warn(resultPrint);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Inventec.Common.Logging.LogSystem.Warn(ex);
-            }
-        }
-
-        private void GenText(V_HIS_SERVICE_REQ serviceReq, List<V_HIS_SERE_SERV> sereServ, ref string txt)
-        {
-            txt += serviceReq.BARCODE;
-            txt += "," + serviceReq.TDL_PATIENT_NAME;
-            txt += "," + serviceReq.TDL_PATIENT_GENDER_NAME;
-            txt += "," + serviceReq.TDL_PATIENT_DOB;
-            txt += "," + (serviceReq.TDL_PATIENT_DOB != null && serviceReq.TDL_PATIENT_DOB > 10000000000000 ? serviceReq.TDL_PATIENT_DOB.ToString().Substring(0, 4) : "");
-            txt += "," + serviceReq.REQUEST_DEPARTMENT_NAME;
-            txt += "," + serviceReq.REQUEST_ROOM_NAME;
-            //string parentName = "";
-            //string serviceTypeName = "";
-            //foreach (var item in sereServ)
-            //{
-            //    parentName += "," + (item.PARENT_ID.HasValue && item.PARENT_ID.Value > 0 ? BackendDataWorker.Get<V_HIS_SERVICE>().FirstOrDefault(o => item.PARENT_ID.Value == o.ID).SERVICE_NAME : "");
-            //    serviceTypeName += "," + item.SERVICE_TYPE_NAME;
-            //}
-            txt += "," + Inventec.Common.DateTime.Convert.TimeNumberToTimeStringWithoutSecond(serviceReq.INTRUCTION_TIME);
-            txt += "," + serviceReq.TREATMENT_CODE;
-            if (serviceReq.TEST_SAMPLE_TYPE_ID.HasValue && serviceReq.TEST_SAMPLE_TYPE_ID.Value > 0)
-            {
-                var testSampleType = BackendDataWorker.Get<HIS_TEST_SAMPLE_TYPE>().FirstOrDefault(o => o.ID == serviceReq.TEST_SAMPLE_TYPE_ID);
-                if (testSampleType != null)
-                {
-                    txt += "," + testSampleType.TEST_SAMPLE_TYPE_NAME;
-                }
-            }
-        }
-        private void InTemBarcodeGpbl()
-        {
-            try
-            {
-                var serviceReq_Gpbl = this.serviceReqComboResultSDO.ServiceReqs.Where(o => o.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__GPBL).ToList();
-                string txt = "";
-                if (serviceReq_Gpbl != null && serviceReq_Gpbl.Count > 0)
-                {
-                    foreach (var item in serviceReq_Gpbl)
-                    {
-                        var SereServBySRQ = this.serviceReqComboResultSDO.SereServs.Where(o => o.SERVICE_REQ_ID == item.ID).ToList();
-                        if (SereServBySRQ != null && SereServBySRQ.Count() > 0)
-                        {
-                            GenText_Gpbl(item, SereServBySRQ.FirstOrDefault(), ref txt);
-                        }
-                        string resultPrint = new Bartender.PrintGpblServiceReq.PrintGpblServiceReq().StartPrintGpblServiceReq(txt);
-
-                        if (!string.IsNullOrWhiteSpace(resultPrint))
-                        {
-                            Inventec.Common.Logging.LogSystem.Warn(resultPrint);
-                        }
-                    }
-                   
-                }
-            }
-            catch (Exception ex)
-            {
-                Inventec.Common.Logging.LogSystem.Warn(ex);
-            }
-        }
-        private void GenText_Gpbl(V_HIS_SERVICE_REQ serviceReq, V_HIS_SERE_SERV sereServ, ref string txt)
-        {
-            var service = BackendDataWorker.Get<HIS_SERVICE>().FirstOrDefault(o => o.ID == sereServ.SERVICE_ID);
-            HIS_SERVICE servicePr = null;
-            if (service != null && service.PARENT_ID.HasValue && service.PARENT_ID.Value > 0)
-            {
-                servicePr = BackendDataWorker.Get<HIS_SERVICE>().FirstOrDefault(o => o.ID == service.PARENT_ID);
-            }
-            txt += serviceReq.SERVICE_REQ_CODE;
-            txt += "," + serviceReq.TDL_PATIENT_NAME;
-            txt += "," + serviceReq.TDL_PATIENT_GENDER_NAME;
-            txt += "," + serviceReq.TDL_PATIENT_DOB;
-            txt += "," + (serviceReq.TDL_PATIENT_DOB > 10000000000000 ? serviceReq.TDL_PATIENT_DOB.ToString().Substring(0, 4) : "");
-            txt += "," + serviceReq.REQUEST_DEPARTMENT_NAME;
-            txt += "," + serviceReq.REQUEST_USERNAME;
-            txt += "," + Inventec.Common.DateTime.Convert.TimeNumberToTimeStringWithoutSecond(Inventec.Common.DateTime.Get.Now() ?? 0);
-            txt += "," + serviceReq.TDL_TREATMENT_CODE;
-
-            if (serviceReq.TEST_SAMPLE_TYPE_ID.HasValue && serviceReq.TEST_SAMPLE_TYPE_ID.Value > 0)
-            {
-                var testSampleType = BackendDataWorker.Get<HIS_TEST_SAMPLE_TYPE>().FirstOrDefault(o => o.ID == serviceReq.TEST_SAMPLE_TYPE_ID);
-                if (testSampleType != null)
-                {
-                    txt += "," + testSampleType.TEST_SAMPLE_TYPE_NAME.Replace(",", ";");
-                }
-            }
-            else
-            {
-                txt += ",";
-            }
-
-            if (servicePr != null)
-            {
-                txt += "," + servicePr.SERVICE_NAME;
-            }
-            else
-            {
-                txt += ",";
-            }
-            txt += "," + serviceReq.EXECUTE_ROOM_CODE;
-
-            // xuong dong (1 row trong db)
-            txt += "\n";
-        }
-
         private void InYeuCauThanhToanQR(bool printTH, bool isSign, bool isPrintPreview)
         {
             try
             {
+                
                 if (serviceReqComboResultSDO != null || IsActionButtonPrintBill)
                 {
                     BordereauInitData data = new BordereauInitData();
-                    IsActionButtonPrintBill = false;
-                    HIS.Desktop.Plugins.Library.PrintBordereau.PrintBordereauProcessor processor = new PrintBordereauProcessor(this.currentModule.RoomId, this.currentModule.RoomTypeId, treatmentId, patientPrint.ID, null, null);
+                    HIS.Desktop.Plugins.Library.PrintBordereau.PrintBordereauProcessor processor = new PrintBordereauProcessor(this.currentModule.RoomId, this.currentModule.RoomTypeId, treatmentId, patientPrint.ID, null, null, GetDocmentSigned);
+                    if (IsActionButtonPrintBill)
+                        processor.IsActionButtonPrintBill = true;
                     if (printTH && !isSign)
                     {
                         Inventec.Common.Logging.LogSystem.Error("Mps000446_____ PRINT_NOW");
@@ -713,7 +648,6 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                         Inventec.Common.Logging.LogSystem.Error("Mps000446_____ NULL");
                         processor.Print("Mps000446", null, null);
                     }
-
                 }
             }
             catch (Exception ex)

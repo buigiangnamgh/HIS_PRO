@@ -1,4 +1,21 @@
-﻿using DevExpress.XtraEditors;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using DevExpress.XtraEditors;
 using DevExpress.XtraEditors.DXErrorProvider;
 using DevExpress.XtraEditors.ViewInfo;
 using HIS.Desktop.Plugins.AssignService.Config;
@@ -8,6 +25,7 @@ using Inventec.Desktop.Common.Controls.ValidationRule;
 using Inventec.Desktop.Common.LibraryMessage;
 using System;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace HIS.Desktop.Plugins.AssignService.AssignService
 {
@@ -108,7 +126,16 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                 this.ValidControlCboUser();
                 this.ValidControlProvisionalDiagnosis();
                 this.ValdateSecondaryIcd();
+
+                // Xử lý cho key IS_TRACKING_REQUIRED = 1
                 if (HisConfigCFG.IsRequiredTracking && this.currentHisPatientTypeAlter != null && (this.currentHisPatientTypeAlter.TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNOITRU || this.currentHisPatientTypeAlter.TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNGOAITRU))
+                {
+                    ValidControlCboTracking(true);
+                    lciTracking.AppearanceItemCaption.ForeColor = System.Drawing.Color.Maroon;
+                }
+                // Xử lý cho key IS_TRACKING_REQUIRED_PRESCRIPTION = 2
+                else if (HisConfigCFG.IsRequiredTrackingPrescription && this.currentHisTreatment != null
+                    && (this.currentHisTreatment.IS_EMERGENCY == 1 || this.currentHisTreatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNOITRU))
                 {
                     ValidControlCboTracking(true);
                     lciTracking.AppearanceItemCaption.ForeColor = System.Drawing.Color.Maroon;
@@ -168,6 +195,7 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                 rule.cboTracking = cboTracking;
                 rule.isRequired = isRequied;
                 dxValidationProviderControl.SetValidationRule(cboTracking, rule);
+                cboTracking.Focus();
             }
             catch (Exception ex)
             {

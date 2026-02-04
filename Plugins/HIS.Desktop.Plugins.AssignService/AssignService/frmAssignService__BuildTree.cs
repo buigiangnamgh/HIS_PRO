@@ -1,4 +1,21 @@
-﻿using DevExpress.Utils.Drawing;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using DevExpress.Utils.Drawing;
 using DevExpress.XtraEditors.DXErrorProvider;
 using DevExpress.XtraEditors.Repository;
 using DevExpress.XtraGrid.Views.Grid;
@@ -6,9 +23,12 @@ using HIS.Desktop.LocalStorage.BackendData;
 using HIS.Desktop.LocalStorage.BackendData.ADO;
 using HIS.Desktop.LocalStorage.BackendData.Core.ServiceCombo;
 using HIS.Desktop.LocalStorage.LocalData;
-using HIS.Desktop.Plugins.AssignService.Config;
 using HIS.Desktop.Utilities.Extentions;
+using Inventec.Common.Adapter;
+using Inventec.Common.WebApiClient;
+using Inventec.Core;
 using MOS.EFMODEL.DataModels;
+using MOS.Filter;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -71,26 +91,26 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
         {
             try
             {
-                ServiceComboADO serviceComboADO = null;
-                if (ServiceComboDataWorker.DicServiceCombo == null)
-                    ServiceComboDataWorker.DicServiceCombo = new Dictionary<long, ServiceComboADO>();
-                if (ServiceComboDataWorker.DicServiceCombo.ContainsKey(this.currentHisPatientTypeAlter.PATIENT_TYPE_ID))
-                {
-                    ServiceComboDataWorker.DicServiceCombo.TryGetValue(this.currentHisPatientTypeAlter.PATIENT_TYPE_ID, out serviceComboADO);
-                }
-                else
-                {
-                    serviceComboADO = ServiceComboDataWorker.GetByPatientType(currentHisPatientTypeAlter.PATIENT_TYPE_ID, this.servicePatyInBranchs);
+				ServiceComboADO serviceComboADO = null;
+				if (ServiceComboDataWorker.DicServiceCombo == null)
+					ServiceComboDataWorker.DicServiceCombo = new Dictionary<long, ServiceComboADO>();
+				if (ServiceComboDataWorker.DicServiceCombo.ContainsKey(this.currentHisPatientTypeAlter.PATIENT_TYPE_ID))
+				{
+					ServiceComboDataWorker.DicServiceCombo.TryGetValue(this.currentHisPatientTypeAlter.PATIENT_TYPE_ID, out serviceComboADO);
+				}
+				else
+				{
+					serviceComboADO = ServiceComboDataWorker.GetByPatientType(currentHisPatientTypeAlter.PATIENT_TYPE_ID, this.servicePatyInBranchs);
 
-                    ServiceComboDataWorker.DicServiceCombo.Add(this.currentHisPatientTypeAlter.PATIENT_TYPE_ID, serviceComboADO);
-                }
-                //await TaskLoadServiceComboData;
+					ServiceComboDataWorker.DicServiceCombo.Add(this.currentHisPatientTypeAlter.PATIENT_TYPE_ID, serviceComboADO);
+				}
+				//await TaskLoadServiceComboData;
                 if (serviceComboADO != null)
                 {
                     Inventec.Common.Logging.LogSystem.Debug("count of serviceComboADO.ServiceIsleafADOs:" + serviceComboADO.ServiceIsleafADOs.Count());
                     Inventec.Common.Logging.LogSystem.Debug("count of serviceComboADO.ServiceAllADOs:" + serviceComboADO.ServiceAllADOs.Count());
                     Inventec.Common.Logging.LogSystem.Debug("count of serviceComboADO.ServiceParentADOs:" + serviceComboADO.ServiceParentADOs.Count());
-
+                    
                     List<long> listRoomIdActives = new List<long>();
                     if (this.currentExecuteRooms != null && this.currentExecuteRooms.Count > 0)
                     {
@@ -164,23 +184,19 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
 
                     List<long> lstNotDisplayIds = BackendDataWorker.Get<HIS_SERVICE_TYPE>().ToList().Where(o => o.IS_NOT_DISPLAY_ASSIGN == 1).Select(o => o.ID).ToList();
 
-                    if (lstNotDisplayIds != null && lstNotDisplayIds.Count > 0)
-                    {
-                        this.ServiceAllADOs = this.ServiceAllADOs.Where(o => !lstNotDisplayIds.Exists(p => p == o.SERVICE_TYPE_ID) && !(o.SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__G && o.HEIN_SERVICE_BHYT_CODE != null && HisConfigCFG.IsNotDisplayBedHein)).ToList();
-                        this.ServiceParentADOs = this.ServiceParentADOs.Where(o => !lstNotDisplayIds.Exists(p => p == o.SERVICE_TYPE_ID) && !(o.SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__G && o.HEIN_SERVICE_BHYT_CODE != null && HisConfigCFG.IsNotDisplayBedHein)).ToList();
-                        this.ServiceParentADOForGridServices = this.ServiceParentADOForGridServices.Where(o => !lstNotDisplayIds.Exists(p => p == o.SERVICE_TYPE_ID) && !(o.SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__G && o.HEIN_SERVICE_BHYT_CODE != null && HisConfigCFG.IsNotDisplayBedHein)).ToList();
-                        this.ServiceIsleafADOs = this.ServiceIsleafADOs.Where(o => !lstNotDisplayIds.Exists(p => p == o.SERVICE_TYPE_ID) && !(o.SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__G && o.TDL_HEIN_SERVICE_BHYT_CODE != null && HisConfigCFG.IsNotDisplayBedHein)).ToList();
+                    if (lstNotDisplayIds !=null && lstNotDisplayIds.Count>0)
+					{
+                        this.ServiceAllADOs = this.ServiceAllADOs.Where(o => !lstNotDisplayIds.Exists(p=>p == o.SERVICE_TYPE_ID)).ToList();
+                        this.ServiceParentADOs = this.ServiceParentADOs.Where(o => !lstNotDisplayIds.Exists(p => p == o.SERVICE_TYPE_ID)).ToList();
+                        this.ServiceParentADOForGridServices = this.ServiceParentADOForGridServices.Where(o => !lstNotDisplayIds.Exists(p => p == o.SERVICE_TYPE_ID)).ToList();
+                        this.ServiceIsleafADOs = this.ServiceIsleafADOs.Where(o => !lstNotDisplayIds.Exists(p => p == o.SERVICE_TYPE_ID)).ToList();
                     }
-                    else
-                    {
-                        this.ServiceAllADOs = this.ServiceAllADOs.Where(o => !(o.SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__G && o.HEIN_SERVICE_BHYT_CODE != null && HisConfigCFG.IsNotDisplayBedHein)).ToList();
-                        this.ServiceParentADOs = this.ServiceParentADOs.Where(o => !(o.SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__G && o.HEIN_SERVICE_BHYT_CODE != null && HisConfigCFG.IsNotDisplayBedHein)).ToList();
-                        this.ServiceParentADOForGridServices = this.ServiceParentADOForGridServices.Where(o => !(o.SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__G && o.HEIN_SERVICE_BHYT_CODE != null && HisConfigCFG.IsNotDisplayBedHein)).ToList();
-                        this.ServiceIsleafADOs = this.ServiceIsleafADOs.Where(o => !(o.SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__G && o.TDL_HEIN_SERVICE_BHYT_CODE != null && HisConfigCFG.IsNotDisplayBedHein)).ToList();
-                    }
+                    var serviceByID = default(HIS_SERVICE);
+                    var serviceByIDSet = default(HIS_SERVICE);
 
                     foreach (var item in this.ServiceIsleafADOs)
                     {
+                        item.AssignNumOrder = null;
                         item.IsChecked = false;
                         item.ShareCount = null;
                         item.AMOUNT = 1;
@@ -220,6 +236,12 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                         item.TEST_SAMPLE_TYPE_ID = 0;
                         item.TEST_SAMPLE_TYPE_CODE = null;
                         item.TEST_SAMPLE_TYPE_NAME = null;
+                        item.SereServEkipADO = null;
+                        item.NumberOfTimes = 1;
+                        item.IsGuarantee = false; 
+                        //if (currentHisTreatment.GUARANTEE_CODE != null) item.IsGuarantee = true; 
+                        // Bỏ check all bảo lãnh lúc ban đầu - sẽ tự động check khi tích chọn dịch vụ
+                        //item.SetIsGuarantee(false);
                     }
                 }
                 else
@@ -265,6 +287,11 @@ namespace HIS.Desktop.Plugins.AssignService.AssignService
                 this.treeService.ParentFieldName = "PARENT_ID__IN_SETY";
                 this.hideCheckBoxHelper__Service = new HideCheckBoxHelper(this.treeService);
                 UpdateSwithExpendAll();
+                if (IsFirstloadConditionService)
+                {
+                    lstConditionService = BackendDataWorker.Get<HIS_SERVICE_CONDITION>().Where(o=>o.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE && ServiceIsleafADOs.Select(p=>p.SERVICE_ID).Contains(o.SERVICE_ID)).ToList();                 
+                    this.IsFirstloadConditionService = false;
+                }
             }
             catch (Exception ex)
             {
