@@ -39,6 +39,8 @@ namespace MPS.Processor.Mps000276.PDO
         public List<V_HIS_DESK> _Desks { get; set; }
         public List<HIS_CONFIG> lstConfig { get; set; }
         public HIS_TRANS_REQ transReq { get; set; }
+       public  List<HIS_SERE_SERV_EXT> _ext { get; set; }
+       public MPS.Processor.Mps000276.PDO.ADO.ServiceReqADO aDO { get; set; }
     }
 
 }

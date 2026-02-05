@@ -171,7 +171,6 @@ namespace MPS.Processor.Mps000276
                             var serviceParent = serviceList.FirstOrDefault(o => o.ID == service.PARENT_ID.Value);
                             if (serviceParent != null)
                             {
-                                ss.EXECUTE_ROOM_NAME = serviceParent.SERVICE_NAME;
                                 ss.SERVICE_ID_LOCAL_PARENT = serviceParent.ID;
                             }
                         }
@@ -196,7 +195,7 @@ namespace MPS.Processor.Mps000276
                     if (resultV.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__XN)
                     {
                         resultV.NUM_ORDER_FIXED = 1;
-                        var groupSS = sSItem.GroupBy(o => o.SERVICE_ID_LOCAL_PARENT).ToList();
+                        var groupSS = sSItem.GroupBy(o => new { o.SERVICE_ID_LOCAL_PARENT, o.TDL_EXECUTE_ROOM_ID }).ToList();
                         if (groupSS != null && groupSS.Count > 0)
                         {
                             foreach (var ss in groupSS)
@@ -260,7 +259,22 @@ namespace MPS.Processor.Mps000276
                         foreach (var itemOther in group)
                         {
                             SereServADO resultTher = new SereServADO(itemOther.FirstOrDefault());
-                            resultTher.EXECUTE_ROOM_NAME = String.Format("{0} - {1}", itemOther.FirstOrDefault().EXECUTE_ROOM_NAME, string.Join("; ", itemOther.Select(o => o.TDL_SERVICE_NAME).ToList()));
+
+                            if (itemOther.Count() > 1)
+                            {
+                                resultTher.EXECUTE_ROOM_NAME = string.Format(
+                                               "{0} - {1}",
+                                               itemOther.FirstOrDefault().EXECUTE_ROOM_NAME,
+                                               string.Join("; ",
+                                                   itemOther.Select((o, index) => String.Format("({0}) {1}", index + 1, o.TDL_SERVICE_NAME))
+                                               )
+                                           );
+                            }
+                            else
+                            {
+                                resultTher.EXECUTE_ROOM_NAME = String.Format("{0} - {1}", itemOther.FirstOrDefault().EXECUTE_ROOM_NAME, string.Join("; ", itemOther.Select(o => o.TDL_SERVICE_NAME).ToList()));
+                            }
+
                             var room = HIS.Desktop.LocalStorage.BackendData.BackendDataWorker.Get<V_HIS_EXECUTE_ROOM>().FirstOrDefault(o => o.ROOM_ID == itemOther.FirstOrDefault().TDL_EXECUTE_ROOM_ID);
                             if (room != null)
                             {
@@ -272,13 +286,14 @@ namespace MPS.Processor.Mps000276
                                 resultTher.NUM_ORDER = serviceReq.NUM_ORDER;
                                 resultTher.BARCODE = serviceReq.BARCODE;
                             }
-                            resultTher.EXECUTE_ROOM_NAME = resultTher.EXECUTE_ROOM_NAME + "\n";
+                            //resultTher.EXECUTE_ROOM_NAME = resultTher.EXECUTE_ROOM_NAME + "\n";
                             listSereServNew.Add(resultTher);
                         }
 
                         listResult.Add(resultV);
                     }
                 }
+                listSereServNew = listSereServNew.OrderBy(o => o.BARCODE).ToList();
                 listResult = listResult.OrderBy(o => o.NUM_ORDER_FIXED).ToList();
                 rdo._SereServs = (rdo._SereServs != null && rdo._SereServs.Count > 0) ? rdo._SereServs.OrderBy(p => p.ID).ToList() : rdo._SereServs;
                 Inventec.Common.Logging.LogSystem.Debug("Data ServiceReqs thuc hien huy yeu cau dich vu null: " + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => listResult), listResult));
