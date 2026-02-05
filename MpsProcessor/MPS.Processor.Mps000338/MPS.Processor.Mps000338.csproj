@@ -91,11 +91,13 @@
     <Reference Include="Inventec.UC.Login">
       <HintPath>..\..\..\..\RELEASE\Inventec.UC\Inventec.UC.Login\Inventec.UC.Login.dll</HintPath>
     </Reference>
-    <Reference Include="MOS.EFMODEL">
+    <Reference Include="MOS.EFMODEL, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\RELEASE\MOS\MOS.EFMODEL.dll</HintPath>
     </Reference>
-    <Reference Include="MOS.Filter">
-      <HintPath>..\..\..\..\..\DkNA\HIS\2.276.0\ReferencedAssemblies\MOS.Filter.dll</HintPath>
+    <Reference Include="MOS.Filter, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\RELEASE\MOS\MOS.Filter.dll</HintPath>
     </Reference>
     <Reference Include="MOS.LibraryHein.Bhyt">
       <HintPath>..\..\..\..\RELEASE\MOS\MOS.LibraryHein.Bhyt.dll</HintPath>
