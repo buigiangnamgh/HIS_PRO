@@ -166,10 +166,17 @@ namespace MPS.Processor.Mps000011
                     SetSingleKey(new KeyValue(Mps000011ExtendSingleKey.OPEN_TIME_SEPARATE_STR, Inventec.Common.DateTime.Convert.TimeNumberToTimeString(rdo.currentTreatment.IN_TIME)));
                     if (rdo.currentTreatment.OUT_TIME.HasValue)
                         SetSingleKey(new KeyValue(Mps000011ExtendSingleKey.CLOSE_TIME_SEPARATE_STR, Inventec.Common.DateTime.Convert.TimeNumberToTimeString(rdo.currentTreatment.OUT_TIME.Value)));
+                    MOS.EFMODEL.DataModels.HIS_TREATMENT_EXT treatmentEx = new HIS_TREATMENT_EXT();
+                    MOS.Filter.HisTreatmentExtFilter filter = new MOS.Filter.HisTreatmentExtFilter();
+                    filter.TREATMENT_ID = rdo.currentTreatment.ID;
+                    var treatmentExList = new Inventec.Common.Adapter.BackendAdapter(new Inventec.Core.CommonParam()).Get<List<MOS.EFMODEL.DataModels.HIS_TREATMENT_EXT>>("api/HisTreatmentExt/Get", HIS.Desktop.ApiConsumer.ApiConsumers.MosConsumer, filter, null);
+                    if (treatmentExList != null && treatmentExList.Count > 0)
+                    {
+                        SetSingleKey(new KeyValue(Mps000011ExtendSingleKey.DAU_HIEU_LAM_SANG, rdo.currentTreatment.CLINICAL_SIGNS));
+                        SetSingleKey(new KeyValue(Mps000011ExtendSingleKey.XET_NGHIEM, treatmentExList.FirstOrDefault().SUBCLINICAL_RESULT));
+                    }
 
-                    SetSingleKey(new KeyValue(Mps000011ExtendSingleKey.MEDI_ORG_TO_NAME, rdo.currentTreatment.MEDI_ORG_NAME));
-                    SetSingleKey(new KeyValue(Mps000011ExtendSingleKey.DAU_HIEU_LAM_SANG, rdo.currentTreatment.CLINICAL_NOTE));
-                    SetSingleKey(new KeyValue(Mps000011ExtendSingleKey.XET_NGHIEM, rdo.currentTreatment.SUBCLINICAL_RESULT));
+                    SetSingleKey(new KeyValue(Mps000011ExtendSingleKey.MEDI_ORG_TO_NAME, rdo.currentTreatment.MEDI_ORG_NAME));                 
                     SetSingleKey(new KeyValue(Mps000011ExtendSingleKey.THUOC_DA_DUNG, rdo.currentTreatment.TREATMENT_METHOD));
                     SetSingleKey(new KeyValue(Mps000011ExtendSingleKey.HUONG_DIEU_TRI, rdo.currentTreatment.TREATMENT_DIRECTION));
                     SetSingleKey(new KeyValue(Mps000011ExtendSingleKey.TINH_TRANG, rdo.currentTreatment.PATIENT_CONDITION));
