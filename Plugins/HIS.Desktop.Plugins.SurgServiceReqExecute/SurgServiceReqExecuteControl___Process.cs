@@ -1,4 +1,21 @@
-﻿using DevExpress.XtraTab;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using DevExpress.XtraTab;
 using HIS.Desktop.ADO;
 using HIS.Desktop.ApiConsumer;
 using HIS.Desktop.Controls.Session;
@@ -77,6 +94,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 {
                     txtMethodCode.Text = this.sereServPTTT.PTTT_METHOD_CODE;
                     cboMethod.EditValue = this.sereServPTTT.PTTT_METHOD_ID;
+
                     txtPtttGroupCode.Text = this.sereServPTTT.PTTT_GROUP_CODE;
                     cbbPtttGroup.EditValue = this.sereServPTTT.PTTT_GROUP_ID;
                     //txtEmotionlessMethod.Text = this.sereServPTTT.EMOTIONLESS_METHOD_CODE;
@@ -101,7 +119,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                         cbbBloodRh.EditValue = bloodRh.ID;
                     else
                         cbbBloodRh.EditValue = null;
-                  
+
                     txtCondition.Text = this.sereServPTTT.PTTT_CONDITION_CODE;
                     cboCondition.EditValue = this.sereServPTTT.PTTT_CONDITION_ID;
                     txtCatastrophe.Text = this.sereServPTTT.PTTT_CATASTROPHE_CODE;
@@ -129,7 +147,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                         long ptttGroupId = 0;
                         long ptttMethodId = 0;
 
-                        var surgMisuService = lstService.FirstOrDefault(o => o.ID == sereServ.SERVICE_ID && (o.SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__PT || o.SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__TT));
+                        var surgMisuService = lstService.FirstOrDefault(o => o.ID == sereServ.SERVICE_ID);
                         if (surgMisuService != null)
                         {
                             if (surgMisuService.PTTT_GROUP_ID.HasValue)
@@ -155,8 +173,16 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                         if (ptttGroupId > 0)
                         {
                             cbbPtttGroup.EditValue = ptttGroupId;
-                            cbbPtttGroup.Enabled = false;
-                            txtPtttGroupCode.Enabled = false;
+                            if (Config.HisConfigKeys.CheckPermissonOption == "2" && this.serviceReq.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__PT)
+                            {
+                                cbbPtttGroup.Enabled = true;
+                                txtPtttGroupCode.Enabled = true;
+                            }
+                            else
+                            {
+                                cbbPtttGroup.Enabled = false;
+                                txtPtttGroupCode.Enabled = false;
+                            }
                         }
                         //else
                         //{
@@ -188,7 +214,29 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 Inventec.Common.Logging.LogSystem.Warn(ex);
             }
         }
-
+        private void SetDefaultCboICD9CmChinh(V_HIS_SERE_SERV_5 sereServ)
+        {
+            try
+            {
+                if (this.serviceReq != null && (this.serviceReq.SERVICE_REQ_STT_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_STT.ID__CXL || this.serviceReq.SERVICE_REQ_STT_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_STT.ID__DXL))
+                {
+                    if (sereServ != null && cboIcdCmName.EditValue == null)
+                    {
+                        var surgService = lstService.FirstOrDefault(o => o.ID == sereServ.SERVICE_ID);
+                        if (surgService != null && surgService.ICD_CM_ID != null)
+                        {
+                            HIS_ICD_CM icdCm = HIS.Desktop.LocalStorage.BackendData.BackendDataWorker.Get<HIS_ICD_CM>().FirstOrDefault(o => o.ID == surgService.ICD_CM_ID);
+                            cboIcdCmName.EditValue = icdCm.ID;
+                            txtIcdCmCode.Text = icdCm.ICD_CM_CODE;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
         private void SetDefaultCboPTTTGroupOnly(V_HIS_SERE_SERV_5 sereServ)
         {
             try
@@ -199,7 +247,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                     {
                         long ptttGroupId = 0;
 
-                        var surgMisuService = lstService.FirstOrDefault(o => o.ID == sereServ.SERVICE_ID && (o.SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__PT || o.SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__TT));
+                        var surgMisuService = lstService.FirstOrDefault(o => o.ID == sereServ.SERVICE_ID);
                         if (surgMisuService != null)
                         {
                             if (surgMisuService.PTTT_GROUP_ID.HasValue)
@@ -208,13 +256,22 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                                 ptttGroupId = ptttGroup.ID;
                                 txtPtttGroupCode.Text = ptttGroup.PTTT_GROUP_CODE;
                             }
+
                         }
 
                         if (ptttGroupId > 0)
                         {
                             cbbPtttGroup.EditValue = ptttGroupId;
-                            cbbPtttGroup.Enabled = false;
-                            txtPtttGroupCode.Enabled = false;
+                            if (Config.HisConfigKeys.CheckPermissonOption == "2" && this.serviceReq.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__PT)
+                            {
+                                cbbPtttGroup.Enabled = true;
+                                txtPtttGroupCode.Enabled = true;
+                            }
+                            else
+                            {
+                                cbbPtttGroup.Enabled = false;
+                                txtPtttGroupCode.Enabled = false;
+                            }
                         }
                         //else
                         //{
@@ -233,8 +290,16 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                                 HIS_PTTT_GROUP ptttGroup = HIS.Desktop.LocalStorage.BackendData.BackendDataWorker.Get<HIS_PTTT_GROUP>().FirstOrDefault(o => o.ID == surgService.PTTT_GROUP_ID);
                                 cbbPtttGroup.EditValue = ptttGroup.ID;
                                 txtPtttGroupCode.Text = ptttGroup.PTTT_GROUP_CODE;
-                                cbbPtttGroup.Enabled = false;
-                                txtPtttGroupCode.Enabled = false;
+                                if (Config.HisConfigKeys.CheckPermissonOption == "2" && this.serviceReq.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__PT)
+                                {
+                                    cbbPtttGroup.Enabled = true;
+                                    txtPtttGroupCode.Enabled = true;
+                                }
+                                else
+                                {
+                                    cbbPtttGroup.Enabled = false;
+                                    txtPtttGroupCode.Enabled = false;
+                                }
                             }
                         }
                     }
@@ -722,6 +787,34 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                     HisSereServPttt.SKIN_SURGERY_DESC_ID = null;
                 }
 
+                if (cboHospSubs.EditValue != null)
+                {
+                    HisSereServPttt.SUBS_DIRECTOR_LOGINNAME = cboHospSubs.EditValue.ToString();
+                    HisSereServPttt.SUBS_DIRECTOR_USERNAME = lstReAcsUserADO.FirstOrDefault(o => o.LOGINNAME == cboHospSubs.EditValue.ToString()).USERNAME;
+                }
+                else
+                {
+                    HisSereServPttt.SUBS_DIRECTOR_LOGINNAME = null;
+                    HisSereServPttt.SUBS_DIRECTOR_USERNAME = null;
+                }
+                if (cboEndDeptSubs.EditValue != null)
+                {
+                    HisSereServPttt.SUBS_HEAD_LOGINNAME = cboEndDeptSubs.EditValue.ToString();
+                    HisSereServPttt.SUBS_HEAD_USERNAME = lstReAcsUserADO.FirstOrDefault(o => o.LOGINNAME == cboEndDeptSubs.EditValue.ToString()).USERNAME;
+                }
+                else
+                {
+                    HisSereServPttt.SUBS_HEAD_LOGINNAME = null;
+                    HisSereServPttt.SUBS_HEAD_USERNAME = null;
+                }
+
+                var RoomV = BackendDataWorker.Get<V_HIS_ROOM>().FirstOrDefault(o => o.ID == Module.RoomId);
+                var Department = HIS.Desktop.LocalStorage.BackendData.BackendDataWorker.Get<MOS.EFMODEL.DataModels.HIS_DEPARTMENT>().FirstOrDefault(o => o.ID == RoomV.DEPARTMENT_ID);
+                HisSereServPttt.HEAD_LOGINNAME = Department.HEAD_LOGINNAME;
+                HisSereServPttt.HEAD_USERNAME = Department.HEAD_USERNAME;
+                var Branch = HIS.Desktop.LocalStorage.BackendData.BackendDataWorker.Get<MOS.EFMODEL.DataModels.HIS_BRANCH>().FirstOrDefault(o => o.ID == Department.BRANCH_ID);
+                HisSereServPttt.DIRECTOR_LOGINNAME = Branch.DIRECTOR_LOGINNAME;
+                HisSereServPttt.DIRECTOR_USERNAME = Branch.DIRECTOR_USERNAME;
                 hisSurgResultSDO.SereServPttt = HisSereServPttt;
             }
             catch (Exception ex)
@@ -857,7 +950,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                         SereServExt.MACHINE_ID = null;
                         SereServExt.MACHINE_CODE = "";
                     }
-
+                    SereServExt.INSTRUCTION_NOTE = !string.IsNullOrEmpty(txtIntructionNote.Text.Trim()) ? txtIntructionNote.Text.Trim() : null;
                     hisSurgResultSDO.SereServExt = SereServExt;
                 }
                 //AutoMapper.Mapper.CreateMap<MOS.EFMODEL.DataModels.V_HIS_SERE_SERV_5, HIS_SERE_SERV>();
@@ -968,8 +1061,10 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                         //xuandv -- reload lai btnKhac
                         this.InitButtonOther();
                         this.InitPrintSurgService();
-                        if (chkSign.Checked && !IsActionOtherButton)
+                        if ((chkSign.Checked && !IsActionOtherButton) || chkXemIn.Checked || chkIn.Checked)
+                        {
                             PrintProcess(PrintTypeSurg.PHIEU_THU_THUAT_PHAU_THUAT);
+                        }
                     }
 
                     #region Show message
@@ -978,7 +1073,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                     #endregion
 
                     #region Process has exception
-                    SessionManager.ProcessTokenLost(param);
+                    SessionManager.ProcessTokenLost(param);  
                     #endregion
                 }
             }
@@ -1107,7 +1202,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                             {
                                 WaitingManager.Hide();
                                 string message = paramCheck.GetMessage();
-                                if (String.IsNullOrWhiteSpace(message) || !message.EndsWith("."))
+                                if (!message.Trim().EndsWith(".")) //String.IsNullOrWhiteSpace(message) ||
                                     message += ".";
                                 if (DevExpress.XtraEditors.XtraMessageBox.Show(String.Format("{0} {1}", message, ResourceMessage.BanCoMuonTiepTucKhong), HIS.Desktop.LibraryMessage.MessageUtil.GetMessage(LibraryMessage.Message.Enum.TieuDeCuaSoThongBaoLaThongBao), MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
                                 {
@@ -1122,7 +1217,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                     .Post<MOS.SDO.HisSurgServiceReqUpdateSDO>("api/HisServiceReq/SurgUpdate", ApiConsumers.MosConsumer, hisSuimResultSDO, param);
                     Inventec.Common.Logging.LogSystem.Debug("SaveSurgServiceReq. 3");
                     WaitingManager.Hide();
-                    if (currentSurgResultSDO != null)
+                    if (currentSurgResultSDO != null && CheckSereServExt())
                     {
                         Inventec.Common.Logging.LogSystem.Debug("SaveSurgServiceReq. 4____" + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => currentSurgResultSDO), currentSurgResultSDO));
                         this.SereServExt = currentSurgResultSDO.SereServExt;
@@ -1162,14 +1257,26 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                         //xuandv -- reload lai btnKhac
                         this.InitButtonOther();
                         this.InitPrintSurgService();
-                        if (chkSign.Checked && !IsActionOtherButton)
+
+                        if ((chkSign.Checked && !IsActionOtherButton) || chkXemIn.Checked || chkIn.Checked)
+                        {
                             PrintProcess(PrintTypeSurg.PHIEU_THU_THUAT_PHAU_THUAT);
+                        }
+
+                        #region Show message
+                        if (!notShowMess)
+                            MessageManager.Show(this.ParentForm, param, success);
+                        #endregion
                     }
 
-                    #region Show message
-                    if (!notShowMess)
-                        MessageManager.Show(this.ParentForm, param, success);
-                    #endregion
+                    if (currentSurgResultSDO == null)
+                    {
+                        #region Show message
+                        if (!notShowMess)
+                            MessageManager.Show(this.ParentForm, param, success);
+                        #endregion
+                    }
+
 
                     #region Process has exception
                     SessionManager.ProcessTokenLost(param);
@@ -1489,6 +1596,8 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 }
                 else
                 {
+                    cboHospSubs.EditValue = null;
+                    cboEndDeptSubs.EditValue = null;
                     cbbBlood.EditValue = null;
                     cbbBloodRh.EditValue = null;
                     cboDeathSurg.EditValue = null;

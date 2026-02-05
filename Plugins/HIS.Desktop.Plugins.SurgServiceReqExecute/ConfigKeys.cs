@@ -1,4 +1,21 @@
-﻿
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 namespace HIS.Desktop.Plugins.SurgServiceReqExecute
 {
     internal class ConfigKeys
@@ -11,6 +28,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
         internal const string RequiredPriorityOption = "HIS.Desktop.Plugins.SurgServiceReqExecute.RequiredPriorityOption";
         internal const string RequiredMannerOption = "HIS.Desktop.Plugins.SurgServiceReqExecute.RequiredMannerOption";
         internal const string RequiredMethodOption = "HIS.Desktop.Plugins.SurgServiceReqExecute.RequiredMethodOption";
+        internal const string RequiredIcdCmOption = "HIS.Desktop.Plugins.SurgServiceReqExecute.RequiredIcdCmOption";
 
         //internal const string HIS_Desktop_Plugins_SurgServiceReqExecute_IsRequiredPtttPriority = "HIS.Desktop.Plugins.SurgServiceReqExecute.IsRequiredPtttPriority";
         //internal const string MannerMethodPriorityIsRequired = "HIS.Desktop.Plugins.SurgServiceReqExecute.MannerMethodPriorityIsRequired";

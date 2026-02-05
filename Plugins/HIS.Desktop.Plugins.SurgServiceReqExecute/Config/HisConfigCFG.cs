@@ -1,5 +1,24 @@
-﻿using HIS.Desktop.LocalStorage.BackendData;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using HIS.Desktop.LocalStorage.BackendData;
 using HIS.Desktop.LocalStorage.HisConfig;
+using HIS.Desktop.LocalStorage.LocalData;
+using Inventec.Common.Logging;
 using MOS.EFMODEL.DataModels;
 using System;
 using System.Collections.Generic;
@@ -11,6 +30,8 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute.Config
 {
     class HisConfigCFG
     {
+        internal static bool IsCheckDepartmentInTimeWhenPresOrAssign;
+        private const string CONFIG_KEY_CheckDepartmentInTimeWhenPresOrAssign = "HIS.Desktop.Plugins.IsCheckDepartmentInTimeWhenPresOrAssign";
         internal static long PatientTypeId__BHYT
         {
             get
@@ -27,26 +48,18 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute.Config
                 return HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>("HIS.Desktop.Plugins.SurgServiceReqExecute.TakeIntrucionTimeByServiceReq");
             }
         }
-
+        internal static string PrescriptionTypeOption
+        {
+            get
+            {
+                return HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>("HIS.Desktop.Plugins.AssignPrescriptionPK.PrescriptionTypeOption");
+            }
+        }
         internal static string REQUIRED_GROUPPTTT_OPTION
         {
             get
             {
                 return HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>("HIS.Desktop.Plugins.SurgServiceReqExecute.RequiredGroupPTTTOption");
-            }
-        }
-        internal static string REQUIRED_CONCLUDE
-        {
-            get
-            {
-                return HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>("HIS.Desktop.Plugins.SurgServiceReqExecute.RequiedConclude");
-            }
-        }
-        internal static string REQUIRED_DIPLOMA
-        {
-            get
-            {
-                return HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>("HIS.Desktop.Plugins.ExecuteRoom.RequiedDiploma");
             }
         }
 
@@ -74,5 +87,47 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute.Config
             }
         }
 
+        internal static string SURG_SERVICE_REQ_EXECUTE_REQUIRE_ICD_OPTION
+        {
+            get
+            {
+                return HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>("HIS.Desktop.Plugins.SurgServiceReqExecute.RequiredIcdCmOption");
+            }
+        }
+
+        internal static string SURG_SERVICE_REQ_EXECUTE_ROLE_USER_OPTION
+        {
+            get
+            {
+                return HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>("HIS.Desktop.Plugins.SurgServiceReqExecute.ExecuteRoleUserOption");
+            }
+        }
+
+
+        internal static void LoadConfig()
+        {
+            try
+            {
+                IsCheckDepartmentInTimeWhenPresOrAssign = GetValue(CONFIG_KEY_CheckDepartmentInTimeWhenPresOrAssign) == GlobalVariables.CommonStringTrue;
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+        }
+        private static string GetValue(string code)
+        {
+            string result = null;
+            try
+            {
+                return HisConfigs.Get<string>(code);
+            }
+            catch (Exception ex)
+            {
+                LogSystem.Warn(ex);
+                result = null;
+            }
+            return result;
+        }
     }
 }

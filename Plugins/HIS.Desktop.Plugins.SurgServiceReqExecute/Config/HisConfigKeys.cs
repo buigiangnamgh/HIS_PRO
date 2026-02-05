@@ -1,4 +1,21 @@
-﻿using System;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,6 +35,8 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute.Config
         internal const string ALLOW_FINISH_WHEN_ACCOUNT_IS_DOCTOR = "MOS.HIS_SERVICE_REQ.ALLOW_FINISH_WHEN_ACCOUNT_IS_DOCTOR";
         internal const string HIS_CONFIG_KEY__CHECK_SIMULTANEITY_OPTION = "MOS.HIS_SERVICE_REQ.CHECK_SIMULTANEITY_OPTION";
 
+        internal const string HIS_CONFIG_KEY__ASSIGN_SERVICE_SIMULTANEITY_OPTION = "MOS.HIS_SERVICE_REQ.ASSIGN_SERVICE_SIMULTANEITY_OPTION";
+
         internal static string CheckPermisson
         {
             get
@@ -34,11 +53,11 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute.Config
             }
         }
 
-        internal static bool CheckPermissonOption
+        internal static string CheckPermissonOption
         {
             get
             {
-                return HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(CHECKING_PERMISSON_OPTION) == "1";
+                return HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(CHECKING_PERMISSON_OPTION);
             }
         }
 
@@ -58,6 +77,13 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute.Config
                 return HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(HIS_CONFIG_KEY__CHECK_SIMULTANEITY_OPTION);
             }
         }
-      
+
+        internal static string ASSIGN_SERVICE_SIMULTANEITY_OPTION
+        {
+            get
+            {
+                return HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(HIS_CONFIG_KEY__ASSIGN_SERVICE_SIMULTANEITY_OPTION);
+            }
+        }
     }
 }

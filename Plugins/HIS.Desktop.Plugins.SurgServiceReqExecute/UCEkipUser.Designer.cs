@@ -1,4 +1,21 @@
-﻿namespace HIS.Desktop.Plugins.SurgServiceReqExecute
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+namespace HIS.Desktop.Plugins.SurgServiceReqExecute
 {
     partial class UCEkipUser
     {
@@ -76,19 +93,16 @@
             this.layoutControl1.Controls.Add(this.grdControlInformationSurg);
             this.layoutControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.layoutControl1.Location = new System.Drawing.Point(0, 0);
-            this.layoutControl1.Margin = new System.Windows.Forms.Padding(4);
             this.layoutControl1.Name = "layoutControl1";
             this.layoutControl1.Root = this.layoutControlGroup1;
-            this.layoutControl1.Size = new System.Drawing.Size(989, 325);
+            this.layoutControl1.Size = new System.Drawing.Size(742, 264);
             this.layoutControl1.TabIndex = 0;
             this.layoutControl1.Text = "layoutControl1";
             // 
             // grdControlInformationSurg
             // 
-            this.grdControlInformationSurg.EmbeddedNavigator.Margin = new System.Windows.Forms.Padding(4);
-            this.grdControlInformationSurg.Location = new System.Drawing.Point(3, 3);
+            this.grdControlInformationSurg.Location = new System.Drawing.Point(2, 2);
             this.grdControlInformationSurg.MainView = this.grdViewInformationSurg;
-            this.grdControlInformationSurg.Margin = new System.Windows.Forms.Padding(4);
             this.grdControlInformationSurg.Name = "grdControlInformationSurg";
             this.grdControlInformationSurg.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
             this.btnAdd,
@@ -99,7 +113,7 @@
             this.GridLookUpEdit_Department,
             this.GridLookupEdit_UserName,
             this.cboPosition});
-            this.grdControlInformationSurg.Size = new System.Drawing.Size(983, 319);
+            this.grdControlInformationSurg.Size = new System.Drawing.Size(738, 260);
             this.grdControlInformationSurg.TabIndex = 4;
             this.grdControlInformationSurg.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.grdViewInformationSurg});
@@ -145,6 +159,7 @@
             this.cboPosition.Name = "cboPosition";
             this.cboPosition.NullText = "";
             this.cboPosition.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.Standard;
+            this.cboPosition.Closed += new DevExpress.XtraEditors.Controls.ClosedEventHandler(this.cboPosition_Closed);
             // 
             // gridColumn2
             // 
@@ -302,7 +317,7 @@
             this.lciInformationSurg});
             this.layoutControlGroup1.Location = new System.Drawing.Point(0, 0);
             this.layoutControlGroup1.Name = "layoutControlGroup1";
-            this.layoutControlGroup1.Size = new System.Drawing.Size(989, 325);
+            this.layoutControlGroup1.Size = new System.Drawing.Size(742, 264);
             this.layoutControlGroup1.TextVisible = false;
             // 
             // lciInformationSurg
@@ -314,7 +329,7 @@
             this.lciInformationSurg.Control = this.grdControlInformationSurg;
             this.lciInformationSurg.Location = new System.Drawing.Point(0, 0);
             this.lciInformationSurg.Name = "lciInformationSurg";
-            this.lciInformationSurg.Size = new System.Drawing.Size(989, 325);
+            this.lciInformationSurg.Size = new System.Drawing.Size(742, 264);
             this.lciInformationSurg.Text = "Kíp thực hiện:";
             this.lciInformationSurg.TextAlignMode = DevExpress.XtraLayout.TextAlignModeItem.CustomSize;
             this.lciInformationSurg.TextSize = new System.Drawing.Size(0, 0);
@@ -323,12 +338,11 @@
             // 
             // UCEkipUser
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.layoutControl1);
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "UCEkipUser";
-            this.Size = new System.Drawing.Size(989, 325);
+            this.Size = new System.Drawing.Size(742, 264);
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).EndInit();
             this.layoutControl1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.grdControlInformationSurg)).EndInit();

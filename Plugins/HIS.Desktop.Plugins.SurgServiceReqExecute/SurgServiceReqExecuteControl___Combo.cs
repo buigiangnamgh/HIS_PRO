@@ -1,7 +1,25 @@
-﻿using DevExpress.XtraEditors;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using DevExpress.XtraEditors;
 using DevExpress.XtraGrid.Columns;
 using HIS.Desktop.ApiConsumer;
 using HIS.Desktop.LocalStorage.BackendData;
+using HIS.Desktop.LocalStorage.LocalData;
 using HIS.Desktop.Plugins.SurgServiceReqExecute.Base;
 using HIS.Desktop.Utility;
 using Inventec.Common.Controls.EditorLoader;
@@ -9,14 +27,16 @@ using Inventec.Core;
 using MOS.EFMODEL.DataModels;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace HIS.Desktop.Plugins.SurgServiceReqExecute
 {
     public partial class SurgServiceReqExecuteControl : UserControlBase
     {
+        private List<AcsUserADO> lstReAcsUserADO;
+
         private void ComboChuanDoanTD(DevExpress.XtraEditors.LookUpEdit cbo)
         {
             try
@@ -52,11 +72,22 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 }
 
                 List<ColumnInfo> columnInfos = new List<ColumnInfo>();
-                columnInfos.Add(new ColumnInfo("PTTT_METHOD_CODE", "", 150, 1));
-                columnInfos.Add(new ColumnInfo("PTTT_METHOD_NAME", "", 250, 2));
+                columnInfos.Add(new ColumnInfo("PTTT_METHOD_CODE", "", 100, 1));
+                columnInfos.Add(new ColumnInfo("PTTT_METHOD_NAME", "", 200, 2));
                 ControlEditorADO controlEditorADO = new ControlEditorADO("PTTT_METHOD_NAME", "ID", columnInfos, false, 250);
                 controlEditorADO.ImmediatePopup = true;
                 ControlEditorLoader.Load(cboMethod, datas, controlEditorADO);
+
+                cboMethod.Properties.PopupFormSize = new System.Drawing.Size(500, 350);
+
+                // Cho phép hàng tự giãn chiều cao theo nội dung
+                cboMethod.Properties.View.OptionsView.RowAutoHeight = true;
+
+                // Không ép cột cố định để nó co giãn theo kéo thả
+                cboMethod.Properties.View.OptionsView.ColumnAutoWidth = false;
+
+                // Nếu muốn nó tự căn chiều rộng theo dữ liệu
+                cboMethod.Properties.BestFitMode = DevExpress.XtraEditors.Controls.BestFitMode.BestFitResizePopup;
 
                 if (this.sereServPTTT != null && this.sereServPTTT.PTTT_METHOD_ID > 0)
                 {
@@ -76,6 +107,8 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
         {
             try
             {
+                Inventec.Desktop.Common.Modules.Module moduleData = GlobalVariables.currentModuleRaws.Where(o => o.ModuleLink == "HIS.Desktop.Plugins.SurgServiceReqExecute").FirstOrDefault();
+                Inventec.Common.Logging.LogSystem.Debug("moduleData" + Inventec.Common.Logging.LogUtil.TraceData("_moduleData", moduleData));
                 List<HIS_PTTT_GROUP> datas = null;
                 if (BackendDataWorker.IsExistsKey<HIS_PTTT_GROUP>())
                 {
@@ -95,12 +128,13 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 ControlEditorADO controlEditorADO = new ControlEditorADO("PTTT_GROUP_NAME", "ID", columnInfos, false, 250);
                 controlEditorADO.ImmediatePopup = true;
                 ControlEditorLoader.Load(cbbPtttGroup, datas, controlEditorADO);
+                cboMethod.Properties.PopupFormSize = new System.Drawing.Size(600, 300);
                 this.SetDefaultCboPTTTGroupOnly(sereServ);
                 if (this.sereServPTTT != null && this.sereServPTTT.PTTT_GROUP_ID != null)
                 {
                     txtPtttGroupCode.Text = this.sereServPTTT.PTTT_GROUP_CODE;
                     cbbPtttGroup.EditValue = this.sereServPTTT.PTTT_GROUP_ID;
-                    cbbPtttGroup.Properties.Buttons[1].Visible = true;
+                    cbbPtttGroup.Properties.Buttons[1].Visible = cbbPtttGroup.Properties.Buttons[1].Enabled ? true : false;
                 }
             }
             catch (Exception ex)
@@ -138,7 +172,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 controlEditorADO.ImmediatePopup = true;
                 ControlEditorLoader.Load(cbbEmotionlessMethod, dataEmotionlessMethod, controlEditorADO);
 
-                if (this.sereServPTTT != null && dataEmotionlessMethod.Exists(o=>o.ID== this.sereServPTTT.EMOTIONLESS_METHOD_ID))
+                if (this.sereServPTTT != null && dataEmotionlessMethod.Exists(o => o.ID == this.sereServPTTT.EMOTIONLESS_METHOD_ID))
                 {
                     cbbEmotionlessMethod.EditValue = this.sereServPTTT.EMOTIONLESS_METHOD_ID;
                 }
@@ -172,28 +206,28 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 ControlEditorADO controlEditorADO = new ControlEditorADO("BLOOD_ABO_CODE", "ID", columnInfos, false, 250);
                 controlEditorADO.ImmediatePopup = true;
                 ControlEditorLoader.Load(cbbBlood, dataBloodAbo, controlEditorADO);
-                    if (!string.IsNullOrEmpty(this.Patient.BLOOD_ABO_CODE))
+                if (!string.IsNullOrEmpty(this.Patient.BLOOD_ABO_CODE))
+                {
+                    var bloodAbo = dataBloodAbo.FirstOrDefault(o => o.BLOOD_ABO_CODE == Patient.BLOOD_ABO_CODE);
+                    if (bloodAbo != null)
                     {
-                        var bloodAbo = dataBloodAbo.FirstOrDefault(o => o.BLOOD_ABO_CODE == Patient.BLOOD_ABO_CODE);
-                        if (bloodAbo != null)
-                        {
-                            cbbBlood.EditValue = bloodAbo.ID;
-                            txtBlood.Text = bloodAbo.BLOOD_ABO_CODE;
-                        }
-                        else
-                        {
-                            cbbBlood.EditValue = null;
-                            txtBlood.Text = null;
-                        }
+                        cbbBlood.EditValue = bloodAbo.ID;
+                        txtBlood.Text = bloodAbo.BLOOD_ABO_CODE;
                     }
                     else
                     {
-                        if (this.sereServPTTT != null)
-                        {
-                            txtBlood.Text = this.sereServPTTT.BLOOD_ABO_CODE;
-                            cbbBlood.EditValue = this.sereServPTTT.BLOOD_ABO_ID;
-                        }
+                        cbbBlood.EditValue = null;
+                        txtBlood.Text = null;
                     }
+                }
+                else
+                {
+                    if (this.sereServPTTT != null)
+                    {
+                        txtBlood.Text = this.sereServPTTT.BLOOD_ABO_CODE;
+                        cbbBlood.EditValue = this.sereServPTTT.BLOOD_ABO_ID;
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -224,28 +258,28 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 controlEditorADO.ImmediatePopup = true;
                 ControlEditorLoader.Load(cbbBloodRh, dataBloodRh, controlEditorADO);
 
-                    if (!string.IsNullOrEmpty(this.Patient.BLOOD_RH_CODE))
+                if (!string.IsNullOrEmpty(this.Patient.BLOOD_RH_CODE))
+                {
+                    var bloodRh = dataBloodRh.FirstOrDefault(o => o.BLOOD_RH_CODE == Patient.BLOOD_RH_CODE);
+                    if (bloodRh != null)
                     {
-                        var bloodRh = dataBloodRh.FirstOrDefault(o => o.BLOOD_RH_CODE == Patient.BLOOD_RH_CODE);
-                        if (bloodRh != null)
-                        {
-                            cbbBloodRh.EditValue = bloodRh.ID;
-                            txtBloodRh.Text = bloodRh.BLOOD_RH_CODE;
-                        }
-                        else
-                        {
-                            cbbBloodRh.EditValue = null;
-                            txtBloodRh.Text = null;
-                        }
+                        cbbBloodRh.EditValue = bloodRh.ID;
+                        txtBloodRh.Text = bloodRh.BLOOD_RH_CODE;
                     }
                     else
                     {
-                        if (this.sereServPTTT != null)
-                        {
-                            txtBloodRh.Text = this.sereServPTTT.BLOOD_RH_CODE;
-                            cbbBloodRh.EditValue = this.sereServPTTT.BLOOD_RH_ID;
-                        }
+                        cbbBloodRh.EditValue = null;
+                        txtBloodRh.Text = null;
                     }
+                }
+                else
+                {
+                    if (this.sereServPTTT != null)
+                    {
+                        txtBloodRh.Text = this.sereServPTTT.BLOOD_RH_CODE;
+                        cbbBloodRh.EditValue = this.sereServPTTT.BLOOD_RH_ID;
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -361,17 +395,93 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
             }
         }
 
+        private async Task LoadDataTocboUser()
+        {
+            try
+            {
+                this.lstReAcsUserADO = new List<AcsUserADO>();
+                var acsUser = HIS.Desktop.LocalStorage.BackendData.BackendDataWorker.Get<MOS.EFMODEL.DataModels.V_HIS_EMPLOYEE>().Where(o => o.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE);
+                foreach (var item in acsUser)
+                {
+                    AcsUserADO ado = new AcsUserADO(item);
+                    ado.DOB_STR = (item.DOB ?? 0).ToString();
+                    ado.DOB_STR = Inventec.Common.DateTime.Convert.TimeNumberToDateString(item.DOB ?? 0);
+                    ado.DIPLOMA = item.DIPLOMA;
+                    ado.DEPARTMENT_CODE = item.DEPARTMENT_CODE;
+                    ado.DEPARTMENT_ID = item.DEPARTMENT_ID;
+                    ado.DEPARTMENT_NAME = item.DEPARTMENT_NAME;
+                    ado.USERNAME = item.TDL_USERNAME;
+                    this.lstReAcsUserADO.Add(ado);
+                }
+                List<ColumnInfo> columnInfos = new List<ColumnInfo>();
+                columnInfos.Add(new ColumnInfo("LOGINNAME", "Tên đăng nhập", 150, 1));
+                columnInfos.Add(new ColumnInfo("USERNAME", "Họ tên", 250, 2));
+                ControlEditorADO controlEditorADO = new ControlEditorADO("USERNAME", "LOGINNAME", columnInfos, true, 400);
+                ControlEditorLoader.Load(cboEndDeptSubs, this.lstReAcsUserADO.Where(o => o.IS_ACTIVE == 1).ToList(), controlEditorADO);
+                cboEndDeptSubs.Properties.ImmediatePopup = true;
+                ControlEditorLoader.Load(cboHospSubs, this.lstReAcsUserADO.Where(o => o.IS_ACTIVE == 1).ToList(), controlEditorADO);
+                cboHospSubs.Properties.ImmediatePopup = true;
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+
+        private void ValidHeadDepartmentAndDirectorBranch()
+        {
+
+            try
+            {
+                var RoomV = BackendDataWorker.Get<V_HIS_ROOM>().FirstOrDefault(o => o.ID == Module.RoomId);
+
+                var Department = HIS.Desktop.LocalStorage.BackendData.BackendDataWorker.Get<MOS.EFMODEL.DataModels.HIS_DEPARTMENT>().FirstOrDefault(o => o.ID == RoomV.DEPARTMENT_ID);
+
+                var empHead = HIS.Desktop.LocalStorage.BackendData.BackendDataWorker.Get<MOS.EFMODEL.DataModels.V_HIS_EMPLOYEE>().FirstOrDefault(o => o.LOGINNAME == Department.HEAD_LOGINNAME);
+                if (empHead != null && empHead.IS_NEED_SIGN_INSTEAD == 1)
+                {
+                    ValidationSigleControl(cboEndDeptSubs);
+                    lciEndDeptSubs.AppearanceItemCaption.ForeColor = Color.Maroon;
+                }
+                else
+                {
+                    dxValidationProvider1.RemoveControlError(cboEndDeptSubs);
+                    dxValidationProvider1.SetValidationRule(cboEndDeptSubs, null);
+                    lciEndDeptSubs.AppearanceItemCaption.ForeColor = Color.Black;
+                }
+
+                var Branch = HIS.Desktop.LocalStorage.BackendData.BackendDataWorker.Get<MOS.EFMODEL.DataModels.HIS_BRANCH>().FirstOrDefault(o => o.ID == Department.BRANCH_ID);
+                var empDirec = HIS.Desktop.LocalStorage.BackendData.BackendDataWorker.Get<MOS.EFMODEL.DataModels.V_HIS_EMPLOYEE>().FirstOrDefault(o => o.LOGINNAME == Branch.DIRECTOR_LOGINNAME);
+                if (empDirec != null && empDirec.IS_NEED_SIGN_INSTEAD == 1)
+                {
+                    ValidationSigleControl(cboHospSubs);
+                    lciHospSubs.AppearanceItemCaption.ForeColor = Color.Maroon;
+                }
+                else
+                {
+                    dxValidationProvider1.RemoveControlError(cboHospSubs);
+                    dxValidationProvider1.SetValidationRule(cboHospSubs, null);
+                    lciHospSubs.AppearanceItemCaption.ForeColor = Color.Black;
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+
+        }
 
         private async Task LoadDataToComboPtttTemp()
         {
             try
             {
                 List<HIS_SERE_SERV_PTTT_TEMP> ptttTemp = new List<HIS_SERE_SERV_PTTT_TEMP>();
-                Action myaction = () => {
+                Action myaction = () =>
+                {
                     var DepartmentID = HIS.Desktop.LocalStorage.LocalData.WorkPlace.WorkPlaceSDO.FirstOrDefault(o => o.RoomId == this.Module.RoomId).DepartmentId;
-                string loginname = Inventec.UC.Login.Base.ClientTokenManagerStore.ClientTokenManager.GetLoginName();
+                    string loginname = Inventec.UC.Login.Base.ClientTokenManagerStore.ClientTokenManager.GetLoginName();
 
-                ptttTemp = BackendDataWorker.Get<HIS_SERE_SERV_PTTT_TEMP>().Where(o => o.IS_ACTIVE == 1 && (o.IS_PUBLIC == 1 || (o.IS_PUBLIC_IN_DEPARTMENT == 1 && o.DEPARTMENT_ID == DepartmentID) || (o.CREATOR == loginname))).ToList();
+                    ptttTemp = BackendDataWorker.Get<HIS_SERE_SERV_PTTT_TEMP>().Where(o => o.IS_ACTIVE == 1 && (o.IS_PUBLIC == 1 || (o.IS_PUBLIC_IN_DEPARTMENT == 1 && o.DEPARTMENT_ID == DepartmentID) || (o.CREATOR == loginname))).ToList();
                 };
                 Task task = new Task(myaction);
                 task.Start();
@@ -441,47 +551,41 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
             List<AcsUserADO> AcsUserADOList = null;
             try
             {
-                List<ACS.EFMODEL.DataModels.ACS_USER> datas = null;
-                List<V_HIS_EMPLOYEE> employeeList = null;
-                CommonParam paramCommon = new CommonParam();
-                dynamic filter = new System.Dynamic.ExpandoObject();
-                datas = HIS.Desktop.LocalStorage.BackendData.BackendDataWorker.Get<ACS.EFMODEL.DataModels.ACS_USER>();
-                if (datas != null) BackendDataWorker.UpdateToRam(typeof(ACS.EFMODEL.DataModels.ACS_USER), datas, long.Parse(DateTime.Now.ToString("yyyyMMddHHmmss")));
-                employeeList = new Inventec.Common.Adapter.BackendAdapter(new CommonParam()).Get<List<MOS.EFMODEL.DataModels.V_HIS_EMPLOYEE>>("api/HisEmployee/GetView", ApiConsumers.MosConsumer, filter, paramCommon);
-                if (employeeList != null) BackendDataWorker.UpdateToRam(typeof(MOS.EFMODEL.DataModels.V_HIS_EMPLOYEE), employeeList, long.Parse(DateTime.Now.ToString("yyyyMMddHHmmss")));
-
-                var departmentList = BackendDataWorker.Get<HIS_DEPARTMENT>().Where(o => o.IS_ACTIVE == 1 && o.IS_CLINICAL == 1).ToList();
-                AcsUserADOList = new List<AcsUserADO>();
-
-                foreach (var item in datas)
+                // Lấy dữ liệu ACS_USER từ RAM
+                var datas = HIS.Desktop.LocalStorage.BackendData.BackendDataWorker.Get<ACS.EFMODEL.DataModels.ACS_USER>();
+                // Lấy dữ liệu EMPLOYEE từ RAM, nếu chưa có thì mới gọi API
+                var employeeList = HIS.Desktop.LocalStorage.BackendData.BackendDataWorker.Get<MOS.EFMODEL.DataModels.V_HIS_EMPLOYEE>();
+                if (employeeList == null || employeeList.Count == 0)
                 {
-                    AcsUserADO user = new AcsUserADO();
-                    user.ID = item.ID;
-                    user.LOGINNAME = item.LOGINNAME;
-                    user.USERNAME = item.USERNAME;
-                    user.MOBILE = item.MOBILE;
-                    user.PASSWORD = item.PASSWORD;
-                    user.IS_ACTIVE = item.IS_ACTIVE;
-
-                    var check = employeeList.FirstOrDefault(o => o.LOGINNAME == item.LOGINNAME);
-                    if (check != null)
-                    {
-
-                        user.DOB = Inventec.Common.DateTime.Convert.TimeNumberToDateString(check.DOB ?? 0);
-
-                        user.DIPLOMA = check.DIPLOMA;
-                        var checkDepartment = departmentList.FirstOrDefault(o => o.ID == check.DEPARTMENT_ID);
-
-                        if (checkDepartment != null)
-                        {
-                            user.DEPARTMENT_NAME = checkDepartment.DEPARTMENT_NAME;
-
-                        }
-                    }
-                    AcsUserADOList.Add(user);
+                    CommonParam paramCommon = new CommonParam();
+                    dynamic filter = new System.Dynamic.ExpandoObject();
+                    employeeList = new Inventec.Common.Adapter.BackendAdapter(paramCommon)
+                        .Get<List<MOS.EFMODEL.DataModels.V_HIS_EMPLOYEE>>("api/HisEmployee/GetView", ApiConsumers.MosConsumer, filter, paramCommon);
+                    if (employeeList != null)
+                        BackendDataWorker.UpdateToRam(typeof(MOS.EFMODEL.DataModels.V_HIS_EMPLOYEE), employeeList, long.Parse(DateTime.Now.ToString("yyyyMMddHHmmss")));
                 }
 
-                AcsUserADOList = AcsUserADOList.OrderBy(o => o.USERNAME).ToList();
+                // Lấy danh sách khoa phòng
+                var departmentList = HIS.Desktop.LocalStorage.BackendData.BackendDataWorker.Get<HIS_DEPARTMENT>()
+                    .Where(o => o.IS_ACTIVE == 1 && o.IS_CLINICAL == 1).ToList();
+
+                // Join dữ liệu
+                AcsUserADOList = (from user in datas
+                                  join emp in employeeList on user.LOGINNAME equals emp.LOGINNAME into empJoin
+                                  from emp in empJoin.DefaultIfEmpty()
+                                  let dept = emp != null ? departmentList.FirstOrDefault(d => d.ID == emp.DEPARTMENT_ID) : null
+                                  select new AcsUserADO
+                                  {
+                                      ID = user.ID,
+                                      LOGINNAME = user.LOGINNAME,
+                                      USERNAME = user.USERNAME,
+                                      MOBILE = user.MOBILE,
+                                      PASSWORD = user.PASSWORD,
+                                      IS_ACTIVE = user.IS_ACTIVE,
+                                      DOB_STR = emp != null ? Inventec.Common.DateTime.Convert.TimeNumberToDateString(emp.DOB ?? 0) : null,
+                                      DIPLOMA = emp != null ? emp.DIPLOMA : null,
+                                      DEPARTMENT_NAME = dept != null ? dept.DEPARTMENT_NAME : null
+                                  }).OrderBy(o => o.USERNAME).ToList();
             }
             catch (Exception ex)
             {
@@ -862,39 +966,12 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                     if (datas != null) BackendDataWorker.UpdateToRam(typeof(HIS_MACHINE), datas, long.Parse(DateTime.Now.ToString("yyyyMMddHHmmss")));
                 }
 
-                datas = datas != null ? datas.Where(p => p.IS_ACTIVE == 1).ToList() : null;
-
-                if (this.sereServ != null && datas != null && datas.Count > 0)
-                {
-                    long execId = this.sereServ.TDL_EXECUTE_ROOM_ID;
-
-                    datas = datas
-                                     .Where(o =>
-                                     {
-                                         if (o.ROOM_IDS == null || o.ROOM_IDS.Trim() == "")
-                                             return false;
-
-                                         var items = o.ROOM_IDS.Split(',');
-
-                                         foreach (var item in items)
-                                         {
-                                             long val;
-                                             if (long.TryParse(item.Trim(), out val))
-                                             {
-                                                 if (val == execId)
-                                                     return true;
-                                             }
-                                         }
-
-                                         return false;
-                                     })
-                                     .ToList();
-                }
+                datas = datas != null ? datas.Where(p => p.IS_ACTIVE == 1 && ("," +p.ROOM_IDS + ",").Contains("," + this.Module.RoomId + ",")).ToList() : null;
 
                 List<ColumnInfo> columnInfos = new List<ColumnInfo>();
-                columnInfos.Add(new ColumnInfo("MACHINE_CODE", "", 100, 1));
-                columnInfos.Add(new ColumnInfo("MACHINE_NAME", "", 550, 2));
-                ControlEditorADO controlEditorADO = new ControlEditorADO("MACHINE_NAME", "ID", columnInfos, false, 650);
+                columnInfos.Add(new ColumnInfo("MACHINE_CODE", "", 150, 1));
+                columnInfos.Add(new ColumnInfo("MACHINE_NAME", "", 250, 2));
+                ControlEditorADO controlEditorADO = new ControlEditorADO("MACHINE_NAME", "ID", columnInfos, false, 250);
                 controlEditorADO.ImmediatePopup = true;
                 ControlEditorLoader.Load(this.cboMachine, datas, controlEditorADO);
             }
@@ -902,6 +979,89 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
             {
                 Inventec.Common.Logging.LogSystem.Warn(ex);
             }
+        }
+
+        private async Task DisplaySubstituteSignerInfo()
+        {
+            try
+            {
+                string directorLoginName = null;
+
+
+                var executeRoom = BackendDataWorker.Get<HIS_EXECUTE_ROOM>()
+        .FirstOrDefault(r => r.ROOM_ID == this.Module.RoomId);
+
+                if (executeRoom != null && !string.IsNullOrEmpty(executeRoom.HOSP_SUBS_DIRECTOR_LOGINNAME))
+                {
+
+                    directorLoginName = executeRoom.HOSP_SUBS_DIRECTOR_LOGINNAME;
+                }
+                else
+                {
+
+                    var room = BackendDataWorker.Get<V_HIS_ROOM>()
+                        .FirstOrDefault(o => o.ID == this.Module.RoomId);
+
+                    if (room != null)
+                    {
+                        var department = BackendDataWorker.Get<HIS_DEPARTMENT>()
+                            .FirstOrDefault(d => d.ID == room.DEPARTMENT_ID);
+
+                        if (department != null && !string.IsNullOrEmpty(department.HOSP_SUBS_DIRECTOR_LOGINNAME))
+                        {
+                            directorLoginName = department.HOSP_SUBS_DIRECTOR_LOGINNAME;
+                        }
+                    }
+
+
+                }
+
+
+                if (!string.IsNullOrEmpty(directorLoginName))
+                {
+                    var user =lstReAcsUserADO!=null? lstReAcsUserADO.FirstOrDefault(u => u.LOGINNAME == directorLoginName):null;
+
+                    if (user != null)
+                    {
+                        cboHospSubs.EditValue = directorLoginName;
+                    }
+                    else
+                    {
+                        cboHospSubs.EditValue = null;
+                    }
+                }
+                else
+                {
+                    cboHospSubs.EditValue = null;
+                }
+
+
+                var endDeptSubsHeadOption = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>("HIS.Desktop.Plugins.TreatmentFinish.EndDepartmentSubsHeadOption");
+
+                if (endDeptSubsHeadOption == "1")
+                {
+
+                    endDeptSubsHeadOption = Inventec.UC.Login.Base.ClientTokenManagerStore.ClientTokenManager.GetLoginName();
+                }
+
+
+                if (!string.IsNullOrEmpty(endDeptSubsHeadOption))
+                {
+                    var user =lstReAcsUserADO!=null? lstReAcsUserADO.FirstOrDefault(u => u.LOGINNAME == endDeptSubsHeadOption):null;
+                    cboEndDeptSubs.EditValue = endDeptSubsHeadOption;
+
+                }
+                else
+                {
+                    cboEndDeptSubs.EditValue = null;
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+
         }
     }
 }

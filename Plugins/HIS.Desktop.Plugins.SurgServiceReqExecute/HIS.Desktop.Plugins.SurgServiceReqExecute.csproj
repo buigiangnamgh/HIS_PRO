@@ -115,6 +115,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.Desktop.Utility.dll</HintPath>
     </Reference>
+    <Reference Include="His.EventLog">
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\His.EventLog.dll</HintPath>
+    </Reference>
     <Reference Include="IMSys.DbConfig.HIS_RS">
       <HintPath>..\..\..\..\..\..\RELEASE\IMSys.DbConfig\IMSys.DbConfig.HIS_RS\IMSys.DbConfig.HIS_RS.dll</HintPath>
     </Reference>
@@ -133,6 +136,9 @@
     <Reference Include="Inventec.Common.DateTime, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Common\Inventec.Common.DateTime\Inventec.Common.DateTime.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.FlexCelPrint">
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.FlexCelPrint.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Common.LocalStorage.SdaConfig">
       <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Common\Inventec.Common.LocalStorage.SdaConfig\Inventec.Common.LocalStorage.SdaConfig.dll</HintPath>
@@ -258,9 +264,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\RELEASE\MPSv2\MPS\MPS.dll</HintPath>
     </Reference>
-    <Reference Include="MPS.Processor.Mps000033.PDO, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\RELEASE\MPSv2\MPS.PDO\MPS.Processor.Mps000033.PDO.dll</HintPath>
+    <Reference Include="MPS.Processor.Mps000033.PDO">
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\MPS.Processor.Mps000033.PDO.dll</HintPath>
     </Reference>
     <Reference Include="MPS.Processor.Mps000035.PDO">
       <HintPath>..\..\..\..\..\..\RELEASE\MPSv2\MPS.PDO\MPS.Processor.Mps000035.PDO.dll</HintPath>
@@ -307,6 +312,9 @@
     <Reference Include="MPS.Processor.Mps000493.PDO">
       <HintPath>..\..\..\..\..\..\RELEASE\MPSv2\MPS.PDO\MPS.Processor.Mps000493.PDO.dll</HintPath>
     </Reference>
+    <Reference Include="MPS.Processor.Mps000495.PDO">
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\MPS.Processor.Mps000495.PDO.dll</HintPath>
+    </Reference>
     <Reference Include="MPS.ProcessorBase, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\RELEASE\MPSv2\MPS.ProcessorBase\MPS.ProcessorBase.dll</HintPath>
@@ -345,9 +353,30 @@
     <Compile Include="Base\ResourceLangManager.cs" />
     <Compile Include="Base\SkinSurgeryDesADO.cs" />
     <Compile Include="Base\ThreadChiDinhDichVuADO.cs" />
+    <Compile Include="ConfigKeys.cs" />
     <Compile Include="Config\ControlStateConstant.cs" />
     <Compile Include="Config\HisConfigCFG.cs" />
     <Compile Include="Config\HisConfigKeys.cs" />
+    <Compile Include="Custom\CustomGridLookUpEdit.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Delegates.cs" />
+    <Compile Include="Delegate\DelegateUC.cs" />
+    <Compile Include="EkipTemp\frmEkipTemp.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EkipTemp\frmEkipTemp.Designer.cs">
+      <DependentUpon>frmEkipTemp.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EkipTemp\frmEkipTemp__Validate.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormSurgAssignAndCopy\frmMultiIntructonTime.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormSurgAssignAndCopy\frmMultiIntructonTime.Designer.cs">
+      <DependentUpon>frmMultiIntructonTime.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormSurgAssignAndCopy\frmSurgAssignAndCopy.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -366,6 +395,13 @@
     <Compile Include="frmMediMate.Designer.cs">
       <DependentUpon>frmMediMate.cs</DependentUpon>
     </Compile>
+    <Compile Include="KeyboardWorker.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PtttMethod\FormEkipUser.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -385,28 +421,15 @@
       <DependentUpon>FormPtttTemp.cs</DependentUpon>
     </Compile>
     <Compile Include="RequestUriStore.cs" />
-    <Compile Include="SurgServiceReqExecuteControl___Plus_ICD.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Custom\CustomGridLookUpEdit.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="EkipTemp\frmEkipTemp.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="EkipTemp\frmEkipTemp.Designer.cs">
-      <DependentUpon>frmEkipTemp.cs</DependentUpon>
-    </Compile>
-    <Compile Include="EkipTemp\frmEkipTemp__Validate.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SurgServiceReqExecuteControl___Thread.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Resources\ResourceLanguageManager.cs" />
     <Compile Include="Resources\ResourceMessage.cs" />
-    <Compile Include="ConfigKeys.cs" />
-    <Compile Include="SurgServiceReqExecuteControl___Shortcut.cs">
+    <Compile Include="SurgServiceReqExecuteControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SurgServiceReqExecuteControl.designer.cs">
+      <DependentUpon>SurgServiceReqExecuteControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SurgServiceReqExecuteControl__Print_Init.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="SurgServiceReqExecuteControl___Combo.cs">
@@ -415,30 +438,22 @@
     <Compile Include="SurgServiceReqExecuteControl___Load.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SurgServiceReqExecuteControl__Print_Init.cs">
+    <Compile Include="SurgServiceReqExecuteControl___Plus_ICD.cs">
       <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="SurgServiceReqExecuteControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="SurgServiceReqExecuteControl.designer.cs">
-      <DependentUpon>SurgServiceReqExecuteControl.cs</DependentUpon>
     </Compile>
     <Compile Include="SurgServiceReqExecuteControl___Process.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="SurgServiceReqExecuteControl___Shortcut.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SurgServiceReqExecuteControl___Thread.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="SurgServiceReqExecuteProcessor.cs" />
-    <Compile Include="Delegate\DelegateUC.cs" />
-    <Compile Include="KeyboardWorker.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SurgServiceReqExecute\ISurgServiceReqExecute.cs" />
     <Compile Include="SurgServiceReqExecute\SurgServiceReqExecuteBehavior.cs" />
     <Compile Include="SurgServiceReqExecute\SurgServiceReqExecuteFactory.cs" />
-    <Compile Include="SurgServiceReqExecute\ISurgServiceReqExecute.cs" />
     <Compile Include="UCEkipUser.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -448,12 +463,12 @@
     <Compile Include="Validate\SurgServiceReqExecuteControl__Validate.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Validate\ValidationRule\ConcludeValidationRule.cs" />
     <Compile Include="Validate\ValidationRule\FinishTimeValidationRule.cs" />
+    <Compile Include="Validate\ValidationRule\ICDValidationRuleControl.cs" />
     <Compile Include="Validate\ValidationRule\InstructionDateCalendarValidationRule.cs" />
     <Compile Include="Validate\ValidationRule\InstructionDateFromValidationRule.cs" />
     <Compile Include="Validate\ValidationRule\StartTimeValidationRule.cs" />
-    <Compile Include="Validate\ValidationRule\ICDValidationRuleControl.cs" />
+    <Compile Include="Validate\ValidationRule\ValidMaxlength.cs" />
     <Compile Include="Validate\ValidationRule\ValidTimeSpan.cs" />
     <Compile Include="ViewImage\FormImageTemp.cs">
       <SubType>Form</SubType>
@@ -471,19 +486,19 @@
   <ItemGroup>
     <EmbeddedResource Include="EkipTemp\frmEkipTemp.resx">
       <DependentUpon>frmEkipTemp.cs</DependentUpon>
-      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormSurgAssignAndCopy\frmMultiIntructonTime.resx">
+      <DependentUpon>frmMultiIntructonTime.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormSurgAssignAndCopy\frmSurgAssignAndCopy.resx">
       <DependentUpon>frmSurgAssignAndCopy.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frmInputDetail.resx">
       <DependentUpon>frmInputDetail.cs</DependentUpon>
-      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="frmMediMate.resx">
       <DependentUpon>frmMediMate.cs</DependentUpon>
     </EmbeddedResource>
-    <None Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -494,32 +509,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="PtttMethod\FormPtttMethod.resx">
       <DependentUpon>FormPtttMethod.cs</DependentUpon>
-      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="PtttTemp\FormPtttTemp.resx">
       <DependentUpon>FormPtttTemp.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Lang.en.resx">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Lang.my.resx">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Lang.vi.resx">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Message.Lang.en.resx">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Message.Lang.my.resx">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Message.Lang.vi.resx">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Lang.en.resx" />
+    <EmbeddedResource Include="Resources\Lang.my.resx" />
+    <EmbeddedResource Include="Resources\Lang.vi.resx" />
+    <EmbeddedResource Include="Resources\Message.Lang.en.resx" />
+    <EmbeddedResource Include="Resources\Message.Lang.my.resx" />
+    <EmbeddedResource Include="Resources\Message.Lang.vi.resx" />
     <EmbeddedResource Include="SurgServiceReqExecuteControl.resx">
       <DependentUpon>SurgServiceReqExecuteControl.cs</DependentUpon>
-      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="UCEkipUser.resx">
       <DependentUpon>UCEkipUser.cs</DependentUpon>
@@ -531,9 +532,7 @@
       <DependentUpon>FormViewImage.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Image\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\..\HIS.Desktop.ADO\HIS.Desktop.ADO.csproj">
       <Project>{808c25cd-0925-417f-bbf9-caf9604da879}</Project>
@@ -593,10 +592,19 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\sound.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\demostration.png" />
+    <Content Include="Image\circle-black.png" />
+    <Content Include="Image\circle-green.png" />
+    <Content Include="Image\circle-red.png" />
+    <Content Include="Image\circle-white.png" />
+    <Content Include="Image\circle-yellow.png" />
+    <Content Include="Image\circleOrgan.png" />
+    <Content Include="Image\Science-Plus2-Math-icon.png" />
+    <Content Include="Resources\circle-16.png" />
+    <Content Include="Resources\circle-16_green.png" />
+    <Content Include="Resources\circle-16_red.png" />
+    <Content Include="Resources\circle-black.png" />
+    <Content Include="Resources\demostration.png" />
+    <Content Include="Resources\sound.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

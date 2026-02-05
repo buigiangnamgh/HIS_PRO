@@ -1,4 +1,21 @@
-﻿using DevExpress.XtraEditors;
+﻿/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using DevExpress.XtraEditors;
 using DevExpress.XtraEditors.DXErrorProvider;
 using HIS.Desktop.Plugins.SurgServiceReqExecute.Validate.ValidationRule;
 using HIS.Desktop.Plugins.SurgServiceReqExecute.Config;
@@ -48,7 +65,6 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                     ValidationLookUpWithTextEdit(cbbPtttGroup, txtPtttGroupCode);
                 }
                 ValidationStartTime();
-                ValidationConclude();
                 ValiVuotQuaKyTu();
                 ValidationFinishTime();
                 if (PriorityIsRequired == 1 || (PriorityIsRequired == 2 && this.serviceReq.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__PT))
@@ -56,14 +72,17 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
 
                 if (MethodIsRequired == 1 || (MethodIsRequired == 2 && this.serviceReq.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__PT))
                     ValidationGridLookUpWithTextEdit(cboMethod, txtMethodCode);
-
+                if (IcdCmIsRequired == 1)
+                {
+                    ValidateTextEdit(txtIcdCmCode);
+                }
+                ValidHeadDepartmentAndDirectorBranch();
             }
             catch (Exception ex)
             {
                 Inventec.Common.Logging.LogSystem.Warn(ex);
             }
         }
-
         private void ValidationGridLookUpWithTextEdit(GridLookUpEdit cboLoaiPT, TextEdit txtLoaiPT)
         {
             try
@@ -81,7 +100,20 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 Inventec.Common.Logging.LogSystem.Warn(ex);
             }
         }
-
+        private void ValidateTextEdit(TextEdit txt)
+        {
+            try
+            {
+                ValidMaxlength valid = new ValidMaxlength();
+                valid.textEdit = txt;
+                valid.ErrorType = ErrorType.Warning;
+                this.dxValidationProvider1.SetValidationRule(txt, valid);
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
         private void ValidationLookUpWithTextEdit(LookUpEdit cbo, TextEdit txt)
         {
             try
@@ -120,29 +152,6 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
             }
         }
 
-        private void ValidationConclude()
-        {
-            try
-            {
-                if (this.sereServ != null)
-                {
-                    var service = BackendDataWorker.Get<V_HIS_SERVICE>().FirstOrDefault(o => o.ID == this.sereServ.SERVICE_ID);
-                    ConcludeValidationRule mainRule = new ConcludeValidationRule();
-                    mainRule.conclude = txtConclude;
-                    mainRule.is_CDHA_Type_Bhyt = service.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__CDHA;
-                    mainRule.requiedConfig = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>("HIS.Desktop.Plugins.SurgServiceReqExecute.RequiedConclude") == "1";
-                    mainRule.ErrorType = ErrorType.Warning;
-                    this.dxValidationProvider1.SetValidationRule(txtConclude, mainRule);
-
-                }
-
-            }
-            catch (Exception ex)
-            {
-                Inventec.Common.Logging.LogSystem.Warn(ex);
-            }
-        }
-
         private void ValidationFinishTime()
         {
             try
@@ -174,7 +183,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 ValidationControlMaxLength(txtMANNER, 3000, mannerRequired);
                 ValidationControlMaxLength(txtConclude, 1000);
                 ValidationControlMaxLength(txtResultNote, 3000);
-                ValidationControlMaxLength(txtDescription, 4000);
+                //ValidationControlMaxLength(txtDescription, 4000);
             }
             catch (Exception)
             {
@@ -190,6 +199,15 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
             validate.maxLength = maxLength;
             validate.IsRequired = isRequired;
             validate.ErrorText = Resources.ResourceMessage.TruongDuLieuVuotQuaKyTu;
+            validate.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Warning;
+            this.dxValidationProvider1.SetValidationRule(control, validate);
+        }
+
+        private void ValidationSigleControl(BaseEdit control)
+        {
+            ControlEditValidationRule validate = new ControlEditValidationRule();
+            validate.editor = control;
+            validate.ErrorText = Resources.ResourceMessage.TruongDuLieuBatBuoc;
             validate.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Warning;
             this.dxValidationProvider1.SetValidationRule(control, validate);
         }

@@ -1,4 +1,21 @@
-﻿namespace HIS.Desktop.Plugins.SurgServiceReqExecute.PtttMethod
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+namespace HIS.Desktop.Plugins.SurgServiceReqExecute.PtttMethod
 {
     partial class FormEkipUser
     {
@@ -83,9 +100,9 @@
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(531, 172);
+            this.btnSave.Location = new System.Drawing.Point(530, 172);
             this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(121, 22);
+            this.btnSave.Size = new System.Drawing.Size(122, 22);
             this.btnSave.StyleController = this.layoutControl1;
             this.btnSave.TabIndex = 6;
             this.btnSave.Text = "Lưu";
@@ -278,9 +295,9 @@
             // layoutControlItem3
             // 
             this.layoutControlItem3.Control = this.btnSave;
-            this.layoutControlItem3.Location = new System.Drawing.Point(529, 170);
+            this.layoutControlItem3.Location = new System.Drawing.Point(528, 170);
             this.layoutControlItem3.Name = "layoutControlItem3";
-            this.layoutControlItem3.Size = new System.Drawing.Size(125, 26);
+            this.layoutControlItem3.Size = new System.Drawing.Size(126, 26);
             this.layoutControlItem3.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem3.TextVisible = false;
             // 
@@ -289,7 +306,7 @@
             this.emptySpaceItem2.AllowHotTrack = false;
             this.emptySpaceItem2.Location = new System.Drawing.Point(0, 170);
             this.emptySpaceItem2.Name = "emptySpaceItem2";
-            this.emptySpaceItem2.Size = new System.Drawing.Size(529, 26);
+            this.emptySpaceItem2.Size = new System.Drawing.Size(528, 26);
             this.emptySpaceItem2.TextSize = new System.Drawing.Size(0, 0);
             // 
             // FormEkipUser

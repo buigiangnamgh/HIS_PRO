@@ -1,8 +1,28 @@
-﻿using AutoMapper;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using AutoMapper;
 using DevExpress.XtraEditors;
 using DevExpress.XtraGrid.Columns;
 using HIS.Desktop.ADO;
+using HIS.Desktop.LocalStorage.BackendData;
+using HIS.Desktop.LocalStorage.LocalData;
 using HIS.Desktop.Plugins.SurgServiceReqExecute.Base;
+using HIS.Desktop.Plugins.SurgServiceReqExecute.Config;
 using HIS.Desktop.Plugins.SurgServiceReqExecute.Resources;
 using HIS.Desktop.Utility;
 using Inventec.Common.Controls.EditorLoader;
@@ -146,116 +166,6 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute.PtttMethod
             }
         }
 
-        //private void gridViewPtttMethod_SelectionChanged(object sender, DevExpress.Data.SelectionChangedEventArgs e)
-        //{
-        //    try
-        //    {
-        //        List<PtttMethodADO> currentSelect = new List<PtttMethodADO>();
-        //        if (gridViewPtttMethod.SelectedRowsCount > 0)
-        //        {
-
-        //            for (int i = 0; i < gridViewPtttMethod.SelectedRowsCount; i++)
-        //            {
-        //                Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => gridViewPtttMethod.GetSelectedRows()[i]), gridViewPtttMethod.GetSelectedRows()[i]));
-
-        //                if (gridViewPtttMethod.GetSelectedRows()[i] >= 0)
-        //                {
-        //                    //PtttMethodADO rowSelect = (PtttMethodADO)gridViewPtttMethod.GetRow(gridViewPtttMethod.GetSelectedRows()[i]);
-        //                    //if (ListSelected != null && ListSelected.Count > 0)
-        //                    //{
-        //                    //    if (ListSelected.Where(o => o.ID == rowSelect.ID).ToList() == null)
-        //                    //    {
-        //                    //        rowSelect.AMOUNT = 1;
-        //                    //        rowSelect.IS_SELECTION = true;
-        //                    //        rowSelect.PTTT_GROUP_NAME = rowSelect.PTTT_GROUP_ID != null ? lstGroup.Where(o => o.ID == rowSelect.PTTT_GROUP_ID).FirstOrDefault().PTTT_GROUP_NAME : "";
-        //                    //        ListSelected.Add(rowSelect);
-        //                    //        currentSelect.Add(rowSelect);
-        //                    //    }
-        //                    //    else if (ListSelected.Where(o => o.ID == rowSelect.ID).ToList() != null && ListSelected.Where(o => o.ID == rowSelect.ID).ToList().Count > 0)
-        //                    //    {
-        //                    //        PtttMethodADO temp = ListSelected.Where(o => o.ID == rowSelect.ID).FirstOrDefault();
-        //                    //        PtttMethodADO data = new PtttMethodADO();
-        //                    //        data.ID = temp.ID;
-        //                    //        data.SERE_SERV_ID = temp.SERE_SERV_ID;
-        //                    //        data.PTTT_METHOD_CODE = temp.PTTT_METHOD_CODE;
-        //                    //        data.PTTT_METHOD_NAME = temp.PTTT_METHOD_NAME;
-        //                    //        data.PTTT_GROUP_ID = temp.PTTT_GROUP_ID;
-        //                    //        data.AMOUNT = temp.AMOUNT;
-        //                    //        data.PTTT_GROUP_NAME = temp.PTTT_GROUP_NAME;
-        //                    //        data.IS_SELECTION = !temp.IS_SELECTION;
-        //                    //        if (!data.IS_SELECTION)
-        //                    //        {
-        //                    //            data.AMOUNT = null;
-        //                    //            data.PTTT_GROUP_NAME = null;
-        //                    //            data.PTTT_GROUP_ID = null;
-        //                    //        }
-        //                    //        ListSelected.Remove(temp);
-        //                    //        ListSelected.Add(data);
-        //                    //        currentSelect.Add(data);
-        //                    //    }
-        //                    //}
-        //                    //else
-        //                    //{
-        //                    //    rowSelect.AMOUNT = 1;
-        //                    //    rowSelect.IS_SELECTION = true;
-        //                    //    rowSelect.PTTT_GROUP_NAME = rowSelect.PTTT_GROUP_ID != null ? lstGroup.Where(o => o.ID == rowSelect.PTTT_GROUP_ID).FirstOrDefault().PTTT_GROUP_NAME : "";
-        //                    //    ListSelected.Add(rowSelect);
-        //                    //    currentSelect.Add(rowSelect);
-        //                    //}
-        //                    PtttMethodADO rowSelect = (PtttMethodADO)gridViewPtttMethod.GetRow(gridViewPtttMethod.GetSelectedRows()[i]);
-        //                    if (!rowSelect.AMOUNT.HasValue)
-        //                    {
-        //                        rowSelect.AMOUNT = 1;
-        //                    }
-        //                    rowSelect.IS_SELECTION = !rowSelect.IS_SELECTION;
-        //                    rowSelect.PTTT_GROUP_NAME = rowSelect.PTTT_GROUP_ID != null ? lstGroup.Where(o => o.ID == rowSelect.PTTT_GROUP_ID).FirstOrDefault().PTTT_GROUP_NAME : "";
-
-        //                    currentSelect.Add(rowSelect);
-
-        //                    Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => ListSelected), ListSelected));
-        //                }
-        //            }
-        //        }
-
-        //        if (currentSelect.Count > 0)
-        //        {
-        //            //cập nhật lại vào danh sách đã chọn
-        //            foreach (var item in currentSelect)
-        //            {
-        //                var update = this.SelectedData.FirstOrDefault(o => o.ID == item.ID);
-        //                if (update != null)
-        //                {
-        //                    update.AMOUNT = item.AMOUNT;
-        //                    update.IS_SELECTION = item.IS_SELECTION;
-        //                    update.PTTT_GROUP_NAME = item.PTTT_GROUP_NAME;
-        //                }
-        //                else
-        //                {
-        //                    this.SelectedData.Add(item);
-        //                }
-        //            }
-        //            gridControlPtttMethod.RefreshDataSource();
-        //        }
-
-
-
-        //        PtttMethodADO removeRow = null;
-        //        if (e.Action == CollectionChangeAction.Remove)
-        //        {
-        //            removeRow = (PtttMethodADO)gridViewPtttMethod.GetRow(e.ControllerRow);
-        //        }
-
-        //        if (removeRow != null)
-        //        {
-        //            this.SelectedData = this.SelectedData.Where(o => o.ID != removeRow.ID).ToList();
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Inventec.Common.Logging.LogSystem.Error(ex);
-        //    }
-        //}
-
         private void txtKeyword_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
             try
@@ -305,15 +215,6 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute.PtttMethod
                     }
                 }
 
-
-                //if (this.SelectedData == null || this.SelectedData.Count <= 0)
-                //{
-                //    if (XtraMessageBox.Show("Bạn chưa chọn phương pháp nào. Nếu tiếp tục các phương pháp cũ sẽ bị mất bạn có đồng ý hay không? ", "Thông báo", MessageBoxButtons.OKCancel) != System.Windows.Forms.DialogResult.OK)
-                //        return;
-
-                //}
-
-
             }
             catch (Exception ex)
             {
@@ -325,58 +226,6 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute.PtttMethod
         {
             btnSearch_Click(null, null);
         }
-
-        //private void gridViewPtttMethod_CellValueChanged(object sender, DevExpress.XtraGrid.Views.Base.CellValueChangedEventArgs e)
-        //{
-        //    try
-        //    {
-        //        if (e.Column.FieldName == gc_amount.FieldName)
-        //        {
-        //            List<HIS_PTTT_GROUP> lstGroup = HIS.Desktop.LocalStorage.BackendData.BackendDataWorker.Get<HIS_PTTT_GROUP>();
-        //            List<PtttMethodADO> currentSelect = new List<PtttMethodADO>();
-        //            if (gridViewPtttMethod.SelectedRowsCount > 0)
-        //            {
-        //                for (int i = 0; i < gridViewPtttMethod.SelectedRowsCount; i++)
-        //                {
-        //                    if (gridViewPtttMethod.GetSelectedRows()[i] >= 0)
-        //                    {
-        //                        PtttMethodADO rowSelect = (PtttMethodADO)gridViewPtttMethod.GetRow(gridViewPtttMethod.GetSelectedRows()[i]);
-        //                        if (!rowSelect.AMOUNT.HasValue)
-        //                        {
-        //                            rowSelect.AMOUNT = 1;
-        //                        }
-        //                        rowSelect.IS_SELECTION = !rowSelect.IS_SELECTION;
-        //                        rowSelect.PTTT_GROUP_NAME = rowSelect.PTTT_GROUP_ID != null ? lstGroup.Where(o => o.ID == rowSelect.PTTT_GROUP_ID).FirstOrDefault().PTTT_GROUP_NAME : "";
-
-        //                        currentSelect.Add(rowSelect);
-        //                    }
-        //                }
-        //            }
-
-
-        //            if (currentSelect.Count > 0)
-        //            {
-        //                //cập nhật lại vào danh sách đã chọn
-        //                foreach (var item in currentSelect)
-        //                {
-        //                    var update = this.SelectedData.FirstOrDefault(o => o.ID == item.ID);
-        //                    if (update != null)
-        //                    {
-        //                        update.AMOUNT = item.AMOUNT;
-        //                        update.IS_SELECTION = item.IS_SELECTION;
-        //                        update.PTTT_METHOD_NAME = item.PTTT_METHOD_NAME;
-        //                    }
-        //                }
-        //            }
-
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Inventec.Common.Logging.LogSystem.Error(ex);
-        //    }
-        //}
-
         private void gridViewPtttMethod_CustomRowCellEdit(object sender, DevExpress.XtraGrid.Views.Grid.CustomRowCellEditEventArgs e)
         {
             try
@@ -696,5 +545,81 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute.PtttMethod
             }
         }
 
+        private void btnAdd_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Inventec.Desktop.Common.Modules.Module moduleData = GlobalVariables.currentModuleRaws.Where(o => o.ModuleLink == "HIS.Desktop.Plugins.HisPtttMethod").FirstOrDefault();
+                if (moduleData == null) throw new NullReferenceException("Not found module by ModuleLink = 'HIS.Desktop.Plugins.HisPtttMethod'");
+                if (moduleData.IsPlugin && moduleData.ExtensionInfo != null)
+                {
+                    moduleData.RoomId = this.CurrentModuleData.RoomId;
+                    moduleData.RoomTypeId = this.CurrentModuleData.RoomTypeId;
+                    List<object> listArgs = new List<object>();
+                    listArgs.Add(moduleData);
+                    if (!String.IsNullOrEmpty(txtKeyword.Text.Trim()))
+                        listArgs.Add(txtKeyword.Text.Trim());
+                    var extenceInstance = PluginInstance.GetPluginInstance(moduleData, listArgs);
+                    if (extenceInstance == null)
+                    {
+                        throw new ArgumentNullException("moduleData is null");
+                    }
+
+                    ((Form)extenceInstance).ShowDialog();
+                }
+                BackendDataWorker.Reset<MOS.EFMODEL.DataModels.HIS_PTTT_METHOD>();
+
+                CreateDataSource();
+                FillDataToGrid();
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+
+        private void txtKeyword_EditValueChanged(object sender, EventArgs e)
+        {
+            try
+            {
+
+                string strValue = (sender as DevExpress.XtraEditors.TextEdit).Text;
+                SearchClick(strValue);
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+        private void SearchClick(string keyword)
+        {
+            try
+            {   
+                List<PtttMethodADO> listResult = null;
+                if (!String.IsNullOrEmpty(keyword.Trim()))
+                {
+                    List<PtttMethodADO> searchResult = new List<PtttMethodADO>();
+
+                    searchResult = lstSelect.Where(o => o.PTTT_METHOD_CODE.ToLower().Contains(keyword.Trim().ToLower()) || (o.PTTT_METHOD_NAME ?? "").ToString().ToLower().Contains(keyword.Trim().ToLower())).Distinct().ToList();
+                    listResult = searchResult;
+                }
+                else
+                {
+                    listResult = lstSelect;
+                }
+                gridControlPtttMethod.BeginUpdate();
+                gridControlPtttMethod.DataSource = listResult;
+                gridControlPtttMethod.EndUpdate();
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+
+        private void bbtnAdd_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
+        {
+            btnAdd_Click(null, null);
+        }
     }
 }

@@ -1,4 +1,24 @@
-﻿using DevExpress.Utils.Menu;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using DevExpress.Utils.Menu;
+using DevExpress.XtraEditors;
+using EMR_MAIN;
+using EMR_MAIN.DATABASE.BenhAn;
 using HIS.Desktop.ADO;
 using HIS.Desktop.ApiConsumer;
 using HIS.Desktop.LocalStorage.BackendData;
@@ -13,6 +33,8 @@ using HIS.Desktop.Plugins.SurgServiceReqExecute.Config;
 using HIS.Desktop.Print;
 using HIS.Desktop.Utility;
 using Inventec.Common.Adapter;
+using Inventec.Common.SignLibrary;
+using Inventec.Common.SignLibrary.ADO;
 using Inventec.Core;
 using Inventec.Desktop.Common.LanguageManager;
 using Inventec.Desktop.Common.Message;
@@ -24,12 +46,11 @@ using MPS.ProcessorBase.Core;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using EMR_MAIN;
-using EMR_MAIN.DATABASE.BenhAn;
 
 namespace HIS.Desktop.Plugins.SurgServiceReqExecute
 {
@@ -60,13 +81,18 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
             BANG_GAY_ME_HOI_SUC,
             PHIEU_PHAU_THUAT,
             PHIEU_THU_THUAT,
-            PHIEU_KIEM_KE_DUNG_CU_VTYT, 
-            PHIEU_KQ_DT_CAN_THIEP_DMV
+            PHIEU_KIEM_KE_DUNG_CU_VTYT,
+            PHIEU_KQ_DT_CAN_THIEP_DMV,
+            PHIEU_VAT_TU_TSD
         }
 
         private async Task InitPrintSurgService()
         {
             DXPopupMenu menu = new DXPopupMenu();
+
+            DXMenuItem menuItem18 = new DXMenuItem("Phiếu vật tư tái sử dụng", new EventHandler(onClickFormType));
+            menuItem18.Tag = PrintTypeSurg.PHIEU_VAT_TU_TSD;
+            menu.Items.Add(menuItem18);
 
             DXMenuItem menuItem17 = new DXMenuItem(Inventec.Common.Resource.Get.Value("SurgServiceReqExecute.Print.PhieuKiemKeDungCuVtyt", ResourceLangManager.LanguageUCSurgServiceReqExecute, LanguageManager.GetCulture()), new EventHandler(onClickFormType));
             menuItem17.Tag = PrintTypeSurg.PHIEU_KIEM_KE_DUNG_CU_VTYT;
@@ -243,79 +269,82 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 switch (printType)
                 {
                     case PrintTypeSurg.PHIEU_GAY_ME_HOI_SUC:
-                    btnPhieuSoKetTruocMoClick();
-                    break;
+                        btnPhieuSoKetTruocMoClick();
+                        break;
                     case PrintTypeSurg.IN_PHIEU_YEU_CAU_PHAU_THUAT:
-                    ProcessPrintMPS000036();
-                    break;
+                        ProcessPrintMPS000036();
+                        break;
                     case PrintTypeSurg.GIAY_CAM_DOAN_CHAP_NHAN_PHAU_THUAT_THU_THUAT_VA_GAY_ME_HOI_SUC:
-                    richEditorMain.RunPrintTemplate(PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__PHIEU_YEU_CAU_IN_GIAY_CAM_DOAN_CHAP_NHAN_pHAU_THUAT_THU_THUAT_VA_GAY_ME_HOI_SUC__MPS000035, DelegateRunPrinterSurg);
-                    break;
+                        richEditorMain.RunPrintTemplate(PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__PHIEU_YEU_CAU_IN_GIAY_CAM_DOAN_CHAP_NHAN_pHAU_THUAT_THU_THUAT_VA_GAY_ME_HOI_SUC__MPS000035, DelegateRunPrinterSurg);
+                        break;
                     case PrintTypeSurg.PHIEU_THU_THUAT_PHAU_THUAT:
-                    richEditorMain.RunPrintTemplate(PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__PHIEU_YEU_CAU_PHAU_THUAT_THU_THUAT__MPS000033, DelegateRunPrinterSurg);
-                    break;
+                        richEditorMain.RunPrintTemplate(PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__PHIEU_YEU_CAU_PHAU_THUAT_THU_THUAT__MPS000033, DelegateRunPrinterSurg);
+                        break;
                     case PrintTypeSurg.CACH_THUC_PHAU_THUAT:
-                    richEditorMain.RunPrintTemplate(PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__CACH_THUC_PHAU_THUAT_THU_THUAT__MPS000097, DelegateRunPrinterSurg);
-                    break;
+                        richEditorMain.RunPrintTemplate(PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__CACH_THUC_PHAU_THUAT_THU_THUAT__MPS000097, DelegateRunPrinterSurg);
+                        break;
                     case PrintTypeSurg.BIEU_MAU_KHAC_PHIEU_PTTT:
-                    LoadBieuMauKhacPhieuPTTT();
-                    break;
+                        LoadBieuMauKhacPhieuPTTT();
+                        break;
                     case PrintTypeSurg.GIAY_CHUNG_NHAN_PT:
-                    LoadGiayChungNhanPhauThuatThuThuat();
-                    break;
+                        LoadGiayChungNhanPhauThuatThuThuat();
+                        break;
                     case PrintTypeSurg.PHIEU_SU_DUNG_VAT_TU_GIA_TRI_LON:
-                    richEditorMain.RunPrintTemplate(PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__PHIEU_SU_DUNG_VAT_TU_GIA_TRI_LON__MPS000311, DelegateRunPrinterSurg);
-                    break;
+                        richEditorMain.RunPrintTemplate(PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__PHIEU_SU_DUNG_VAT_TU_GIA_TRI_LON__MPS000311, DelegateRunPrinterSurg);
+                        break;
                     case PrintTypeSurg.PHIEU_THANH_TOAN_PT_TT:
-                    richEditorMain.RunPrintTemplate(PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__PHIEU_THANH_TOAN_PT_TT__MPS000324, DelegateRunPrinterSurg);
-                    break;
+                        richEditorMain.RunPrintTemplate(PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__PHIEU_THANH_TOAN_PT_TT__MPS000324, DelegateRunPrinterSurg);
+                        break;
                     case PrintTypeSurg.PHIEU_GAY_ME_TRUOC_MO:
-                    LoadBieuMauKhacPhieuGayMeTruocMo();
-                    break;
+                        LoadBieuMauKhacPhieuGayMeTruocMo();
+                        break;
                     case PrintTypeSurg.PHIEU_KE_KHAI_THUOC_VAT_TU:
-                    richEditorMain.RunPrintTemplate(PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__PHIEU_KE_KHAI_THUOC_VATU__MPS000338, DelegateRunPrinterSurg);
-                    break;
+                        richEditorMain.RunPrintTemplate(PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__PHIEU_KE_KHAI_THUOC_VATU__MPS000338, DelegateRunPrinterSurg);
+                        break;
                     case PrintTypeSurg.PHIEU_PHAU_THUAT_DUC_TTT:
-                    richEditorMain.RunPrintTemplate(PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__PT_DUC_TTT__Mps000390, DelegateRunPrinterSurg);
-                    break;
+                        richEditorMain.RunPrintTemplate(PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__PT_DUC_TTT__Mps000390, DelegateRunPrinterSurg);
+                        break;
                     case PrintTypeSurg.PHIEU_PHAU_THUAT_MONG:
-                    richEditorMain.RunPrintTemplate(PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__PT_MONG__Mps000391, DelegateRunPrinterSurg);
-                    break;
+                        richEditorMain.RunPrintTemplate(PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__PT_MONG__Mps000391, DelegateRunPrinterSurg);
+                        break;
                     case PrintTypeSurg.PHIEU_PHAU_THUAT_TAI_TAO_LE_QUAN:
-                    richEditorMain.RunPrintTemplate(PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__PT_TAI_TAO_LE_QUAN__Mps000392, DelegateRunPrinterSurg);
-                    break;
+                        richEditorMain.RunPrintTemplate(PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__PT_TAI_TAO_LE_QUAN__Mps000392, DelegateRunPrinterSurg);
+                        break;
                     case PrintTypeSurg.PHIEU_PHAU_THUAT_SUP_MI:
-                    richEditorMain.RunPrintTemplate(PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__SUP_MI__Mps000393, DelegateRunPrinterSurg);
-                    break;
+                        richEditorMain.RunPrintTemplate(PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__SUP_MI__Mps000393, DelegateRunPrinterSurg);
+                        break;
                     case PrintTypeSurg.PHIEU_PHAU_THUAT_GLOCOM:
-                    richEditorMain.RunPrintTemplate(PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__GLOCOM__Mps000394, DelegateRunPrinterSurg);
-                    break;
+                        richEditorMain.RunPrintTemplate(PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__GLOCOM__Mps000394, DelegateRunPrinterSurg);
+                        break;
                     case PrintTypeSurg.PHIEU_PHAU_THUAT_LASER_YAG:
-                    richEditorMain.RunPrintTemplate(PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__LASER_YAG__Mps000395, DelegateRunPrinterSurg);
-                    break;
+                        richEditorMain.RunPrintTemplate(PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__LASER_YAG__Mps000395, DelegateRunPrinterSurg);
+                        break;
                     case PrintTypeSurg.PHIEU_PHAU_THUAT_MONG_MAT:
-                    richEditorMain.RunPrintTemplate(PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__MONG_MAT__Mps000396, DelegateRunPrinterSurg);
-                    break;
+                        richEditorMain.RunPrintTemplate(PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__MONG_MAT__Mps000396, DelegateRunPrinterSurg);
+                        break;
                     case PrintTypeSurg.BANG_KIEM_AN_TOAN_PHAU_THUAT:
-                    LoadBieuMauKhacBangKiemAnToanPTTT();
-                    break;
+                        LoadBieuMauKhacBangKiemAnToanPTTT();
+                        break;
                     case PrintTypeSurg.BANG_GAY_ME_HOI_SUC:
-                    LoadBangGayMeHoiSuc();
-                    break;
+                        LoadBangGayMeHoiSuc();
+                        break;
                     case PrintTypeSurg.PHIEU_PHAU_THUAT:
-                    LoadPhieuPhauThuat();
-                    break;
+                        LoadPhieuPhauThuat();
+                        break;
                     case PrintTypeSurg.PHIEU_THU_THUAT:
-                    LoadPhieuThuThuat();
-                    break;
+                        LoadPhieuThuThuat();
+                        break;
                     case PrintTypeSurg.PHIEU_KIEM_KE_DUNG_CU_VTYT:
-                    richEditorMain.RunPrintTemplate(PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__DUNG_CU_VTYT__Mps000415, DelegateRunPrinterSurg);
-                    break;
+                        richEditorMain.RunPrintTemplate(PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__DUNG_CU_VTYT__Mps000415, DelegateRunPrinterSurg);
+                        break;
                     case PrintTypeSurg.PHIEU_KQ_DT_CAN_THIEP_DMV:
                         richEditorMain.RunPrintTemplate("Mps000493", DelegateRunPrinterSurg);
                         break;
+                    case PrintTypeSurg.PHIEU_VAT_TU_TSD:
+                        richEditorMain.RunPrintTemplate("Mps000495", DelegateRunPrinterSurg);
+                        break;
                     default:
-                    break;
+                        break;
                 }
             }
             catch (Exception ex)
@@ -647,7 +676,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                     {
                         _snDieuTri = HIS.Common.Treatment.Calculation.DayOfTreatment(vhisTreatment.CLINICAL_IN_TIME, vhisTreatment.OUT_TIME, vhisTreatment.TREATMENT_END_TYPE_ID, vhisTreatment.TREATMENT_RESULT_ID, HIS.Common.Treatment.PatientTypeEnum.TYPE.THU_PHI);
                     }
-                    _ThongTinDieuTri.TinhHinhPTSanKhoa = 2;
+
                     _ThongTinDieuTri.TongSoNgayDieuTri1 = _snDieuTri.ToString();
                     _ThongTinDieuTri.TongSoNgayDieuTri2 = _snDieuTri.ToString();
                     _ThongTinDieuTri.ChanDoan_NoiChuyenDen = vhisTreatment.IN_ICD_NAME;
@@ -668,8 +697,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                         _ThongTinDieuTri.LyDoTaiBienBienChung = null;//TODO
                         var ptttMethod = BackendDataWorker.Get<HIS_PTTT_METHOD>().Where(o => o.ID == sereServPttts[0].PTTT_METHOD_ID).FirstOrDefault();
                         _ThongTinDieuTri.PhuongPhapPhauThuat = ptttMethod != null ? ptttMethod.PTTT_METHOD_NAME : "";
-                        _ThongTinDieuTri.TinhHinhPhauThuat = true;//TODO
-                       
+                        _ThongTinDieuTri.TinhHinhPhauThuat = false;//TODO
                         _ThongTinDieuTri.MaICD_ChanDoanSauPhauThuat = sereServPttts[0].AFTER_PTTT_ICD_CODE;
                         _ThongTinDieuTri.MaICD_ChanDoanTruocPhauThuat = sereServPttts[0].BEFORE_PTTT_ICD_CODE;
                         _ThongTinDieuTri.MaICD_NguyenNhan_BenhChinh_RV = sereServPttts[0].ICD_CODE;
@@ -738,8 +766,6 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                     _HoSo.XQuang = 7;
                     _ThongTinDieuTri.HoSo = _HoSo;
                     #endregion
-                   
-                    
 
                     BenhAnNoiKhoa _BenhAnCommonADO = new BenhAnNoiKhoa();
                     _BenhAnCommonADO.DauSinhTon = new DauSinhTon();
@@ -817,7 +843,6 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                     _ERMADO._HanhChinhBenhNhan_s = _HanhChinhBenhNhan;
                     _ERMADO._ThongTinDieuTri_s = _ThongTinDieuTri;
 
-                  
                     //Gán dữ liệu vào SDO , tương đương với mỗi loại bệnh án
                     //if (_TYpe == LoaiBenhAnEMR.Bong)
                     //{
@@ -870,57 +895,60 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
         private bool DelegateRunPrinterSurg(string printTypeCode, string fileName)
         {
             bool result = false;
-            try
+            try 
             {
                 switch (printTypeCode)
                 {
                     case PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__PHIEU_YEU_CAU_PHAU_THUAT_THU_THUAT__MPS000033:
-                    LoadBieuMauPhieuThuThuatPhauThuat(printTypeCode, fileName, ref result);
-                    break;
+                        LoadBieuMauPhieuThuThuatPhauThuat(printTypeCode, fileName, ref result);
+                        break;
                     case PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__PHIEU_YEU_CAU_IN_GIAY_CAM_DOAN_CHAP_NHAN_pHAU_THUAT_THU_THUAT_VA_GAY_ME_HOI_SUC__MPS000035:
-                    LoadBieuMauPhieuYCInGiayCamDoan(printTypeCode, fileName, ref result);
-                    break;
+                        LoadBieuMauPhieuYCInGiayCamDoan(printTypeCode, fileName, ref result);
+                        break;
                     case PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__CACH_THUC_PHAU_THUAT_THU_THUAT__MPS000097:
-                    LoadBieuMauCachThucPhauThuat(printTypeCode, fileName, ref result);
-                    break;
+                        LoadBieuMauCachThucPhauThuat(printTypeCode, fileName, ref result);
+                        break;
                     case PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__PHIEU_SU_DUNG_VAT_TU_GIA_TRI_LON__MPS000311:
-                    LoadBieuMauPhieuSuDungVatTuGiaTriLon(printTypeCode, fileName, ref result);
-                    break;
+                        LoadBieuMauPhieuSuDungVatTuGiaTriLon(printTypeCode, fileName, ref result);
+                        break;
                     case PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__PHIEU_THANH_TOAN_PT_TT__MPS000324:
-                    Mps000324(printTypeCode, fileName, ref result);
-                    break;
+                        Mps000324(printTypeCode, fileName, ref result);
+                        break;
                     case PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__PHIEU_KE_KHAI_THUOC_VATU__MPS000338:
-                    InPhieuKeKhaiThuocVatTu(printTypeCode, fileName, ref result);
-                    break;
+                        InPhieuKeKhaiThuocVatTu(printTypeCode, fileName, ref result);
+                        break;
                     case PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__PT_DUC_TTT__Mps000390:
-                    InPhieuPTMat(printTypeCode, fileName, ref result);
-                    break;
+                        InPhieuPTMat(printTypeCode, fileName, ref result);
+                        break;
                     case PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__PT_MONG__Mps000391:
-                    InPhieuPTMat(printTypeCode, fileName, ref result);
-                    break;
+                        InPhieuPTMat(printTypeCode, fileName, ref result);
+                        break;
                     case PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__PT_TAI_TAO_LE_QUAN__Mps000392:
-                    InPhieuPTMat(printTypeCode, fileName, ref result);
-                    break;
+                        InPhieuPTMat(printTypeCode, fileName, ref result);
+                        break;
                     case PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__SUP_MI__Mps000393:
-                    InPhieuPTMat(printTypeCode, fileName, ref result);
-                    break;
+                        InPhieuPTMat(printTypeCode, fileName, ref result);
+                        break;
                     case PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__GLOCOM__Mps000394:
-                    InPhieuPTMat(printTypeCode, fileName, ref result);
-                    break;
+                        InPhieuPTMat(printTypeCode, fileName, ref result);
+                        break;
                     case PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__LASER_YAG__Mps000395:
-                    InPhieuPTMat(printTypeCode, fileName, ref result);
-                    break;
+                        InPhieuPTMat(printTypeCode, fileName, ref result);
+                        break;
                     case PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__MONG_MAT__Mps000396:
-                    InPhieuPTMat(printTypeCode, fileName, ref result);
-                    break;
+                        InPhieuPTMat(printTypeCode, fileName, ref result);
+                        break;
                     case PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__DUNG_CU_VTYT__Mps000415:
-                    InPhieuDungCuVtyt(printTypeCode, fileName, ref result);
-                    break;
+                        InPhieuDungCuVtyt(printTypeCode, fileName, ref result);
+                        break;
                     case "Mps000493":
                         InPhieuKQDTDMV(printTypeCode, fileName, ref result);
                         break;
+                    case "Mps000495":
+                        PrintMps495(printTypeCode, fileName, ref result);
+                        break;
                     default:
-                    break;
+                        break;
                 }
             }
             catch (Exception ex)
@@ -930,7 +958,73 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
 
             return result;
         }
+        private void PrintMps495(string printTypeCode, string fileName, ref bool result)
+        {
+            try
+            {
+                HisExpMestMaterialViewFilter filter = new HisExpMestMaterialViewFilter();
+                filter.SERE_SERV_PARENT_ID = sereServ.ID;
+                filter.IS_REUSABLE = true;
+                filter.IS_ACTIVE = IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE;
+                var lstMatePrintMps495 = new Inventec.Common.Adapter.BackendAdapter(new CommonParam()).Get<List<V_HIS_EXP_MEST_MATERIAL>>("api/HisExpMestMaterial/GetView", ApiConsumers.MosConsumer, filter, null);
+                if (lstMatePrintMps495 == null || lstMatePrintMps495.Count == 0)
+                {
+                    XtraMessageBox.Show("Không có vật tư tái sử dụng.");
+                    return;
+                }
+                HisServiceReqViewFilter Srfilter = new HisServiceReqViewFilter();
+                Srfilter.ID = serviceReq.ID;
+                var ViewServiceReq = new Inventec.Common.Adapter.BackendAdapter(new CommonParam()).Get<List<V_HIS_SERVICE_REQ>>("api/HisServiceReq/GetView", ApiConsumers.MosConsumer, Srfilter, null).FirstOrDefault();
+                V_HIS_SERE_SERV SereServ = new V_HIS_SERE_SERV();
+                Inventec.Common.Mapper.DataObjectMapper.Map<V_HIS_SERE_SERV>(SereServ, sereServ);
 
+                MPS.Processor.Mps000495.PDO.Mps000495PDO rdo = new MPS.Processor.Mps000495.PDO.Mps000495PDO(lstMatePrintMps495, SereServ, ViewServiceReq);
+
+                RunPrint(printTypeCode, fileName, rdo, (Inventec.Common.FlexCelPrint.DelegateEventLog)EventLogPrint, result, Module.RoomId);
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+
+        }
+        void RunPrint(string printTypeCode, string fileName, object data, Inventec.Common.FlexCelPrint.DelegateEventLog EventLogPrint, bool result, long? roomId)
+        {
+            try
+            {
+                string printerName = "";
+                if (GlobalVariables.dicPrinter.ContainsKey(printTypeCode))
+                {
+                    printerName = GlobalVariables.dicPrinter[printTypeCode];
+                }
+                if (HIS.Desktop.LocalStorage.ConfigApplication.ConfigApplications.CheDoInChoCacChucNangTrongPhanMem == 2)
+                {
+                    result = MPS.MpsPrinter.Run(new MPS.ProcessorBase.Core.PrintData(printTypeCode, fileName, data, MPS.ProcessorBase.PrintConfig.PreviewType.PrintNow, printerName, EventLogPrint));
+                }
+                else
+                {
+                    Inventec.Common.SignLibrary.ADO.InputADO inputADO = new HIS.Desktop.Plugins.Library.EmrGenerate.EmrGenerateProcessor().GenerateInputADOWithPrintTypeCode(sereServ.TDL_TREATMENT_CODE, printTypeCode, roomId);
+                    result = MPS.MpsPrinter.Run(new MPS.ProcessorBase.Core.PrintData(printTypeCode, fileName, data, MPS.ProcessorBase.PrintConfig.PreviewType.ShowDialog, printerName, EventLogPrint) { EmrInputADO = inputADO });
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+        private void EventLogPrint()
+        {
+            try
+            {
+                string message = "In tem vật tư tái sử dụng. Mã in : Mps000495" + "  TREATMENT_CODE: " + sereServ.TDL_TREATMENT_CODE + "  Thời gian in: " + Inventec.Common.DateTime.Convert.SystemDateTimeToTimeSeparateString(DateTime.Now) + "  Người in: " + Inventec.UC.Login.Base.ClientTokenManagerStore.ClientTokenManager.GetLoginName();
+                His.EventLog.Logger.Log(GlobalVariables.APPLICATION_CODE, Inventec.UC.Login.Base.ClientTokenManagerStore.ClientTokenManager.GetLoginName(), message, Inventec.UC.Login.Base.ClientTokenManagerStore.ClientTokenManager.GetLoginAddress());
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+
+        }
         private void InPhieuKQDTDMV(string printTypeCode, string fileName, ref bool result)
         {
             try
@@ -1231,6 +1325,11 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 ssffilter.SERE_SERV_ID = sereServ.ID;
                 var sereServFiles = new BackendAdapter(param).Get<List<HIS_SERE_SERV_FILE>>("api/HisSereServFile/Get", ApiConsumers.MosConsumer, ssffilter, param);
 
+                HisSesePtttMethodViewFilter filterSese = new HisSesePtttMethodViewFilter();
+                filterSese.TDL_SERE_SERV_ID = sereServ.ID;
+                var sesePtttMethod = new BackendAdapter(param)
+                  .Get<List<MOS.EFMODEL.DataModels.V_HIS_SESE_PTTT_METHOD>>("api/HisSesePtttMethod/GetView", ApiConsumers.MosConsumer, filterSese, param);
+
                 List<string> listManner = new List<string>();
                 HIS_SKIN_SURGERY_DESC skinDesc = null;
                 if (currentHisSurgResultSDO != null && currentHisSurgResultSDO.SurgUpdateSDOs != null && currentHisSurgResultSDO.SurgUpdateSDOs.Count > 0)
@@ -1250,11 +1349,37 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 }
 
                 WaitingManager.Hide();
-                MPS.Processor.Mps000033.PDO.Mps000033PDO rdo = new MPS.Processor.Mps000033.PDO.Mps000033PDO(currentPatient, departmentTran, serviceReq, sereServ, SereServExt, sereServPttts, vhisTreatment, vEkipUsers, null, currentBedLog, lastBedLog, listManner, skinDesc, sereServFiles);
+                MPS.Processor.Mps000033.PDO.Mps000033PDO rdo = new MPS.Processor.Mps000033.PDO.Mps000033PDO(currentPatient, departmentTran, serviceReq, sereServ, SereServExt, sereServPttts, vhisTreatment, vEkipUsers, null, currentBedLog, lastBedLog, listManner, skinDesc, sereServFiles, sesePtttMethod);
                 PrintData PrintData;
-                if (chkSign.Checked && !IsActionPrint)
+                if (chkSign.Checked && !IsActionPrint && chkIn.Checked)
+                {
+                    PrintData = new MPS.ProcessorBase.Core.PrintData(printTypeCode, fileName, rdo, MPS.ProcessorBase.PrintConfig.PreviewType.EmrSignAndPrintNow, "");
+                }
+                else if (chkSign.Checked && !IsActionPrint && chkXemIn.Checked)   
+                {
+                    PrintData = new MPS.ProcessorBase.Core.PrintData(printTypeCode, fileName, rdo, MPS.ProcessorBase.PrintConfig.PreviewType.EmrSignAndPrintPreview, "");
+                    //Inventec.Common.SignLibrary.SignLibraryGUIProcessor.SignAndShowPrintPreview(printTypeCode, fileName, rdo);
+                }
+                else if (chkSign.Checked && IsActionPrint && chkIn.Checked)
+                {
+                    PrintData = new MPS.ProcessorBase.Core.PrintData(printTypeCode, fileName, rdo, MPS.ProcessorBase.PrintConfig.PreviewType.EmrSignAndPrintNow, "");
+                }
+                else if (chkSign.Checked && IsActionPrint && chkXemIn.Checked)
+                {    
+                    PrintData = new MPS.ProcessorBase.Core.PrintData(printTypeCode, fileName, rdo, MPS.ProcessorBase.PrintConfig.PreviewType.EmrSignAndPrintPreview, "");
+                    //Inventec.Common.SignLibrary.SignLibraryGUIProcessor.SignAndShowPrintPreview(printTypeCode, fileName, rdo);
+                }
+                else if (chkSign.Checked && !IsActionPrint)
                 {
                     PrintData = new MPS.ProcessorBase.Core.PrintData(printTypeCode, fileName, rdo, MPS.ProcessorBase.PrintConfig.PreviewType.EmrSignNow, "");
+                }
+                else if (chkXemIn.Checked)
+                {
+                    PrintData = new MPS.ProcessorBase.Core.PrintData(printTypeCode, fileName, rdo, MPS.ProcessorBase.PrintConfig.PreviewType.ShowDialog, "");
+                }
+                else if (chkIn.Checked)
+                {
+                    PrintData = new MPS.ProcessorBase.Core.PrintData(printTypeCode, fileName, rdo, MPS.ProcessorBase.PrintConfig.PreviewType.PrintNow, "");
                 }
                 else if (HIS.Desktop.LocalStorage.LocalData.GlobalVariables.CheDoInChoCacChucNangTrongPhanMem == 2)
                 {
@@ -1264,7 +1389,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 {
                     PrintData = new MPS.ProcessorBase.Core.PrintData(printTypeCode, fileName, rdo, MPS.ProcessorBase.PrintConfig.PreviewType.ShowDialog, "");
                 }
-                
+
                 Inventec.Common.SignLibrary.ADO.InputADO inputADO = new HIS.Desktop.Plugins.Library.EmrGenerate.EmrGenerateProcessor().GenerateInputADOWithPrintTypeCode(vhisTreatment != null ? vhisTreatment.TREATMENT_CODE : "", printTypeCode, Module != null ? Module.RoomId : 0);
                 PrintData.ShowPrintLog = (MPS.ProcessorBase.PrintConfig.DelegateShowPrintLog)CallModuleShowPrintLog;
                 PrintData.EmrInputADO = inputADO;
@@ -1497,70 +1622,70 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 switch (printTypeCode)
                 {
                     case PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__PT_DUC_TTT__Mps000390:
-                    rdo = new MPS.Processor.Mps000390.PDO.Mps000390PDO(
-                    treatment,
-                    sereServPttt,
-                    currentEyeSurgDesc,
-                    SereServExt,
-                    vEkipUsers
-                    );
-                    break;
+                        rdo = new MPS.Processor.Mps000390.PDO.Mps000390PDO(
+                        treatment,
+                        sereServPttt,
+                        currentEyeSurgDesc,
+                        SereServExt,
+                        vEkipUsers
+                        );
+                        break;
                     case PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__PT_MONG__Mps000391:
-                    rdo = new MPS.Processor.Mps000391.PDO.Mps000391PDO(
-                    treatment,
-                    sereServPttt,
-                    currentEyeSurgDesc,
-                    SereServExt,
-                    vEkipUsers
-                    );
-                    break;
+                        rdo = new MPS.Processor.Mps000391.PDO.Mps000391PDO(
+                        treatment,
+                        sereServPttt,
+                        currentEyeSurgDesc,
+                        SereServExt,
+                        vEkipUsers
+                        );
+                        break;
                     case PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__PT_TAI_TAO_LE_QUAN__Mps000392:
-                    rdo = new MPS.Processor.Mps000392.PDO.Mps000392PDO(
-                    treatment,
-                    sereServPttt,
-                    currentEyeSurgDesc,
-                    SereServExt,
-                    vEkipUsers
-                    );
-                    break;
+                        rdo = new MPS.Processor.Mps000392.PDO.Mps000392PDO(
+                        treatment,
+                        sereServPttt,
+                        currentEyeSurgDesc,
+                        SereServExt,
+                        vEkipUsers
+                        );
+                        break;
                     case PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__SUP_MI__Mps000393:
-                    rdo = new MPS.Processor.Mps000393.PDO.Mps000393PDO(
-                    treatment,
-                    sereServPttt,
-                    currentEyeSurgDesc,
-                    SereServExt,
-                    vEkipUsers
-                    );
-                    break;
+                        rdo = new MPS.Processor.Mps000393.PDO.Mps000393PDO(
+                        treatment,
+                        sereServPttt,
+                        currentEyeSurgDesc,
+                        SereServExt,
+                        vEkipUsers
+                        );
+                        break;
                     case PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__GLOCOM__Mps000394:
-                    rdo = new MPS.Processor.Mps000394.PDO.Mps000394PDO(
-                    treatment,
-                    sereServPttt,
-                    currentEyeSurgDesc,
-                    SereServExt,
-                    vEkipUsers
-                    );
-                    break;
+                        rdo = new MPS.Processor.Mps000394.PDO.Mps000394PDO(
+                        treatment,
+                        sereServPttt,
+                        currentEyeSurgDesc,
+                        SereServExt,
+                        vEkipUsers
+                        );
+                        break;
                     case PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__LASER_YAG__Mps000395:
-                    rdo = new MPS.Processor.Mps000395.PDO.Mps000395PDO(
-                    treatment,
-                    sereServPttt,
-                    currentEyeSurgDesc,
-                    SereServExt,
-                    vEkipUsers
-                    );
-                    break;
+                        rdo = new MPS.Processor.Mps000395.PDO.Mps000395PDO(
+                        treatment,
+                        sereServPttt,
+                        currentEyeSurgDesc,
+                        SereServExt,
+                        vEkipUsers
+                        );
+                        break;
                     case PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__MONG_MAT__Mps000396:
-                    rdo = new MPS.Processor.Mps000396.PDO.Mps000396PDO(
-                    treatment,
-                    sereServPttt,
-                    currentEyeSurgDesc,
-                    SereServExt,
-                    vEkipUsers
-                    );
-                    break;
+                        rdo = new MPS.Processor.Mps000396.PDO.Mps000396PDO(
+                        treatment,
+                        sereServPttt,
+                        currentEyeSurgDesc,
+                        SereServExt,
+                        vEkipUsers
+                        );
+                        break;
                     default:
-                    break;
+                        break;
                 }
 
                 Inventec.Common.SignLibrary.ADO.InputADO inputADO = new HIS.Desktop.Plugins.Library.EmrGenerate.EmrGenerateProcessor().GenerateInputADOWithPrintTypeCode(vhisTreatment != null ? vhisTreatment.TREATMENT_CODE : "", printTypeCode, Module != null ? Module.RoomId : 0);

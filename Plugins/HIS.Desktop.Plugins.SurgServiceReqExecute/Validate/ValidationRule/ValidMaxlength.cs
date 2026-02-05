@@ -15,35 +15,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-using Inventec.Desktop.Core;
-using Inventec.Desktop.Core.Actions;
-using Inventec.Desktop.Core.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HIS.Desktop.Plugins.SurgServiceReqExecute
+namespace HIS.Desktop.Plugins.SurgServiceReqExecute.Validate.ValidationRule
 {
-    [KeyboardAction("SaveShortCut", "HIS.Desktop.Plugins.SurgServiceReqExecute.SurgServiceReqExecuteControl", "SaveShortCut", KeyStroke = XKeys.Control | XKeys.S)]
-    [KeyboardAction("FinishShortCut", "HIS.Desktop.Plugins.SurgServiceReqExecute.SurgServiceReqExecuteControl", "FinishShortCut", KeyStroke = XKeys.Control | XKeys.E)]
-    [ExtensionOf(typeof(DesktopToolExtensionPoint))]
-    public sealed class KeyboardWorker : Tool<IDesktopToolContext>
+    class ValidMaxlength : DevExpress.XtraEditors.DXErrorProvider.ValidationRule
     {
-        public KeyboardWorker() : base() { }
-
-        public override IActionSet Actions
+        internal DevExpress.XtraEditors.TextEdit textEdit;
+        public override bool Validate(System.Windows.Forms.Control control, object value)
         {
-            get
+            bool valid = false;
+            try
             {
-                return base.Actions;
+                if (string.IsNullOrEmpty(textEdit.Text.Trim()))
+                {
+                    this.ErrorText = HIS.Desktop.LibraryMessage.MessageUtil.GetMessage(HIS.Desktop.LibraryMessage.Message.Enum.TruongDuLieuBatBuoc);
+                    return valid;
+                }
+                valid = true;
             }
-        }
-
-        public override void Initialize()
-        {
-            base.Initialize();
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+            return valid;
         }
     }
 }

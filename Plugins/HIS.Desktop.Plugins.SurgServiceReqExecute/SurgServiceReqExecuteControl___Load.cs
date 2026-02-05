@@ -1,4 +1,21 @@
-﻿using ACS.EFMODEL.DataModels;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using ACS.EFMODEL.DataModels;
 using AutoMapper;
 using DevExpress.Utils.Menu;
 using DevExpress.XtraEditors;
@@ -26,6 +43,7 @@ using HIS.Desktop.Plugins.SurgServiceReqExecute.Config;
 using ACS.Filter;
 using System.IO;
 using Newtonsoft.Json;
+using System.Drawing;
 
 namespace HIS.Desktop.Plugins.SurgServiceReqExecute
 {
@@ -47,7 +65,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 this.chkServiceCode.Properties.Caption = Inventec.Common.Resource.Get.Value("SurgServiceReqExecuteControl.chkServiceCode.Properties.Caption", Base.ResourceLangManager.LanguageUCSurgServiceReqExecute, LanguageManager.GetCulture());
                 this.btnSavePtttTemp.ToolTip = Inventec.Common.Resource.Get.Value("SurgServiceReqExecuteControl.btnSavePtttTemp.ToolTip", Base.ResourceLangManager.LanguageUCSurgServiceReqExecute, LanguageManager.GetCulture());
                 this.cboPtttTemp.Properties.NullText = Inventec.Common.Resource.Get.Value("SurgServiceReqExecuteControl.cboPtttTemp.Properties.NullText", Base.ResourceLangManager.LanguageUCSurgServiceReqExecute, LanguageManager.GetCulture());
-                this.dropDownButtonGPBL.Text = Inventec.Common.Resource.Get.Value("SurgServiceReqExecuteControl.dropDownButtonGPBL.Text", Base.ResourceLangManager.LanguageUCSurgServiceReqExecute, LanguageManager.GetCulture());
+                //this.dropDownButtonGPBL.Text = Inventec.Common.Resource.Get.Value("SurgServiceReqExecuteControl.dropDownButtonGPBL.Text", Base.ResourceLangManager.LanguageUCSurgServiceReqExecute, LanguageManager.GetCulture());
                 this.dropDownButtonGPBL.ToolTip = Inventec.Common.Resource.Get.Value("SurgServiceReqExecuteControl.dropDownButtonGPBL.ToolTip", Base.ResourceLangManager.LanguageUCSurgServiceReqExecute, LanguageManager.GetCulture());
                 this.gridColumn2.Caption = Inventec.Common.Resource.Get.Value("SurgServiceReqExecuteControl.gridColumn2.Caption", Base.ResourceLangManager.LanguageUCSurgServiceReqExecute, LanguageManager.GetCulture());
                 this.gridColumn8.Caption = Inventec.Common.Resource.Get.Value("SurgServiceReqExecuteControl.gridColumn8.Caption", Base.ResourceLangManager.LanguageUCSurgServiceReqExecute, LanguageManager.GetCulture());
@@ -72,8 +90,8 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 this.grdColNumber.Caption = Inventec.Common.Resource.Get.Value("SurgServiceReqExecuteControl.grdColNumber.Caption", Base.ResourceLangManager.LanguageUCSurgServiceReqExecute, LanguageManager.GetCulture());
                 this.grdColObjectPay.Caption = Inventec.Common.Resource.Get.Value("SurgServiceReqExecuteControl.grdColObjectPay.Caption", Base.ResourceLangManager.LanguageUCSurgServiceReqExecute, LanguageManager.GetCulture());
                 this.gridColumnMaty.Caption = Inventec.Common.Resource.Get.Value("SurgServiceReqExecuteControl.gridColumnMaty.Caption", Base.ResourceLangManager.LanguageUCSurgServiceReqExecute, LanguageManager.GetCulture());
-                this.btnAssignPre.Text = Inventec.Common.Resource.Get.Value("SurgServiceReqExecuteControl.btnAssignPre.Text", Base.ResourceLangManager.LanguageUCSurgServiceReqExecute, LanguageManager.GetCulture());
-                this.ddbPhatSinh.Text = Inventec.Common.Resource.Get.Value("SurgServiceReqExecuteControl.ddbPhatSinh.Text", Base.ResourceLangManager.LanguageUCSurgServiceReqExecute, LanguageManager.GetCulture());
+                //this.btnAssignPre.Text = Inventec.Common.Resource.Get.Value("SurgServiceReqExecuteControl.btnAssignPre.Text", Base.ResourceLangManager.LanguageUCSurgServiceReqExecute, LanguageManager.GetCulture());
+                //this.ddbPhatSinh.Text = Inventec.Common.Resource.Get.Value("SurgServiceReqExecuteControl.ddbPhatSinh.Text", Base.ResourceLangManager.LanguageUCSurgServiceReqExecute, LanguageManager.GetCulture());
                 this.ddbPhatSinh.ToolTip = Inventec.Common.Resource.Get.Value("SurgServiceReqExecuteControl.ddbPhatSinh.ToolTip", Base.ResourceLangManager.LanguageUCSurgServiceReqExecute, LanguageManager.GetCulture());
                 this.layoutControlGroup1.Text = Inventec.Common.Resource.Get.Value("SurgServiceReqExecuteControl.layoutControlGroup1.Text", Base.ResourceLangManager.LanguageUCSurgServiceReqExecute, LanguageManager.GetCulture());
                 this.layoutControlGroup2.Text = Inventec.Common.Resource.Get.Value("SurgServiceReqExecuteControl.layoutControlGroup2.Text", Base.ResourceLangManager.LanguageUCSurgServiceReqExecute, LanguageManager.GetCulture());
@@ -352,6 +370,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
         {
             try
             {
+                Inventec.Common.Logging.LogSystem.Debug("serviceReq.TREATMENT_ID: " + serviceReq.TREATMENT_ID);
                 Inventec.Core.CommonParam param = new Inventec.Core.CommonParam();
                 sereServs = new List<V_HIS_SERE_SERV_5>();
                 HisSereServFilter sereServFilter = new HisSereServFilter();
@@ -604,10 +623,9 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 //nếu có thời gian bắt đầu/kết thúc đã lưu thì load theo thời gian đã lưu
                 CommonParam param = new CommonParam();
                 HisSereServExtFilter ssExtFilter = new HisSereServExtFilter();
+                ssExtFilter.SERE_SERV_IDs = new List<long>() { this.sereServ.ID };
                 if (dicSereServCopy != null && dicSereServCopy.Count > 0 && dicSereServCopy.ContainsKey(sereServ.ID))
-                    ssExtFilter.SERE_SERV_ID = dicSereServCopy[sereServ.ID];
-                else
-                    ssExtFilter.SERE_SERV_ID = this.sereServ.ID;
+                    ssExtFilter.SERE_SERV_IDs.Add(dicSereServCopy[sereServ.ID]);
                 var SereServExts = await new BackendAdapter(param)
                     .GetAsync<List<MOS.EFMODEL.DataModels.HIS_SERE_SERV_EXT>>("api/HisSereServExt/Get", ApiConsumers.MosConsumer, ssExtFilter, param);
                 this.SereServExt = new HIS_SERE_SERV_EXT();//xuandv
@@ -622,18 +640,23 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                         else
                             ListSereServExt.Add(item);
                     }
-
-                    this.SereServExt = SereServExts.FirstOrDefault();
+                    var dfSereServExt = SereServExts.FirstOrDefault(o => o.SERE_SERV_ID == this.sereServ.ID);
+                    if (dicSereServCopy != null && dicSereServCopy.Count > 0 && dicSereServCopy.ContainsKey(sereServ.ID))
+                        this.SereServExt = SereServExts.FirstOrDefault(o => o.SERE_SERV_ID == dicSereServCopy[sereServ.ID]);
+                    else
+                        this.SereServExt = dfSereServExt;
                     txtConclude.Text = this.SereServExt.CONCLUDE;
                     txtDescription.Text = this.SereServExt.DESCRIPTION;
                     txtResultNote.Text = this.SereServExt.NOTE;
-                    txtIntructionNote.Text = this.SereServExt.INSTRUCTION_NOTE;
+                    txtIntructionNote.Text = !string.IsNullOrEmpty(SereServExt.INSTRUCTION_NOTE) || (!txtIntructionNote.Text.Equals(SereServExt.INSTRUCTION_NOTE)) ? this.SereServExt.INSTRUCTION_NOTE : dfSereServExt.INSTRUCTION_NOTE;
                     txtMachineCode.Text = this.SereServExt.MACHINE_CODE;
                     cboMachine.EditValue = this.SereServExt.MACHINE_ID;
                     LogSystem.Info("SereServExts: " + SereServExts.Count);
                     if (this.SereServExt.BEGIN_TIME.HasValue)
                     {
-                        dtStart.DateTime = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(this.SereServExt.BEGIN_TIME.Value) ?? DateTime.Now;
+                        var dt = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(this.SereServExt.BEGIN_TIME.Value) ?? DateTime.Now;
+                        dtStart.DateTime = new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, 0);
+                        //dtStart.DateTime = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(this.SereServExt.BEGIN_TIME.Value) ?? DateTime.Now;
                     }
                     else
                     {
@@ -642,7 +665,9 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
 
                     if (this.SereServExt.END_TIME.HasValue)
                     {
-                        dtFinish.DateTime = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(this.SereServExt.END_TIME.Value) ?? DateTime.Now;
+                        var dt = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(this.SereServExt.END_TIME.Value) ?? DateTime.Now;
+                        dtFinish.DateTime = new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, 0);
+                        //dtFinish.DateTime = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(this.SereServExt.END_TIME.Value) ?? DateTime.Now;
                         dtFinish.Properties.Buttons[1].Visible = true;
                         if (this.SereServExt.BEGIN_TIME.HasValue)
                         {
@@ -786,9 +811,8 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                     {
                         V_HIS_SERE_SERV_PTTT pttt = hisSereServPttt.FirstOrDefault(o => o.ID == item.ID);
                         if (pttt != null)
-                            pttt = item;//gán lại để cập nhật dữ liệu mới nhất
-                        else
-                            hisSereServPttt.Add(item);
+                            hisSereServPttt.Remove(pttt);//gán lại để cập nhật dữ liệu mới nhất
+                        hisSereServPttt.Add(item);
                     }
                 }
                 if (dicSereServCopy != null && dicSereServCopy.Count > 0 && dicSereServCopy.ContainsKey(sereServ.ID))
@@ -808,12 +832,12 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 {
                     this.currentEyeSurgDesc = new HIS_EYE_SURGRY_DESC();
                 }
-                if(this.sereServPTTT != null)
+                if (this.sereServPTTT != null)
                 {
                     HisStentConcludeFilter filter = new HisStentConcludeFilter();
                     filter.SERE_SERV_ID = sereServPTTT.SERE_SERV_ID;
                     stentConcludeSave = new BackendAdapter(param).Get<List<HIS_STENT_CONCLUDE>>("api/HisStentConclude/Get", ApiConsumers.MosConsumer, filter, param);
-                }    
+                }
 
                 if (this.sereServPTTT != null && this.sereServPTTT.SKIN_SURGERY_DESC_ID > 0)
                 {
@@ -853,6 +877,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 GetSereServPtttBySereServId();
                 this.refreshControl();
                 this.SetDefaultCboPTTTGroup(sereServ);
+                this.SetDefaultCboICD9CmChinh(sereServ);
                 this.ComboMethodPTTT();
                 this.ComboPTTTGroup();
                 this.ComboEmotionlessMothod();
@@ -869,6 +894,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 this.ComboHisMachine();
                 this.LoadComboPtttTable(cboBanMo);
                 this.ComboPhuongPhapThucTe();
+                this.DisplaySubstituteSignerInfo();
                 LoadDefaultControl();
                 if (this.sereServPTTT != null && this.sereServPTTT.ID > 0)
                 {
@@ -897,6 +923,16 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                     }
 
                     this.txtMANNER.Text = this.sereServPTTT.MANNER;
+
+                    if (!string.IsNullOrEmpty(sereServPTTT.SUBS_DIRECTOR_LOGINNAME) && lstReAcsUserADO.Exists(o => o.LOGINNAME == sereServPTTT.SUBS_DIRECTOR_LOGINNAME))
+                    {
+                        cboHospSubs.EditValue = sereServPTTT.SUBS_DIRECTOR_LOGINNAME;
+                    }
+
+                    if (!string.IsNullOrEmpty(sereServPTTT.SUBS_HEAD_LOGINNAME) && lstReAcsUserADO.Exists(o => o.LOGINNAME == sereServPTTT.SUBS_HEAD_LOGINNAME))
+                    {
+                        cboEndDeptSubs.EditValue = sereServPTTT.SUBS_HEAD_LOGINNAME;
+                    }
                 }
                 else
                 {
@@ -904,6 +940,10 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                     {
                         this.txtMANNER.Text = this.sereServ.TDL_SERVICE_NAME;
                     }
+                }
+                if (this.sereServ.TDL_HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__CDHA)//neu loai la cdha thi bat buoc nhap ket luan - IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__CDHA
+                {
+                    this.lciKetLuan.AppearanceItemCaption.ForeColor = Color.Maroon;
                 }
             }
             catch (Exception ex)
@@ -1015,6 +1055,16 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                             txtBanMoCode.Text = "";
                             cboBanMo.EditValue = null;
                         }
+                    }
+
+                    if (!string.IsNullOrEmpty(this.sereServPTTT.SUBS_DIRECTOR_LOGINNAME) && lstReAcsUserADO.Exists(o => o.LOGINNAME == this.sereServPTTT.SUBS_DIRECTOR_LOGINNAME))
+                    {
+                        cboHospSubs.EditValue = this.sereServPTTT.SUBS_DIRECTOR_LOGINNAME;
+                    }
+
+                    if (!string.IsNullOrEmpty(this.sereServPTTT.SUBS_HEAD_LOGINNAME) && lstReAcsUserADO.Exists(o => o.LOGINNAME == this.sereServPTTT.SUBS_HEAD_LOGINNAME))
+                    {
+                        cboEndDeptSubs.EditValue = this.sereServPTTT.SUBS_HEAD_LOGINNAME;
                     }
                 }
                 else if (this.sereServ != null && !this.sereServ.EKIP_ID.HasValue)
@@ -1169,6 +1219,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
             {
                 if (this.sereServ != null)
                 {
+                    lblIntructionTime.Text = Inventec.Common.DateTime.Convert.TimeNumberToTimeStringWithoutSecond(sereServ.TDL_INTRUCTION_TIME);
                     CommonParam param = new CommonParam();
                     List<HisEkipUserADO> ekipUserAdos = new List<HisEkipUserADO>();
                     if (this.sereServ.EKIP_ID.HasValue)
@@ -1290,341 +1341,434 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                     {
                         btnSurgAssignAndCopy.Enabled = false;
                     }
-                    if (!HisConfigKeys.CheckPermissonOption)
+                    #region Old
+                    //if (HisConfigKeys.CheckPermissonOption != "1")
+                    //{
+                    //    if ((this.sereServ.IS_NO_EXECUTE != null || this.serviceReq.SERVICE_REQ_STT_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_STT.ID__HT) || this.vhisTreatment.IS_PAUSE == 1)
+                    //    {
+                    //        LogSystem.Debug("SetEnableControl.2");
+                    //        if (this.isAllowEditInfo)
+                    //        {
+                    //            LogSystem.Debug("SetEnableControl.3");
+                    //            btnSwapService.Enabled = false;
+                    //            dropDownButtonGPBL.Enabled = false;
+                    //            btnDepartmentTran.Enabled = false;
+                    //        }
+                    //        else
+                    //        {
+                    //            LogSystem.Debug("SetEnableControl.4");
+
+                    //            ReadOnlyICD(true, txtIcdCode1, txtIcd1, cboIcd1, chkIcd1);
+                    //            ReadOnlyICD(true, txtIcdCode2, txtIcd2, cboIcd2, chkIcd2);
+                    //            ReadOnlyICD(true, txtIcdCode3, txtIcd3, cboIcd3, chkIcd3);
+                    //            ReadOnlyICD(true, txtIcdCmCode, txtIcdCmName, cboIcdCmName, chkIcdCm);
+
+                    //            txtIcdCmSubCode.ReadOnly = true;
+                    //            txtIcdCmSubName.ReadOnly = true;
+                    //            txtLoaiPT.ReadOnly = true;
+                    //            cboLoaiPT.ReadOnly = true;
+                    //            txtBanMoCode.ReadOnly = true;
+                    //            cboBanMo.ReadOnly = true;
+                    //            txtPhuongPhap2.ReadOnly = true;
+                    //            cboPhuongPhap2.ReadOnly = true;
+                    //            txtPhuongPhapTT.ReadOnly = true;
+                    //            cboPhuongPhapThucTe.ReadOnly = true;
+                    //            txtKQVoCam.ReadOnly = true;
+                    //            cboKQVoCam.ReadOnly = true;
+                    //            txtMachineCode.ReadOnly = true;
+                    //            cboMachine.ReadOnly = true;
+                    //            txtMoKTCao.ReadOnly = true;
+                    //            cboMoKTCao.ReadOnly = true;
+
+                    //            cboEkipTemp.ReadOnly = true;
+                    //            txtIcdExtraCode.ReadOnly = true;
+                    //            txtIcdText.ReadOnly = true;
+                    //            txtPtttGroupCode.ReadOnly = true;
+                    //            cbbPtttGroup.ReadOnly = true;
+                    //            txtMethodCode.ReadOnly = true;
+                    //            cboMethod.ReadOnly = true;
+                    //            txtBlood.ReadOnly = true;
+                    //            cbbBlood.ReadOnly = true;
+                    //            txtEmotionlessMethod.ReadOnly = true;
+                    //            cbbEmotionlessMethod.ReadOnly = true;
+                    //            txtCondition.ReadOnly = true;
+                    //            cboCondition.ReadOnly = true;
+                    //            txtBloodRh.ReadOnly = true;
+                    //            cbbBloodRh.ReadOnly = true;
+                    //            txtCatastrophe.ReadOnly = true;
+                    //            cboCatastrophe.ReadOnly = true;
+                    //            txtDeathSurg.ReadOnly = true;
+                    //            cboDeathSurg.ReadOnly = true;
+                    //            dtStart.ReadOnly = true;
+                    //            dtFinish.ReadOnly = true;
+                    //            txtMANNER.ReadOnly = true;
+                    //            txtDescription.ReadOnly = true;
+                    //            txtConclude.ReadOnly = true;
+                    //            txtResultNote.ReadOnly = true;
+                    //            cbbPtttGroup.Properties.Buttons[0].Enabled = false;
+                    //            dtStart.Properties.Buttons[0].Enabled = false;
+                    //            dtFinish.Properties.Buttons[0].Enabled = false;
+                    //            cbbPtttGroup.Properties.Buttons[1].Enabled = false;
+                    //            dtStart.Properties.Buttons[1].Enabled = false;
+                    //            dtFinish.Properties.Buttons[1].Enabled = false;
+                    //            ucEkip.SetEnableControl(true);
+                    //            //lciInformationSurg.Enabled = false;                          
+                    //            //btnSwapService.Enabled = false;
+                    //            //btnTrackingCreate.Enabled = false;
+                    //            //layoutControlItem18.Enabled = false;
+                    //            //layoutControlItem22.Enabled = false;
+                    //            //layoutControlItem24.Enabled = false;
+                    //            //layoutControlItem16.Enabled = false;
+                    //            //layoutControlItem20.Enabled = false;
+                    //            //layoutControlItem26.Enabled = false;
+                    //            //layoutControlItem12.Enabled = false;
+
+                    //            btnSave.Enabled = false;
+                    //            btnFinish.Enabled = false;
+                    //            btnSaveEkipTemp.Enabled = false;
+                    //        }
+
+                    //        ddbPhatSinh.Enabled = false;
+                    //        btnKTDT.Enabled = false;
+                    //        btnAssignBlood.Enabled = false;
+                    //        btnTuTruc.Enabled = false;
+                    //        btnAssignPre.Enabled = false;
+                    //    }
+                    //    else if (!String.IsNullOrWhiteSpace(Config.HisConfigKeys.CheckPermisson) && Config.HisConfigKeys.CheckPermisson.Contains("1"))
+                    //    {
+                    //        btnKTDT.Enabled = false;
+                    //        btnAssignBlood.Enabled = true;
+                    //        btnTuTruc.Enabled = true;
+                    //        //btnSwapService.Enabled = false;
+                    //        ddbPhatSinh.Enabled = true;
+                    //        btnAssignPre.Enabled = true;
+                    //        btnSave.Enabled = true;
+                    //        btnFinish.Enabled = !(HisConfigKeys.allowFinishWhenAccountIsDoctor == "1" && BackendDataWorker.Get<HIS_EMPLOYEE>().Where(o => o.LOGINNAME == Inventec.UC.Login.Base.ClientTokenManagerStore.ClientTokenManager.GetLoginName()).FirstOrDefault().IS_DOCTOR != 1);
+                    //        //btnTrackingCreate.Enabled = true;
+
+                    //        txtPtttGroupCode.ReadOnly = false;
+                    //        cbbPtttGroup.ReadOnly = false;
+                    //        cbbPtttGroup.Properties.Buttons[0].Enabled = true;
+                    //        cbbPtttGroup.Properties.Buttons[1].Enabled = true;
+
+                    //        //#17292
+                    //        bool isDoctor = false;
+                    //        var _employee = HIS.Desktop.LocalStorage.BackendData.BackendDataWorker.Get<MOS.EFMODEL.DataModels.HIS_EMPLOYEE>().FirstOrDefault(p => p.LOGINNAME == Inventec.UC.Login.Base.ClientTokenManagerStore.ClientTokenManager.GetLoginName());
+                    //        if (_employee != null && _employee.IS_DOCTOR == (short)1)
+                    //        {
+                    //            isDoctor = true;
+                    //        }
+
+                    //        if (isDoctor)
+                    //        {
+                    //            txtMANNER.ReadOnly = false;
+                    //            txtDescription.ReadOnly = false;
+                    //            txtConclude.ReadOnly = false;
+                    //            txtResultNote.ReadOnly = false;
+
+                    //            txtMachineCode.ReadOnly = true;
+                    //            cboMachine.ReadOnly = true;
+                    //            txtLoaiPT.ReadOnly = true;
+                    //            cboLoaiPT.ReadOnly = true;
+                    //            txtBanMoCode.ReadOnly = true;
+                    //            cboBanMo.ReadOnly = true;
+                    //            txtPhuongPhap2.ReadOnly = true;
+                    //            cboPhuongPhap2.ReadOnly = true;
+                    //            cboPhuongPhapThucTe.ReadOnly = true;
+                    //            txtPhuongPhapTT.ReadOnly = true;
+                    //            txtKQVoCam.ReadOnly = true;
+                    //            cboKQVoCam.ReadOnly = true;
+                    //            txtMoKTCao.ReadOnly = true;
+                    //            cboMoKTCao.ReadOnly = true;
+
+                    //            txtIcdExtraCode.ReadOnly = true;
+                    //            txtIcdText.ReadOnly = true;
+                    //            txtMethodCode.ReadOnly = true;
+                    //            cboMethod.ReadOnly = true;
+                    //            txtBlood.ReadOnly = true;
+                    //            cbbBlood.ReadOnly = true;
+                    //            txtEmotionlessMethod.ReadOnly = true;
+                    //            cbbEmotionlessMethod.ReadOnly = true;
+                    //            txtCondition.ReadOnly = true;
+                    //            cboCondition.ReadOnly = true;
+                    //            txtBloodRh.ReadOnly = true;
+                    //            cbbBloodRh.ReadOnly = true;
+                    //            txtCatastrophe.ReadOnly = true;
+                    //            cboCatastrophe.ReadOnly = true;
+                    //            txtDeathSurg.ReadOnly = true;
+                    //            cboDeathSurg.ReadOnly = true;
+                    //            dtStart.ReadOnly = true;
+                    //            dtFinish.ReadOnly = true;
+                    //            cboEkipTemp.ReadOnly = true;
+                    //            btnSaveEkipTemp.Enabled = false;
+                    //            dtStart.Properties.Buttons[0].Enabled = false;
+                    //            dtFinish.Properties.Buttons[0].Enabled = false;
+                    //            dtStart.Properties.Buttons[1].Enabled = false;
+                    //            dtFinish.Properties.Buttons[1].Enabled = false;
+                    //            ucEkip.SetEnableControl(true);
+
+                    //            ReadOnlyICD(true, txtIcdCode1, txtIcd1, cboIcd1, chkIcd1);
+                    //            ReadOnlyICD(true, txtIcdCode2, txtIcd2, cboIcd2, chkIcd2);
+                    //            ReadOnlyICD(true, txtIcdCode3, txtIcd3, cboIcd3, chkIcd3);
+                    //            ReadOnlyICD(true, txtIcdCmCode, txtIcdCmName, cboIcdCmName, chkIcdCm);
+
+                    //            txtIcdCmSubCode.ReadOnly = true;
+                    //            txtIcdCmSubName.ReadOnly = true;
+                    //            txtLoaiPT.ReadOnly = true;
+                    //            cboLoaiPT.ReadOnly = true;
+                    //            txtBanMoCode.ReadOnly = true;
+                    //            cboBanMo.ReadOnly = true;
+                    //            txtPhuongPhap2.ReadOnly = true;
+                    //            cboPhuongPhap2.ReadOnly = true;
+                    //            txtPhuongPhapTT.ReadOnly = true;
+                    //            cboPhuongPhapThucTe.ReadOnly = true;
+                    //            txtKQVoCam.ReadOnly = true;
+                    //            cboKQVoCam.ReadOnly = true;
+                    //            txtMachineCode.ReadOnly = true;
+                    //            cboMachine.ReadOnly = true;
+                    //            txtMoKTCao.ReadOnly = true;
+                    //            cboMoKTCao.ReadOnly = true;
+                    //        }
+                    //        else
+                    //        {
+                    //            txtMANNER.ReadOnly = true;
+                    //            txtDescription.ReadOnly = true;
+                    //            txtConclude.ReadOnly = true;
+                    //            txtResultNote.ReadOnly = true;
+
+                    //            txtMachineCode.ReadOnly = false;
+                    //            cboMachine.ReadOnly = false;
+                    //            txtLoaiPT.ReadOnly = false;
+                    //            cboLoaiPT.ReadOnly = false;
+                    //            txtBanMoCode.ReadOnly = false;
+                    //            cboBanMo.ReadOnly = false;
+                    //            txtPhuongPhap2.ReadOnly = false;
+                    //            cboPhuongPhap2.ReadOnly = false;
+                    //            txtPhuongPhapTT.ReadOnly = false;
+                    //            cboPhuongPhapThucTe.ReadOnly = false;
+                    //            txtKQVoCam.ReadOnly = false;
+                    //            cboKQVoCam.ReadOnly = false;
+                    //            txtMoKTCao.ReadOnly = false;
+                    //            cboMoKTCao.ReadOnly = false;
+
+                    //            txtIcdExtraCode.ReadOnly = false;
+                    //            txtIcdText.ReadOnly = false;
+                    //            txtMethodCode.ReadOnly = false;
+                    //            cboMethod.ReadOnly = false;
+                    //            txtBlood.ReadOnly = false;
+                    //            cbbBlood.ReadOnly = false;
+                    //            txtEmotionlessMethod.ReadOnly = false;
+                    //            cbbEmotionlessMethod.ReadOnly = false;
+                    //            txtCondition.ReadOnly = false;
+                    //            cboCondition.ReadOnly = false;
+                    //            txtBloodRh.ReadOnly = false;
+                    //            cbbBloodRh.ReadOnly = false;
+                    //            txtCatastrophe.ReadOnly = false;
+                    //            cboCatastrophe.ReadOnly = false;
+                    //            txtDeathSurg.ReadOnly = false;
+                    //            cboDeathSurg.ReadOnly = false;
+                    //            dtStart.ReadOnly = false;
+                    //            dtFinish.ReadOnly = false;
+                    //            cboEkipTemp.ReadOnly = false;
+                    //            btnSaveEkipTemp.Enabled = true;
+                    //            dtStart.Properties.Buttons[0].Enabled = true;
+                    //            dtFinish.Properties.Buttons[0].Enabled = true;
+                    //            dtStart.Properties.Buttons[1].Enabled = true;
+                    //            dtFinish.Properties.Buttons[1].Enabled = true;
+                    //            ucEkip.SetEnableControl(false);
+
+                    //            ReadOnlyICD(false, txtIcdCode1, txtIcd1, cboIcd1, chkIcd1);
+                    //            ReadOnlyICD(false, txtIcdCode2, txtIcd2, cboIcd2, chkIcd2);
+                    //            ReadOnlyICD(false, txtIcdCode3, txtIcd3, cboIcd3, chkIcd3);
+                    //            ReadOnlyICD(false, txtIcdCmCode, txtIcdCmName, cboIcdCmName, chkIcdCm);
+
+                    //            txtIcdCmSubCode.ReadOnly = false;
+                    //            txtIcdCmSubName.ReadOnly = false;
+                    //            txtLoaiPT.ReadOnly = false;
+                    //            cboLoaiPT.ReadOnly = false;
+                    //            txtBanMoCode.ReadOnly = false;
+                    //            cboBanMo.ReadOnly = false;
+                    //            txtPhuongPhap2.ReadOnly = false;
+                    //            cboPhuongPhap2.ReadOnly = false;
+                    //            txtPhuongPhapTT.ReadOnly = false;
+                    //            cboPhuongPhapThucTe.ReadOnly = false;
+                    //            txtKQVoCam.ReadOnly = false;
+                    //            cboKQVoCam.ReadOnly = false;
+                    //            txtMachineCode.ReadOnly = false;
+                    //            cboMachine.ReadOnly = false;
+                    //            txtMoKTCao.ReadOnly = false;
+                    //            cboMoKTCao.ReadOnly = false;
+                    //        }
+                    //    }
+                    //    else
+                    //    {
+                    //        txtIcdExtraCode.ReadOnly = false;
+                    //        txtIcdText.ReadOnly = false;
+                    //        txtPtttGroupCode.ReadOnly = false;
+                    //        cbbPtttGroup.ReadOnly = false;
+                    //        txtMethodCode.ReadOnly = false;
+                    //        cboMethod.ReadOnly = false;
+                    //        txtBlood.ReadOnly = false;
+                    //        cbbBlood.ReadOnly = false;
+                    //        txtEmotionlessMethod.ReadOnly = false;
+                    //        cbbEmotionlessMethod.ReadOnly = false;
+                    //        txtCondition.ReadOnly = false;
+                    //        cboCondition.ReadOnly = false;
+                    //        txtBloodRh.ReadOnly = false;
+                    //        cbbBloodRh.ReadOnly = false;
+                    //        txtCatastrophe.ReadOnly = false;
+                    //        cboCatastrophe.ReadOnly = false;
+                    //        txtDeathSurg.ReadOnly = false;
+                    //        cboDeathSurg.ReadOnly = false;
+                    //        dtStart.ReadOnly = false;
+                    //        dtFinish.ReadOnly = false;
+                    //        txtMANNER.ReadOnly = false;
+                    //        txtDescription.ReadOnly = false;
+                    //        txtConclude.ReadOnly = false;
+                    //        txtResultNote.ReadOnly = false;
+                    //        //lciInformationSurg.Enabled = true;
+                    //        btnKTDT.Enabled = false;
+                    //        btnAssignBlood.Enabled = true;
+                    //        btnTuTruc.Enabled = true;
+                    //        //btnSwapService.Enabled = false;
+                    //        ddbPhatSinh.Enabled = true;
+                    //        btnAssignPre.Enabled = true;
+                    //        btnSave.Enabled = true;
+                    //        btnFinish.Enabled = !(HisConfigKeys.allowFinishWhenAccountIsDoctor == "1" && BackendDataWorker.Get<HIS_EMPLOYEE>().Where(o => o.LOGINNAME == Inventec.UC.Login.Base.ClientTokenManagerStore.ClientTokenManager.GetLoginName()).FirstOrDefault().IS_DOCTOR != 1);
+                    //        cboEkipTemp.ReadOnly = false;
+                    //        btnSaveEkipTemp.Enabled = true;
+                    //        //btnTrackingCreate.Enabled = true;
+
+                    //        cbbPtttGroup.Properties.Buttons[0].Enabled = true;
+                    //        dtStart.Properties.Buttons[0].Enabled = true;
+                    //        dtFinish.Properties.Buttons[0].Enabled = true;
+                    //        cbbPtttGroup.Properties.Buttons[1].Enabled = true;
+                    //        dtStart.Properties.Buttons[1].Enabled = true;
+                    //        dtFinish.Properties.Buttons[1].Enabled = true;
+                    //        ucEkip.SetEnableControl(false);
+                    //        //layoutControlItem18.Enabled = true;
+                    //        //layoutControlItem22.Enabled = true;
+                    //        //layoutControlItem16.Enabled = true;
+                    //        //layoutControlItem24.Enabled = true;
+                    //        //layoutControlItem20.Enabled = true;
+                    //        //layoutControlItem26.Enabled = true;
+                    //        //layoutControlItem12.Enabled = true;
+                    //        ReadOnlyICD(false, txtIcdCode1, txtIcd1, cboIcd1, chkIcd1);
+                    //        ReadOnlyICD(false, txtIcdCode2, txtIcd2, cboIcd2, chkIcd2);
+                    //        ReadOnlyICD(false, txtIcdCode3, txtIcd3, cboIcd3, chkIcd3);
+                    //        ReadOnlyICD(false, txtIcdCmCode, txtIcdCmName, cboIcdCmName, chkIcdCm);
+
+                    //        txtIcdCmSubCode.ReadOnly = false;
+                    //        txtIcdCmSubName.ReadOnly = false;
+                    //        txtLoaiPT.ReadOnly = false;
+                    //        cboLoaiPT.ReadOnly = false;
+                    //        txtBanMoCode.ReadOnly = false;
+                    //        cboBanMo.ReadOnly = false;
+                    //        txtPhuongPhap2.ReadOnly = false;
+                    //        cboPhuongPhap2.ReadOnly = false;
+                    //        txtPhuongPhapTT.ReadOnly = false;
+                    //        cboPhuongPhapThucTe.ReadOnly = false;
+                    //        txtKQVoCam.ReadOnly = false;
+                    //        cboKQVoCam.ReadOnly = false;
+                    //        txtMachineCode.ReadOnly = false;
+                    //        cboMachine.ReadOnly = false;
+                    //        txtMoKTCao.ReadOnly = false;
+                    //        cboMoKTCao.ReadOnly = false;
+                    //    }
+                    //}
+                    //else
+                    #endregion
+                    if (serviceReq.SERVICE_REQ_STT_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_STT.ID__HT)
                     {
-                        if ((this.sereServ.IS_NO_EXECUTE != null || this.serviceReq.SERVICE_REQ_STT_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_STT.ID__HT) || this.vhisTreatment.IS_PAUSE == 1)
+                        if (this.isAllowEditInfo)
                         {
-                            LogSystem.Debug("SetEnableControl.2");
-                            if (this.isAllowEditInfo)
-                            {
-                                LogSystem.Debug("SetEnableControl.3");
-                                btnSwapService.Enabled = false;
-                                dropDownButtonGPBL.Enabled = false;
-                                btnDepartmentTran.Enabled = false;
-                            }
-                            else
-                            {
-                                LogSystem.Debug("SetEnableControl.4");
-
-                                ReadOnlyICD(true, txtIcdCode1, txtIcd1, cboIcd1, chkIcd1);
-                                ReadOnlyICD(true, txtIcdCode2, txtIcd2, cboIcd2, chkIcd2);
-                                ReadOnlyICD(true, txtIcdCode3, txtIcd3, cboIcd3, chkIcd3);
-                                ReadOnlyICD(true, txtIcdCmCode, txtIcdCmName, cboIcdCmName, chkIcdCm);
-
-                                txtIcdCmSubCode.ReadOnly = true;
-                                txtIcdCmSubName.ReadOnly = true;
-                                txtLoaiPT.ReadOnly = true;
-                                cboLoaiPT.ReadOnly = true;
-                                txtBanMoCode.ReadOnly = true;
-                                cboBanMo.ReadOnly = true;
-                                txtPhuongPhap2.ReadOnly = true;
-                                cboPhuongPhap2.ReadOnly = true;
-                                txtPhuongPhapTT.ReadOnly = true;
-                                cboPhuongPhapThucTe.ReadOnly = true;
-                                txtKQVoCam.ReadOnly = true;
-                                cboKQVoCam.ReadOnly = true;
-                                txtMachineCode.ReadOnly = true;
-                                cboMachine.ReadOnly = true;
-                                txtMoKTCao.ReadOnly = true;
-                                cboMoKTCao.ReadOnly = true;
-
-                                cboEkipTemp.ReadOnly = true;
-                                txtIcdExtraCode.ReadOnly = true;
-                                txtIcdText.ReadOnly = true;
-                                txtPtttGroupCode.ReadOnly = true;
-                                cbbPtttGroup.ReadOnly = true;
-                                txtMethodCode.ReadOnly = true;
-                                cboMethod.ReadOnly = true;
-                                txtBlood.ReadOnly = true;
-                                cbbBlood.ReadOnly = true;
-                                txtEmotionlessMethod.ReadOnly = true;
-                                cbbEmotionlessMethod.ReadOnly = true;
-                                txtCondition.ReadOnly = true;
-                                cboCondition.ReadOnly = true;
-                                txtBloodRh.ReadOnly = true;
-                                cbbBloodRh.ReadOnly = true;
-                                txtCatastrophe.ReadOnly = true;
-                                cboCatastrophe.ReadOnly = true;
-                                txtDeathSurg.ReadOnly = true;
-                                cboDeathSurg.ReadOnly = true;
-                                dtStart.ReadOnly = true;
-                                dtFinish.ReadOnly = true;
-                                txtMANNER.ReadOnly = true;
-                                txtDescription.ReadOnly = true;
-                                txtConclude.ReadOnly = true;
-                                txtResultNote.ReadOnly = true;
-                                cbbPtttGroup.Properties.Buttons[0].Enabled = false;
-                                dtStart.Properties.Buttons[0].Enabled = false;
-                                dtFinish.Properties.Buttons[0].Enabled = false;
-                                cbbPtttGroup.Properties.Buttons[1].Enabled = false;
-                                dtStart.Properties.Buttons[1].Enabled = false;
-                                dtFinish.Properties.Buttons[1].Enabled = false;
-                                ucEkip.SetEnableControl(true);
-                                //lciInformationSurg.Enabled = false;                          
-                                //btnSwapService.Enabled = false;
-                                //btnTrackingCreate.Enabled = false;
-                                //layoutControlItem18.Enabled = false;
-                                //layoutControlItem22.Enabled = false;
-                                //layoutControlItem24.Enabled = false;
-                                //layoutControlItem16.Enabled = false;
-                                //layoutControlItem20.Enabled = false;
-                                //layoutControlItem26.Enabled = false;
-                                //layoutControlItem12.Enabled = false;
-
-                                btnSave.Enabled = false;
-                                btnFinish.Enabled = false;
-                                btnSaveEkipTemp.Enabled = false;
-                            }
-
-                            ddbPhatSinh.Enabled = false;
-                            btnKTDT.Enabled = false;
-                            btnAssignBlood.Enabled = false;
-                            btnTuTruc.Enabled = false;
-                            btnAssignPre.Enabled = false;
-                        }
-                        else if (!String.IsNullOrWhiteSpace(Config.HisConfigKeys.CheckPermisson) && Config.HisConfigKeys.CheckPermisson.Contains("1"))
-                        {
-                            btnKTDT.Enabled = false;
-                            btnAssignBlood.Enabled = true;
-                            btnTuTruc.Enabled = true;
-                            //btnSwapService.Enabled = false;
-                            ddbPhatSinh.Enabled = true;
-                            btnAssignPre.Enabled = true;
-                            btnSave.Enabled = true;
-                            btnFinish.Enabled = !(HisConfigKeys.allowFinishWhenAccountIsDoctor == "1" && BackendDataWorker.Get<HIS_EMPLOYEE>().Where(o => o.LOGINNAME == Inventec.UC.Login.Base.ClientTokenManagerStore.ClientTokenManager.GetLoginName()).FirstOrDefault().IS_DOCTOR != 1);
-                            //btnTrackingCreate.Enabled = true;
-
-                            txtPtttGroupCode.ReadOnly = false;
-                            cbbPtttGroup.ReadOnly = false;
-                            cbbPtttGroup.Properties.Buttons[0].Enabled = true;
-                            cbbPtttGroup.Properties.Buttons[1].Enabled = true;
-
-                            //#17292
-                            bool isDoctor = false;
-                            var _employee = HIS.Desktop.LocalStorage.BackendData.BackendDataWorker.Get<MOS.EFMODEL.DataModels.HIS_EMPLOYEE>().FirstOrDefault(p => p.LOGINNAME == Inventec.UC.Login.Base.ClientTokenManagerStore.ClientTokenManager.GetLoginName());
-                            if (_employee != null && _employee.IS_DOCTOR == (short)1)
-                            {
-                                isDoctor = true;
-                            }
-
-                            if (isDoctor)
-                            {
-                                txtMANNER.ReadOnly = false;
-                                txtDescription.ReadOnly = false;
-                                txtConclude.ReadOnly = false;
-                                txtResultNote.ReadOnly = false;
-
-                                txtMachineCode.ReadOnly = true;
-                                cboMachine.ReadOnly = true;
-                                txtLoaiPT.ReadOnly = true;
-                                cboLoaiPT.ReadOnly = true;
-                                txtBanMoCode.ReadOnly = true;
-                                cboBanMo.ReadOnly = true;
-                                txtPhuongPhap2.ReadOnly = true;
-                                cboPhuongPhap2.ReadOnly = true;
-                                cboPhuongPhapThucTe.ReadOnly = true;
-                                txtPhuongPhapTT.ReadOnly = true;
-                                txtKQVoCam.ReadOnly = true;
-                                cboKQVoCam.ReadOnly = true;
-                                txtMoKTCao.ReadOnly = true;
-                                cboMoKTCao.ReadOnly = true;
-
-                                txtIcdExtraCode.ReadOnly = true;
-                                txtIcdText.ReadOnly = true;
-                                txtMethodCode.ReadOnly = true;
-                                cboMethod.ReadOnly = true;
-                                txtBlood.ReadOnly = true;
-                                cbbBlood.ReadOnly = true;
-                                txtEmotionlessMethod.ReadOnly = true;
-                                cbbEmotionlessMethod.ReadOnly = true;
-                                txtCondition.ReadOnly = true;
-                                cboCondition.ReadOnly = true;
-                                txtBloodRh.ReadOnly = true;
-                                cbbBloodRh.ReadOnly = true;
-                                txtCatastrophe.ReadOnly = true;
-                                cboCatastrophe.ReadOnly = true;
-                                txtDeathSurg.ReadOnly = true;
-                                cboDeathSurg.ReadOnly = true;
-                                dtStart.ReadOnly = true;
-                                dtFinish.ReadOnly = true;
-                                cboEkipTemp.ReadOnly = true;
-                                btnSaveEkipTemp.Enabled = false;
-                                dtStart.Properties.Buttons[0].Enabled = false;
-                                dtFinish.Properties.Buttons[0].Enabled = false;
-                                dtStart.Properties.Buttons[1].Enabled = false;
-                                dtFinish.Properties.Buttons[1].Enabled = false;
-                                ucEkip.SetEnableControl(true);
-
-                                ReadOnlyICD(true, txtIcdCode1, txtIcd1, cboIcd1, chkIcd1);
-                                ReadOnlyICD(true, txtIcdCode2, txtIcd2, cboIcd2, chkIcd2);
-                                ReadOnlyICD(true, txtIcdCode3, txtIcd3, cboIcd3, chkIcd3);
-                                ReadOnlyICD(true, txtIcdCmCode, txtIcdCmName, cboIcdCmName, chkIcdCm);
-
-                                txtIcdCmSubCode.ReadOnly = true;
-                                txtIcdCmSubName.ReadOnly = true;
-                                txtLoaiPT.ReadOnly = true;
-                                cboLoaiPT.ReadOnly = true;
-                                txtBanMoCode.ReadOnly = true;
-                                cboBanMo.ReadOnly = true;
-                                txtPhuongPhap2.ReadOnly = true;
-                                cboPhuongPhap2.ReadOnly = true;
-                                txtPhuongPhapTT.ReadOnly = true;
-                                cboPhuongPhapThucTe.ReadOnly = true;
-                                txtKQVoCam.ReadOnly = true;
-                                cboKQVoCam.ReadOnly = true;
-                                txtMachineCode.ReadOnly = true;
-                                cboMachine.ReadOnly = true;
-                                txtMoKTCao.ReadOnly = true;
-                                cboMoKTCao.ReadOnly = true;
-                            }
-                            else
-                            {
-                                txtMANNER.ReadOnly = true;
-                                txtDescription.ReadOnly = true;
-                                txtConclude.ReadOnly = true;
-                                txtResultNote.ReadOnly = true;
-
-                                txtMachineCode.ReadOnly = false;
-                                cboMachine.ReadOnly = false;
-                                txtLoaiPT.ReadOnly = false;
-                                cboLoaiPT.ReadOnly = false;
-                                txtBanMoCode.ReadOnly = false;
-                                cboBanMo.ReadOnly = false;
-                                txtPhuongPhap2.ReadOnly = false;
-                                cboPhuongPhap2.ReadOnly = false;
-                                txtPhuongPhapTT.ReadOnly = false;
-                                cboPhuongPhapThucTe.ReadOnly = false;
-                                txtKQVoCam.ReadOnly = false;
-                                cboKQVoCam.ReadOnly = false;
-                                txtMoKTCao.ReadOnly = false;
-                                cboMoKTCao.ReadOnly = false;
-
-                                txtIcdExtraCode.ReadOnly = false;
-                                txtIcdText.ReadOnly = false;
-                                txtMethodCode.ReadOnly = false;
-                                cboMethod.ReadOnly = false;
-                                txtBlood.ReadOnly = false;
-                                cbbBlood.ReadOnly = false;
-                                txtEmotionlessMethod.ReadOnly = false;
-                                cbbEmotionlessMethod.ReadOnly = false;
-                                txtCondition.ReadOnly = false;
-                                cboCondition.ReadOnly = false;
-                                txtBloodRh.ReadOnly = false;
-                                cbbBloodRh.ReadOnly = false;
-                                txtCatastrophe.ReadOnly = false;
-                                cboCatastrophe.ReadOnly = false;
-                                txtDeathSurg.ReadOnly = false;
-                                cboDeathSurg.ReadOnly = false;
-                                dtStart.ReadOnly = false;
-                                dtFinish.ReadOnly = false;
-                                cboEkipTemp.ReadOnly = false;
-                                btnSaveEkipTemp.Enabled = true;
-                                dtStart.Properties.Buttons[0].Enabled = true;
-                                dtFinish.Properties.Buttons[0].Enabled = true;
-                                dtStart.Properties.Buttons[1].Enabled = true;
-                                dtFinish.Properties.Buttons[1].Enabled = true;
-                                ucEkip.SetEnableControl(false);
-
-                                ReadOnlyICD(false, txtIcdCode1, txtIcd1, cboIcd1, chkIcd1);
-                                ReadOnlyICD(false, txtIcdCode2, txtIcd2, cboIcd2, chkIcd2);
-                                ReadOnlyICD(false, txtIcdCode3, txtIcd3, cboIcd3, chkIcd3);
-                                ReadOnlyICD(false, txtIcdCmCode, txtIcdCmName, cboIcdCmName, chkIcdCm);
-
-                                txtIcdCmSubCode.ReadOnly = false;
-                                txtIcdCmSubName.ReadOnly = false;
-                                txtLoaiPT.ReadOnly = false;
-                                cboLoaiPT.ReadOnly = false;
-                                txtBanMoCode.ReadOnly = false;
-                                cboBanMo.ReadOnly = false;
-                                txtPhuongPhap2.ReadOnly = false;
-                                cboPhuongPhap2.ReadOnly = false;
-                                txtPhuongPhapTT.ReadOnly = false;
-                                cboPhuongPhapThucTe.ReadOnly = false;
-                                txtKQVoCam.ReadOnly = false;
-                                cboKQVoCam.ReadOnly = false;
-                                txtMachineCode.ReadOnly = false;
-                                cboMachine.ReadOnly = false;
-                                txtMoKTCao.ReadOnly = false;
-                                cboMoKTCao.ReadOnly = false;
-                            }
+                            LogSystem.Debug("SetEnableControl.1.1");
+                            btnSwapService.Enabled = false;
+                            dropDownButtonGPBL.Enabled = false;
+                            btnDepartmentTran.Enabled = false;
                         }
                         else
                         {
-                            txtIcdExtraCode.ReadOnly = false;
-                            txtIcdText.ReadOnly = false;
-                            txtPtttGroupCode.ReadOnly = false;
-                            cbbPtttGroup.ReadOnly = false;
-                            txtMethodCode.ReadOnly = false;
-                            cboMethod.ReadOnly = false;
-                            txtBlood.ReadOnly = false;
-                            cbbBlood.ReadOnly = false;
-                            txtEmotionlessMethod.ReadOnly = false;
-                            cbbEmotionlessMethod.ReadOnly = false;
-                            txtCondition.ReadOnly = false;
-                            cboCondition.ReadOnly = false;
-                            txtBloodRh.ReadOnly = false;
-                            cbbBloodRh.ReadOnly = false;
-                            txtCatastrophe.ReadOnly = false;
-                            cboCatastrophe.ReadOnly = false;
-                            txtDeathSurg.ReadOnly = false;
-                            cboDeathSurg.ReadOnly = false;
-                            dtStart.ReadOnly = false;
-                            dtFinish.ReadOnly = false;
-                            txtMANNER.ReadOnly = false;
-                            txtDescription.ReadOnly = false;
-                            txtConclude.ReadOnly = false;
-                            txtResultNote.ReadOnly = false;
-                            //lciInformationSurg.Enabled = true;
-                            btnKTDT.Enabled = false;
-                            btnAssignBlood.Enabled = true;
-                            btnTuTruc.Enabled = true;
+                            LogSystem.Debug("SetEnableControl.1.2");
+
+                            ReadOnlyICD(true, txtIcdCode1, txtIcd1, cboIcd1, chkIcd1);
+                            ReadOnlyICD(true, txtIcdCode2, txtIcd2, cboIcd2, chkIcd2);
+                            ReadOnlyICD(true, txtIcdCode3, txtIcd3, cboIcd3, chkIcd3);
+                            ReadOnlyICD(true, txtIcdCmCode, txtIcdCmName, cboIcdCmName, chkIcdCm);
+
+                            txtIcdCmSubCode.ReadOnly = true;
+                            txtIcdCmSubName.ReadOnly = true;
+                            txtLoaiPT.ReadOnly = true;
+                            cboLoaiPT.ReadOnly = true;
+                            txtBanMoCode.ReadOnly = true;
+                            cboBanMo.ReadOnly = true;
+                            txtPhuongPhap2.ReadOnly = true;
+                            cboPhuongPhap2.ReadOnly = true;
+                            txtPhuongPhapTT.ReadOnly = true;
+                            cboPhuongPhapThucTe.ReadOnly = true;
+                            txtKQVoCam.ReadOnly = true;
+                            cboKQVoCam.ReadOnly = true;
+                            txtMachineCode.ReadOnly = true;
+                            cboMachine.ReadOnly = true;
+                            txtMoKTCao.ReadOnly = true;
+                            cboMoKTCao.ReadOnly = true;
+
+                            cboEkipTemp.ReadOnly = true;
+                            txtIcdExtraCode.ReadOnly = true;
+                            txtIcdText.ReadOnly = true;
+                            txtPtttGroupCode.ReadOnly = true;
+                            cbbPtttGroup.ReadOnly = true;
+                            txtMethodCode.ReadOnly = true;
+                            cboMethod.ReadOnly = true;
+                            txtBlood.ReadOnly = true;
+                            cbbBlood.ReadOnly = true;
+                            txtEmotionlessMethod.ReadOnly = true;
+                            cbbEmotionlessMethod.ReadOnly = true;
+                            txtCondition.ReadOnly = true;
+                            cboCondition.ReadOnly = true;
+                            txtBloodRh.ReadOnly = true;
+                            cbbBloodRh.ReadOnly = true;
+                            txtCatastrophe.ReadOnly = true;
+                            cboCatastrophe.ReadOnly = true;
+                            txtDeathSurg.ReadOnly = true;
+                            cboDeathSurg.ReadOnly = true;
+                            dtStart.ReadOnly = true;
+                            dtFinish.ReadOnly = true;
+                            txtMANNER.ReadOnly = true;
+                            txtDescription.ReadOnly = true;
+                            txtConclude.ReadOnly = true;
+                            txtResultNote.ReadOnly = true;
+                            cbbPtttGroup.Properties.Buttons[0].Enabled = false;
+                            dtStart.Properties.Buttons[0].Enabled = false;
+                            dtFinish.Properties.Buttons[0].Enabled = false;
+                            cbbPtttGroup.Properties.Buttons[1].Enabled = false;
+                            dtStart.Properties.Buttons[1].Enabled = false;
+                            dtFinish.Properties.Buttons[1].Enabled = false;
+                            ucEkip.SetEnableControl(true);
+                            //lciInformationSurg.Enabled = false;                          
                             //btnSwapService.Enabled = false;
-                            ddbPhatSinh.Enabled = true;
-                            btnAssignPre.Enabled = true;
-                            btnSave.Enabled = true;
-                            btnFinish.Enabled = !(HisConfigKeys.allowFinishWhenAccountIsDoctor == "1" && BackendDataWorker.Get<HIS_EMPLOYEE>().Where(o => o.LOGINNAME == Inventec.UC.Login.Base.ClientTokenManagerStore.ClientTokenManager.GetLoginName()).FirstOrDefault().IS_DOCTOR != 1);
-                            cboEkipTemp.ReadOnly = false;
-                            btnSaveEkipTemp.Enabled = true;
-                            //btnTrackingCreate.Enabled = true;
+                            //btnTrackingCreate.Enabled = false;
+                            //layoutControlItem18.Enabled = false;
+                            //layoutControlItem22.Enabled = false;
+                            //layoutControlItem24.Enabled = false;
+                            //layoutControlItem16.Enabled = false;
+                            //layoutControlItem20.Enabled = false;
+                            //layoutControlItem26.Enabled = false;
+                            //layoutControlItem12.Enabled = false;
 
-                            cbbPtttGroup.Properties.Buttons[0].Enabled = true;
-                            dtStart.Properties.Buttons[0].Enabled = true;
-                            dtFinish.Properties.Buttons[0].Enabled = true;
-                            cbbPtttGroup.Properties.Buttons[1].Enabled = true;
-                            dtStart.Properties.Buttons[1].Enabled = true;
-                            dtFinish.Properties.Buttons[1].Enabled = true;
-                            ucEkip.SetEnableControl(false);
-                            //layoutControlItem18.Enabled = true;
-                            //layoutControlItem22.Enabled = true;
-                            //layoutControlItem16.Enabled = true;
-                            //layoutControlItem24.Enabled = true;
-                            //layoutControlItem20.Enabled = true;
-                            //layoutControlItem26.Enabled = true;
-                            //layoutControlItem12.Enabled = true;
-                            ReadOnlyICD(false, txtIcdCode1, txtIcd1, cboIcd1, chkIcd1);
-                            ReadOnlyICD(false, txtIcdCode2, txtIcd2, cboIcd2, chkIcd2);
-                            ReadOnlyICD(false, txtIcdCode3, txtIcd3, cboIcd3, chkIcd3);
-                            ReadOnlyICD(false, txtIcdCmCode, txtIcdCmName, cboIcdCmName, chkIcdCm);
-
-                            txtIcdCmSubCode.ReadOnly = false;
-                            txtIcdCmSubName.ReadOnly = false;
-                            txtLoaiPT.ReadOnly = false;
-                            cboLoaiPT.ReadOnly = false;
-                            txtBanMoCode.ReadOnly = false;
-                            cboBanMo.ReadOnly = false;
-                            txtPhuongPhap2.ReadOnly = false;
-                            cboPhuongPhap2.ReadOnly = false;
-                            txtPhuongPhapTT.ReadOnly = false;
-                            cboPhuongPhapThucTe.ReadOnly = false;
-                            txtKQVoCam.ReadOnly = false;
-                            cboKQVoCam.ReadOnly = false;
-                            txtMachineCode.ReadOnly = false;
-                            cboMachine.ReadOnly = false;
-                            txtMoKTCao.ReadOnly = false;
-                            cboMoKTCao.ReadOnly = false;
+                            btnSave.Enabled = false;
+                            btnFinish.Enabled = false;
+                            btnSaveEkipTemp.Enabled = false;
                         }
+
+                        ddbPhatSinh.Enabled = false;
+                        btnKTDT.Enabled = false;
+                        btnAssignBlood.Enabled = false;
+                        btnTuTruc.Enabled = false;
+                        btnAssignPre.Enabled = false;
+                        btnPresYhct.Enabled = false;
                     }
-                    else if (HisConfigKeys.CheckPermissonOption && this.serviceReq.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__PT)
+                    else if (HisConfigKeys.CheckPermissonOption == "1" && this.serviceReq.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__PT)
                     {
                         var _employee = HIS.Desktop.LocalStorage.BackendData.BackendDataWorker.Get<MOS.EFMODEL.DataModels.HIS_EMPLOYEE>().FirstOrDefault(p => p.LOGINNAME == Inventec.UC.Login.Base.ClientTokenManagerStore.ClientTokenManager.GetLoginName());
                         if (_employee.DEPARTMENT_ID == HIS.Desktop.LocalStorage.LocalData.WorkPlace.WorkPlaceSDO.FirstOrDefault(o => o.RoomId == this.Module.RoomId).DepartmentId)
@@ -1635,7 +1779,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                             btnImagePublic.Enabled = false;
                             btnCreateImageLuuDo.Enabled = false;
                             btnChonMauPTCHuyenKhoaMat.Enabled = true;
-
+                            btnChoosePtttMethods.Enabled = true;
                             txtIntructionNote.ReadOnly = false;
                             txtIntructionNote.ReadOnly = false;
                             txtPtttGroupCode.ReadOnly = false;
@@ -1681,6 +1825,19 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                             dtFinish.Properties.Buttons[0].Enabled = true;
                             dtStart.Properties.Buttons[1].Enabled = true;
                             dtFinish.Properties.Buttons[1].Enabled = true;
+                            cboBanMo.Properties.Buttons[1].Enabled = true;
+                            cboPhuongPhap2.Properties.Buttons[1].Enabled = true;
+                            cbbBlood.Properties.Buttons[1].Enabled = true;
+                            cbbBloodRh.Properties.Buttons[1].Enabled = true;
+                            cboKQVoCam.Properties.Buttons[1].Enabled = true;
+                            cboMoKTCao.Properties.Buttons[1].Enabled = true;
+                            cboDeathSurg.Properties.Buttons[1].Enabled = true;
+                            cboMachine.Properties.Buttons[1].Enabled = true;
+                            cboDepartment.Properties.Buttons[1].Enabled = true;
+                            cboMethod.Properties.Buttons[1].Enabled = true;
+                            cbbPtttGroup.Properties.Buttons[1].Enabled = true;
+                            cboCondition.Properties.Buttons[1].Enabled = true;
+                            cboCatastrophe.Properties.Buttons[1].Enabled = true;
                             ucEkip.SetEnableControl(false);
                             IsReadOnlyGridViewEkipUser = false;
                             ReadOnlyICD(false, txtIcdCode1, txtIcd1, cboIcd1, chkIcd1);
@@ -1710,6 +1867,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                             btnAssignBlood.Enabled = true;
                             btnTuTruc.Enabled = true;
                             btnAssignPre.Enabled = true;
+                            btnPresYhct.Enabled = true;
                             dropDownButtonGPBL.Enabled = true;
                             ddbPhatSinh.Enabled = true;
                             btnSwapService.Enabled = true;
@@ -1741,6 +1899,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                             txtIntructionNote.ReadOnly = true;
                             txtPtttGroupCode.ReadOnly = true;
                             cbbPtttGroup.ReadOnly = true;
+                            btnChoosePtttMethods.Enabled = false;
                             txtMANNER.ReadOnly = true;
                             txtMachineCode.ReadOnly = true;
                             cboMachine.ReadOnly = true;
@@ -1778,6 +1937,19 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                             dtFinish.Properties.Buttons[0].Enabled = false;
                             dtStart.Properties.Buttons[1].Enabled = false;
                             dtFinish.Properties.Buttons[1].Enabled = false;
+                            cboBanMo.Properties.Buttons[1].Enabled = false;
+                            cboPhuongPhap2.Properties.Buttons[1].Enabled = false;
+                            cbbBlood.Properties.Buttons[1].Enabled = false;
+                            cbbBloodRh.Properties.Buttons[1].Enabled = false;
+                            cboKQVoCam.Properties.Buttons[1].Enabled = false;
+                            cboMoKTCao.Properties.Buttons[1].Enabled = false;
+                            cboDeathSurg.Properties.Buttons[1].Enabled = false;
+                            cboMachine.Properties.Buttons[1].Enabled = false;
+                            cboDepartment.Properties.Buttons[1].Enabled = false;
+                            cboMethod.Properties.Buttons[1].Enabled = false;
+                            cbbPtttGroup.Properties.Buttons[1].Enabled = false;
+                            cboCondition.Properties.Buttons[1].Enabled = false;
+                            cboCatastrophe.Properties.Buttons[1].Enabled = false;
                             ucEkip.SetEnableControl(true);
 
                             IsReadOnlyGridViewEkipUser = true;
@@ -1802,6 +1974,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                             btnAssignBlood.Enabled = false;
                             btnTuTruc.Enabled = false;
                             btnAssignPre.Enabled = false;
+                            btnPresYhct.Enabled = false;
                             dropDownButtonGPBL.Enabled = false;
                             ddbPhatSinh.Enabled = false;
                             btnSwapService.Enabled = false;
@@ -1814,6 +1987,294 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                             cboDepartment.ReadOnly = true;
                             btnFinish.Enabled = false;
                         }
+                    }
+                    else if (HisConfigKeys.CheckPermissonOption == "2" && this.serviceReq.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__PT)
+                    {
+                        btnSave.Enabled = true;
+                        var enable = BackendDataWorker.Get<HIS_EMPLOYEE>().Where(o => o.LOGINNAME == Inventec.UC.Login.Base.ClientTokenManagerStore.ClientTokenManager.GetLoginName()).FirstOrDefault().DEPARTMENT_ID == HIS.Desktop.LocalStorage.LocalData.WorkPlace.WorkPlaceSDO.FirstOrDefault(o => o.RoomId == this.Module.RoomId).DepartmentId;
+                        if (enable)
+                        {
+                            txtDescription.ReadOnly = !enable;
+                            txtResultNote.ReadOnly = !enable;
+                            cardControl.Enabled = true;
+                            btnImagePublic.Enabled = true;
+                            btnCreateImageLuuDo.Enabled = true;
+                            btnChonMauPTCHuyenKhoaMat.Enabled = true;
+                            txtIntructionNote.ReadOnly = !enable;
+                            txtMANNER.ReadOnly = !enable;
+                            txtConclude.ReadOnly = !enable;
+                            ReadOnlyICD(!enable, txtIcdCode1, txtIcd1, cboIcd1, chkIcd1);
+                            ReadOnlyICD(!enable, txtIcdCode2, txtIcd2, cboIcd2, chkIcd2);
+                            ReadOnlyICD(!enable, txtIcdCode3, txtIcd3, cboIcd3, chkIcd3);
+                            ReadOnlyICD(!enable, txtIcdCmCode, txtIcdCmName, cboIcdCmName, chkIcdCm);
+                            txtIcdCmSubCode.ReadOnly = !enable;
+                            txtIcdCmSubName.ReadOnly = !enable;
+                            txtIcdExtraCode.ReadOnly = !enable;
+                            txtIcdText.ReadOnly = !enable;
+
+                            txtBanMoCode.ReadOnly = !enable;
+                            cboBanMo.ReadOnly = !enable;
+                            txtPhuongPhap2.ReadOnly = !enable;
+                            cboPhuongPhap2.ReadOnly = !enable;
+                            txtPhuongPhapTT.ReadOnly = !enable;
+                            cboPhuongPhapThucTe.ReadOnly = !enable;
+                            cboPhuongPhapThucTe.Enabled = true;
+                            txtPhuongPhapTT.Enabled = true;
+                            btnChoosePtttMethods.Enabled = enable;
+                            txtBlood.ReadOnly = !enable;
+                            cbbBlood.ReadOnly = !enable;
+                            txtBloodRh.ReadOnly = !enable;
+                            cbbBloodRh.ReadOnly = !enable;
+
+                            txtKQVoCam.ReadOnly = !enable;
+                            cboKQVoCam.ReadOnly = !enable;
+                            txtCondition.ReadOnly = !enable;
+                            cboCondition.ReadOnly = !enable;
+                            txtMoKTCao.ReadOnly = !enable;
+                            cboMoKTCao.ReadOnly = !enable;
+                            txtCatastrophe.ReadOnly = !enable;
+                            cboCatastrophe.ReadOnly = !enable;
+                            txtDeathSurg.ReadOnly = !enable;
+                            cboDeathSurg.ReadOnly = !enable;
+                            txtMachineCode.ReadOnly = !enable;
+                            cboMachine.ReadOnly = !enable;
+
+                            txtPtttGroupCode.ReadOnly = !enable;
+                            cbbPtttGroup.ReadOnly = !enable;
+                            txtLoaiPT.ReadOnly = !enable;
+                            cboLoaiPT.ReadOnly = !enable;
+                            txtMethodCode.ReadOnly = !enable;
+                            cboMethod.ReadOnly = !enable;
+                            txtEmotionlessMethod.ReadOnly = !enable;
+                            cbbEmotionlessMethod.ReadOnly = !enable;
+                            dtStart.ReadOnly = !enable;
+                            dtFinish.ReadOnly = !enable;
+                            dtStart.Properties.Buttons[0].Enabled = enable;
+                            dtFinish.Properties.Buttons[0].Enabled = enable;
+                            dtStart.Properties.Buttons[1].Enabled = enable;
+                            dtFinish.Properties.Buttons[1].Enabled = enable;
+                            cboBanMo.Properties.Buttons[1].Enabled = !enable;
+                            cboPhuongPhap2.Properties.Buttons[1].Enabled = !enable;
+                            cbbBlood.Properties.Buttons[1].Enabled = !enable;
+                            cbbBloodRh.Properties.Buttons[1].Enabled = !enable;
+                            cboKQVoCam.Properties.Buttons[1].Enabled = !enable;
+                            cboMoKTCao.Properties.Buttons[1].Enabled = !enable;
+                            cboDeathSurg.Properties.Buttons[1].Enabled = !enable;
+                            cboMachine.Properties.Buttons[1].Enabled = !enable;
+                            spinExcuteTimeAdd.ReadOnly = !enable;
+                            cboDepartment.Properties.Buttons[1].Enabled = enable;
+                            cboMethod.Properties.Buttons[1].Enabled = enable;
+                            cbbPtttGroup.Properties.Buttons[1].Enabled = enable;
+                            cboCondition.Properties.Buttons[1].Enabled = enable;
+                            cboCatastrophe.Properties.Buttons[1].Enabled = enable;
+                            cboEkipTemp.ReadOnly = !enable;
+                            cboDepartment.ReadOnly = !enable;
+                            ucEkip.SetEnableControl(!enable);
+                            IsReadOnlyGridViewEkipUser = !enable;
+                            chkSaveGroup.ReadOnly = !enable;
+
+                            btnAssignBlood.Enabled = enable;
+                            btnTuTruc.Enabled = enable;
+                            btnAssignPre.Enabled = enable;
+                            btnPresYhct.Enabled = enable;
+                            dropDownButtonGPBL.Enabled = enable;
+                            ddbPhatSinh.Enabled = enable;
+                            btnSwapService.Enabled = enable;
+                            btnDepartmentTran.Enabled = enable;
+                            btnOther.Enabled = enable;
+                            btnPrint.Enabled = enable;
+                            btnKTDT.Enabled = enable;
+                        }
+                        else
+                        {
+                            btnSave.Enabled = true;
+                            txtDescription.ReadOnly = false;
+                            txtResultNote.ReadOnly = false;
+                            cardControl.Enabled = true;
+                            btnImagePublic.Enabled = true;
+                            btnCreateImageLuuDo.Enabled = true;
+                            btnChonMauPTCHuyenKhoaMat.Enabled = true;
+                            txtIntructionNote.ReadOnly = false;
+                            txtMANNER.ReadOnly = false;
+                            txtConclude.ReadOnly = false;
+                            btnChoosePtttMethods.Enabled = true;
+                            ReadOnlyICD(false, txtIcdCode1, txtIcd1, cboIcd1, chkIcd1);
+                            ReadOnlyICD(false, txtIcdCode2, txtIcd2, cboIcd2, chkIcd2);
+                            ReadOnlyICD(false, txtIcdCode3, txtIcd3, cboIcd3, chkIcd3);
+                            ReadOnlyICD(false, txtIcdCmCode, txtIcdCmName, cboIcdCmName, chkIcdCm);
+                            txtIcdCmSubCode.ReadOnly = false;
+                            txtIcdCmSubName.ReadOnly = false;
+                            txtIcdExtraCode.ReadOnly = false;
+                            txtIcdText.ReadOnly = false;
+
+                            txtBanMoCode.ReadOnly = false;
+                            cboBanMo.ReadOnly = false;
+                            txtPhuongPhap2.ReadOnly = false;
+                            cboPhuongPhap2.ReadOnly = false;
+                            txtPhuongPhapTT.ReadOnly = false;
+                            cboPhuongPhapThucTe.ReadOnly = false;
+                            cboPhuongPhapThucTe.Enabled = true;
+                            txtPhuongPhapTT.Enabled = true;
+                            txtBlood.ReadOnly = false;
+                            cbbBlood.ReadOnly = false;
+                            txtBloodRh.ReadOnly = false;
+                            cbbBloodRh.ReadOnly = false;
+
+                            txtKQVoCam.ReadOnly = false;
+                            cboKQVoCam.ReadOnly = false;
+                            txtCondition.ReadOnly = false;
+                            cboCondition.ReadOnly = false;
+                            txtMoKTCao.ReadOnly = false;
+                            cboMoKTCao.ReadOnly = false;
+                            txtCatastrophe.ReadOnly = false;
+                            cboCatastrophe.ReadOnly = false;
+                            txtDeathSurg.ReadOnly = false;
+                            cboDeathSurg.ReadOnly = false;
+                            txtMachineCode.ReadOnly = false;
+                            cboMachine.ReadOnly = false;
+
+                            txtPtttGroupCode.ReadOnly = false;
+                            cbbPtttGroup.ReadOnly = false;
+                            txtPtttGroupCode.Enabled = true;
+                            cbbPtttGroup.Enabled = true;
+                            txtLoaiPT.ReadOnly = false;
+                            cboLoaiPT.ReadOnly = false;
+                            txtMethodCode.ReadOnly = false;
+                            cboMethod.ReadOnly = false;
+                            txtEmotionlessMethod.ReadOnly = false;
+                            cbbEmotionlessMethod.ReadOnly = false;
+                            dtStart.ReadOnly = false;
+                            dtFinish.ReadOnly = false;
+                            dtStart.Properties.Buttons[0].Enabled = true;
+                            dtFinish.Properties.Buttons[0].Enabled = true;
+                            dtStart.Properties.Buttons[1].Enabled = true;
+                            dtFinish.Properties.Buttons[1].Enabled = true;
+                            cboBanMo.Properties.Buttons[1].Enabled = true;
+                            cboPhuongPhap2.Properties.Buttons[1].Enabled = true;
+                            cbbBlood.Properties.Buttons[1].Enabled = true;
+                            cbbBloodRh.Properties.Buttons[1].Enabled = true;
+                            cboKQVoCam.Properties.Buttons[1].Enabled = true;
+                            cboMoKTCao.Properties.Buttons[1].Enabled = true;
+                            cboDeathSurg.Properties.Buttons[1].Enabled = true;
+                            cboMachine.Properties.Buttons[1].Enabled = true;
+                            cboDepartment.Properties.Buttons[1].Enabled = false;
+                            cboMethod.Properties.Buttons[1].Enabled = true;
+                            cbbPtttGroup.Properties.Buttons[1].Enabled = true;
+                            cboCondition.Properties.Buttons[1].Enabled = true;
+                            cboCatastrophe.Properties.Buttons[1].Enabled = true;
+                            cboPhuongPhapThucTe.Properties.Buttons[1].Enabled = true;
+                            spinExcuteTimeAdd.ReadOnly = false;
+                            cboEkipTemp.ReadOnly = true;
+                            cboDepartment.ReadOnly = true;
+                            ucEkip.SetEnableControl(true);
+                            layoutControlItem56.Enabled = false;
+                            IsReadOnlyGridViewEkipUser = false;
+                            chkSaveGroup.ReadOnly = false;
+
+                            btnAssignBlood.Enabled = true;
+                            btnTuTruc.Enabled = true;
+                            btnAssignPre.Enabled = true;
+                            btnPresYhct.Enabled = true;
+                            dropDownButtonGPBL.Enabled = true;
+                            ddbPhatSinh.Enabled = true;
+                            btnSwapService.Enabled = true;
+                            btnDepartmentTran.Enabled = true;
+                            btnOther.Enabled = true;
+                            btnPrint.Enabled = true;
+                            btnKTDT.Enabled = true;
+                        }
+                    }
+                    else if (HisConfigKeys.CheckPermissonOption != "1" && HisConfigKeys.CheckPermissonOption != "2")
+                    {
+                        btnSave.Enabled = true;
+                        txtDescription.ReadOnly = false;
+                        txtResultNote.ReadOnly = false;
+                        cardControl.Enabled = true;
+                        btnImagePublic.Enabled = true;
+                        btnCreateImageLuuDo.Enabled = true;
+                        btnChonMauPTCHuyenKhoaMat.Enabled = true;
+                        txtIntructionNote.ReadOnly = false;
+                        txtMANNER.ReadOnly = false;
+                        txtConclude.ReadOnly = false;
+                        btnChoosePtttMethods.Enabled = true;
+                        ReadOnlyICD(false, txtIcdCode1, txtIcd1, cboIcd1, chkIcd1);
+                        ReadOnlyICD(false, txtIcdCode2, txtIcd2, cboIcd2, chkIcd2);
+                        ReadOnlyICD(false, txtIcdCode3, txtIcd3, cboIcd3, chkIcd3);
+                        ReadOnlyICD(false, txtIcdCmCode, txtIcdCmName, cboIcdCmName, chkIcdCm);
+                        txtIcdCmSubCode.ReadOnly = false;
+                        txtIcdCmSubName.ReadOnly = false;
+                        txtIcdExtraCode.ReadOnly = false;
+                        txtIcdText.ReadOnly = false;
+
+                        txtBanMoCode.ReadOnly = false;
+                        cboBanMo.ReadOnly = false;
+                        txtPhuongPhap2.ReadOnly = false;
+                        cboPhuongPhap2.ReadOnly = false;
+                        txtPhuongPhapTT.ReadOnly = false;
+                        cboPhuongPhapThucTe.ReadOnly = false;
+                        txtBlood.ReadOnly = false;
+                        cbbBlood.ReadOnly = false;
+                        txtBloodRh.ReadOnly = false;
+                        cbbBloodRh.ReadOnly = false;
+
+                        txtKQVoCam.ReadOnly = false;
+                        cboKQVoCam.ReadOnly = false;
+                        txtCondition.ReadOnly = false;
+                        cboCondition.ReadOnly = false;
+                        txtMoKTCao.ReadOnly = false;
+                        cboMoKTCao.ReadOnly = false;
+                        txtCatastrophe.ReadOnly = false;
+                        cboCatastrophe.ReadOnly = false;
+                        txtDeathSurg.ReadOnly = false;
+                        cboDeathSurg.ReadOnly = false;
+                        txtMachineCode.ReadOnly = false;
+                        cboMachine.ReadOnly = false;
+
+                        txtPtttGroupCode.ReadOnly = false;
+                        cbbPtttGroup.ReadOnly = false;
+                        txtLoaiPT.ReadOnly = false;
+                        cboLoaiPT.ReadOnly = false;
+                        txtMethodCode.ReadOnly = false;
+                        cboMethod.ReadOnly = false;
+                        txtEmotionlessMethod.ReadOnly = false;
+                        cbbEmotionlessMethod.ReadOnly = false;
+                        dtStart.ReadOnly = false;
+                        dtFinish.ReadOnly = false;
+                        dtStart.Properties.Buttons[0].Enabled = true;
+                        dtFinish.Properties.Buttons[0].Enabled = true;
+                        dtStart.Properties.Buttons[1].Enabled = true;
+                        dtFinish.Properties.Buttons[1].Enabled = true;
+                        cboBanMo.Properties.Buttons[1].Enabled = true;
+                        cboPhuongPhap2.Properties.Buttons[1].Enabled = true;
+                        cbbBlood.Properties.Buttons[1].Enabled = true;
+                        cbbBloodRh.Properties.Buttons[1].Enabled = true;
+                        cboKQVoCam.Properties.Buttons[1].Enabled = true;
+                        cboMoKTCao.Properties.Buttons[1].Enabled = true;
+                        cboDeathSurg.Properties.Buttons[1].Enabled = true;
+                        cboMachine.Properties.Buttons[1].Enabled = true;
+                        cboDepartment.Properties.Buttons[1].Enabled = true;
+                        cboMethod.Properties.Buttons[1].Enabled = true;
+                        cbbPtttGroup.Properties.Buttons[1].Enabled = true;
+                        cboCondition.Properties.Buttons[1].Enabled = true;
+                        cboCatastrophe.Properties.Buttons[1].Enabled = true;
+                        spinExcuteTimeAdd.ReadOnly = false;
+                        cboEkipTemp.ReadOnly = false;
+                        cboDepartment.ReadOnly = false;
+                        ucEkip.SetEnableControl(false);
+                        IsReadOnlyGridViewEkipUser = false;
+                        chkSaveGroup.ReadOnly = false;
+
+                        btnAssignBlood.Enabled = true;
+                        btnTuTruc.Enabled = true;
+                        btnAssignPre.Enabled = true;
+                        btnPresYhct.Enabled = true;
+                        dropDownButtonGPBL.Enabled = true;
+                        ddbPhatSinh.Enabled = true;
+                        btnSwapService.Enabled = true;
+                        btnDepartmentTran.Enabled = true;
+                        btnOther.Enabled = true;
+                        btnPrint.Enabled = true;
+                        btnKTDT.Enabled = true;
                     }
 
                     //
@@ -1877,12 +2338,12 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                     this.lciStartTime.AppearanceItemCaption.ForeColor = ColorStart;
                     ValidationStartTime();
                 }
-                ValidationConclude();
                 var Color = layoutControlItem17.AppearanceItemCaption.ForeColor;
                 if (txtLoaiPT.ReadOnly)
                 {
                     layoutControlItem17.AppearanceItemCaption.ForeColor = System.Drawing.Color.Black;
                     this.dxValidationProvider1.SetValidationRule(txtLoaiPT, null);
+
                 }
                 else
                 {
@@ -1890,6 +2351,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                     if (PriorityIsRequired == 1 || (PriorityIsRequired == 2 && this.serviceReq.SERVICE_REQ_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__PT))
                         ValidationGridLookUpWithTextEdit(cboLoaiPT, txtLoaiPT);
                 }
+                var KLColor = this.lciKetLuan.AppearanceItemCaption.ForeColor;
                 var ColorPL = lciPhanLoai.AppearanceItemCaption.ForeColor;
                 if (txtPtttGroupCode.ReadOnly)
                 {
@@ -1995,7 +2457,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                         if (data.Count == 1)
                         {
                             cbbPtttGroup.EditValue = data[0].ID;
-                            cbbPtttGroup.Properties.Buttons[1].Visible = true;
+                            cbbPtttGroup.Properties.Buttons[1].Visible = cbbPtttGroup.Properties.Buttons[1].Enabled ? true : false;
                             txtMethodCode.Focus();
                             txtMethodCode.SelectAll();
                         }
@@ -2005,7 +2467,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                             if (search != null)
                             {
                                 cbbPtttGroup.EditValue = search.ID;
-                                cbbPtttGroup.Properties.Buttons[1].Visible = true;
+                                cbbPtttGroup.Properties.Buttons[1].Visible = cbbPtttGroup.Properties.Buttons[1].Enabled ? true : false;
                                 txtMethodCode.Focus();
                                 txtMethodCode.SelectAll();
                             }
@@ -2158,7 +2620,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                         if (data.Count == 1)
                         {
                             cboMethod.EditValue = data[0].ID;
-                            cboMethod.Properties.Buttons[1].Visible = true;
+                            cboMethod.Properties.Buttons[1].Visible = cboMethod.Properties.Buttons[1].Enabled ? true : false;
                             txtPhuongPhap2.Focus();
                             txtPhuongPhap2.SelectAll();
                         }
@@ -2168,7 +2630,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                             if (search != null)
                             {
                                 cboMethod.EditValue = search.ID;
-                                cboMethod.Properties.Buttons[1].Visible = true;
+                                cboMethod.Properties.Buttons[1].Visible = cboMethod.Properties.Buttons[1].Enabled ? true : false;
                                 txtPhuongPhap2.Focus();
                                 txtPhuongPhap2.SelectAll();
                             }
@@ -2485,7 +2947,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                         if (data.Count == 1)
                         {
                             cboCondition.EditValue = data[0].ID;
-                            cboCondition.Properties.Buttons[1].Visible = true;
+                            cboCondition.Properties.Buttons[1].Visible = cboCondition.Properties.Buttons[1].Enabled ? true : false;
                             txtBlood.Focus();
                             txtBlood.SelectAll();
                         }
@@ -2495,7 +2957,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                             if (search != null)
                             {
                                 cboCondition.EditValue = search.ID;
-                                cboCondition.Properties.Buttons[1].Visible = true;
+                                cboCondition.Properties.Buttons[1].Visible = cboCondition.Properties.Buttons[1].Enabled ? true : false;
                                 txtBlood.Focus();
                                 txtBlood.SelectAll();
                             }
@@ -2649,7 +3111,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                         if (data.Count == 1)
                         {
                             cboCatastrophe.EditValue = data[0].ID;
-                            cboCatastrophe.Properties.Buttons[1].Visible = true;
+                            cboCatastrophe.Properties.Buttons[1].Visible = cboCatastrophe.Properties.Buttons[1].Enabled ? true : false;
                             txtDeathSurg.Focus();
                             txtDeathSurg.SelectAll();
                         }
@@ -2659,7 +3121,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                             if (search != null)
                             {
                                 cboCatastrophe.EditValue = search.ID;
-                                cboCatastrophe.Properties.Buttons[1].Visible = true;
+                                cboCatastrophe.Properties.Buttons[1].Visible = cboCatastrophe.Properties.Buttons[1].Enabled ? true : false;
                                 txtDeathSurg.Focus();
                                 txtDeathSurg.SelectAll();
                             }
@@ -2698,7 +3160,8 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 {
                     var data = HIS.Desktop.LocalStorage.BackendData.BackendDataWorker.Get<HIS_MACHINE>().Where(o =>
                         o.IS_ACTIVE == 1
-                        && o.MACHINE_CODE.Contains(searchCode)).ToList();
+                        && o.MACHINE_CODE.Contains(searchCode)
+                        && ("," + o.ROOM_IDS + ",").Contains("," + this.Module.RoomId + ",")).ToList();
                     if (data != null)
                     {
                         if (data.Count == 1)
@@ -2943,6 +3406,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                     //btnSwapService.Enabled = false;
                     ddbPhatSinh.Enabled = false;
                     btnAssignPre.Enabled = false;
+                    btnPresYhct.Enabled = false;
                     btnSave.Enabled = false;
                     btnFinish.Enabled = false;
                     EnableICD(false, txtIcdCode1, txtIcd1, cboIcd1, chkIcd1);
@@ -3006,6 +3470,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                     //btnSwapService.Enabled = true;
                     ddbPhatSinh.Enabled = true;
                     btnAssignPre.Enabled = true;
+                    btnPresYhct.Enabled = true;
                     btnSave.Enabled = true;
                     btnFinish.Enabled = !(HisConfigKeys.allowFinishWhenAccountIsDoctor == "1" && BackendDataWorker.Get<HIS_EMPLOYEE>().Where(o => o.LOGINNAME == Inventec.UC.Login.Base.ClientTokenManagerStore.ClientTokenManager.GetLoginName()).FirstOrDefault().IS_DOCTOR != 1);
 
@@ -3105,9 +3570,10 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 {
                     //ekipTemps = ekipTemps.Where(o => (o.IS_PUBLIC == 1 || o.CREATOR == logginName || (o.IS_PUBLIC_IN_DEPARTMENT == 1 && o.DEPARTMENT_ID == DepartmentID)) && o.IS_ACTIVE == 1).OrderByDescending(o => o.CREATE_TIME).ToList();
                     ekipTemps = ekipTemps.Where(o => o.CREATOR == logginName && o.IS_ACTIVE == 1).OrderByDescending(o => o.CREATE_TIME).ToList();
+
                 }
                 List<ColumnInfo> columnInfos = new List<ColumnInfo>();
-                columnInfos.Add(new ColumnInfo("EKIP_TEMP_NAME", "Tên", 250, 1));
+                columnInfos.Add(new ColumnInfo("EKIP_TEMP_NAME", "", 250, 1));
                 ControlEditorADO controlEditorADO = new ControlEditorADO("EKIP_TEMP_NAME", "ID", columnInfos, false, 250);
                 ControlEditorLoader.Load(cbo, ekipTemps, controlEditorADO);
             }

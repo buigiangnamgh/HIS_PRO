@@ -1,29 +1,48 @@
-﻿using System;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using ACS.EFMODEL.DataModels;
+using ACS.Filter;
+using AutoMapper;
+using DevExpress.XtraEditors;
+using DevExpress.XtraGrid.Columns;
+using HIS.Desktop.ADO;
+using HIS.Desktop.ApiConsumer;
+using HIS.Desktop.LocalStorage.BackendData;
+using HIS.Desktop.Plugins.SurgServiceReqExecute.Base;
+using HIS.Desktop.Plugins.SurgServiceReqExecute.Config;
+using HIS.Desktop.Utility;
+using Inventec.Common.Adapter;
+using Inventec.Common.Controls.EditorLoader;
+using Inventec.Core;
+using Inventec.Desktop.Common.LanguageManager;
+using MOS.EFMODEL.DataModels;
+using MOS.Filter;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
 using System.Data;
+using System.Drawing;
+using System.Dynamic;
 using System.Linq;
+using System.Resources;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using HIS.Desktop.ADO;
-using HIS.Desktop.Utility;
-using DevExpress.XtraEditors;
-using HIS.Desktop.Plugins.SurgServiceReqExecute.Base;
-using DevExpress.XtraGrid.Columns;
-using MOS.EFMODEL.DataModels;
-using Inventec.Core;
-using HIS.Desktop.LocalStorage.BackendData;
-using HIS.Desktop.ApiConsumer;
-using ACS.EFMODEL.DataModels;
-using Inventec.Common.Controls.EditorLoader;
-using MOS.Filter;
-using Inventec.Common.Adapter;
-using AutoMapper;
-using ACS.Filter;
-using System.Resources;
-using Inventec.Desktop.Common.LanguageManager;
 namespace HIS.Desktop.Plugins.SurgServiceReqExecute
 {
     public partial class UCEkipUser : UserControlBase
@@ -37,12 +56,21 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
         {
             InitializeComponent();
             this.SetCaptionByLanguageKey();
+            //AcsUserADOList = ProcessAcsUser();
+            //LoadDataToComboDepartment();
+            //ComboAcsUser();
+            //ComboExecuteRole();
+            //LoadExecuteRoleUser();
+
+        }
+
+        public void LoadUserData()
+        {
             AcsUserADOList = ProcessAcsUser();
             LoadDataToComboDepartment();
             ComboAcsUser();
             ComboExecuteRole();
             LoadExecuteRoleUser();
-
         }
 
         public void FillDataToGrid(List<HisEkipUserADO> lst)
@@ -370,13 +398,13 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
 
                 if (datas != null && datas.Count > 0)
                 {
-                    datas = datas.Where(p => p.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE && p.IS_DISABLE_IN_EKIP != IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE && p.IS_SURGRY == (short)1).ToList();
+                    datas = datas.Where(p => p.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE && p.IS_DISABLE_IN_EKIP != IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE).ToList();
                 }
 
                 List<ColumnInfo> columnInfos = new List<ColumnInfo>();
                 columnInfos.Add(new ColumnInfo("EXECUTE_ROLE_CODE", "", 150, 1));
                 columnInfos.Add(new ColumnInfo("EXECUTE_ROLE_NAME", "", 250, 2));
-                ControlEditorADO controlEditorADO = new ControlEditorADO("EXECUTE_ROLE_NAME", "ID", columnInfos, false, 250,30);
+                ControlEditorADO controlEditorADO = new ControlEditorADO("EXECUTE_ROLE_NAME", "ID", columnInfos, false, 250);
                 controlEditorADO.ImmediatePopup = true;
                 ControlEditorLoader.Load(cboPosition, datas, controlEditorADO);
             }
@@ -507,27 +535,60 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 if (view.FocusedColumn.FieldName == "LOGINNAME" && view.ActiveEditor is GridLookUpEdit)
                 {
                     GridLookUpEdit editor = view.ActiveEditor as GridLookUpEdit;
-                    List<string> loginNames = new List<string>();
-                    Inventec.Common.Logging.LogSystem.Debug("grdViewInformationSurg_ShownEditor data.EXECUTE_ROLE_ID " + data.EXECUTE_ROLE_ID);
-                    if (data != null && data.EXECUTE_ROLE_ID > 0)
-                    {
-                        if (data.LOGINNAME != null)
-                            editor.EditValue = data.LOGINNAME;
-                        var executeRoleUserTemps = executeRoleUsers != null ? executeRoleUsers.Where(o => o.EXECUTE_ROLE_ID == data.EXECUTE_ROLE_ID).ToList() : null;
-                        if (executeRoleUserTemps != null && executeRoleUserTemps.Count > 0)
-                        {
-                            loginNames = executeRoleUserTemps.Select(o => o.LOGINNAME).Distinct().ToList();
-                            Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData("grdViewInformationSurg_ShownEditor loginNames ", loginNames));
-                        }
-                    }
-
-                    ComboAcsUser(editor, loginNames);
-                    SetDepartment(data);
+                    LoadDataToUser(data, editor);
                     grdViewInformationSurg.RefreshData();
                 }
             }
             catch (Exception ex)
             {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+
+        private void LoadDataToUser(HisEkipUserADO data, GridLookUpEdit editor)
+        {
+            try
+            {
+                List<string> loginNames = new List<string>();
+
+
+                if (data != null && data.EXECUTE_ROLE_ID > 0)
+                {
+
+                    var executeRoleUserTemps = executeRoleUsers != null ? executeRoleUsers.Where(o => o.EXECUTE_ROLE_ID == data.EXECUTE_ROLE_ID).ToList() : null;
+                    if (executeRoleUserTemps != null && executeRoleUserTemps.Count > 0)
+                    {
+                        loginNames = executeRoleUserTemps.Select(o => o.LOGINNAME).Distinct().ToList();
+                    }
+                    if (data.LOGINNAME != null)
+                    {
+                        if (HisConfigCFG.SURG_SERVICE_REQ_EXECUTE_ROLE_USER_OPTION == "1")
+                        {
+                            if (loginNames.Contains(data.LOGINNAME))
+                            {
+                                editor.EditValue = data.LOGINNAME;
+                            }
+                            else
+                            {
+                                editor.EditValue = null;
+                                data.LOGINNAME = null;
+                            }
+                        }
+                        else
+                        {
+                            editor.EditValue = data.LOGINNAME;
+                        }
+                    }
+
+                }
+                ComboAcsUser(editor, loginNames);
+
+
+                SetDepartment(data);
+            }
+            catch (Exception ex)
+            {
+
                 Inventec.Common.Logging.LogSystem.Warn(ex);
             }
         }
@@ -605,9 +666,11 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 //BackendDataWorker.Get<HIS_EMPLOYEE>().FirstOrDefault(o => o.ID == this.serviceReq.EXECUTE_DEPARTMENT_ID);
                 if (loginNames != null && loginNames.Count > 0)
                 {
-
                     acsUserAlows = this.AcsUserADOList.Where(o => loginNames.Contains(o.LOGINNAME) && o.IS_ACTIVE == 1).ToList();
-
+                }
+                else if (HisConfigCFG.SURG_SERVICE_REQ_EXECUTE_ROLE_USER_OPTION == "1")
+                {
+                    acsUserAlows = null;
                 }
                 else
                 {
@@ -662,59 +725,88 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
 
         private List<AcsUserADO> ProcessAcsUser()
         {
-            List<AcsUserADO> AcsUserADOList = null;
+            List<AcsUserADO> AcsUserADOList = new List<AcsUserADO>();
+
             try
             {
-                List<ACS.EFMODEL.DataModels.ACS_USER> datas = null;
-                List<V_HIS_EMPLOYEE> employeeList = null;
+                var datas = BackendDataWorker.Get<ACS_USER>();
+                var employeeList = BackendDataWorker.Get<V_HIS_EMPLOYEE>();
+                var departmentList = BackendDataWorker.Get<HIS_DEPARTMENT>()
+                    .Where(o => o.IS_ACTIVE == 1 && o.IS_CLINICAL == 1)
+                    .ToList();
 
-                CommonParam paramCommon = new CommonParam();
-                dynamic filter = new System.Dynamic.ExpandoObject();
-                datas = HIS.Desktop.LocalStorage.BackendData.BackendDataWorker.Get<ACS.EFMODEL.DataModels.ACS_USER>();
-                if (datas != null) BackendDataWorker.UpdateToRam(typeof(ACS.EFMODEL.DataModels.ACS_USER), datas, long.Parse(DateTime.Now.ToString("yyyyMMddHHmmss")));
-                employeeList = new Inventec.Common.Adapter.BackendAdapter(new CommonParam()).Get<List<MOS.EFMODEL.DataModels.V_HIS_EMPLOYEE>>("api/HisEmployee/GetView", ApiConsumers.MosConsumer, filter, paramCommon);
-                if (employeeList != null) BackendDataWorker.UpdateToRam(typeof(MOS.EFMODEL.DataModels.V_HIS_EMPLOYEE), employeeList, long.Parse(DateTime.Now.ToString("yyyyMMddHHmmss")));
+                CommonParam param = new CommonParam();
+                dynamic filter = new ExpandoObject();
 
-                var departmentList = BackendDataWorker.Get<HIS_DEPARTMENT>().Where(o => o.IS_ACTIVE == 1 && o.IS_CLINICAL == 1).ToList();
-                AcsUserADOList = new List<AcsUserADO>();
-
-                foreach (var item in datas)
+                // Load from API if RAM empty
+                if (datas == null || datas.Count == 0)
                 {
-                    AcsUserADO user = new AcsUserADO();
-                    user.ID = item.ID;
-                    user.LOGINNAME = item.LOGINNAME;
-                    user.USERNAME = item.USERNAME;
-                    user.MOBILE = item.MOBILE;
-                    user.PASSWORD = item.PASSWORD;
-                    user.IS_ACTIVE = item.IS_ACTIVE;
+                    datas = new BackendAdapter(param)
+                        .Get<List<ACS_USER>>("api/AcsUser/Get", ApiConsumers.AcsConsumer, filter, param);
 
-                    var check = employeeList.FirstOrDefault(o => o.LOGINNAME == item.LOGINNAME);
-                    if (check != null)
-                    {
-
-                        user.DOB = Inventec.Common.DateTime.Convert.TimeNumberToDateString(check.DOB ?? 0);
-
-                        user.DIPLOMA = check.DIPLOMA;
-                        var checkDepartment = departmentList.FirstOrDefault(o => o.ID == check.DEPARTMENT_ID);
-
-                        if (checkDepartment != null)
-                        {
-                            user.DEPARTMENT_NAME = checkDepartment.DEPARTMENT_NAME;
-
-                        }
-                    }
-                    AcsUserADOList.Add(user);
+                    if (datas != null)
+                        BackendDataWorker.UpdateToRam(typeof(ACS_USER), datas, long.Parse(DateTime.Now.ToString("yyyyMMddHHmmss")));
                 }
 
-                AcsUserADOList = AcsUserADOList.OrderBy(o => o.USERNAME).ToList();
+                if (employeeList == null || employeeList.Count == 0)
+                {
+                    employeeList = new BackendAdapter(param)
+                        .Get<List<V_HIS_EMPLOYEE>>("api/HisEmployee/GetView", ApiConsumers.MosConsumer, filter, param);
+
+                    if (employeeList != null)
+                        BackendDataWorker.UpdateToRam(typeof(V_HIS_EMPLOYEE), employeeList, long.Parse(DateTime.Now.ToString("yyyyMMddHHmmss")));
+                }
+
+                // ⭐ Tối ưu lookup
+                var employeeDict =employeeList!=null? employeeList
+                    .Where(o => o.IS_ACTIVE == 1)
+                    .GroupBy(o => o.LOGINNAME)
+                    .ToDictionary(g => g.Key, g => g.First()):null;
+
+                var departmentDict = departmentList
+                    .ToDictionary(o => o.ID, o => o);
+
+                if (datas != null)
+                {
+                    foreach (var item in datas)
+                    {
+                        var user = new AcsUserADO()
+                        {
+                            ID = item.ID,
+                            LOGINNAME = item.LOGINNAME,
+                            USERNAME = item.USERNAME,
+                            MOBILE = item.MOBILE,
+                            PASSWORD = item.PASSWORD
+                        };
+                        MOS.EFMODEL.DataModels.V_HIS_EMPLOYEE emp;
+                        // ⭐ Lookup O(1) thay vì FirstOrDefault O(n)
+                        if (employeeDict != null && employeeDict.TryGetValue(item.LOGINNAME, out emp))
+                        {
+                            user.IS_ACTIVE = emp.IS_ACTIVE;
+                            user.DOB_STR = Inventec.Common.DateTime.Convert.TimeNumberToDateString(emp.DOB ?? 0);
+                            user.DIPLOMA = emp.DIPLOMA;
+                            HIS_DEPARTMENT dept;
+                            if (emp.DEPARTMENT_ID.HasValue && departmentDict.TryGetValue(emp.DEPARTMENT_ID.Value, out dept))
+                            {
+                                user.DEPARTMENT_NAME = dept.DEPARTMENT_NAME;
+                            }
+                        }
+
+                        AcsUserADOList.Add(user);
+                    }
+
+                    AcsUserADOList = AcsUserADOList.OrderBy(o => o.USERNAME).ToList();
+                }
             }
             catch (Exception ex)
             {
-                AcsUserADOList = null;
                 Inventec.Common.Logging.LogSystem.Warn(ex);
+                return null;
             }
+
             return AcsUserADOList;
         }
+
 
         private async Task ComboAcsUser()
         {
@@ -979,6 +1071,44 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
             }
             catch (Exception ex)
             {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+
+        private void cboPosition_Closed(object sender, DevExpress.XtraEditors.Controls.ClosedEventArgs e)
+        {
+            try
+            {
+                LookUpEdit edit = sender as LookUpEdit;
+                if (edit == null) return;
+                if (edit.EditValue != null)
+                {
+                    if ((edit.EditValue ?? 0).ToString() != (edit.OldEditValue ?? 0).ToString())
+                    {
+                        DevExpress.XtraGrid.Views.Grid.GridView view = grdViewInformationSurg as DevExpress.XtraGrid.Views.Grid.GridView;
+                        var data = (HisEkipUserADO)grdViewInformationSurg.GetFocusedRow();
+                        data.EXECUTE_ROLE_ID = Convert.ToInt64(edit.EditValue);
+                        GridLookUpEdit editor = view.ActiveEditor as GridLookUpEdit;
+                        if (editor != null)
+                        {
+                            LoadDataToUser(data, editor);
+                        }
+                        else
+                        {
+                            GridLookUpEdit newEditor = new GridLookUpEdit();
+                            LoadDataToUser(data, newEditor);
+                        }
+                        if (data.LOGINNAME == null && (HisConfigCFG.SURG_SERVICE_REQ_EXECUTE_ROLE_USER_OPTION == "1"))
+                        {
+                            view.SetRowCellValue(view.FocusedRowHandle, view.Columns["LOGINNAME"], null);
+                        }
+
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
                 Inventec.Common.Logging.LogSystem.Warn(ex);
             }
         }

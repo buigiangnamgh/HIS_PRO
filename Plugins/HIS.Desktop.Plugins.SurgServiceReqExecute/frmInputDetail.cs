@@ -1,9 +1,27 @@
-﻿using DevExpress.Utils;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using DevExpress.Utils;
 using DevExpress.XtraEditors;
 using DevExpress.XtraEditors.Controls;
 using HIS.Desktop.ApiConsumer;
 using HIS.Desktop.Plugins.SurgServiceReqExecute.Base;
 using Inventec.Common.Adapter;
+using Inventec.Common.Logging;
 using Inventec.Core;
 using Inventec.Desktop.Common.LanguageManager;
 using Inventec.Desktop.Common.LocalStorage.Location;
@@ -39,7 +57,13 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
         long LOAI_PT_MAT = 0;//: LOAI_PT_MAT: 1: PT glocom, 2: PT mộng; 3: PT duc thuy tinh the, 4: PT tai tao le quan, 5: PT sup mi, 6: TT laser yag, 7: TT mong mat
         bool isFirstLoad = true;
         List<DmvADO> lstDataDmv { get; set; }
-        public frmInputDetail(V_HIS_SERE_SERV_5 sereServ, HIS_EYE_SURGRY_DESC eyeSurgDesc, List<HIS_STENT_CONCLUDE> StenConclude, Action<HIS_EYE_SURGRY_DESC> getEyeSurgryDescLast, SkinSurgeryDesADO skinSurgeryDes, Action<SkinSurgeryDesADO> actionSkinSurgeryDes, V_HIS_SERE_SERV_PTTT sereServPTTT, Action<V_HIS_SERE_SERV_PTTT> actionSereServPTTT, Action<List<HIS_STENT_CONCLUDE>> ActionStentConclude)
+        bool isReset { get; set; }
+      public bool ShouldFocusOtherTab { get; set; }
+
+        private long instructionTime;
+        private DateTime? dtStartTime;
+        private DateTime? dtFinishTime;
+        public frmInputDetail(V_HIS_SERE_SERV_5 sereServ, HIS_EYE_SURGRY_DESC eyeSurgDesc, List<HIS_STENT_CONCLUDE> StenConclude, Action<HIS_EYE_SURGRY_DESC> getEyeSurgryDescLast, SkinSurgeryDesADO skinSurgeryDes, Action<SkinSurgeryDesADO> actionSkinSurgeryDes, V_HIS_SERE_SERV_PTTT sereServPTTT, Action<V_HIS_SERE_SERV_PTTT> actionSereServPTTT, Action<List<HIS_STENT_CONCLUDE>> ActionStentConclude, long instructionTime, DateTime? dtStartTime, DateTime? dtFinishTime)
         {
             InitializeComponent();
             try
@@ -53,6 +77,9 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 this.SereServPTTT = sereServPTTT;
                 this.ActionSereServPTTT = actionSereServPTTT;
                 this.ActionStentConclude = ActionStentConclude;
+                this.instructionTime = instructionTime;
+                this.dtStartTime = dtStartTime;
+                this.dtFinishTime = dtFinishTime;
                 SetIcon();
             }
             catch (Exception ex)
@@ -60,7 +87,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 Inventec.Common.Logging.LogSystem.Error(ex);
             }
         }
-
+       
         private void SetIcon()
         {
             try
@@ -123,6 +150,20 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 LoadTTSkin();
                 LoadDMV();
                 LoadSereServPTTT_Other();
+
+                xtraTabControl1.ShowTabHeader = DefaultBoolean.False;
+                if (ShouldFocusOtherTab)
+                {
+                    xtraTabAddInfo.SelectedTabPage = xtraTabOther;
+                }
+                bool require = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>("HIS.Desktop.Plugins.SurgServiceReqExecute.RequirePrepCleaningAndGrouping") == "1";
+                if (require)
+                {
+                    this.layoutControlItem357.AppearanceItemCaption.ForeColor = System.Drawing.Color.Maroon;
+                    this.layoutControlItem358.AppearanceItemCaption.ForeColor = System.Drawing.Color.Maroon;
+                    this.layoutControlItem360.AppearanceItemCaption.ForeColor = System.Drawing.Color.Maroon;
+                    this.layoutControlItem361.AppearanceItemCaption.ForeColor = System.Drawing.Color.Maroon;
+                }
                 isFirstLoad = false;
             }
             catch (Exception ex)
@@ -185,6 +226,22 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                     if (this.SereServPTTT.CUT_SEWING_DATE != null)
                     {
                         dtSewingDate.DateTime = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(this.SereServPTTT.CUT_SEWING_DATE ?? 0) ?? new DateTime();
+                    }
+                    if (this.SereServPTTT.PREPARE_ROOM_TIME_FROM != null)
+                    {
+                        fromDatePrepareRoom.DateTime = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(this.SereServPTTT.PREPARE_ROOM_TIME_FROM ?? 0) ?? new DateTime();
+                    }
+                    if (this.SereServPTTT.PREPARE_ROOM_TIME_TO != null)
+                    {
+                        toDatePrepareRoom.DateTime = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(this.SereServPTTT.PREPARE_ROOM_TIME_TO ?? 0) ?? new DateTime();
+                    }
+                    if (this.SereServPTTT.CLEAR_ROOM_TIME_FROM != null)
+                    {
+                        fromDateClearRoom.DateTime = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(this.SereServPTTT.CLEAR_ROOM_TIME_FROM ?? 0) ?? new DateTime();
+                    }
+                    if (this.SereServPTTT.CLEAR_ROOM_TIME_TO != null)
+                    {
+                        toDateClearRoom.DateTime = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(this.SereServPTTT.CLEAR_ROOM_TIME_TO ?? 0) ?? new DateTime();
                     }
                     txtOther.Text = this.SereServPTTT.OTHER;
                 }
@@ -277,6 +334,10 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
         {
             try
             {
+                if (isReset) return;
+
+                DefaultChosen();
+                TextDefault();
                 //dynamic eyeSurgDesc = new System.Dynamic.ExpandoObject();
                 //4. Phẫu thuật tái tạo lệ quản:
                 //- CHAN_DOAN_DUT_LE_QUAN: 1: Dut le quan duoi; 2: Dut le quan tren; 3: Dut le quan tren duoi
@@ -459,8 +520,6 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 {
                     checkEdit144.Checked = false;
                 }
-                DefaultChosen();
-                TextDefault();
                 //- TRA_MAT_BANG_EP: 0: khong, 1: co
             }
             catch (Exception ex)
@@ -473,6 +532,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
         {
             try
             {
+                if (isReset) return;
                 TextDefaultPTSupMi();
                 //dynamic eyeSurgDesc = new System.Dynamic.ExpandoObject();
                 //5. Phẫu thuật sụp mí:
@@ -722,6 +782,9 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
         {
             try
             {
+                if (isReset) return;
+                DefaultChosenGlocom();
+                TextDefaultGlocom();
                 //dynamic eyeSurgDesc = new System.Dynamic.ExpandoObject();                
 
                 //- CHAN_DOAN: 6: glocom goc dong, 7: glocom goc mo, 8: glocom bam sinh, 9: glocom thu phat
@@ -939,8 +1002,6 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
 
                 textEdit6.Text = eyeSurgDesc.TRA_MAT_THUOC;
                 textEdit2.Text = eyeSurgDesc.TRA_MAT_BANG_TT;
-                DefaultChosenGlocom();
-                TextDefaultGlocom();
             }
             catch (Exception ex)
             {
@@ -952,6 +1013,9 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
         {
             try
             {
+                if (isReset) return;
+                DefaultChosenDucTTT();
+                TextDefaultDucTTT();
                 //dynamic eyeSurgDesc = new System.Dynamic.ExpandoObject();
                 //3: Phẫu thuật đục thủy tinh thể:
                 if (eyeSurgDesc.CHAN_DOAN == 1)
@@ -1047,9 +1111,9 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 textEdit1.Text = eyeSurgDesc.MO_VAO_TP_KINH_TUYEN;
                 //- Mo_vao_tp_kinh_tuyen: (gio)
                 if (eyeSurgDesc.MO_VAO_TP_KICH_THUOC != null)
-                    spinEdit2.EditValue = eyeSurgDesc.MO_VAO_TP_KICH_THUOC;
+                    txtkichthuoc.EditValue = eyeSurgDesc.MO_VAO_TP_KICH_THUOC;
                 else
-                    spinEdit2.EditValue = 2.2f;
+                    txtkichthuoc.EditValue = "";///////////////////////////////////////// ==> vừa sửa ở đây
                 //- Mo_vao_tp_kich_thuoc: (mm)
 
                 checkEdit12.Checked = (eyeSurgDesc.MO_VAO_TP_RACH_PHU == null || eyeSurgDesc.MO_VAO_TP_RACH_PHU == 1);
@@ -1087,20 +1151,20 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 //- Cach_day_nhan: 1: bang nuoc, 2: bang chat nhay
 
                 if (eyeSurgDesc.TAN_NHAN_NANG_LUONG != null)
-                    spinEdit3.EditValue = eyeSurgDesc.TAN_NHAN_NANG_LUONG;
+                    txtNangLuong.EditValue = eyeSurgDesc.TAN_NHAN_NANG_LUONG;
                 else
-                    spinEdit3.EditValue = 50;
+                    txtNangLuong.EditValue = "";///////////////////////////////// ==> vừa sửa ở đây
                 //- Tan_nhan_nang_luong: (%)
 
                 if (eyeSurgDesc.TAN_NHAN_LUC_HUT != null)
-                    spinEdit5.EditValue = eyeSurgDesc.TAN_NHAN_LUC_HUT;
+                    txtLucHut.EditValue = eyeSurgDesc.TAN_NHAN_LUC_HUT;
                 else
-                    spinEdit5.EditValue = 380;
+                    txtLucHut.EditValue = "";////////////////////////////// ==> vừa sửa ở đây
                 //- Tan_nhan_luc_hut: (mmHg)
                 if (eyeSurgDesc.TAN_NHAN_TOC_DO_DC != null)
                     textEdit7.EditValue = eyeSurgDesc.TAN_NHAN_TOC_DO_DC;
                 else
-                    textEdit7.EditValue = 30;
+                    textEdit7.EditValue = "";///////////////////////////// ==> vừa sửa ở đây
                 //- Tan_nhan_toc_do_dc:
 
                 if (eyeSurgDesc.HUT_CHAT_T3 == null || eyeSurgDesc.HUT_CHAT_T3 == 1)
@@ -1143,14 +1207,17 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 //- Rach_bao_sau: 0: khong; 1: co
 
                 if (eyeSurgDesc.CAT_BAO_SAU == null || eyeSurgDesc.CAT_BAO_SAU == 0)
+                {
                     raRBSCBSKhong.Checked = true;
+                    eyeSurgDesc.CAT_BAO_SAU_CACH_THUC = 0;//////////////// ==> sửa ở đây
+                }
                 else if (eyeSurgDesc.CAT_BAO_SAU == 1)
                     raRBSCBSCo.Checked = true;
                 //- Cat_bao_sau: 0: khong, 1: co
 
                 if (eyeSurgDesc.CAT_BAO_SAU_CACH_THUC == 1)
                     raRBSCBSCatBangKeo.Checked = true;
-                else //if (eyeSurgDesc.CAT_BAO_SAU_CACH_THUC == 2)
+                else if (eyeSurgDesc.CAT_BAO_SAU_CACH_THUC == 2)
                     raRBSCBSMayCatDK.Checked = true;
                 //- Cat_bao_sau_cach_thuc: 1: bang keo, 2: may cat DK
 
@@ -1194,7 +1261,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                     raTiemMatCNC.Checked = true;
                 //- Tiem_mat_tt_bo_sung: 1: tien phong, 2: duoi km, 3: CNC
                 if (eyeSurgDesc.TIEM_MAT_THUOC == null)
-                    txtLoaiThuocForraTiemMat.Text = "vancomycin";
+                    txtLoaiThuocForraTiemMat.Text = "";////////////////////////// ==> vừa sửa ở đây
                 else
                     txtLoaiThuocForraTiemMat.Text = eyeSurgDesc.TIEM_MAT_THUOC;
                 //- Tiem_mat_thuoc:
@@ -1205,7 +1272,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                     raTraMatMo.Checked = true;
                 //- Tra_mat: 1: dung dich, 2: mong
                 if (eyeSurgDesc.TRA_MAT_THUOC == null)
-                    txtLoaiThuocForraTraMat.Text = "Vigamox 0.5% 5ml";
+                    txtLoaiThuocForraTraMat.Text = "";////////////////////////// ==> vừa sửa ở đây
                 else
                     txtLoaiThuocForraTraMat.Text = eyeSurgDesc.TRA_MAT_THUOC;
                 //- Tra_mat_thuoc:
@@ -1216,8 +1283,6 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 //- Tra_mat_bang_ep: 0: khong, 1: co
                 txtDienBienKhac.Text = eyeSurgDesc.DIEN_BIEN_KHAC;
                 //- Dien_bien_khac
-                DefaultChosenDucTTT();
-                TextDefaultDucTTT();
             }
             catch (Exception ex)
             {
@@ -1229,6 +1294,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
         {
             try
             {
+                if (isReset) return;
                 //dynamic eyeSurgDesc = new System.Dynamic.ExpandoObject();
                 //7. Thủ thuật mống mắt:
                 if (eyeSurgDesc.CHAN_DOAN_NGHI_NGO_GLOCOM == 1)
@@ -1295,6 +1361,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
         {
             try
             {
+                if (isReset) return;
                 //dynamic eyeSurgDesc = new System.Dynamic.ExpandoObject();
                 //2. Phẫu thuật mộng:
                 //- MAT_PHAU_THUAT: 1: mat phai, 2: mat trai
@@ -1418,6 +1485,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
         {
             try
             {
+                if (isReset) return;
                 //dynamic eyeSurgDesc = new System.Dynamic.ExpandoObject();
                 //- CD_DUC_BAO_SAU_SAU_MO_TTT: Chan doan duc sau mo TTT. 1: Mat phai duc bao sau sau mo PTTT; 2: Mat trai duc bao sau sau mo PTTT
                 //- LASER_YAG_NANG_LUONG: 4: 1.5mj; 5: 2mj; 3: Khac
@@ -1695,7 +1763,6 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
         {
             try
             {
-                TextDefaultPTSupMi();
                 //dynamic eyeSurgDesc = new System.Dynamic.ExpandoObject();
                 //5. Phẫu thuật sụp mí:
                 if (checkEdit141.Checked)
@@ -2218,8 +2285,6 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
         {
             try
             {
-                DefaultChosenDucTTT();
-                TextDefaultDucTTT();
                 //dynamic eyeSurgDesc = new System.Dynamic.ExpandoObject();
                 //3: Phẫu thuật đục thủy tinh thể:
                 if (raDucT3Gia.Checked)
@@ -2323,7 +2388,11 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
 
                 eyeSurgDesc.MO_VAO_TP_KINH_TUYEN = textEdit1.Text;
                 //- Mo_vao_tp_kinh_tuyen: (gio)
-                eyeSurgDesc.MO_VAO_TP_KICH_THUOC = spinEdit2.EditValue != null ? spinEdit2.Value.ToString() : "";
+                //qtcode
+                //eyeSurgDesc.MO_VAO_TP_KICH_THUOC = txtkichthuoc.EditValue != null ? (decimal?)txtkichthuoc.EditValue : null;
+
+
+                eyeSurgDesc.MO_VAO_TP_KICH_THUOC = string.IsNullOrWhiteSpace(txtkichthuoc.Text) ? null : (txtkichthuoc.Text);
                 //- Mo_vao_tp_kich_thuoc: (mm)
 
                 eyeSurgDesc.MO_VAO_TP_RACH_PHU = checkEdit12.Checked ? (short?)1 : (short?)0;
@@ -2371,10 +2440,11 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 else
                     eyeSurgDesc.CACH_DAY_NHAN = null;
                 //- Cach_day_nhan: 1: bang nuoc, 2: bang chat nhay
-
-                eyeSurgDesc.TAN_NHAN_NANG_LUONG = spinEdit3.EditValue != null ? (decimal?)spinEdit3.Value : null;
-
-                eyeSurgDesc.TAN_NHAN_LUC_HUT = spinEdit5.EditValue != null ? (decimal?)spinEdit5.Value : null;
+                //qtcode
+                //eyeSurgDesc.TAN_NHAN_NANG_LUONG = txtNangLuong.EditValue != null ? (decimal?)txtNangLuong.EditValue : null;
+                eyeSurgDesc.TAN_NHAN_NANG_LUONG = string.IsNullOrWhiteSpace(txtNangLuong.EditValue!=null? txtNangLuong.EditValue.ToString():"") ? null : (decimal?)Convert.ToDecimal(txtNangLuong.EditValue);
+                //eyeSurgDesc.TAN_NHAN_LUC_HUT = txtLucHut.EditValue != null ? (decimal?)txtLucHut.EditValue : null;
+                eyeSurgDesc.TAN_NHAN_LUC_HUT = string.IsNullOrWhiteSpace(txtLucHut.EditValue!=null? txtLucHut.EditValue.ToString():"") ? null : (decimal?)Convert.ToDecimal(txtLucHut.EditValue);
                 //- Tan_nhan_luc_hut: (mmHg)
 
                 eyeSurgDesc.TAN_NHAN_TOC_DO_DC = textEdit7.Text;
@@ -2418,14 +2488,20 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 {
                     eyeSurgDesc.RACH_BAO_SAU = 1;
                     eyeSurgDesc.RACH_BAO_SAU_VI_TRI = txtViTriRachForraRachBaoSau.Text;
+                    //qtcode
                     //- Rach_bao_sau_vi_tri:
-                    eyeSurgDesc.RACH_BAO_SAU_KICH_THUOC = spinKichThuocRachForraRachBaoSau.EditValue != null ? spinKichThuocRachForraRachBaoSau.Value.ToString() : "";
+                    //eyeSurgDesc.RACH_BAO_SAU_KICH_THUOC = spinKichThuocRachForraRachBaoSau.EditValue != null ? (decimal?)spinKichThuocRachForraRachBaoSau.Value : null;
+                    eyeSurgDesc.RACH_BAO_SAU_KICH_THUOC = !string.IsNullOrWhiteSpace(spinKichThuocRachForraRachBaoSau.Text)? spinKichThuocRachForraRachBaoSau.Text : null;
                     //- Rach_bao_sau_kich_thuoc:
                 }
                 //- Rach_bao_sau: 0: khong; 1: co
 
                 if (raRBSCBSKhong.Checked)
+                {
                     eyeSurgDesc.CAT_BAO_SAU = 0;
+                    eyeSurgDesc.CAT_BAO_SAU_CACH_THUC = 0;
+                }
+
                 else if (raRBSCBSCo.Checked)
                     eyeSurgDesc.CAT_BAO_SAU = 1;
                 else
@@ -2437,7 +2513,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 else if (raRBSCBSMayCatDK.Checked)
                     eyeSurgDesc.CAT_BAO_SAU_CACH_THUC = 2;
                 else
-                    eyeSurgDesc.CAT_BAO_SAU_CACH_THUC = null;
+                    eyeSurgDesc.CAT_BAO_SAU_CACH_THUC = 0;////////////////////////////// ==> mới sửa chỗ này
                 //- Cat_bao_sau_cach_thuc: 1: bang keo, 2: may cat DK
 
                 if (raRBSCMMNVKhong.Checked)
@@ -2934,11 +3010,17 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 Inventec.Common.Logging.LogSystem.Error(ex);
             }
         }
-
+      
         private void simpleButton2_Click(object sender, EventArgs e)
         {
             try
             {
+                bool isValid = checkValidDate(null, EventArgs.Empty);
+                if (!isValid)
+                {
+                    return;
+                }
+
                 if (xtraTabAddInfo.SelectedTabPage == xtraTabEye)
                 {
                     HIS_EYE_SURGRY_DESC eyeSurgDescTmp = new HIS_EYE_SURGRY_DESC();
@@ -3097,6 +3179,22 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 {
                     this.SereServPTTT.CUT_SEWING_DATE = Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(dtSewingDate.DateTime);
                 }
+                if (fromDatePrepareRoom.EditValue != null && fromDatePrepareRoom.DateTime != DateTime.MinValue)
+                {
+                    this.SereServPTTT.PREPARE_ROOM_TIME_FROM = Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(fromDatePrepareRoom.DateTime);
+                }
+                if (toDatePrepareRoom.EditValue != null && fromDatePrepareRoom.DateTime != DateTime.MinValue)
+                {
+                    this.SereServPTTT.PREPARE_ROOM_TIME_TO = Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(toDatePrepareRoom.DateTime);
+                }
+                if (fromDateClearRoom.EditValue != null && fromDatePrepareRoom.DateTime != DateTime.MinValue)
+                {
+                    this.SereServPTTT.CLEAR_ROOM_TIME_FROM = Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(fromDateClearRoom.DateTime);
+                }
+                if (toDateClearRoom.EditValue != null && fromDatePrepareRoom.DateTime != DateTime.MinValue)
+                {
+                    this.SereServPTTT.CLEAR_ROOM_TIME_TO = Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(toDateClearRoom.DateTime);
+                }
                 this.SereServPTTT.OTHER = txtOther.Text;
             }
             catch (Exception ex)
@@ -3215,6 +3313,11 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                     this.SereServPTTT.OTHER = null;
                     this.SereServPTTT.DRAW_DATE = null;
                     this.SereServPTTT.CUT_SEWING_DATE = null;
+                    this.SereServPTTT.PREPARE_ROOM_TIME_FROM = null;
+                    this.SereServPTTT.PREPARE_ROOM_TIME_TO = null;
+                    this.SereServPTTT.CLEAR_ROOM_TIME_FROM = null;
+                    this.SereServPTTT.CLEAR_ROOM_TIME_TO = null;
+
                     if (this.ActionSereServPTTT != null)
                         this.ActionSereServPTTT(this.SereServPTTT);
                     this.Close();
@@ -4401,6 +4504,8 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 if (raRBSCBSKhong.Checked)
                 {
                     raRBSCBSCo.Checked = false;
+                    raRBSCBSCatBangKeo.Checked = false;
+                    raRBSCBSMayCatDK.Checked = false;
                 }
             }
             catch (Exception ex)
@@ -4506,6 +4611,9 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 if (raTiemMatKhong.Checked)
                 {
                     raTiemMatCo.Checked = false;
+                    raTiemMatTienPhong.Checked = false;
+                    raTiemMatDuoiKM.Checked = false;
+                    raTiemMatCNC.Checked = false;
                 }
             }
             catch (Exception ex)
@@ -7002,7 +7110,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 Resources.ResourceLanguageManager.LanguageResource__frmInputDetail = new ResourceManager("HIS.Desktop.Plugins.SurgServiceReqExecute.Resources.Lang", typeof(frmInputDetail).Assembly);
 
                 ////Gan gia tri cho cac control editor co Text/Caption/ToolTip/NullText/NullValuePrompt/FindNullPrompt
-                this.layoutControl1.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.layoutControl1.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
+                this.lcPtDucTTT.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.layoutControl1.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.raTraMatMo.Properties.Caption = Inventec.Common.Resource.Get.Value("frmInputDetail.raTraMatMo.Properties.Caption", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.checkEdit10.Properties.Caption = Inventec.Common.Resource.Get.Value("frmInputDetail.checkEdit10.Properties.Caption", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.raTraMatDD.Properties.Caption = Inventec.Common.Resource.Get.Value("frmInputDetail.raTraMatDD.Properties.Caption", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
@@ -7118,7 +7226,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 this.layoutControl4.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.layoutControl4.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.tabPageGlocom.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.tabPageGlocom.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.layoutControl6.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.layoutControl6.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
-                this.layoutControl7.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.layoutControl7.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
+                this.lcGlocom.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.layoutControl7.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.labelControl33.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.labelControl33.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.checkEdit1.Properties.Caption = Inventec.Common.Resource.Get.Value("frmInputDetail.checkEdit1.Properties.Caption", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.checkEdit2.Properties.Caption = Inventec.Common.Resource.Get.Value("frmInputDetail.checkEdit2.Properties.Caption", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
@@ -7223,7 +7331,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 this.layoutControl8.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.layoutControl8.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.tabPagePTMong.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.tabPagePTMong.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.layoutControl9.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.layoutControl9.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
-                this.layoutControl10.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.layoutControl10.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
+                this.lcPtMong.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.layoutControl10.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.checkEdit72.Properties.Caption = Inventec.Common.Resource.Get.Value("frmInputDetail.checkEdit72.Properties.Caption", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.checkEdit108.Properties.Caption = Inventec.Common.Resource.Get.Value("frmInputDetail.checkEdit108.Properties.Caption", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.labelControl20.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.labelControl20.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
@@ -7271,7 +7379,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 this.layoutControl11.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.layoutControl11.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.TabPagePTSupMi.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.TabPagePTSupMi.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.layoutControl12.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.layoutControl12.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
-                this.layoutControl13.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.layoutControl13.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
+                this.lcPtSupMi.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.layoutControl13.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.labelControl53.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.labelControl53.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.labelControl19.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.labelControl19.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.labelControl21.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.labelControl21.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
@@ -7348,7 +7456,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 this.layoutControl14.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.layoutControl14.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.TabPageTaiTaoLeQuan.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.TabPageTaiTaoLeQuan.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.layoutControl15.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.layoutControl15.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
-                this.layoutControl16.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.layoutControl16.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
+                this.lcTaiTaoLeQuan.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.layoutControl16.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.checkEdit144.Properties.Caption = Inventec.Common.Resource.Get.Value("frmInputDetail.checkEdit144.Properties.Caption", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.checkEdit171.Properties.Caption = Inventec.Common.Resource.Get.Value("frmInputDetail.checkEdit171.Properties.Caption", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.checkEdit173.Properties.Caption = Inventec.Common.Resource.Get.Value("frmInputDetail.checkEdit173.Properties.Caption", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
@@ -7406,7 +7514,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 this.layoutControl17.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.layoutControl17.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.TabPageTTMongMat.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.TabPageTTMongMat.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.layoutControl18.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.layoutControl18.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
-                this.layoutControl19.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.layoutControl19.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
+                this.lcTTMongMat.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.layoutControl19.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.labelControl28.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.labelControl28.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.labelControl37.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.labelControl37.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.labelControl38.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.labelControl38.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
@@ -7433,7 +7541,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 this.layoutControl20.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.layoutControl20.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.TabPageTTTLaser.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.TabPageTTTLaser.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.layoutControl21.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.layoutControl21.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
-                this.layoutControl22.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.layoutControl22.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
+                this.lcTTTLaser.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.layoutControl22.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.labelControl31.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.labelControl31.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.labelControl29.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.labelControl29.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.labelControl30.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.labelControl30.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
@@ -7461,7 +7569,7 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
                 this.layoutControl2.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.layoutControl2.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.xtraTabEye.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.xtraTabEye.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.xtraTabSkin.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.xtraTabSkin.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
-                this.layoutControl25.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.layoutControl25.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
+                this.lcDaLieu.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.layoutControl25.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.labelControl44.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.labelControl44.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.labelControl43.Text = Inventec.Common.Resource.Get.Value("frmInputDetail.labelControl43.Text", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
                 this.chkDiscloseSkin.Properties.Caption = Inventec.Common.Resource.Get.Value("frmInputDetail.chkDiscloseSkin.Properties.Caption", Resources.ResourceLanguageManager.LanguageResource__frmInputDetail, LanguageManager.GetCulture());
@@ -7689,6 +7797,266 @@ namespace HIS.Desktop.Plugins.SurgServiceReqExecute
             {
                 Inventec.Common.Logging.LogSystem.Warn(ex);
             }
+        }
+
+        private void btnReset_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                isReset = true;
+                List<DevExpress.XtraLayout.LayoutControl> layoutControls = new List<DevExpress.XtraLayout.LayoutControl>
+                    {
+                        lcPtDucTTT, lcGlocom, lcPtMong, lcPtSupMi, lcTaiTaoLeQuan, lcTTMongMat, lcTTTLaser, lcDaLieu, lcDieuTriCanThiepDMV, layoutControl_TabOther
+                    };
+                foreach (DevExpress.XtraLayout.LayoutControl layoutControl in layoutControls)
+                {
+                    layoutControl.BeginUpdate();
+                    try
+                    {
+                        foreach (DevExpress.XtraLayout.BaseLayoutItem item in layoutControl.Items)
+                        {
+                            DevExpress.XtraLayout.LayoutControlItem lci = item as DevExpress.XtraLayout.LayoutControlItem;
+                            if (lci != null && lci.Control != null)
+                            {
+                                if ((lci.Control is BaseEdit) && !(lci.Control is DevExpress.XtraEditors.CheckEdit))
+                                {
+                                    DevExpress.XtraEditors.BaseEdit fomatFrm = lci.Control as DevExpress.XtraEditors.BaseEdit;
+
+                                    fomatFrm.EditValue = null;
+                                    fomatFrm.Text = null;
+                                }
+                                else if (lci.Control is DevExpress.XtraEditors.CheckEdit)
+                                {
+                                    DevExpress.XtraEditors.CheckEdit checkEdit = lci.Control as DevExpress.XtraEditors.CheckEdit;
+
+                                    checkEdit.Checked = false;
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Inventec.Common.Logging.LogSystem.Warn(ex);
+                    }
+                    finally
+                    {
+                        layoutControl.EndUpdate();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+
+        //private void spinKichThuocRachForraRachBaoSau_KeyPress(object sender, KeyPressEventArgs e)
+        //{
+        //    if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+        //    {
+        //        e.Handled = true; // Ngăn nhập ký tự không phải số
+        //    }
+        //}
+
+        //private void txtkichthuoc_KeyPress(object sender, KeyPressEventArgs e)
+        //{
+        //    if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+        //    {
+        //        e.Handled = true; // Ngăn nhập ký tự không phải số
+        //    }
+        //}
+
+        //private void txtNangLuong_KeyPress(object sender, KeyPressEventArgs e)
+        //{
+        //    if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+        //    {
+        //        e.Handled = true; // Ngăn nhập ký tự không phải số
+        //    }
+        //}
+
+        //private void txtLucHut_KeyPress(object sender, KeyPressEventArgs e)
+        //{
+        //    if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+        //    {
+        //        e.Handled = true; // Ngăn nhập ký tự không phải số
+        //    }
+        //}
+        private bool checkValidDate(object sender, EventArgs e)
+        {
+            try
+            {
+                bool require = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>("HIS.Desktop.Plugins.SurgServiceReqExecute.RequirePrepCleaningAndGrouping") == "1";
+
+                DateTime? fromDatePrepareRoomVal = fromDatePrepareRoom.EditValue as DateTime?;
+                DateTime? toDatePrepareRoomVal = toDatePrepareRoom.EditValue as DateTime?;
+                DateTime? intrucTime = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(instructionTime);
+                DateTime? fromDateClearRoomVal = fromDateClearRoom.EditValue as DateTime?;
+                DateTime? toDateClearRoomVal = toDateClearRoom.EditValue as DateTime?;
+                //-----------------------THỜI GIAN CHUẨN BỊ PHÒNG MỔ-----------------------
+                // Bắt buộc nhập Bắt đầu
+               
+                if (require && (fromDatePrepareRoomVal == null || fromDatePrepareRoomVal == DateTime.MinValue))
+                {
+                    var result = MessageBox.Show(
+                    "Thời gian bắt đầu chuẩn bị phòng mổ bắt buộc nhập",
+                    "Cảnh báo",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                    // Nếu người dùng bấm OK (hoặc Yes nếu dùng YesNo)
+                    if (result == DialogResult.OK)
+                    {
+                        xtraTabAddInfo.SelectedTabPage = xtraTabOther;
+                    }
+                    // Hàm check trả về false (lỗi)
+                    return false;
+
+                }
+
+                // Bắt buộc nhập Kết thúc
+                if (require && (toDatePrepareRoomVal == null || toDatePrepareRoomVal == DateTime.MinValue))
+                {
+                    var result = MessageBox.Show(
+                        "Thời gian kết thúc chuẩn bị phòng mổ bắt buộc nhập",
+                        "Cảnh báo",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+
+                    if (result == DialogResult.OK)
+                    {
+                        xtraTabAddInfo.SelectedTabPage = xtraTabOther;
+                    }
+                    // Hàm check trả về false (lỗi)
+                    return false;
+                }
+
+                //// Bắt đầu < thời gian y lệnh
+                if (require && (fromDatePrepareRoomVal != null && intrucTime != null && fromDatePrepareRoomVal < intrucTime))
+                {
+                    var result = MessageBox.Show(
+                        "Thời gian bắt đầu chuẩn bị phòng mổ không được nhỏ hơn thời gian y lệnh",
+                        "Cảnh báo",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+
+                    if (result == DialogResult.OK)
+                    {
+                        xtraTabAddInfo.SelectedTabPage = xtraTabOther;
+                    }
+                    // Hàm check trả về false (lỗi)
+                    return false;
+                }
+
+                //// Bắt đầu > kết thúc chuẩn bị
+                if (require && (fromDatePrepareRoomVal != null && toDatePrepareRoomVal != null && fromDatePrepareRoomVal > toDatePrepareRoomVal))
+                {
+                    var result = MessageBox.Show(
+                        "Thời gian bắt đầu chuẩn bị phòng mổ không được lớn hơn thời gian kết thúc chuẩn bị phòng mổ",
+                        "Cảnh báo",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+
+                    if (result == DialogResult.OK)
+                    {
+                        xtraTabAddInfo.SelectedTabPage = xtraTabOther;
+                    }
+                    // Hàm check trả về false (lỗi)
+                    return false;
+                }
+                //// Kết thúc > bắt đầu mổ
+
+                if (require && (toDatePrepareRoom != null && dtStartTime != null && toDatePrepareRoomVal > dtStartTime))
+                {
+                    var result = MessageBox.Show(
+                        "Thời gian kết thúc chuẩn bị phòng mổ không được lớn hơn thời gian bắt đầu mổ",
+                        "Cảnh báo",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+
+                    if (result == DialogResult.OK)
+                    {
+                        xtraTabAddInfo.SelectedTabPage = xtraTabOther;
+                    }
+                    // Hàm check trả về false (lỗi)
+                    return false;
+                }
+
+
+                //----------------------THỜI GIAN VỆ SINH PHÒNG MỔ---------------------------
+               
+                if (require && (fromDateClearRoomVal == null || fromDateClearRoomVal == DateTime.MinValue))
+                {
+                    var result = MessageBox.Show(
+                    "Thời gian bắt đầu vệ sinh phòng mổ bắt buộc nhập",
+                    "Cảnh báo",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                    // Nếu người dùng bấm OK (hoặc Yes nếu dùng YesNo)
+                    if (result == DialogResult.OK)
+                    {
+                        xtraTabAddInfo.SelectedTabPage = xtraTabOther;
+                    }
+                    // Hàm check trả về false (lỗi)
+                    return false;
+                }
+
+                if (require && (fromDateClearRoomVal != null && dtFinishTime != null && fromDateClearRoomVal < dtFinishTime))
+                {
+                    var result = MessageBox.Show(
+                    "Thời gian bắt đầu vệ sinh phòng mổ không được nhỏ hơn thời gian kết thúc mổ.",
+                    "Cảnh báo",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                    // Nếu người dùng bấm OK (hoặc Yes nếu dùng YesNo)
+                    if (result == DialogResult.OK)
+                    {
+                        xtraTabAddInfo.SelectedTabPage = xtraTabOther;
+                    }
+                    // Hàm check trả về false (lỗi)
+                    return false;
+                }
+
+                if (require && (fromDateClearRoomVal != null && toDateClearRoomVal != null && fromDateClearRoomVal > toDateClearRoomVal))
+                {
+                    var result = MessageBox.Show(
+                   "Thời gian bắt đầu vệ sinh không được lớn hơn thời gian kết thúc vệ sinh",
+                   "Cảnh báo",
+                   MessageBoxButtons.OK,
+                   MessageBoxIcon.Warning);
+
+                    // Nếu người dùng bấm OK (hoặc Yes nếu dùng YesNo)
+                    if (result == DialogResult.OK)
+                    {
+                        xtraTabAddInfo.SelectedTabPage = xtraTabOther;
+                    }
+                    // Hàm check trả về false (lỗi)
+                    return false;
+                }
+
+                if (require && (toDateClearRoomVal == null || toDateClearRoomVal == DateTime.MinValue))
+                {
+                    var result = MessageBox.Show(
+                    "Thời gian kết thúc vệ sinh phòng mổ bắt buộc nhập",
+                    "Cảnh báo",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                    // Nếu người dùng bấm OK (hoặc Yes nếu dùng YesNo)
+                    if (result == DialogResult.OK)
+                    {
+                        xtraTabAddInfo.SelectedTabPage = xtraTabOther;
+                    }
+                    // Hàm check trả về false (lỗi)
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Fatal(ex);
+            }
+            return true;
         }
     }
 }
