@@ -45,7 +45,6 @@ namespace HIS.UC.ExamTreatmentFinish
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             this.layoutControl1 = new DevExpress.XtraLayout.LayoutControl();
             this.panelControlIcds = new DevExpress.XtraEditors.PanelControl();
             this.cboIcds = new Inventec.Desktop.CustomControl.CustomGridLookUpEditWithFilterMultiColumn();
@@ -64,14 +63,14 @@ namespace HIS.UC.ExamTreatmentFinish
             this.lciICDText = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem1 = new DevExpress.XtraLayout.LayoutControlItem();
             this.lciPanelControlIcds = new DevExpress.XtraLayout.LayoutControlItem();
-            this.barManager1 = new DevExpress.XtraBars.BarManager(this.components);
+            this.barManager1 = new DevExpress.XtraBars.BarManager();
             this.bar1 = new DevExpress.XtraBars.Bar();
             this.bbtnSave = new DevExpress.XtraBars.BarButtonItem();
             this.barDockControl1 = new DevExpress.XtraBars.BarDockControl();
             this.barDockControl2 = new DevExpress.XtraBars.BarDockControl();
             this.barDockControl3 = new DevExpress.XtraBars.BarDockControl();
             this.barDockControl4 = new DevExpress.XtraBars.BarDockControl();
-            this.dxValidationProvider1 = new DevExpress.XtraEditors.DXErrorProvider.DXValidationProvider(this.components);
+            this.dxValidationProvider1 = new DevExpress.XtraEditors.DXErrorProvider.DXValidationProvider();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).BeginInit();
             this.layoutControl1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.panelControlIcds)).BeginInit();
@@ -105,10 +104,11 @@ namespace HIS.UC.ExamTreatmentFinish
             this.layoutControl1.Controls.Add(this.txtIcdCode);
             this.layoutControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.layoutControl1.Location = new System.Drawing.Point(0, 0);
+            this.layoutControl1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.layoutControl1.Name = "layoutControl1";
             this.layoutControl1.OptionsCustomizationForm.DesignTimeCustomizationFormPositionAndSize = new System.Drawing.Rectangle(552, 171, 250, 350);
             this.layoutControl1.Root = this.layoutControlGroup1;
-            this.layoutControl1.Size = new System.Drawing.Size(448, 78);
+            this.layoutControl1.Size = new System.Drawing.Size(597, 96);
             this.layoutControl1.TabIndex = 4;
             this.layoutControl1.Text = "layoutControl1";
             // 
@@ -117,15 +117,17 @@ namespace HIS.UC.ExamTreatmentFinish
             this.panelControlIcds.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
             this.panelControlIcds.Controls.Add(this.cboIcds);
             this.panelControlIcds.Controls.Add(this.txtIcdMainText);
-            this.panelControlIcds.Location = new System.Drawing.Point(172, 2);
+            this.panelControlIcds.Location = new System.Drawing.Point(229, 2);
+            this.panelControlIcds.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.panelControlIcds.Name = "panelControlIcds";
-            this.panelControlIcds.Size = new System.Drawing.Size(222, 20);
+            this.panelControlIcds.Size = new System.Drawing.Size(297, 23);
             this.panelControlIcds.TabIndex = 22;
             // 
             // cboIcds
             // 
             this.cboIcds.Dock = System.Windows.Forms.DockStyle.Fill;
             this.cboIcds.Location = new System.Drawing.Point(0, 0);
+            this.cboIcds.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.cboIcds.Name = "cboIcds";
             this.cboIcds.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
             this.cboIcds.Properties.AutoComplete = false;
@@ -135,7 +137,7 @@ namespace HIS.UC.ExamTreatmentFinish
             this.cboIcds.Properties.NullText = "";
             this.cboIcds.Properties.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.Standard;
             this.cboIcds.Properties.View = this.customGridViewWithFilterMultiColumn1;
-            this.cboIcds.Size = new System.Drawing.Size(222, 20);
+            this.cboIcds.Size = new System.Drawing.Size(297, 22);
             this.cboIcds.TabIndex = 1;
             this.cboIcds.Closed += new DevExpress.XtraEditors.Controls.ClosedEventHandler(this.cboIcds_Closed);
             this.cboIcds.ButtonClick += new DevExpress.XtraEditors.Controls.ButtonPressedEventHandler(this.cboIcds_ButtonClick);
@@ -154,16 +156,18 @@ namespace HIS.UC.ExamTreatmentFinish
             // 
             this.txtIcdMainText.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtIcdMainText.Location = new System.Drawing.Point(0, 0);
+            this.txtIcdMainText.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtIcdMainText.Name = "txtIcdMainText";
-            this.txtIcdMainText.Size = new System.Drawing.Size(222, 20);
+            this.txtIcdMainText.Size = new System.Drawing.Size(297, 22);
             this.txtIcdMainText.TabIndex = 0;
             this.txtIcdMainText.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.txtIcdMainText_PreviewKeyDown);
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(361, 54);
+            this.btnSave.Location = new System.Drawing.Point(481, 60);
+            this.btnSave.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(85, 22);
+            this.btnSave.Size = new System.Drawing.Size(113, 27);
             this.btnSave.StyleController = this.layoutControl1;
             this.btnSave.TabIndex = 9;
             this.btnSave.Text = "Lưu (Ctrl S)";
@@ -171,10 +175,11 @@ namespace HIS.UC.ExamTreatmentFinish
             // 
             // txtIcdText
             // 
-            this.txtIcdText.Location = new System.Drawing.Point(172, 26);
+            this.txtIcdText.Location = new System.Drawing.Point(229, 29);
+            this.txtIcdText.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtIcdText.Name = "txtIcdText";
             this.txtIcdText.Properties.NullValuePrompt = "Nhấn F1 để chọn bệnh";
-            this.txtIcdText.Size = new System.Drawing.Size(274, 20);
+            this.txtIcdText.Size = new System.Drawing.Size(366, 22);
             this.txtIcdText.StyleController = this.layoutControl1;
             this.txtIcdText.TabIndex = 8;
             this.txtIcdText.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtIcdText_KeyDown);
@@ -182,9 +187,10 @@ namespace HIS.UC.ExamTreatmentFinish
             // 
             // txtIcdSubCode
             // 
-            this.txtIcdSubCode.Location = new System.Drawing.Point(97, 26);
+            this.txtIcdSubCode.Location = new System.Drawing.Point(97, 29);
+            this.txtIcdSubCode.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtIcdSubCode.Name = "txtIcdSubCode";
-            this.txtIcdSubCode.Size = new System.Drawing.Size(75, 20);
+            this.txtIcdSubCode.Size = new System.Drawing.Size(132, 22);
             this.txtIcdSubCode.StyleController = this.layoutControl1;
             this.txtIcdSubCode.TabIndex = 7;
             this.txtIcdSubCode.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtIcdSubCode_KeyDown);
@@ -192,11 +198,12 @@ namespace HIS.UC.ExamTreatmentFinish
             // 
             // chkEditIcd
             // 
-            this.chkEditIcd.Location = new System.Drawing.Point(398, 2);
+            this.chkEditIcd.Location = new System.Drawing.Point(531, 3);
+            this.chkEditIcd.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.chkEditIcd.Name = "chkEditIcd";
             this.chkEditIcd.Properties.Caption = "Sửa";
             this.chkEditIcd.Properties.NullStyle = DevExpress.XtraEditors.Controls.StyleIndeterminate.Unchecked;
-            this.chkEditIcd.Size = new System.Drawing.Size(48, 19);
+            this.chkEditIcd.Size = new System.Drawing.Size(63, 21);
             this.chkEditIcd.StyleController = this.layoutControl1;
             this.chkEditIcd.TabIndex = 6;
             this.chkEditIcd.CheckedChanged += new System.EventHandler(this.chkEditIcd_CheckedChanged);
@@ -205,8 +212,9 @@ namespace HIS.UC.ExamTreatmentFinish
             // txtIcdCode
             // 
             this.txtIcdCode.Location = new System.Drawing.Point(97, 2);
+            this.txtIcdCode.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtIcdCode.Name = "txtIcdCode";
-            this.txtIcdCode.Size = new System.Drawing.Size(75, 20);
+            this.txtIcdCode.Size = new System.Drawing.Size(132, 22);
             this.txtIcdCode.StyleController = this.layoutControl1;
             this.txtIcdCode.TabIndex = 4;
             this.txtIcdCode.InvalidValue += new DevExpress.XtraEditors.Controls.InvalidValueExceptionEventHandler(this.txtIcdCode_InvalidValue);
@@ -227,7 +235,7 @@ namespace HIS.UC.ExamTreatmentFinish
             this.layoutControlGroup1.Location = new System.Drawing.Point(0, 0);
             this.layoutControlGroup1.Name = "Root";
             this.layoutControlGroup1.Padding = new DevExpress.XtraLayout.Utils.Padding(0, 0, 0, 0);
-            this.layoutControlGroup1.Size = new System.Drawing.Size(448, 78);
+            this.layoutControlGroup1.Size = new System.Drawing.Size(597, 96);
             this.layoutControlGroup1.TextVisible = false;
             // 
             // lciICDCode
@@ -238,7 +246,7 @@ namespace HIS.UC.ExamTreatmentFinish
             this.lciICDCode.Location = new System.Drawing.Point(0, 0);
             this.lciICDCode.Name = "lciICDCode";
             this.lciICDCode.Padding = new DevExpress.XtraLayout.Utils.Padding(2, 0, 2, 2);
-            this.lciICDCode.Size = new System.Drawing.Size(172, 24);
+            this.lciICDCode.Size = new System.Drawing.Size(229, 27);
             this.lciICDCode.Text = "CĐ chính:";
             this.lciICDCode.TextAlignMode = DevExpress.XtraLayout.TextAlignModeItem.CustomSize;
             this.lciICDCode.TextSize = new System.Drawing.Size(90, 20);
@@ -247,17 +255,17 @@ namespace HIS.UC.ExamTreatmentFinish
             // emptySpaceItem1
             // 
             this.emptySpaceItem1.AllowHotTrack = false;
-            this.emptySpaceItem1.Location = new System.Drawing.Point(0, 48);
+            this.emptySpaceItem1.Location = new System.Drawing.Point(0, 53);
             this.emptySpaceItem1.Name = "emptySpaceItem1";
-            this.emptySpaceItem1.Size = new System.Drawing.Size(359, 30);
+            this.emptySpaceItem1.Size = new System.Drawing.Size(478, 43);
             this.emptySpaceItem1.TextSize = new System.Drawing.Size(0, 0);
             // 
             // layoutControlItem3
             // 
             this.layoutControlItem3.Control = this.chkEditIcd;
-            this.layoutControlItem3.Location = new System.Drawing.Point(396, 0);
+            this.layoutControlItem3.Location = new System.Drawing.Point(528, 0);
             this.layoutControlItem3.Name = "layoutControlItem3";
-            this.layoutControlItem3.Size = new System.Drawing.Size(52, 24);
+            this.layoutControlItem3.Size = new System.Drawing.Size(69, 27);
             this.layoutControlItem3.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem3.TextVisible = false;
             // 
@@ -266,10 +274,10 @@ namespace HIS.UC.ExamTreatmentFinish
             this.lciICDSubCode.AppearanceItemCaption.Options.UseTextOptions = true;
             this.lciICDSubCode.AppearanceItemCaption.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.lciICDSubCode.Control = this.txtIcdSubCode;
-            this.lciICDSubCode.Location = new System.Drawing.Point(0, 24);
+            this.lciICDSubCode.Location = new System.Drawing.Point(0, 27);
             this.lciICDSubCode.Name = "lciICDSubCode";
             this.lciICDSubCode.Padding = new DevExpress.XtraLayout.Utils.Padding(2, 0, 2, 2);
-            this.lciICDSubCode.Size = new System.Drawing.Size(172, 24);
+            this.lciICDSubCode.Size = new System.Drawing.Size(229, 26);
             this.lciICDSubCode.Text = "CĐ phụ:";
             this.lciICDSubCode.TextAlignMode = DevExpress.XtraLayout.TextAlignModeItem.CustomSize;
             this.lciICDSubCode.TextSize = new System.Drawing.Size(90, 20);
@@ -278,19 +286,19 @@ namespace HIS.UC.ExamTreatmentFinish
             // lciICDText
             // 
             this.lciICDText.Control = this.txtIcdText;
-            this.lciICDText.Location = new System.Drawing.Point(172, 24);
+            this.lciICDText.Location = new System.Drawing.Point(229, 27);
             this.lciICDText.Name = "lciICDText";
             this.lciICDText.Padding = new DevExpress.XtraLayout.Utils.Padding(0, 2, 2, 2);
-            this.lciICDText.Size = new System.Drawing.Size(276, 24);
+            this.lciICDText.Size = new System.Drawing.Size(368, 26);
             this.lciICDText.TextSize = new System.Drawing.Size(0, 0);
             this.lciICDText.TextVisible = false;
             // 
             // layoutControlItem1
             // 
             this.layoutControlItem1.Control = this.btnSave;
-            this.layoutControlItem1.Location = new System.Drawing.Point(359, 48);
+            this.layoutControlItem1.Location = new System.Drawing.Point(478, 53);
             this.layoutControlItem1.Name = "layoutControlItem1";
-            this.layoutControlItem1.Size = new System.Drawing.Size(89, 30);
+            this.layoutControlItem1.Size = new System.Drawing.Size(119, 43);
             this.layoutControlItem1.Spacing = new DevExpress.XtraLayout.Utils.Padding(0, 0, 4, 0);
             this.layoutControlItem1.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem1.TextVisible = false;
@@ -298,10 +306,10 @@ namespace HIS.UC.ExamTreatmentFinish
             // lciPanelControlIcds
             // 
             this.lciPanelControlIcds.Control = this.panelControlIcds;
-            this.lciPanelControlIcds.Location = new System.Drawing.Point(172, 0);
+            this.lciPanelControlIcds.Location = new System.Drawing.Point(229, 0);
             this.lciPanelControlIcds.Name = "lciPanelControlIcds";
             this.lciPanelControlIcds.Padding = new DevExpress.XtraLayout.Utils.Padding(0, 2, 2, 2);
-            this.lciPanelControlIcds.Size = new System.Drawing.Size(224, 24);
+            this.lciPanelControlIcds.Size = new System.Drawing.Size(299, 27);
             this.lciPanelControlIcds.TextSize = new System.Drawing.Size(0, 0);
             this.lciPanelControlIcds.TextVisible = false;
             // 
@@ -343,40 +351,45 @@ namespace HIS.UC.ExamTreatmentFinish
             this.barDockControl1.CausesValidation = false;
             this.barDockControl1.Dock = System.Windows.Forms.DockStyle.Top;
             this.barDockControl1.Location = new System.Drawing.Point(0, 0);
-            this.barDockControl1.Size = new System.Drawing.Size(448, 0);
+            this.barDockControl1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.barDockControl1.Size = new System.Drawing.Size(597, 0);
             // 
             // barDockControl2
             // 
             this.barDockControl2.CausesValidation = false;
             this.barDockControl2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.barDockControl2.Location = new System.Drawing.Point(0, 78);
-            this.barDockControl2.Size = new System.Drawing.Size(448, 0);
+            this.barDockControl2.Location = new System.Drawing.Point(0, 96);
+            this.barDockControl2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.barDockControl2.Size = new System.Drawing.Size(597, 0);
             // 
             // barDockControl3
             // 
             this.barDockControl3.CausesValidation = false;
             this.barDockControl3.Dock = System.Windows.Forms.DockStyle.Left;
             this.barDockControl3.Location = new System.Drawing.Point(0, 0);
-            this.barDockControl3.Size = new System.Drawing.Size(0, 78);
+            this.barDockControl3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.barDockControl3.Size = new System.Drawing.Size(0, 96);
             // 
             // barDockControl4
             // 
             this.barDockControl4.CausesValidation = false;
             this.barDockControl4.Dock = System.Windows.Forms.DockStyle.Right;
-            this.barDockControl4.Location = new System.Drawing.Point(448, 0);
-            this.barDockControl4.Size = new System.Drawing.Size(0, 78);
+            this.barDockControl4.Location = new System.Drawing.Point(597, 0);
+            this.barDockControl4.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.barDockControl4.Size = new System.Drawing.Size(0, 96);
             // 
             // frmICDInformation
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(448, 78);
+            this.ClientSize = new System.Drawing.Size(597, 96);
             this.Controls.Add(this.layoutControl1);
             this.Controls.Add(this.barDockControl3);
             this.Controls.Add(this.barDockControl4);
             this.Controls.Add(this.barDockControl2);
             this.Controls.Add(this.barDockControl1);
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "frmICDInformation";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Thông tin chuẩn đoán hiển thị trên giấy ra viện";

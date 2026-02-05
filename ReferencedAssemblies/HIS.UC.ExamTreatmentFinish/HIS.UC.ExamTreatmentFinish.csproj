@@ -66,6 +66,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\LIBRARY\DevLib\DevExpress.XtraTreeList.v15.2.dll</HintPath>
     </Reference>
+    <Reference Include="HIS.Desktop.Common, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.Desktop.Common.dll</HintPath>
+    </Reference>
     <Reference Include="HIS.Desktop.Plugins.Library.CheckIcd">
       <HintPath>..\..\..\..\..\..\RELEASE\HIS\HIS.Desktop.Plugins.Library.CheckIcd\HIS.Desktop.Plugins.Library.CheckIcd.dll</HintPath>
     </Reference>
@@ -170,15 +174,19 @@
     </Reference>
     <Reference Include="MOS.EFMODEL, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\2.276.0\MOS.EFMODEL.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\RELEASE\MOS\MOS.EFMODEL.dll</HintPath>
     </Reference>
     <Reference Include="MOS.Filter, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\2.276.0\ReferencedAssemblies\MOS.Filter.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\RELEASE\MOS\MOS.Filter.dll</HintPath>
+    </Reference>
+    <Reference Include="MOS.LibraryHein.Bhyt, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\2.276.0\ReferencedAssemblies\MOS.LibraryHein.Bhyt.dll</HintPath>
     </Reference>
     <Reference Include="MOS.SDO, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\2.276.0\ReferencedAssemblies\MOS.SDO.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\RELEASE\MOS\MOS.SDO.dll</HintPath>
     </Reference>
     <Reference Include="MPS">
       <HintPath>..\..\..\..\..\..\RELEASE\MPS\MPS.dll</HintPath>
@@ -272,6 +280,7 @@
       <DependentUpon>UCTimes.cs</DependentUpon>
     </Compile>
     <Compile Include="EndTypeForm\ValidForm\TranPatiTechValidationRule.cs" />
+    <Compile Include="Run\Validate\IcdYhctValidationRuleControl.cs" />
     <Compile Include="Validate\ValidateBehavior.cs" />
     <Compile Include="Validate\ValidateFactory.cs" />
     <Compile Include="Validate\IValidate.cs" />
@@ -389,7 +398,7 @@
     <EmbeddedResource Include="Popup\frmSecondaryIcd.resx">
       <DependentUpon>frmSecondaryIcd.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Properties\licenses.licx" />
+    <None Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -432,10 +441,6 @@
     <ProjectReference Include="..\..\..\HIS\HIS.Desktop.ApplicationFont\HIS.Desktop.ApplicationFont.csproj">
       <Project>{ee6bba16-7e46-49bd-9707-a2069e480302}</Project>
       <Name>HIS.Desktop.ApplicationFont</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\HIS\HIS.Desktop.Common\HIS.Desktop.Common.csproj">
-      <Project>{59fdcba7-0f9f-4257-b95a-e37a1ccfe107}</Project>
-      <Name>HIS.Desktop.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\HIS\HIS.Desktop.LocalStorage.BackendData\HIS.Desktop.LocalStorage.BackendData.csproj">
       <Project>{86709a9c-a149-4ebb-a817-1bf8f4f4bc07}</Project>

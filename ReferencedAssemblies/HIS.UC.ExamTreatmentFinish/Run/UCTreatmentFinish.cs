@@ -578,6 +578,10 @@ namespace HIS.UC.ExamTreatmentFinish.Run
                         {
                             chkKyPhieuTrichLuc.Checked = item.VALUE == "1";
                         }
+                        if (item.KEY == chkKyDonThuoc.Name)
+                        {
+                            chkKyDonThuoc.Checked = item.VALUE == "1";
+                        }
                         if (item.KEY == chkPrintPrescription.Name)
                         {
                             chkPrintPrescription.Checked = item.VALUE == "1";
@@ -2181,6 +2185,40 @@ namespace HIS.UC.ExamTreatmentFinish.Run
             catch (Exception ex)
             {
                 Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+
+        private void chkKyDonThuoc_CheckedChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                if (isNotLoadWhileChangeControlStateInFirst)
+                {
+                    return;
+                }
+                WaitingManager.Show();
+                HIS.Desktop.Library.CacheClient.ControlStateRDO csAddOrUpdate = (this.currentControlStateRDO != null && this.currentControlStateRDO.Count > 0) ? this.currentControlStateRDO.Where(o => o.KEY == chkKyDonThuoc.Name && o.MODULE_LINK == moduleLink).FirstOrDefault() : null;
+                Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => csAddOrUpdate), csAddOrUpdate));
+                if (csAddOrUpdate != null)
+                {
+                    csAddOrUpdate.VALUE = (chkKyDonThuoc.Checked ? "1" : "");
+                }
+                else
+                {
+                    csAddOrUpdate = new HIS.Desktop.Library.CacheClient.ControlStateRDO();
+                    csAddOrUpdate.KEY = chkKyDonThuoc.Name;
+                    csAddOrUpdate.VALUE = (chkKyDonThuoc.Checked ? "1" : "");
+                    csAddOrUpdate.MODULE_LINK = moduleLink;
+                    if (this.currentControlStateRDO == null)
+                        this.currentControlStateRDO = new List<HIS.Desktop.Library.CacheClient.ControlStateRDO>();
+                    this.currentControlStateRDO.Add(csAddOrUpdate);
+                }
+                this.controlStateWorker.SetData(this.currentControlStateRDO);
+                WaitingManager.Hide();
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
             }
         }
     }

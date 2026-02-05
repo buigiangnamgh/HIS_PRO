@@ -302,6 +302,10 @@ namespace HIS.UC.ExamTreatmentFinish.Run
                 {
                     ExamTreatmentFinish.IsSignTrichPhuLuc = true;
                 }
+                if (chkKyDonThuoc.Checked)
+                {
+                    ExamTreatmentFinish.IsSignPrescription = true;
+                }
                 if (chkInPhieuTrichLuc.Checked)
                 {
                     ExamTreatmentFinish.IsPrintTrichPhuLuc = true;
