@@ -35,6 +35,7 @@ using HIS.Desktop.Plugins.Library.PrintTreatmentFinish;
 using HIS.Desktop.Print;
 using HIS.Desktop.Utility;
 using HIS.UC.DHST.ADO;
+using HIS.UC.ExamTreatmentFinish.Run;
 using HIS.UC.SecondaryIcd;
 using HIS.UC.SecondaryIcd.ADO;
 using Inventec.Common.Adapter;
@@ -75,6 +76,16 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
             try
             {
                 DXPopupMenu menu = new DXPopupMenu();
+                //DXMenuItem itemTruyenDich = new DXMenuItem("Truyền dịch", new EventHandler(onClickTruyenDich));
+                //menu.Items.Add(itemTruyenDich);
+                DXMenuItem itemOptometrist = new DXMenuItem("Đo thị lực", new EventHandler(onClickOptometrist));
+                menu.Items.Add(itemOptometrist);
+                //qtcode
+                DXMenuItem itemTraSoatHoSoBenhAn = new DXMenuItem("Tra soát hồ sơ bệnh án", new EventHandler(onClickTraSoatHoSoBenhAn));
+                menu.Items.Add(itemTraSoatHoSoBenhAn);
+                DXMenuItem itemChiTietBenhAn = new DXMenuItem("Chi tiết bệnh án", new EventHandler(onClickChiTietBenhAn));
+                menu.Items.Add(itemChiTietBenhAn);
+                // qtcode
                 DXMenuItem itemPhieuVoBenhAn = new DXMenuItem(Inventec.Common.Resource.Get.Value("IVT_LANGUAGE_KEY_PHIEU_VO_BENH_AN", ResourceLangManager.LanguageUCExamServiceReqExecute, LanguageManager.GetCulture()), new EventHandler(onClickPhieuVoBenhAn));
                 menu.Items.Add(itemPhieuVoBenhAn);
 
@@ -1282,6 +1293,14 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
         //        Inventec.Common.Logging.LogSystem.Error(ex);
         //    }
         //}
+        private void UcIcd_OnIcdMapCodeChanged(string icdMapCode)
+        {
+            if (!string.IsNullOrEmpty(icdMapCode))
+            {
+                LoadIcdCombo(icdMapCode);
+            }
+        }
+
         private void InitUcIcdYHCT()
         {
             try
@@ -1289,6 +1308,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                 this.icdProcessorYHCT = new HIS.UC.Icd.IcdProcessor();
                 HIS.UC.Icd.ADO.IcdInitADO ado = new HIS.UC.Icd.ADO.IcdInitADO();
                 ado.DelegateNextFocus = NextForcusSubIcd;
+                ado.IsUCCause = false;
                 //ado.DelegateRequiredCause = DelegateRequiredCause;
                 ado.LblIcdMain = "CĐ YHCT:";
                 ado.ToolTipsIcdMain = "Chẩn đoán y học cổ truyền";
@@ -1298,10 +1318,12 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                 //ado.LabelTextSize = 100;
                 ado.DataIcds = BackendDataWorker.Get<HIS_ICD>().Where(o => o.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE && o.IS_TRADITIONAL == 1).OrderBy(o => o.ICD_CODE).ToList();
                 ado.AutoCheckIcd = HisConfigCFG.AutoCheckIcd == GlobalVariables.CommonStringTrue;
+                ado.DepamentId = BackendDataWorker.Get<V_HIS_ROOM>().FirstOrDefault(o => o.ID == this.moduleData.RoomId).DEPARTMENT_ID;
                 this.ucIcdYHCT = (UserControl)this.icdProcessorYHCT.Run(ado);
 
                 if (this.ucIcdYHCT != null)
                 {
+                    ((HIS.UC.Icd.UCIcd)ucIcdYHCT).OnIcdMapCodeChanged += UcIcd_OnIcdMapCodeChanged;
                     this.panelControlIcdYHCT.Controls.Add(this.ucIcdYHCT);
                     this.ucIcdYHCT.Dock = DockStyle.Fill;
                 }

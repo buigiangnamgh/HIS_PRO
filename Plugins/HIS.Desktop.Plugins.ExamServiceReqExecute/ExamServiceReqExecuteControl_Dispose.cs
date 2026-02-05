@@ -295,19 +295,19 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                 this.txtPathologicalHistory.Leave -= new System.EventHandler(this.txtPathologicalHistory_Leave);
                 this.txtPathologicalProcess.Leave -= new System.EventHandler(this.txtPathologicalProcess_Leave);
                 this.Load -= new System.EventHandler(this.ExamServiceReqExecuteControl_Load);
-                gvIcdSubCode.GridControl.DataSource = null;
+                if (gvIcdSubCode != null && gvIcdSubCode.GridControl != null) gvIcdSubCode.GridControl.DataSource = null;
                 gcIcdSubCode.DataSource = null;
-                gridView3.GridControl.DataSource = null;
+                if (gridView3 != null && gridView3.GridControl != null) gridView3.GridControl.DataSource = null;
                 gridControl1.DataSource = null;
-                customGridViewSubIcdName.GridControl.DataSource = null;
+                if (customGridViewSubIcdName != null && customGridViewSubIcdName.GridControl != null) customGridViewSubIcdName.GridControl.DataSource = null;
                 customGridControlSubIcdName.DataSource = null;
-                gridViewTutorial.GridControl.DataSource = null;
+                if (gridViewTutorial != null && gridViewTutorial.GridControl != null) gridViewTutorial.GridControl.DataSource = null;
                 gridControlTutorial.DataSource = null;
-                gridViewIcdCode.GridControl.DataSource = null;
+                if (gridViewIcdCode != null && gridViewIcdCode.GridControl != null) gridViewIcdCode.GridControl.DataSource = null;
                 gridControlIcdCode.DataSource = null;
-                gridView2.GridControl.DataSource = null;
-                gridView1.GridControl.DataSource = null;
-                gridViewDKPresent.GridControl.DataSource = null;
+                if (gridView2 != null && gridView2.GridControl != null) gridView2.GridControl.DataSource = null;
+                if (gridView1 != null && gridView1.GridControl != null) gridView1.GridControl.DataSource = null;
+                if (gridViewDKPresent != null && gridViewDKPresent.GridControl != null) gridViewDKPresent.GridControl.DataSource = null;
                 gridControlDKPresent.DataSource = null;
                 timerInitForm = null;
                 layoutControlItem41 = null;
@@ -325,8 +325,6 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                 layoutControlGroupTabExamExecute = null;
                 layoutControlTabExamExecute = null;
                 xtraTabPageExamExecute = null;
-                emptySpaceItem13 = null;
-                emptySpaceItem12 = null;
                 layoutControlItem108 = null;
                 layoutControlItem107 = null;
                 emptySpaceItem11 = null;
@@ -340,7 +338,6 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                 layoutx = null;
                 emptySpaceItem9 = null;
                 btnKhamBoPhan = null;
-                emptySpaceItem8 = null;
                 layoutControlItem104 = null;
                 btnKhamToanThan = null;
                 gridColumn16 = null;
@@ -757,6 +754,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                 layoutControl2 = null;
                 layoutControl1 = null;
                 dxErrorProviderForSpinVat = null;
+                dtpStartTime = null;
 
             }
             catch (Exception ex)

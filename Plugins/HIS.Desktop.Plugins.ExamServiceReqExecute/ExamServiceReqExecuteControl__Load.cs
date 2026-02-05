@@ -15,10 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+using ACS.SDO;
 using DevExpress.XtraEditors;
 using DevExpress.XtraEditors.Controls;
 using HIS.Desktop.ApiConsumer;
 using HIS.Desktop.Plugins.ExamServiceReqExecute.ADO;
+using HIS.Desktop.Plugins.ExamServiceReqExecute.Config;
 using HIS.Desktop.Utility;
 using Inventec.Common.Adapter;
 using Inventec.Core;
@@ -27,6 +29,7 @@ using MOS.EFMODEL.DataModels;
 using MOS.Filter;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -225,6 +228,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                     txtPathologicalProcess.Text = IsCheckLockInfor(txtPathologicalProcess.Text, status) ? examServiceTemp.PATHOLOGICAL_PROCESS : txtPathologicalProcess.Text;
                     txtPathologicalHistory.Text = IsCheckLockInfor(txtPathologicalHistory.Text, status) ? examServiceTemp.PATHOLOGICAL_HISTORY : txtPathologicalHistory.Text;
                     txtPathologicalHistoryFamily.Text = IsCheckLockInfor(txtPathologicalHistoryFamily.Text, status) ? examServiceTemp.PATHOLOGICAL_HISTORY_FAMILY : txtPathologicalHistoryFamily.Text;
+                    //txtHistoryAllergy.Text = IsCheckLockInfor(txtHistoryAllergy.Text, status) ? examServiceTemp : txtHistoryAllergy.Text;
                     txtKhamToanThan.Text = IsCheckLockInfor(txtKhamToanThan.Text, status) ? examServiceTemp.FULL_EXAM : txtKhamToanThan.Text;
                     txtKhamBoPhan.Text = IsCheckLockInfor(txtKhamBoPhan.Text, status) ? examServiceTemp.PART_EXAM : txtKhamBoPhan.Text;
                     txtTuanHoan.Text = IsCheckLockInfor(txtTuanHoan.Text, status) ? examServiceTemp.PART_EXAM_CIRCULATION : txtTuanHoan.Text;
@@ -390,11 +394,11 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
             try
             {
                 CommonParam param = new CommonParam();
-                HisTreatmentLView2Filter treatmentFilter = new HisTreatmentLView2Filter();
-                treatmentFilter.PATIENT_ID = this.HisServiceReqView.TDL_PATIENT_ID;
-                this.treatmentByPatients = new BackendAdapter(param)
-                    .Get<List<MOS.EFMODEL.DataModels.L_HIS_TREATMENT_2>>("api/HisTreatment/GetLView2", ApiConsumers.MosConsumer, treatmentFilter, param);
-                this.ltreatment2 = this.treatmentByPatients.FirstOrDefault(o => o.ID == this.HisServiceReqView.TREATMENT_ID);
+                //HisTreatmentLView2Filter treatmentFilter = new HisTreatmentLView2Filter();
+                //treatmentFilter.PATIENT_ID = this.HisServiceReqView.TDL_PATIENT_ID;
+                //this.treatmentByPatients = new BackendAdapter(param)
+                //    .Get<List<MOS.EFMODEL.DataModels.L_HIS_TREATMENT_2>>("api/HisTreatment/GetLView2", ApiConsumers.MosConsumer, treatmentFilter, param);
+                //this.ltreatment2 = this.treatmentByPatients.FirstOrDefault(o => o.ID == this.HisServiceReqView.TREATMENT_ID);
 
                 HisTreatmentFilter treatment = new HisTreatmentFilter();
                 treatment.ID = this.HisServiceReqView.TREATMENT_ID;
@@ -413,13 +417,6 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                 }
 
                 EnableControlFastCreateTracking();
-                //CommonParam param = new CommonParam();
-                //HisTreatmentFilter treatmentFilter = new HisTreatmentFilter();
-                //treatmentFilter.PATIENT_ID = this.HisServiceReqView.TDL_PATIENT_ID;
-                //this.treatmentByPatients = new BackendAdapter(param)
-                //    .Get<List<MOS.EFMODEL.DataModels.HIS_TREATMENT>>("api/HisTreatment/Get", ApiConsumers.MosConsumer, treatmentFilter, param);
-
-                //this.treatment = this.treatmentByPatients.FirstOrDefault(o => o.ID == this.HisServiceReqView.TREATMENT_ID);
             }
             catch (Exception ex)
             {
@@ -427,15 +424,48 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
             }
         }
 
-        private void LoadTreatmentHistoryTogrid()
+
+
+        private async Task LoadTreatmentHistoryTogrid()
         {
             try
             {
-                LoadTreatmentHistory();
+                await LoadTreatmentHistory();
                 if (this.TreatmentHistorys != null && this.TreatmentHistorys.Count > 0)
                 {
                     gridControlTreatmentHistory.DataSource = this.TreatmentHistorys;
                 }
+
+                if (this.TreatmentHistorys != null && this.TreatmentHistorys.Count > 0)
+                {
+                    this.xtraTabControlInfo.SelectedTabPage = this.xtraTabPageExamHistory;
+                }
+                else
+                {
+                    this.xtraTabControlInfo.SelectedTabPage = this.xtraTabPageExamExecute;
+                }
+                this.SetTabPageVisible(tabControlDetailData);
+
+
+                if (!string.IsNullOrEmpty(this.HisServiceReqView.PATHOLOGICAL_HISTORY_FAMILY))
+                    txtPathologicalHistoryFamily.Text = this.HisServiceReqView.PATHOLOGICAL_HISTORY_FAMILY;
+                else if (ltreatment2 != null && !string.IsNullOrEmpty(ltreatment2.PT_PATHOLOGICAL_HISTORY_FAMILY))
+                    txtPathologicalHistoryFamily.Text = ltreatment2.PT_PATHOLOGICAL_HISTORY_FAMILY;
+
+                if (!string.IsNullOrEmpty(this.HisServiceReqView.HISTORY_ALLERGY))
+                    txtHistoryAllergy.Text = this.HisServiceReqView.HISTORY_ALLERGY;
+
+                if (!string.IsNullOrEmpty(this.HisServiceReqView.PATHOLOGICAL_HISTORY))
+                    txtPathologicalHistory.Text = this.HisServiceReqView.PATHOLOGICAL_HISTORY;
+                else if (ltreatment2 != null && !string.IsNullOrEmpty(ltreatment2.PT_PATHOLOGICAL_HISTORY))
+                    txtPathologicalHistory.Text = ltreatment2.PT_PATHOLOGICAL_HISTORY;
+
+
+                chkIsHistoryAllergyRelated.Checked = HisServiceReqView.IS_HISTORY_ALLERGY_RELATED == (short?)1;
+                chkIsHistoryRelated.Checked = HisServiceReqView.IS_HISTORY_RELATED == (short?)1;
+                chkIsHistoryFamilyRelated.Checked = HisServiceReqView.IS_HISTORY_FAMILY_RELATED == (short?)1;
+                chkIsFullExamAbnormal.Checked = HisServiceReqView.IS_FULL_EXAM_ABNORMAL == (short?)1;
+                chkIsPartExamAbnormal.Checked = HisServiceReqView.IS_PART_EXAM_ABNORMAL == (short?)1;
             }
             catch (Exception ex)
             {
@@ -443,10 +473,17 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
             }
         }
 
-        private void LoadTreatmentHistory()
+        private async Task LoadTreatmentHistory()
         {
             try
             {
+                CommonParam param = new CommonParam();
+                HisTreatmentLView2Filter treatmentFilter = new HisTreatmentLView2Filter();
+                treatmentFilter.PATIENT_ID = this.HisServiceReqView.TDL_PATIENT_ID;
+                this.treatmentByPatients = await new BackendAdapter(param)
+                    .GetAsync<List<MOS.EFMODEL.DataModels.L_HIS_TREATMENT_2>>("api/HisTreatment/GetLView2", ApiConsumers.MosConsumer, treatmentFilter, param);
+                this.ltreatment2 = this.treatmentByPatients.FirstOrDefault(o => o.ID == this.HisServiceReqView.TREATMENT_ID);
+
                 this.TreatmentHistorys = new List<TreatmentExamADO>();
                 if (this.treatmentByPatients != null && this.treatmentByPatients.Count > 0)
                 {
@@ -772,8 +809,26 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                     //    txtHospitalizationReason.Text = this.treatment.HOSPITALIZATION_REASON;
                     //}
 
+                    if (HisServiceReqView.START_TIME.HasValue)
+                    {
+                        dtpStartTime.EditValue = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(HisServiceReqView.START_TIME.Value);
+                    }    
+                    else
+                    {
+                        dtpStartTime.EditValue = new BackendAdapter(new CommonParam()).Get<TimerSDO>(AcsRequestUriStore.ACS_TIMER__SYNC, ApiConsumers.AcsConsumer, 1, new CommonParam()).DateNow;
+                    }
+                    if (HisConfigCFG.IsEnableEditStartTime == "1")
+                    {
+                        dtpStartTime.Enabled = true;
+                    }
+                    else
+                    {
+                        dtpStartTime.Enabled = false;
+                    }
                     if (this.HisServiceReqView.SICK_DAY.HasValue)
                         spinNgayThuCuaBenh.EditValue = this.HisServiceReqView.SICK_DAY;//TODO
+                    if (this.HisServiceReqView.SICK_HOUR.HasValue)
+                        spnGioThuCuaBenh.EditValue = this.HisServiceReqView.SICK_HOUR;//TODO
 
                     if (!string.IsNullOrEmpty(this.HisServiceReqView.PATHOLOGICAL_PROCESS))
                         txtPathologicalProcess.Text = this.HisServiceReqView.PATHOLOGICAL_PROCESS;
@@ -893,11 +948,20 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                     else if (ltreatment2 != null && !string.IsNullOrEmpty(ltreatment2.PT_PATHOLOGICAL_HISTORY_FAMILY))
                         txtPathologicalHistoryFamily.Text = ltreatment2.PT_PATHOLOGICAL_HISTORY_FAMILY;
 
+                    if (!string.IsNullOrEmpty(this.HisServiceReqView.HISTORY_ALLERGY))
+                        txtHistoryAllergy.Text = this.HisServiceReqView.HISTORY_ALLERGY;
+
                     if (!string.IsNullOrEmpty(this.HisServiceReqView.PATHOLOGICAL_HISTORY))
                         txtPathologicalHistory.Text = this.HisServiceReqView.PATHOLOGICAL_HISTORY;
                     else if (ltreatment2 != null && !string.IsNullOrEmpty(ltreatment2.PT_PATHOLOGICAL_HISTORY))
                         txtPathologicalHistory.Text = ltreatment2.PT_PATHOLOGICAL_HISTORY;
 
+
+                    chkIsHistoryAllergyRelated.Checked = HisServiceReqView.IS_HISTORY_ALLERGY_RELATED == (short?)1;
+                    chkIsHistoryRelated.Checked = HisServiceReqView.IS_HISTORY_RELATED == (short?)1;
+                    chkIsHistoryFamilyRelated.Checked = HisServiceReqView.IS_HISTORY_FAMILY_RELATED == (short?)1;
+                    chkIsFullExamAbnormal.Checked = HisServiceReqView.IS_FULL_EXAM_ABNORMAL == (short?)1;
+                    chkIsPartExamAbnormal.Checked = HisServiceReqView.IS_PART_EXAM_ABNORMAL == (short?)1;
 
                     chkPartExamEyeStPlus.Checked = HisServiceReqView.PART_EXAM_EYE_ST_PLUS == 1;
                     chkPartExamEyeStMinus.Checked = HisServiceReqView.PART_EXAM_EYE_ST_MINUS == 1;
@@ -1054,7 +1118,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                                 currentDhst.WEIGHT = item.WEIGHT;
                                 currentDhst.HEIGHT = item.HEIGHT;
                             }
-                            MapInformationDhstEmpty(ref currentDhst, item);                         
+                            MapInformationDhstEmpty(ref currentDhst, item);
                         }
                     }
                 }
@@ -1064,8 +1128,9 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                 this.DHSTSetValue(currentDhst);
                 if (IsCheckedGetLastDHSTByPatient)
                 {
-                    LoadDHSTByPatient();
+                    await LoadDHSTByPatient();
                 }
+                await LoadMLCT();
             }
             catch (Exception ex)
             {

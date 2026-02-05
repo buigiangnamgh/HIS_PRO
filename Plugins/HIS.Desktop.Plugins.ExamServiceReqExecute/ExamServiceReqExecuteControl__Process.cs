@@ -30,6 +30,7 @@ using HIS.Desktop.Plugins.ExamServiceReqExecute.Config;
 using HIS.Desktop.Plugins.ExamServiceReqExecute.ConnectCOM;
 using HIS.Desktop.Plugins.ExamServiceReqExecute.Resources;
 using HIS.Desktop.Plugins.ExamServiceReqExecute.Sda.SdaEventLogCreate;
+using HIS.Desktop.Plugins.Library.ConnectWhoCnd;
 using HIS.Desktop.Plugins.Library.ElectronicBill;
 using HIS.Desktop.Plugins.Library.ElectronicBill.Base;
 using HIS.Desktop.Plugins.Library.PrintPrescription;
@@ -42,16 +43,19 @@ using HIS.UC.Hospitalize.ADO;
 using HIS.UC.Icd;
 using HIS.UC.SecondaryIcd.ADO;
 using Inventec.Common.Adapter;
+using Inventec.Common.Logging;
 using Inventec.Common.ThreadCustom;
 using Inventec.Core;
 using Inventec.Desktop.Common.Message;
 using MOS.EFMODEL.DataModels;
 using MOS.Filter;
 using MOS.SDO;
+using MOS.TDO;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -83,7 +87,6 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                 ProcessExamSereIcdDTO(ref hisServiceReqSDO);
                 ProcessExamSereNextTreatmentIntructionDTO(ref hisServiceReqSDO);
                 ProcessExamSereDHST(ref hisServiceReqSDO);
-
 
                 hisServiceReqSDO.RequestRoomId = moduleData.RoomId;
                 HisServiceReqExamUpdateResultSDO HisServiceReqResult = await new BackendAdapter(param)
@@ -209,6 +212,103 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                 Inventec.Common.Logging.LogSystem.Warn(ex);
             }
         }
+
+        private void onClickOptometrist(object sender, EventArgs e)
+        {
+            try
+            {
+                var moduleData = GlobalVariables.currentModuleRaws.FirstOrDefault(o => o.ModuleLink == "HIS.Desktop.Plugins.Optometrist");
+                if (moduleData == null)
+                {
+                    Inventec.Common.Logging.LogSystem.Error("khong tim thay moduleLink = HIS.Desktop.Plugins.Optometrist");
+                    return;
+                }
+                if (!moduleData.IsPlugin || moduleData.ExtensionInfo == null)
+                {
+                    return;
+                }
+
+                moduleData.RoomId = this.moduleData.RoomId;
+                moduleData.RoomTypeId = this.moduleData.RoomTypeId;
+
+                //HIS_SERE_SERV sereServDetail = null;
+                //if (sereServDetail == null && HisServiceReqView != null && HisServiceReqView.TREATMENT_ID != 0)
+                //{
+                //    CommonParam param = new CommonParam();
+                //    var filter = new MOS.Filter.HisSereServFilter
+                //    {
+                //        SERVICE_REQ_ID = HisServiceReqView.ID,
+                //        TREATMENT_ID = HisServiceReqView.TREATMENT_ID,
+                //        TDL_SERVICE_TYPE_ID = IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__KH
+                //    };
+                //    var sereServs = new BackendAdapter(param).Get<List<HIS_SERE_SERV>>("api/HisSereServ/Get", ApiConsumers.MosConsumer, filter, param);
+                //    sereServDetail = sereServs?.FirstOrDefault();
+                //}
+                List<object> listArgs = new List<object>();
+                listArgs.Add(Inventec.Desktop.Common.Modules.Module.MODULE_TYPE_ID__FORM);
+                listArgs.Add(moduleData);
+                listArgs.Add(this.HisServiceReqView);
+                var moduleWithRoom = PluginInstance.GetModuleWithWorkingRoom(moduleData, moduleData.RoomId, moduleData.RoomTypeId);
+                var extenceInstance = PluginInstance.GetPluginInstance(moduleWithRoom, listArgs);
+                if (extenceInstance == null) throw new ArgumentNullException("moduleData is null");
+                ((Form)extenceInstance).ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+        
+        //qtcode
+        private void onClickChiTietBenhAn(object sender, EventArgs e)
+        {
+            try
+            {
+                Inventec.Desktop.Common.Modules.Module moduleData = GlobalVariables.currentModuleRaws.Where(o =>
+                o.ModuleLink == "HIS.Desktop.Plugins.EmrDocument").FirstOrDefault();
+                if (moduleData == null) Inventec.Common.Logging.LogSystem.Error("khong tim thay moduleLink = HIS.Desktop.Plugins.EmrDocument");
+                if (moduleData.IsPlugin && moduleData.ExtensionInfo != null)
+                {
+                    List<object> listArgs = new List<Object>();
+                    var tdlTreatmentCode = HisServiceReqView.TDL_TREATMENT_CODE.ToString();
+                    listArgs.Add(tdlTreatmentCode);
+                    var extenceInstance = PluginInstance.GetPluginInstance(HIS.Desktop.Utility.PluginInstance.GetModuleWithWorkingRoom(moduleData, this.moduleData.RoomId, this.moduleData.RoomTypeId), listArgs);
+                    if (extenceInstance == null) throw new ArgumentNullException("moduleData is null");
+                    ((Form)extenceInstance).ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+
+        private void onClickTraSoatHoSoBenhAn(object sender, EventArgs e)
+        {
+            try
+            {
+                Inventec.Desktop.Common.Modules.Module moduleData = GlobalVariables.currentModuleRaws.Where(o =>
+                o.ModuleLink == "HIS.Desktop.Plugins.HisTreatmentRecordChecking").FirstOrDefault();
+                if (moduleData == null) Inventec.Common.Logging.LogSystem.Error("khong tim thay moduleLink = HIS.Desktop.Plugins.HisTreatmentRecordChecking ");
+                if (moduleData.IsPlugin && moduleData.ExtensionInfo != null)
+                {
+                    List<object> listArgs = new List<Object>();
+                    List<long> tdlTreatmentCode = new List<long>();
+                    tdlTreatmentCode.Add(HisServiceReqView.TREATMENT_ID);
+                    listArgs.Add(HisServiceReqView.TREATMENT_ID);
+                    listArgs.Add(tdlTreatmentCode);
+                    var extenceInstance = PluginInstance.GetPluginInstance(HIS.Desktop.Utility.PluginInstance.GetModuleWithWorkingRoom(moduleData, this.moduleData.RoomId, this.moduleData.RoomTypeId), listArgs);
+                    if (extenceInstance == null) throw new ArgumentNullException("moduleData is null");
+                    ((Form)extenceInstance).ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+        //qtcode
+
 
         private void onClickTruyenDich(object sender, EventArgs e)
         {
@@ -524,13 +624,105 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                 {
                     return false;
                 }
+
             }
             catch (Exception ex)
             {
                 Inventec.Common.Logging.LogSystem.Warn(ex);
             }
             return valid;
+        }   
+
+        private void FocusTreatmentExtField(string fieldName)
+        {
+            if (fieldName == "CLINICAL_NOTE")
+            {
+                if (txtPathologicalProcess != null)
+                {
+                    txtPathologicalProcess.Focus();
+                    txtPathologicalProcess.SelectAll();
+                }
+            }
+            else
+            {
+                if (txtSubclinical != null)
+                {
+                    txtSubclinical.Focus();
+                    txtSubclinical.SelectAll();
+                }
+            }
         }
+        private bool ValidateTreatmentExtMaxLength(ExamTreatmentFinishResult finishResult)
+        {
+            string overField = null;
+            string clinicalNote = null;
+            string subclinicalResult = null;
+
+            var treatmentFinish = finishResult != null
+                ? finishResult.TreatmentFinishSDO
+                : null;
+
+            if (treatmentFinish != null)
+            {
+                clinicalNote = treatmentFinish.ClinicalNote;
+                subclinicalResult = treatmentFinish.SubclinicalResult;
+            }
+
+            if (string.IsNullOrEmpty(clinicalNote))
+            {
+                clinicalNote = txtPathologicalProcess.Text;
+            }
+            if (string.IsNullOrEmpty(subclinicalResult))
+            {
+                subclinicalResult = txtSubclinical.Text;
+            }
+
+            if (!string.IsNullOrEmpty(clinicalNote) && Encoding.UTF8.GetByteCount(clinicalNote) > MAX_CLINICAL_LENGTH)
+            {
+                overField = "CLINICAL_NOTE";
+            }
+            else if (!string.IsNullOrEmpty(subclinicalResult) && Encoding.UTF8.GetByteCount(subclinicalResult) > MAX_CLINICAL_LENGTH)
+            {
+                overField = "SUBCLINICAL_RESULT";
+            }
+
+            if (overField == null)
+            {
+                return true;
+            }
+
+            var opt = HisConfigCFG.IsCheckValueMaxlengthOption;
+            if (opt == "1")
+            {
+                var dlg = XtraMessageBox.Show(
+                    "Dữ liệu trường quá trình bệnh lý, tóm tắt kết quả vượt quá 4000 ký tự. Bạn có muốn sửa không?",
+                    "Thông báo",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning);
+
+                if (dlg == DialogResult.Yes)
+                {
+                    FocusTreatmentExtField(overField);
+                    return false;
+                }
+
+                return true; 
+            }
+
+            if (opt == "2")
+            {
+                XtraMessageBox.Show(
+                    "Dữ liệu trường quá trình bệnh lý, tóm tắt kết quả vượt quá 4000 ký tự.",
+                    "Thông báo",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                FocusTreatmentExtField(overField);
+                return false;
+            }
+            return true;
+        }
+
         public bool isWarning = true;
         private bool ValidIcd(bool isSave)
         {
@@ -583,9 +775,9 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
             bool valid = true;
             try
             {
-                if (HisConfigCFG.RequiredAddressOption && treatment != null && (String.IsNullOrEmpty(treatment.TDL_PATIENT_PROVINCE_CODE) || String.IsNullOrEmpty(treatment.TDL_PATIENT_DISTRICT_CODE) || String.IsNullOrEmpty(treatment.TDL_PATIENT_COMMUNE_CODE)))
+                if (HisConfigCFG.RequiredAddressOption && treatment != null && (String.IsNullOrEmpty(treatment.TDL_PATIENT_PROVINCE_CODE) || String.IsNullOrEmpty(treatment.TDL_PATIENT_COMMUNE_CODE)))
                 {
-                    MessageBox.Show("Bệnh nhân chưa nhập tỉnh - huyện - xã. Vui lòng bổ sung.", ResourceMessage.ThongBao, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("Bệnh nhân chưa nhập tỉnh - xã. Vui lòng bổ sung.", ResourceMessage.ThongBao, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     valid = false;
                 }
             }
@@ -1384,6 +1576,31 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                     }
                 }
                 valid = success;
+                if (treatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNGOAITRU)
+                {
+                    List<string> errors = new List<string>();
+
+                    if (string.IsNullOrEmpty(txtSubclinical.Text.Trim()))
+                    {
+                        errors.Add("Tóm tắt kết quả cận lâm sàng");
+                    }
+                    if (string.IsNullOrEmpty(txtTreatmentInstruction.Text.Trim()))
+                    {
+                        errors.Add("Phương pháp điều trị");
+                    }
+                    if (string.IsNullOrEmpty(txtProvisionalDianosis.Text.Trim()))
+                    {
+                        errors.Add("Chuẩn đoán sơ bộ");
+                    }
+
+                    if (errors.Count > 0)
+                    {
+                        string errorMessage = "Bạn chưa nhập: " + string.Join(" và ", errors) + ".";
+                        DevExpress.XtraEditors.XtraMessageBox.Show(errorMessage, ResourceMessage.ThongBao);
+                        return false;
+                    }
+
+                }
                 if (success)
                 {
                     if (HisServiceReqWithOrderSDO != null && examServiceReqUpdateSDO != null)
@@ -1396,6 +1613,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                         ProcessExamSereIcdDTO(ref examServiceReqUpdateSDO);
                         ProcessExamSereNextTreatmentIntructionDTO(ref examServiceReqUpdateSDO);
                         ProcessExamSereDHST(ref examServiceReqUpdateSDO);
+
                         try
                         {
                             if (this.treatment != null && !string.IsNullOrEmpty(this.treatment.HOSPITALIZE_REASON_NAME) && examServiceReqUpdateSDO.TreatmentFinishSDO != null)
@@ -1428,9 +1646,18 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
             try
             {
                 examServiceReqUpdateSDO.Id = this.HisServiceReqView.ID;
+                if (dtpStartTime.Enabled == true)
+                {
+                    examServiceReqUpdateSDO.StartTime = Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(dtpStartTime.DateTime);
+                }
+                else
+                {
+                    examServiceReqUpdateSDO.StartTime = null;
+                }
                 examServiceReqUpdateSDO.Advise = this.HisServiceReqView.ADVISE;
                 examServiceReqUpdateSDO.Conclusion = this.HisServiceReqView.CONCLUSION;
                 examServiceReqUpdateSDO.SickDay = Inventec.Common.TypeConvert.Parse.ToInt64(spinNgayThuCuaBenh.Text ?? "0");
+                examServiceReqUpdateSDO.SickHour = Inventec.Common.TypeConvert.Parse.ToInt64(spnGioThuCuaBenh.Text ?? "0");
                 examServiceReqUpdateSDO.HospitalizationReason = !string.IsNullOrEmpty(txtHospitalizationReason.Text.Trim()) ? txtHospitalizationReason.Text.Trim() : null;
                 examServiceReqUpdateSDO.FullExam = !string.IsNullOrEmpty(txtKhamToanThan.Text.Trim()) ? txtKhamToanThan.Text.Trim() : null;
                 examServiceReqUpdateSDO.PartExam = !string.IsNullOrEmpty(txtKhamBoPhan.Text.Trim()) ? txtKhamBoPhan.Text.Trim() : null;
@@ -1520,6 +1747,14 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                 examServiceReqUpdateSDO.PartExamRespiratory = !string.IsNullOrEmpty(txtHoHap.Text.Trim()) ? txtHoHap.Text.Trim() : null;
                 examServiceReqUpdateSDO.PathologicalHistory = !string.IsNullOrEmpty(txtPathologicalHistory.Text.Trim()) ? txtPathologicalHistory.Text.Trim() : null; // tien su cua BN
                 examServiceReqUpdateSDO.PathologicalHistoryFamily = !string.IsNullOrEmpty(txtPathologicalHistoryFamily.Text.Trim()) ? txtPathologicalHistoryFamily.Text.Trim() : null; // tien su gia dinh
+                examServiceReqUpdateSDO.HistoryAllergy = !string.IsNullOrEmpty(txtHistoryAllergy.Text.Trim()) ? txtHistoryAllergy.Text.Trim() : null;
+
+                if (chkIsHistoryAllergyRelated.Checked) examServiceReqUpdateSDO.IsHistoryAllergyRelated = (short?)1;
+                if (chkIsHistoryRelated.Checked) examServiceReqUpdateSDO.IsHistoryRelated = (short?)1;
+                if (chkIsHistoryFamilyRelated.Checked) examServiceReqUpdateSDO.IsHistoryFamilyRelated = (short?)1;
+                if (chkIsFullExamAbnormal.Checked) examServiceReqUpdateSDO.IsFullExamAbnormal = (short?)1;
+                if (chkIsPartExamAbnormal.Checked) examServiceReqUpdateSDO.IsPartExamAbnormal = (short?)1;
+
                 examServiceReqUpdateSDO.PathologicalProcess = !string.IsNullOrEmpty(txtPathologicalProcess.Text.Trim()) ? txtPathologicalProcess.Text.Trim() : null; // kham toan than
                 examServiceReqUpdateSDO.Note = !string.IsNullOrEmpty(txtResultNote.Text.Trim()) ? txtResultNote.Text.Trim() : null;
                 examServiceReqUpdateSDO.Subclinical = !string.IsNullOrEmpty(txtSubclinical.Text.Trim()) ? txtSubclinical.Text.Trim() : null;
@@ -1577,6 +1812,8 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                 examServiceReqUpdateSDO.TraditionalIcdName = IcdNameYHCT;
                 examServiceReqUpdateSDO.TraditionalIcdSubCode = IcdSubCodeYHCT;
                 examServiceReqUpdateSDO.TraditionalIcdText = IcdTextYHCT;
+                //
+                examServiceReqUpdateSDO.IS_REQUEST_SKIN_CARE = GetBulletItem(TabInfoPage.IS_REQUEST_SKIN_CARE);
 
             }
             catch (Exception ex)
@@ -1688,6 +1925,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                             serviceReqUpdateSDO.HospitalizeSDO.TreatmentTypeId = hisDepartmentTranHospitalizeSDO.HisDepartmentTranHospitalizeSDO.TreatmentTypeId;
                             serviceReqUpdateSDO.HospitalizeSDO.Time = hisDepartmentTranHospitalizeSDO.HisDepartmentTranHospitalizeSDO.Time;
                             serviceReqUpdateSDO.HospitalizeSDO.IsEmergency = hisDepartmentTranHospitalizeSDO.HisDepartmentTranHospitalizeSDO.IsEmergency;
+                            serviceReqUpdateSDO.HospitalizeSDO.IsCAPD = hisDepartmentTranHospitalizeSDO.HisDepartmentTranHospitalizeSDO.IsCAPD;
                             serviceReqUpdateSDO.FinishTime = hisDepartmentTranHospitalizeSDO.FinishTime;
                             serviceReqUpdateSDO.HospitalizeSDO.RelativeName = hisDepartmentTranHospitalizeSDO.HisDepartmentTranHospitalizeSDO.RelativeName;
                             serviceReqUpdateSDO.HospitalizeSDO.RelativePhone = hisDepartmentTranHospitalizeSDO.HisDepartmentTranHospitalizeSDO.RelativePhone;
@@ -1696,6 +1934,8 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                             serviceReqUpdateSDO.HospitalizeSDO.InHospitalizationReasonCode = hisDepartmentTranHospitalizeSDO.HisDepartmentTranHospitalizeSDO.InHospitalizationReasonCode;
                             serviceReqUpdateSDO.HospitalizeSDO.InHospitalizationReasonName = hisDepartmentTranHospitalizeSDO.HisDepartmentTranHospitalizeSDO.InHospitalizationReasonName;
                         }
+                        serviceReqUpdateSDO.SpecialistNote = hisDepartmentTranHospitalizeSDO.SpecialistNote;
+                        serviceReqUpdateSDO.ExecutedServices = hisDepartmentTranHospitalizeSDO.ExecutedServices;
                         serviceReqUpdateSDO.NotePatient = hisDepartmentTranHospitalizeSDO.Note;
                         this.isPrintHospitalizeExam = hisDepartmentTranHospitalizeSDO.IsPrintHospitalizeExam;
                         this.isSign = hisDepartmentTranHospitalizeSDO.IsSign;
@@ -1769,11 +2009,22 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                             //HIS_PATIENT patient = GetPatientByID(treatment.PATIENT_ID);
                             if (treatment != null)
                             {
+
+                                // sửa đoạn này nếu trẻ em < 7 tuổi và ko có thông tin bố mẹ/người thân thì ko cho lưu(cảnh báo)
                                 var age = Inventec.Common.DateTime.Calculation.Age(treatment.TDL_PATIENT_DOB);
-                                if (age < 7 && (String.IsNullOrWhiteSpace(treatmentFinish.TreatmentFinishSDO.PatientRelativeName) || String.IsNullOrWhiteSpace(treatmentFinish.TreatmentFinishSDO.PatientRelativeType)))
+                                if (age < 7)
                                 {
-                                    MessageBox.Show("Thông tin nghỉ hưởng BHXH thiếu thông tin bố mẹ. Vui lòng kiểm tra lại!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                    return false;
+                                    bool hasFather = !string.IsNullOrWhiteSpace(treatmentFinish.TreatmentFinishSDO.FatherName);
+                                    bool hasMother = !string.IsNullOrWhiteSpace(treatmentFinish.TreatmentFinishSDO.MotherName);
+                                    bool hasRelative = !string.IsNullOrWhiteSpace(treatmentFinish.TreatmentFinishSDO.PatientRelativeName)
+                                                       && !string.IsNullOrWhiteSpace(treatmentFinish.TreatmentFinishSDO.PatientRelativeType);
+
+                                    if (!hasFather && !hasMother && !hasRelative)
+                                    {
+                                        MessageBox.Show("Thông tin nghỉ hưởng BHXH thiếu thông tin bố mẹ/người thân. Vui lòng kiểm tra lại!",
+                                                        "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                        return false;
+                                    }
                                 }
                             }
                         }
@@ -1786,7 +2037,9 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                             }
                         }
                         var treatmentEndTypeId = treatmentFinish.TreatmentFinishSDO.TreatmentEndTypeId;
-                        if (HisConfigCFG.RequiredTreatmentMethodOption == "1" && this.treatment != null && this.treatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNOITRU && (treatmentEndTypeId == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__CHUYEN
+                        if (HisConfigCFG.RequiredTreatmentMethodOption == "1" && this.treatment != null
+                            && this.treatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNOITRU
+                            && (treatmentEndTypeId == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__CHUYEN
                             || treatmentEndTypeId == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__HEN || treatmentEndTypeId == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__RAVIEN
                             || treatmentEndTypeId == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__XINRAVIEN || treatmentEndTypeId == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__CTCV))
                         {
@@ -1796,7 +2049,10 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                                 return false;
                             }
                         }
-                        else if (HisConfigCFG.RequiredTreatmentMethodOption == "2" && ((cboThongTinBoSung != null && cboThongTinBoSung == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE_EXT.ID__NGHI_OM) || ((this.treatment != null && (this.treatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNOITRU || this.treatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNGOAITRU || this.treatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTBANNGAY)) && (treatmentEndTypeId == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__CHUYEN
+                        else if (HisConfigCFG.RequiredTreatmentMethodOption == "2" && ((cboThongTinBoSung != null && cboThongTinBoSung == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE_EXT.ID__NGHI_OM)
+                            || ((this.treatment != null && (this.treatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNOITRU
+                            || this.treatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNGOAITRU
+                            || this.treatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTBANNGAY)) && (treatmentEndTypeId == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__CHUYEN
                             || treatmentEndTypeId == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__HEN || treatmentEndTypeId == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__RAVIEN
                             || treatmentEndTypeId == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__XINRAVIEN || treatmentEndTypeId == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__CTCV))))
                         {
@@ -1841,7 +2097,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                                 SickLeaveTo_Date = Int64.Parse((dtSickLeaveTo ?? new DateTime()).ToString("yyyyMMdd") + "000000");
                             }
 
-                            if (SickLeaveDay != null && SickLeaveDay > 30)
+                            if (SickLeaveDay != null && SickLeaveDay > 30 && HisConfigCFG.AllowBhxhLeaveOver30days != "1")
                             {
                                 XtraMessageBox.Show("Số ngày nghỉ không được vượt quá 30 ngày", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                                 treatmentFinishProcessor.FocusControl(ucTreatmentFinish);
@@ -1877,11 +2133,55 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                         if (treatmentFinish.TreatmentFinishSDO.ProgramId > 0)
                         {
                             var Program = BackendDataWorker.Get<HIS_PROGRAM>().FirstOrDefault(o => o.ID == treatmentFinish.TreatmentFinishSDO.ProgramId);
-                            if (Program != null && Program.AUTO_CHANGE_TO_OUT_PATIENT == 1 && (string.IsNullOrEmpty(txtSubclinical.Text.Trim()) || string.IsNullOrEmpty(txtTreatmentInstruction.Text.Trim())))
+                            if (Program != null && Program.AUTO_CHANGE_TO_OUT_PATIENT == 1)
                             {
-                                DevExpress.XtraEditors.XtraMessageBox.Show("Bạn chưa nhập \"Phương pháp điều trị\" hoặc \"Tóm tắt kết quả cận lâm sàng\".", ResourceMessage.ThongBao);
+                                List<string> errors = new List<string>();
+
+                                if (string.IsNullOrEmpty(txtSubclinical.Text.Trim()))
+                                {
+                                    errors.Add("Tóm tắt kết quả cận lâm sàng");
+                                }
+                                if (string.IsNullOrEmpty(txtTreatmentInstruction.Text.Trim()))
+                                {
+                                    errors.Add("Phương pháp điều trị");
+                                }
+                                if (string.IsNullOrEmpty(txtProvisionalDianosis.Text.Trim()))
+                                {
+                                    errors.Add("Chuẩn đoán sơ bộ");
+                                }
+
+                                if (errors.Count > 0)
+                                {
+                                    string errorMessage = "Bạn chưa nhập: " + string.Join(" và ", errors) + ".";
+                                    DevExpress.XtraEditors.XtraMessageBox.Show(errorMessage, ResourceMessage.ThongBao);
+                                    return false;
+                                }
+                            }
+                        }
+                        if (treatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNGOAITRU)
+                        {
+                            List<string> errors = new List<string>();
+
+                            if (string.IsNullOrEmpty(txtSubclinical.Text.Trim()))
+                            {
+                                errors.Add("Tóm tắt kết quả cận lâm sàng");
+                            }
+                            if (string.IsNullOrEmpty(txtTreatmentInstruction.Text.Trim()))
+                            {
+                                errors.Add("Phương pháp điều trị");
+                            }
+                            if (string.IsNullOrEmpty(txtProvisionalDianosis.Text.Trim()))
+                            {
+                                errors.Add("Chuẩn đoán sơ bộ");
+                            }
+
+                            if (errors.Count > 0)
+                            {
+                                string errorMessage = "Bạn chưa nhập: " + string.Join(" và ", errors) + ".";
+                                DevExpress.XtraEditors.XtraMessageBox.Show(errorMessage, ResourceMessage.ThongBao);
                                 return false;
                             }
+
                         }
                         serviceReqUpdateSDO.NotePatient = treatmentFinish.Note;
                         serviceReqUpdateSDO.TreatmentFinishSDO = treatmentFinish.TreatmentFinishSDO;
@@ -1895,7 +2195,12 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                         {
                             serviceReqUpdateSDO.TreatmentFinishSDO.TreatmentMethod = txtTreatmentInstruction.Text.Trim();
                         }
-                        
+
+                        if (!string.IsNullOrEmpty(txtPathologicalProcess.Text.Trim()))
+                        {
+                            serviceReqUpdateSDO.TreatmentFinishSDO.ClinicalNote = txtPathologicalProcess.Text.Trim();
+                        }
+
                         if (!String.IsNullOrEmpty(treatmentFinish.TreatmentFinishSDO.SickLoginname))
                         {
                             serviceReqUpdateSDO.TreatmentFinishSDO.SickLoginname = treatmentFinish.TreatmentFinishSDO.SickLoginname;
@@ -1951,7 +2256,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                         if (treatmentFinish.SevereIllNessInfo != null)
                             treatmentFinish.SevereIllNessInfo.DEPARTMENT_ID = HIS.Desktop.LocalStorage.LocalData.WorkPlace.WorkPlaceSDO.FirstOrDefault(o => o.RoomId == this.moduleData.RoomId).DepartmentId;
                         SevereIllnessInfo = treatmentFinish.SevereIllNessInfo;
-                        EventsCausesDeaths = treatmentFinish.ListEventsCausesDeath;                    
+                        EventsCausesDeaths = treatmentFinish.ListEventsCausesDeath;
                         isPrintAppoinment = treatmentFinish.IsPrintAppoinment;
                         isPrintBordereau = treatmentFinish.IsPrintBordereau;
                         isSignAppoinment = treatmentFinish.IsSignAppoinment;
@@ -1974,11 +2279,11 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                     {
                         if (currentTreatmentExt == null || string.IsNullOrEmpty(this.currentTreatmentExt.CLINICAL_NOTE))
                         {
-                            serviceReqUpdateSDO.TreatmentFinishSDO.ClinicalNote = txtPathologicalProcess.Text.Trim();
+                            serviceReqUpdateSDO.TreatmentFinishSDO.ClinicalSigns = txtPathologicalProcess.Text.Trim();
                         }
                         else
                         {
-                            serviceReqUpdateSDO.TreatmentFinishSDO.ClinicalNote = this.currentTreatmentExt.CLINICAL_NOTE;
+                            serviceReqUpdateSDO.TreatmentFinishSDO.ClinicalSigns = treatment.CLINICAL_SIGNS;
                         }
 
                         if (currentTreatmentExt == null || string.IsNullOrEmpty(this.currentTreatmentExt.SUBCLINICAL_RESULT))
@@ -2076,6 +2381,9 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                         IsAppointment_ExamFinish = examFinishADO.IsAppointment;
                         IsPrintAppointment_ExamFinish = examFinishADO.IsPrintAppointment;
                         serviceReqUpdateSDO.NotePatient = examFinishADO.Note;
+
+                        serviceReqUpdateSDO.AppointmentExamRoomId = examFinishADO.RoomApointmentId;
+                        serviceReqUpdateSDO.AppointmentExamServiceId = examFinishADO.ServiceApointmentId;
                     }
                     else
                     {
@@ -2383,12 +2691,18 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
             {
                 WaitingManager.Show();
                 serviceReqExamUpdateSDO.RequestRoomId = moduleData.RoomId;
+                Inventec.Common.Logging.LogSystem.Info("serviceReqExamUpdateSDO: " + LogUtil.TraceData("serviceReqExamUpdateSDO: ", serviceReqExamUpdateSDO));
                 HisServiceReqResult = new BackendAdapter(param)
                     .Post<HisServiceReqExamUpdateResultSDO>("api/HisServiceReq/ExamUpdate", ApiConsumers.MosConsumer, serviceReqExamUpdateSDO, param);
 
 
                 if (HisServiceReqResult != null)
                 {
+                    if (whoCndProcessor != null)
+                    {
+                        //cập nhật thành công thì gửi sang hệ thống who
+                        whoCndProcessor.SendData();
+                    }
 
                     CreateThreadPostApi();
 
@@ -2425,7 +2739,9 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                             btnAggrExam.Enabled = false;
                         }
                         Room = BackendDataWorker.Get<V_HIS_ROOM>().FirstOrDefault(o => o.ID == this.moduleData.RoomId);
-                        if (Room.DEFAULT_CASHIER_ROOM_ID.HasValue && Room.BILL_ACCOUNT_BOOK_ID.HasValue && this.treatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__KHAM && !string.IsNullOrEmpty(HisConfigCFG.AutoCreatePaymentTransactions))
+                        if (Room.DEFAULT_CASHIER_ROOM_ID.HasValue && Room.BILL_ACCOUNT_BOOK_ID.HasValue
+                            && this.treatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__KHAM
+                            && !string.IsNullOrEmpty(HisConfigCFG.AutoCreatePaymentTransactions))
                         {
                             var PatientTypes = BackendDataWorker.Get<HIS_PATIENT_TYPE>().Where(o => HisConfigCFG.AutoCreatePaymentTransactions.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList().Contains(o.PATIENT_TYPE_CODE)).ToList();
                             ListAcountBook = LoadAccountBookList(Room.DEFAULT_CASHIER_ROOM_ID ?? 0);
@@ -2580,7 +2896,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                         //        printTest.Print("Mps000316");
                         //    }
                         //}
-                        Inventec.Common.Logging.LogSystem.Fatal("SaveExamServiceReq this.isPrintPrescription " + this.isPrintPrescription + " this.isSignPrescription " + this.isSignPrescription);
+
                         if (this.isPrintPrescription && !this.isSignPrescription)
                         {
                             bool printNow = true;

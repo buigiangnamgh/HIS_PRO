@@ -100,6 +100,9 @@
     <Reference Include="HIS.Desktop.Plugins.Library.ConnectBloodPressure">
       <HintPath>..\..\..\..\..\..\RELEASE\HIS\HIS.Desktop.Plugins.Library.ConnectBloodPressure\HIS.Desktop.Plugins.Library.ConnectBloodPressure.dll</HintPath>
     </Reference>
+    <Reference Include="HIS.Desktop.Plugins.Library.ConnectWhoCnd">
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.Desktop.Plugins.Library.ConnectWhoCnd.dll</HintPath>
+    </Reference>
     <Reference Include="HIS.Desktop.Plugins.Library.EmrGenerate, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\RELEASE\HIS\HIS.Desktop.Plugins.Library.EmrGenerate\HIS.Desktop.Plugins.Library.EmrGenerate.dll</HintPath>
@@ -152,15 +155,18 @@
     <Reference Include="HIS.UC.ExamFinish">
       <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.UC.ExamFinish.dll</HintPath>
     </Reference>
+    <Reference Include="HIS.UC.ExamTreatmentFinish, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Users\giang\Desktop\HIS.UC.ExamTreatmentFinish.dll</HintPath>
+    </Reference>
     <Reference Include="HIS.UC.HisExamServiceAdd">
       <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.UC.HisExamServiceAdd.dll</HintPath>
     </Reference>
     <Reference Include="HIS.UC.Hospitalize">
       <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.UC.Hospitalize.dll</HintPath>
     </Reference>
-    <Reference Include="HIS.UC.Icd, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\RELEASE\HIS\His.UC.Icd\HIS.UC.Icd.dll</HintPath>
+    <Reference Include="HIS.UC.Icd">
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.UC.Icd.dll</HintPath>
     </Reference>
     <Reference Include="HIS.UC.Ksk">
       <HintPath>..\..\..\..\..\..\RELEASE\HIS\HIS.UC.Ksk\HIS.UC.Ksk.dll</HintPath>
@@ -335,7 +341,7 @@
     </Reference>
     <Reference Include="MOS.SDO, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\RELEASE\MOS\MOS.SDO.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\MOS.SDO.dll</HintPath>
     </Reference>
     <Reference Include="MOS.ServicePaty, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -447,36 +453,43 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ADO\ConfigADO.cs" />
     <Compile Include="ADO\DiseaseRelationADO.cs" />
     <Compile Include="ADO\IcdADO.cs" />
     <Compile Include="ADO\TreatmentExamADO.cs" />
-    <Compile Include="Config\AppConfigKeys.cs" />
     <Compile Include="Base\PrintTypeCodeWorker.cs" />
     <Compile Include="Base\ResourceLangManager.cs" />
+    <Compile Include="Config\AppConfigKeys.cs" />
     <Compile Include="Config\ConfigKeyss.cs" />
     <Compile Include="Config\HisConfigCFG.cs" />
     <Compile Include="Config\HisPatientTypeCFG.cs" />
     <Compile Include="Config\HisTransactionTypeCFG.cs" />
-    <Compile Include="ExamServiceReqExecuteControl_Dispose.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ExamServiceReqExecuteControl_PrintTracking.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Popup\frmConnectCOM.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Popup\frmConnectCOM.Designer.cs">
-      <DependentUpon>frmConnectCOM.cs</DependentUpon>
-    </Compile>
+    <Compile Include="Delegate\DelegateUC.cs" />
     <Compile Include="ExamServiceReqExecuteControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="ExamServiceReqExecuteControl.designer.cs">
       <DependentUpon>ExamServiceReqExecuteControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="ExamServiceReqExecuteControlProcess.cs" />
+    <Compile Include="ExamServiceReqExecuteControl_Dispose.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ExamServiceReqExecuteControl_PrintTracking.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ExamServiceReqExecuteControl__Combo.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ExamServiceReqExecuteControl__InitLanguage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="ExamServiceReqExecuteControl__InitUC.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ExamServiceReqExecuteControl__InitUCDHST.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ExamServiceReqExecuteControl__InitUCIcd.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="ExamServiceReqExecuteControl__InitUCIcdCause.cs">
@@ -485,18 +498,28 @@
     <Compile Include="ExamServiceReqExecuteControl__InitUCIcdSub.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ExamServiceReqExecuteControl__InitUCIcd.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="ExamServiceReqExecuteControl__InitUCNextTreatInst.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ExamServiceReqExecuteControl__InitUCDHST.cs">
+    <Compile Include="ExamServiceReqExecuteControl__Load.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="ExamServiceReqExecuteControl__Process.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="ExamServiceReqExecuteControl__ShortCut.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ExamServiceReqExecuteControl__TabInfo.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ExamServiceReqExecuteControl__ValidateExam.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ExamServiceReqExecuteProcessor.cs" />
+    <Compile Include="ExamServiceReqExecute\ExamServiceReqExecuteBehavior.cs" />
+    <Compile Include="ExamServiceReqExecute\ExamServiceReqExecuteFactory.cs" />
+    <Compile Include="ExamServiceReqExecute\IExamServiceReqExecuteExecute.cs" />
     <Compile Include="frmSecondaryIcd.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -508,6 +531,14 @@
     </Compile>
     <Compile Include="frmXemGiayChuyenTuyen.Designer.cs">
       <DependentUpon>frmXemGiayChuyenTuyen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IcdUtil.cs" />
+    <Compile Include="KeyboardWorker.cs" />
+    <Compile Include="Popup\frmConnectCOM.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Popup\frmConnectCOM.Designer.cs">
+      <DependentUpon>frmConnectCOM.cs</DependentUpon>
     </Compile>
     <Compile Include="Popup\frmInformationExam.cs">
       <SubType>Form</SubType>
@@ -521,19 +552,37 @@
     <Compile Include="Popup\frmPayment.Designer.cs">
       <DependentUpon>frmPayment.cs</DependentUpon>
     </Compile>
+    <Compile Include="Print\ExamServiceReqExcuteControl__init.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Print\ExamServiceReqExcuteControl__Print__Sars_nCOV_2.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Print\ExamServiceReqExcuteControl__Print___GiayDongYXetNghiemHIV.cs">
+    <Compile Include="Print\ExamServiceReqExcuteControl__Print___BenhAnNgoaiTru.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Print\ExamServiceReqExcuteControl__Print___GiayNghiOm.cs">
+    <Compile Include="Print\ExamServiceReqExcuteControl__Print___DonPhongKhamTongHop.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Print\ExamServiceReqExcuteControl__Print___GiayBaoTu.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Print\ExamServiceReqExcuteControl__Print___DonPhongKhamTongHop.cs">
+    <Compile Include="Print\ExamServiceReqExcuteControl__Print___GiayChuyenVien.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Print\ExamServiceReqExcuteControl__Print___GiayDongYXetNghiemHIV.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Print\ExamServiceReqExcuteControl__Print___GiayHenKham.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Print\ExamServiceReqExcuteControl__Print___GiayNghiOm.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Print\ExamServiceReqExcuteControl__Print___GiayRaVien.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Print\ExamServiceReqExcuteControl__Print___Load.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Print\ExamServiceReqExcuteControl__Print___Mps000178.cs">
@@ -543,6 +592,9 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Print\ExamServiceReqExcuteControl__Print___Mps000485.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Print\ExamServiceReqExcuteControl__Print___PhieuKhamBenhVaoVien.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Print\ExamServiceReqExcuteControl__Print___PhieuKiemTraKhamSucKhoeDinhKy.cs">
@@ -557,44 +609,6 @@
     <Compile Include="Print\ExamServiceReqExcuteControl__Print___YeuCauKhamThem.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Print\ExamServiceReqExcuteControl__Print___PhieuKhamBenhVaoVien.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Print\ExamServiceReqExcuteControl__Print___GiayHenKham.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Print\ExamServiceReqExcuteControl__Print___GiayChuyenVien.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Print\ExamServiceReqExcuteControl__Print___GiayRaVien.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Print\ExamServiceReqExcuteControl__Print___BenhAnNgoaiTru.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Print\ExamServiceReqExcuteControl__Print___Load.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ExamServiceReqExecuteControl__ShortCut.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="IcdUtil.cs" />
-    <Compile Include="ExamServiceReqExecuteControl__Load.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ExamServiceReqExecuteControl__Combo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ExamServiceReqExecuteControl__InitLanguage.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Print\ExamServiceReqExcuteControl__Init.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ExamServiceReqExecuteControlProcess.cs" />
-    <Compile Include="ExamServiceReqExecute\ExamServiceReqExecuteBehavior.cs" />
-    <Compile Include="ExamServiceReqExecute\ExamServiceReqExecuteFactory.cs" />
-    <Compile Include="ExamServiceReqExecute\IExamServiceReqExecuteExecute.cs" />
     <Compile Include="Print\ExamServiceReqExcuteControl__Tracking.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -603,36 +617,22 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="ExamServiceReqExecuteProcessor.cs" />
-    <Compile Include="Delegate\DelegateUC.cs" />
-    <Compile Include="KeyboardWorker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Resources\Lang.vi.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Lang.vi.resx</DependentUpon>
-    </Compile>
+    <Compile Include="Resources\Lang.vi.Designer.cs" />
     <Compile Include="Resources\ResourceMessage.cs" />
     <Compile Include="SdaConfigKeys.cs" />
-    <Compile Include="ExamServiceReqExecuteControl__ValidateExam.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Sda\SdaEventLogCreate.cs" />
     <Compile Include="Validate\ValidateRule\BenhPhuValidationRule.cs" />
-    <Compile Include="Validate\ValidateRule\PortComValidationRule.cs" />
-    <Compile Include="Validate\ValidateRule\ValidateMaxlength.cs" />
     <Compile Include="Validate\ValidateRule\IcdValidationRuleControl.cs" />
     <Compile Include="Validate\ValidateRule\NextTreatmentInstValidationRuleControl.cs" />
+    <Compile Include="Validate\ValidateRule\PortComValidationRule.cs" />
+    <Compile Include="Validate\ValidateRule\ValidateMaxlength.cs" />
+    <Compile Include="Validate\ValidateRule\ValidateStartTime.cs" />
     <Compile Include="Validate\ValidateRule\WeightValidaionRule.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Popup\frmConnectCOM.resx">
-      <DependentUpon>frmConnectCOM.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="ExamServiceReqExecuteControl.resx">
       <DependentUpon>ExamServiceReqExecuteControl.cs</DependentUpon>
-      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="frmSecondaryIcd.resx">
       <DependentUpon>frmSecondaryIcd.cs</DependentUpon>
@@ -640,44 +640,29 @@
     <EmbeddedResource Include="frmXemGiayChuyenTuyen.resx">
       <DependentUpon>frmXemGiayChuyenTuyen.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="Properties\licenses.licx" />
+    <EmbeddedResource Include="Resources\Lang.en.resx" />
+    <EmbeddedResource Include="Resources\Lang.my.resx" />
+    <EmbeddedResource Include="Resources\Lang.vi.resx" />
+    <EmbeddedResource Include="Resources\Message.Lang.en.resx" />
+    <EmbeddedResource Include="Resources\Message.Lang.my.resx" />
+    <EmbeddedResource Include="Resources\Message.Lang.vi.resx" />
+    <EmbeddedResource Include="Popup\frmConnectCOM.resx">
+      <DependentUpon>frmConnectCOM.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Popup\frmInformationExam.resx">
       <DependentUpon>frmInformationExam.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Popup\frmPayment.resx">
       <DependentUpon>frmPayment.cs</DependentUpon>
     </EmbeddedResource>
-    <None Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Lang.en.resx">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Lang.my.resx">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Lang.vi.resx">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Message.Lang.en.resx">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Message.Lang.my.resx">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Message.Lang.vi.resx">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Image\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\UC\HIS.UC\HIS.UC.ExamTreatmentFinish\HIS.UC.ExamTreatmentFinish.csproj">
-      <Project>{bfbc4f29-fbeb-4ea0-896a-1a7362ae75af}</Project>
-      <Name>HIS.UC.ExamTreatmentFinish</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\HIS.Desktop.ApiConsumer\HIS.Desktop.ApiConsumer.csproj">
       <Project>{861bfedb-026f-4b6f-a3cf-32843ae8c03d}</Project>
       <Name>HIS.Desktop.ApiConsumer</Name>
@@ -748,10 +733,21 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\sound.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\demostration.png" />
+    <Content Include="Image\circle-black.png" />
+    <Content Include="Image\circle-green.png" />
+    <Content Include="Image\circle-red.png" />
+    <Content Include="Image\circle-white.png" />
+    <Content Include="Image\circle-yellow.png" />
+    <Content Include="Image\circleOrgan.png" />
+    <Content Include="Image\Science-Plus2-Math-icon.png" />
+    <Content Include="Resources\circle-16.png" />
+    <Content Include="Resources\circle-16_green.png" />
+    <Content Include="Resources\circle-16_red.png" />
+    <Content Include="Resources\circle-black.png" />
+    <Content Include="Resources\dau tích-01.jpg" />
+    <Content Include="Resources\dau tích-02.jpg" />
+    <Content Include="Resources\demostration.png" />
+    <Content Include="Resources\sound.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

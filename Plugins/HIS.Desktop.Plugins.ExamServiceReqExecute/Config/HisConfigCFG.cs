@@ -28,12 +28,17 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute.Config
 {
     class HisConfigCFG
     {
+        public const string KEY__MOS_TREATMENT_ALLOW_MANY_TREATMENT_OPENING_OPTION = "MOS.TREATMENT.ALLOW_MANY_TREATMENT_OPENING_OPTION";
+        public const string KEY_HIS_DESKTOP_PLUGINS_EXAMSERVICEREQEXECUTE_ISENABLEEDITSTARTTIME  = "HIS.Desktop.Plugins.ExamServiceReqExecute.IsEnableEditStartTime";
+        public static string IsEnableEditStartTime;
+        public const string CONFIG_KEY_IsCheckServiceFollowWhenOut = "HIS.Desktop.Plugins.IsCheckServiceFollowWhenOut";
+        internal static bool IsCheckServiceFollowWhenOut;
         public const string REQUIRED_PULSE_BLOOD_PRESSURE = "HIS.UC.DHST__REQUIRED_PULSE_BLOOD_PRESSURE";
 
         private const string CONFIG_KEY__IsloadIcdFromExamServiceExecute = "HIS.Desktop.Plugins.IsloadIcdFromExamServiceExecute";
         internal static bool IsloadIcdFromExamServiceExecute;
         private const string CONFIG_KEY__ICD_GENERA_KEY = "HIS.Desktop.Plugins.AutoCheckIcd";
-        // tự động tắt màn hình xử lý khám sau khi kết thúc
+        // tự động tắt màn hình xử lý khám sau khi kết thúcASSIGN_SERVICE_SIMULTANEITY_OPTION
         private const string CONFIG_KEY_AutoExitAfterFinish = "HIS.Desktop.Plugins.ExamServiceReqExecute.AutoExitAfterFinish";
         internal static bool IsAutoExitAfterFinish;
 
@@ -74,6 +79,11 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute.Config
 
         private const string EXECUTE_ROOM_PAYMENT_OPTION = "MOS.EPAYMENT.EXECUTE_ROOM_PAYMENT_OPTION";
         internal static string executeRoomPaymentOption;
+        //huannh bo sung key
+        private const string ASSIGN_SERVICE_SIMULTANEITY_OPTION = "MOS.HIS_SERVICE_REQ.ASSIGN_SERVICE_SIMULTANEITY_OPTION";
+        internal static string AssignServiceSimultaneityOption;
+        private const string ASSIGN_SIMULTANEITY_OPTION = "MOS.HIS_SERVICE_REQ.ASSIGN_SIMULTANEITY_OPTION";
+        internal static string AssignSimultaneityOption;
 
         private const string TERMINAL_SYTEM_ADDRESS = "MOS.EPAYMENT.TERMINAL_SYTEM.ADDRESS";
         internal static string terminalSystemAddress;
@@ -99,10 +109,25 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute.Config
         internal static bool RequiredAddressOption;
         internal static string RequiredTreatmentMethodOption;
         internal static string AutoCheckIcd;
+        private const string KEY_IsRequiredPathologicalProcessTransferPatientBHYT = "HIS.Desktop.Plugins.TreatmentFinish.IsRequiredPathologicalProcessTransferPatientBHYT";
+        private const string KEY_PathologicalProcessOption = "HIS.Desktop.Plugins.TreatmentFinish.PathologicalProcessOption";
+        internal static bool IsRequiredPathologicalProcessTransferPatientBHYT;
+        internal static int PathologicalProcessOption;
+        private const string KEY_AllowBhxhLeaveOver30days = "His.LeaveDay.AllowBhxhLeaveOver30days";
+        internal static string AllowBhxhLeaveOver30days;
+        internal static string AllowManyTreatmentOpeningOption;
+        private const string KEY_IsCheckValueMaxlengthOption = "HIS.Desktop.Plugins.TreatmentFinish.IsCheckValueMaxlengthOption";
+        internal static string IsCheckValueMaxlengthOption;
+        private const string KEY_MOS_HIS_SERVICE_REQ_NOT_UPDATE_EXECUTE_LOGINNAME_WHEN_FINISH_EXAM = "MOS.HIS_SERVICE_REQ.NOT_UPDATE_EXECUTE_LOGINNAME_WHEN_FINISH_EXAM";
+        internal static string NotUpdateExecuteLoginNameWhenFinishExam;
+        private const string KEY_HIS_DESKTOP_PLUGINS_REGISTER_V2_REQUEST_SKIN_CARE = "HIS.Desktop.Plugins.RegisterV2.RequestSkinCare";
+        internal static string HisDesktopPluginsRegisterV2RequestSkinCare;
         internal static void LoadConfig()
         {
             try
             {
+                IsCheckValueMaxlengthOption = GetValue(KEY_IsCheckValueMaxlengthOption);
+                IsCheckServiceFollowWhenOut = GetValue(CONFIG_KEY_IsCheckServiceFollowWhenOut) == GlobalVariables.CommonStringTrue;
                 AutoCreatePaymentTransactions = GetValue(KEY__AutoCreatePaymentTransactions);
                 OptionTreatmentEndTypeIsTransfer = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(KEY_TreatmentEndTypeIsTransfer);
                 HospitalizationReasonRequiredByPatientCode = GetValue(KEY__HospitalizationReasonRequiredByPatientCode);
@@ -125,10 +150,20 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute.Config
                 IsFormClosingOption = GetValue(CONFIG_KEY__FormClosingOption) == GlobalVariables.CommonStringTrue;
                 ModuleLinkApply = GetValue(CONFIG_KEY__ModuleLinkApply);
                 executeRoomPaymentOption = GetValue(EXECUTE_ROOM_PAYMENT_OPTION);
+                AssignServiceSimultaneityOption = GetValue(ASSIGN_SERVICE_SIMULTANEITY_OPTION);
+                AssignSimultaneityOption = GetValue(ASSIGN_SIMULTANEITY_OPTION);
                 terminalSystemAddress = GetValue(TERMINAL_SYTEM_ADDRESS);
                 terminalSystemSecureKey = GetValue(TERMINAL_SYTEM_SECURE_KEY);
                 RequiredTreatmentMethodOption = GetValue(CONFIG_KEY__IS_REQUIRED_TREATMENT_METHOD_OPTION);
                 AutoCheckIcd = GetValue(CONFIG_KEY__ICD_GENERA_KEY);
+                IsRequiredPathologicalProcessTransferPatientBHYT = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(KEY_IsRequiredPathologicalProcessTransferPatientBHYT) == GlobalVariables.CommonStringTrue;
+                PathologicalProcessOption = int.Parse(HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(KEY_PathologicalProcessOption) ?? "0");
+                AllowBhxhLeaveOver30days = GetValue(KEY_AllowBhxhLeaveOver30days);
+                IsEnableEditStartTime = GetValue(KEY_HIS_DESKTOP_PLUGINS_EXAMSERVICEREQEXECUTE_ISENABLEEDITSTARTTIME);
+                AllowManyTreatmentOpeningOption = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(KEY__MOS_TREATMENT_ALLOW_MANY_TREATMENT_OPENING_OPTION);
+                NotUpdateExecuteLoginNameWhenFinishExam = GetValue(KEY_MOS_HIS_SERVICE_REQ_NOT_UPDATE_EXECUTE_LOGINNAME_WHEN_FINISH_EXAM);
+                HisDesktopPluginsRegisterV2RequestSkinCare = GetValue(KEY_HIS_DESKTOP_PLUGINS_REGISTER_V2_REQUEST_SKIN_CARE);
+
             }
             catch (Exception ex)
             {
