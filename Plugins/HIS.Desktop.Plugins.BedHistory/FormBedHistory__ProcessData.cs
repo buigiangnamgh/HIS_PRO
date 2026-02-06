@@ -1,4 +1,21 @@
-﻿
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 using DevExpress.XtraEditors;
 using DevExpress.XtraEditors.DXErrorProvider;
 using HIS.Desktop.LocalStorage.BackendData;
@@ -7,10 +24,10 @@ using Inventec.Common.Controls.EditorLoader;
 using MOS.EFMODEL.DataModels;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace HIS.Desktop.Plugins.BedHistory
 {
@@ -100,29 +117,37 @@ namespace HIS.Desktop.Plugins.BedHistory
             List<HisBedServiceTypeADO> result = null;
             try
             {
-
                 if (bedLogCheckProcessing != null && bedLogCheckProcessing.Count > 0)
                 {
-                    var bedLogTime = bedLogCheckProcessing.Where(o => o.finishTime.HasValue && o.finishTime.Value.Subtract(o.startTime).TotalDays <= 1)
-                    .ToList();
-                    if (bedLogTime != null && bedLogTime.Count > 0)
-                    {
-                        result = ListBedServiceTypes;
-                        ChkSplitDay.Checked = false;
-                        MessageBox.Show(String.Join(", ", bedLogTime.Select(o => o.BED_NAME).ToList()) + " có thời gian sử dụng ít hơn 1 ngày ", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    }
-                    else
-                    {
-                        result = new List<HisBedServiceTypeADO>();
+                    result = new List<HisBedServiceTypeADO>();
 
-                        var lstSplitBedLogByDay = ProcessSplitBedLogByDay(bedLogCheckProcessing);
-                        if (lstSplitBedLogByDay != null && lstSplitBedLogByDay.Count > 0)
+                    var lstSplitBedLogByDay = ProcessSplitBedLogByDay(bedLogCheckProcessing);
+                    if (lstSplitBedLogByDay != null && lstSplitBedLogByDay.Count > 0)
+                    {
+                        var groupByDate = lstSplitBedLogByDay.GroupBy(g => new { g.startTime.Date, g.BED_SERVICE_TYPE_ID, g.SHARE_COUNT }).Select(grc => grc.ToList()).ToList();
+
+                        foreach (var bedServiceTypes in groupByDate)
                         {
-                            var groupByDate = lstSplitBedLogByDay.GroupBy(g => new { g.startTime.Date, g.BED_SERVICE_TYPE_ID, g.SHARE_COUNT }).Select(grc => grc.ToList()).ToList();
-
-                            foreach (var bedServiceTypes in groupByDate)
+                            this.ExecuteTotalDateTimeBed(bedServiceTypes, ref result);
+                        }
+                        if (IsShareBed == "1")
+                        {
+                            foreach (var item in result)
                             {
-                                this.ExecuteTotalDateTimeBed(bedServiceTypes, ref result);
+                                if (dicBedLog.ContainsKey(item.BED_ID) && dicBedLog[item.BED_ID] != null && dicBedLog[item.BED_ID].Count > 0)
+                                {
+                                    var bedLogs = dicBedLog[item.BED_ID].Where(o => o.TREATMENT_ID != _TreatmentBedRoom.TREATMENT_ID).ToList();
+                                    if (bedLogs.FirstOrDefault(o => o.START_TIME <= item.START_TIME && item.START_TIME <= o.FINISH_TIME) != null)
+                                    {
+                                        item.AmmoutNamGhep = bedLogs.Where(o => o.START_TIME <= item.START_TIME && item.START_TIME <= o.FINISH_TIME).Count() + 1;
+                                    }
+                                    else
+                                    {
+                                        item.AmmoutNamGhep = null;
+                                    }
+                                }
+                                else
+                                    item.AmmoutNamGhep = null;
                             }
                         }
                     }
@@ -147,12 +172,12 @@ namespace HIS.Desktop.Plugins.BedHistory
                     foreach (var item in bedLogCheckProcessing)
                     {
                         long? namghep = null;
-                        decimal lastAmount = 0;
-                        var days = chkSplitByResult.Checked ? SplitBedServiceByCircular(item.startTime, item.finishTime ?? DateTime.Now) : ProcessTotalBedDay1(new List<HisBedHistoryADO>() { item }, ref namghep, ref lastAmount);
+
+                        var days = chkSplitByResult.Checked ? SplitBedServiceByCircular(item.startTime, item.finishTime ?? DateTime.Now) : ProcessTotalBedDay(new List<HisBedHistoryADO>() { item }, ref namghep);
 
                         if (days > 1)
                         {
-                            for (int i = 0; i < Math.Ceiling(days); i++) // Math.Ceiling(days) neu ngay la le thi lam tron len de duoc them 1 dong
+                            for (int i = 0; i < days; i++)
                             {
                                 ADO.HisBedHistoryADO ado = new ADO.HisBedHistoryADO();
                                 Inventec.Common.Mapper.DataObjectMapper.Map<ADO.HisBedHistoryADO>(ado, item);
@@ -165,7 +190,7 @@ namespace HIS.Desktop.Plugins.BedHistory
                                     ado.FINISH_TIME = Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(startTime.AddDays(1)) ?? 0;
                                 }
 
-                                if (i == Math.Ceiling(days) - 1)
+                                if (i == days - 1)
                                 {
                                     if (ado.START_TIME > item.FINISH_TIME)
                                     {
@@ -176,7 +201,6 @@ namespace HIS.Desktop.Plugins.BedHistory
 
                                     }
                                     ado.FINISH_TIME = item.FINISH_TIME;
-                                    ado.LastAmount = lastAmount;
                                 }
 
                                 ado.startTime = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(ado.START_TIME) ?? DateTime.Now;
@@ -190,25 +214,22 @@ namespace HIS.Desktop.Plugins.BedHistory
                             result.Add(item);
                         }
 
-                        Inventec.Common.Logging.LogSystem.Debug("ProcessSplitBedLogByDay List<HisBedHistoryADO> " + Inventec.Common.Logging.LogUtil.TraceData("", result));
-
                         var last = result.Last();
-                        if (last.startTime.Day != last.finishTime.Value.Day && last.finishTime.Value.Hour > 0 && !chkSplitByResult.Checked) // nambg sua
+                        if (last.startTime.Day != last.finishTime.Value.Day && !chkSplitByResult.Checked)
                         {
-                            //ADO.HisBedHistoryADO ado = new ADO.HisBedHistoryADO();
-                            //Inventec.Common.Mapper.DataObjectMapper.Map<ADO.HisBedHistoryADO>(ado, item);
+                            ADO.HisBedHistoryADO ado = new ADO.HisBedHistoryADO();
+                            Inventec.Common.Mapper.DataObjectMapper.Map<ADO.HisBedHistoryADO>(ado, item);
 
-                            ////DateTime date = (DateTime)Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(item.FINISH_TIME ?? 0);
+                            //DateTime date = (DateTime)Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(item.FINISH_TIME ?? 0);
 
-                            //ado.START_TIME = item.FINISH_TIME ?? 0;
+                            ado.START_TIME = item.FINISH_TIME ?? 0;
 
-                            //ado.FINISH_TIME = item.FINISH_TIME ?? 0;
+                            ado.FINISH_TIME = item.FINISH_TIME ?? 0;
 
-                            //ado.startTime = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(ado.START_TIME) ?? DateTime.Now;
-                            //ado.finishTime = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(ado.FINISH_TIME ?? 0) ?? DateTime.Now;
-                            //ado.LastAmount = lastAmount;
+                            ado.startTime = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(ado.START_TIME) ?? DateTime.Now;
+                            ado.finishTime = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(ado.FINISH_TIME ?? 0) ?? DateTime.Now;
 
-                            //result.Add(ado);
+                            result.Add(ado);
                         }
                     }
                 }
@@ -221,120 +242,7 @@ namespace HIS.Desktop.Plugins.BedHistory
             return result;
         }
 
-        private decimal ProcessTotalBedDay(List<HisBedHistoryADO> bebHistoryAdos, ref long? namghep, ref decimal lastAmount)
-        {
-            decimal result = 0;
-            try
-            {
-                if (bebHistoryAdos != null && bebHistoryAdos.Count > 0)
-                {
-                    long tongSoPhut = 0;
-                    foreach (var item in bebHistoryAdos)
-                    {
-                        DateTime timeFinish = new DateTime();
-                        DateTime timeStart = new DateTime();
-                        if (ChkNotCountHours.Checked)
-                        {
-                            DateTime time = item.finishTime ?? DateTime.Now;
-                            timeFinish = new DateTime(time.Year, time.Month, time.Day);
-                            timeStart = new DateTime(item.startTime.Year, item.startTime.Month, item.startTime.Day);
-                        }
-                        else
-                        {
-                            timeFinish = item.finishTime ?? DateTime.Now;
-                            timeStart = item.startTime;
-                        }
-                        TimeSpan diff = timeFinish - timeStart;
-                        if (diff.Days > 0)
-                        {
-                            result += diff.Days;
-                        }
-                        else
-                        {
-                            if (ChkNotCountHours.Checked) result += 1;
-                        }
-
-                        if (diff.Minutes > 0)
-                        {
-                            tongSoPhut += diff.Minutes;
-                        }
-
-                        if (item.SHARE_COUNT.HasValue)
-                        {
-                            if (!namghep.HasValue || namghep < item.SHARE_COUNT)
-                            {
-                                namghep = item.SHARE_COUNT;
-                            }
-                        }
-                    }
-
-                    //if (tongSoPhut > 0)
-                    //{
-                    //    result += tongSoPhut / (24 * 60);
-                    //    // thời gian xử dụng < 4h thì sl 0.5 nếu > 4h thì tính sl 1
-                    //    if ((tongSoPhut % (24 * 60)) != 0)
-                    //    {
-                    //        if ((tongSoPhut % (24 * 60)) < (4 * 60))
-                    //        {
-                    //            result += System.Convert.ToDecimal(0.5);
-                    //        }
-                    //        else
-                    //        {
-                    //            result += 1;
-                    //        }
-                    //    }
-                    //    else
-                    //    {
-                    //        //result += 1; khong cong
-                    //        //tongSoNgayGiuong += System.Convert.ToDecimal(0.5);
-                    //    }
-                    //}
-                    if (tongSoPhut > 0)
-                    {
-                        //result += Convert.ToDecimal(tongSoPhutNew / (24 * 60));
-                        // thời gian xử dụng < 4h thì sl 0.5 nếu > 4h thì tính sl 1
-                        if ((tongSoPhut % (24 * 60)) != 0)
-                        {
-                            if ((tongSoPhut % (24 * 60)) < (4 * 60))
-                            {
-                                result += System.Convert.ToDecimal(0.5);
-                                lastAmount = System.Convert.ToDecimal(0.5);
-                            }
-                            else
-                            {
-                                result += 1;
-                                lastAmount = 1;
-                            }
-                        }
-                        else
-                        {
-                            //result += 1; khong cong
-                            //tongSoNgayGiuong += System.Convert.ToDecimal(0.5);
-                        }
-                    }
-                    //else
-                    //{
-                    //    tongSoNgayGiuong += 1;
-                    //    //tongSoNgayGiuong += System.Convert.ToDecimal(0.5);
-                    //}
-
-                    if (result == 0) result = 1;
-                }
-            }
-            catch (Exception ex)
-            {
-                result = 0;
-                Inventec.Common.Logging.LogSystem.Error(ex);
-            }
-            return result;
-        }
-
-        public static DateTime TrimMilliseconds(DateTime dt)
-        {
-            return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, 0, 0, dt.Kind);
-        }
-
-        private decimal ProcessTotalBedDay1(List<HisBedHistoryADO> bebHistoryAdos, ref long? namghep, ref decimal lastAmount)
+        private decimal ProcessTotalBedDay(List<HisBedHistoryADO> bebHistoryAdos, ref long? namghep)
         {
             decimal result = 0;
             try
@@ -358,7 +266,7 @@ namespace HIS.Desktop.Plugins.BedHistory
                             timeStart = item.startTime;
                         }
 
-                        TimeSpan diff = TrimMilliseconds(timeFinish) - TrimMilliseconds(timeStart);
+                        TimeSpan diff = timeFinish - timeStart;
                         if (diff.Days > 0)
                         {
                             result += diff.Days;
@@ -385,56 +293,22 @@ namespace HIS.Desktop.Plugins.BedHistory
                     if (tongSoGio > 0)
                     {
                         result += tongSoGio / 24;
-                        if ((tongSoGio / 24) >= 1)
+                        if ((tongSoGio % 24) != 0)
                         {
-                            if (tongSoGio % 24 < 4)
-                            {
-                                result += System.Convert.ToDecimal(0.5);
-                                lastAmount = System.Convert.ToDecimal(0.5);
-                            }
-                            else
-                            {
-                                result += 1;
-                                lastAmount = 1;
-                            }
+                            result += 1;
                         }
                         else
                         {
-                            if (tongSoGio < 4)
-                            {
-                                result += System.Convert.ToDecimal(0.5);
-                                lastAmount = System.Convert.ToDecimal(0.5);
-                            }
-                            else
-                            {
-                                result += 1;
-                                lastAmount = 1;
-                            }
+                            result += 1;
+                            //tongSoNgayGiuong += System.Convert.ToDecimal(0.5);
                         }
-
-                        //if ((tongSoGio % 24) != 0)
-                        //{
-                        //    result += 1;
-                        //}
-                        //else
-                        //{
-                        //    if (tongSoGio < 4)
-                        //    {
-                        //        result += System.Convert.ToDecimal(0.5);
-                        //    }
-                        //    else
-                        //    {
-                        //        result += 1;
-                        //    }
-                        //    //result += 1;
-
-                        //}
                     }
                     //else
                     //{
                     //    tongSoNgayGiuong += 1;
                     //    //tongSoNgayGiuong += System.Convert.ToDecimal(0.5);
                     //}
+
                     if (result == 0) result = 1;
                 }
             }
@@ -446,6 +320,153 @@ namespace HIS.Desktop.Plugins.BedHistory
             return result;
         }
 
+        private void FillDataIntoServiceConditionCombo(HisBedHistoryADO data, GridLookUpEdit grd)
+        {
+            try
+            {
+                if (grd != null && data.PATIENT_TYPE_ID != null)
+                {
+                    var dataCondition = GetListServicePatyCondition(data);
+                    InitComboServiceCondition(grd, dataCondition);
+                    if (dataCondition != null && dataCondition.Count == 1)
+                    {
+                        data.SERVICE_CONDITION_ID = dataCondition[0].ID;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+
+        private List<ServicePatyConditionADO> GetListServicePatyCondition(HisBedHistoryADO data)
+        {
+            List<ServicePatyConditionADO> result = new List<ServicePatyConditionADO>();
+            try
+            {
+                var dataCondition = BranchDataWorker.ServicePatyWithListPatientType(data.BED_SERVICE_TYPE_ID ?? 0, new List<long>() { data.PATIENT_TYPE_ID ?? 0 });
+                if (dataCondition != null && dataCondition.Count > 0)
+                {
+                    dataCondition = dataCondition.Where(o => o.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE && o.SERVICE_CONDITION_ID.HasValue && o.SERVICE_CONDITION_ID > 0).ToList();
+                    if (dataCondition != null && dataCondition.Count > 0)
+                    {
+                        List<V_HIS_SERVICE_PATY> dataConditionTmps = new List<V_HIS_SERVICE_PATY>();
+                        foreach (var item in dataCondition)
+                        {
+                            if (dataConditionTmps.Count == 0 || !dataConditionTmps.Exists(t => t.SERVICE_CONDITION_ID == item.SERVICE_CONDITION_ID))
+                            {
+                                dataConditionTmps.Add(item);
+                            }
+                        }
+                        dataCondition.Clear();
+                        dataCondition.AddRange(dataConditionTmps);
+                    }
+                }
+                if (dataCondition != null && dataCondition.Count > 0 && lstConditionService != null && lstConditionService.Count > 0)
+                {
+                    dataCondition = dataCondition.Where(o => lstConditionService.Exists(p => p.SERVICE_ID == (data.BED_SERVICE_TYPE_ID ?? 0) && p.ID == o.SERVICE_CONDITION_ID)).ToList();
+                }
+                AutoMapper.Mapper.CreateMap<V_HIS_SERVICE_PATY, ServicePatyConditionADO>();
+                return AutoMapper.Mapper.Map<List<ServicePatyConditionADO>>(dataCondition);
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+            return result;
+
+        }
+
+        private void InitComboServiceCondition(DevExpress.XtraEditors.Repository.RepositoryItemGridLookUpEdit cboServiceCondition, List<HIS_SERVICE_CONDITION> servicePatyConditionADOs)
+        {
+            try
+            {
+                cboServiceCondition.DataSource = servicePatyConditionADOs;
+                cboServiceCondition.DisplayMember = "SERVICE_CONDITION_NAME";
+                cboServiceCondition.ValueMember = "ID";
+
+                cboServiceCondition.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.Standard;
+                cboServiceCondition.PopupFilterMode = DevExpress.XtraEditors.PopupFilterMode.Contains;
+                cboServiceCondition.ImmediatePopup = true;
+                cboServiceCondition.View.Columns.Clear();
+
+                DevExpress.XtraGrid.Columns.GridColumn aColumnCode = cboServiceCondition.View.Columns.AddField("SERVICE_CONDITION_CODE");
+                aColumnCode.Caption = "Mã";
+                aColumnCode.Visible = true;
+                aColumnCode.VisibleIndex = 1;
+                aColumnCode.Width = 80;
+
+                DevExpress.XtraGrid.Columns.GridColumn aColumnName = cboServiceCondition.View.Columns.AddField("SERVICE_CONDITION_NAME");
+                aColumnName.Caption = "Tên";
+                DevExpress.XtraEditors.Repository.RepositoryItemMemoEdit repositoryItemMemoEdit1 = new DevExpress.XtraEditors.Repository.RepositoryItemMemoEdit();
+                repositoryItemMemoEdit1.Appearance.Options.UseTextOptions = true;
+                repositoryItemMemoEdit1.Appearance.TextOptions.WordWrap = DevExpress.Utils.WordWrap.Wrap;
+                repositoryItemMemoEdit1.Name = "repositoryItemMemoEdit1";
+                aColumnName.ColumnEdit = repositoryItemMemoEdit1;
+                aColumnName.Visible = true;
+                aColumnName.VisibleIndex = 2;
+                aColumnName.Width = 250;
+
+                DevExpress.XtraGrid.Columns.GridColumn aColumnHein = cboServiceCondition.View.Columns.AddField("HEIN_RATIO_DISPLAY");
+                aColumnHein.Caption = "Tỉ lệ thanh toán";
+                aColumnHein.Visible = true;
+                aColumnHein.VisibleIndex = 2;
+                aColumnHein.Width = 100;
+
+                cboServiceCondition.PopupFormSize = new Size(430, 320);
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+        }
+
+        private void InitComboServiceCondition(GridLookUpEdit cboServiceCondition, List<ServicePatyConditionADO> servicePatyConditionADOs)
+        {
+            try
+            {
+                cboServiceCondition.Properties.DataSource = servicePatyConditionADOs;
+                cboServiceCondition.Properties.DisplayMember = "SERVICE_CONDITION_NAME";
+                cboServiceCondition.Properties.ValueMember = "SERVICE_CONDITION_ID";
+
+                cboServiceCondition.Properties.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.Standard;
+                cboServiceCondition.Properties.PopupFilterMode = DevExpress.XtraEditors.PopupFilterMode.Contains;
+                cboServiceCondition.Properties.ImmediatePopup = true;
+                cboServiceCondition.ForceInitialize();
+                cboServiceCondition.Properties.View.Columns.Clear();
+
+                DevExpress.XtraGrid.Columns.GridColumn aColumnCode = cboServiceCondition.Properties.View.Columns.AddField("SERVICE_CONDITION_CODE");
+                aColumnCode.Caption = "Mã";
+                aColumnCode.Visible = true;
+                aColumnCode.VisibleIndex = 1;
+                aColumnCode.Width = 80;
+
+                DevExpress.XtraGrid.Columns.GridColumn aColumnName = cboServiceCondition.Properties.View.Columns.AddField("SERVICE_CONDITION_NAME");
+                aColumnName.Caption = "Tên";
+                DevExpress.XtraEditors.Repository.RepositoryItemMemoEdit repositoryItemMemoEdit1 = new DevExpress.XtraEditors.Repository.RepositoryItemMemoEdit();
+                repositoryItemMemoEdit1.Appearance.Options.UseTextOptions = true;
+                repositoryItemMemoEdit1.Appearance.TextOptions.WordWrap = DevExpress.Utils.WordWrap.Wrap;
+                repositoryItemMemoEdit1.Name = "repositoryItemMemoEdit1";
+                aColumnName.ColumnEdit = repositoryItemMemoEdit1;
+                aColumnName.Visible = true;
+                aColumnName.VisibleIndex = 2;
+                aColumnName.Width = 250;
+
+                DevExpress.XtraGrid.Columns.GridColumn aColumnHein = cboServiceCondition.Properties.View.Columns.AddField("HEIN_RATIO_DISPLAY");
+                aColumnHein.Caption = "Tỉ lệ thanh toán";
+                aColumnHein.Visible = true;
+                aColumnHein.VisibleIndex = 2;
+                aColumnHein.Width = 100;
+
+                cboServiceCondition.Properties.PopupFormSize = new Size(430, 320);
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+        }
+
         private void FillDataIntoPatientTypeCombo(HisBedHistoryADO data, GridLookUpEdit patientTypeCombo)
         {
             try
@@ -455,17 +476,33 @@ namespace HIS.Desktop.Plugins.BedHistory
                     long intructionTime = data.START_TIME > 0 ? data.START_TIME : (Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(data.startTime) ?? 0);
                     //Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData("FillDataIntoPatientTypeCombo HisBedHistoryADO", intructionTime));
                     long treatmentTime = this.CurrentTreatment.IN_TIME;
-                    List<MOS.EFMODEL.DataModels.HIS_PATIENT_TYPE> dataCombo = new List<HIS_PATIENT_TYPE>();
-                    var patientType = currentPatientTypeWithPatientTypeAlter.Where(o => o.IS_ACTIVE == 1).ToList();
-                    foreach (var item in patientType)
-                    {
-                        var itemPaty = MOS.ServicePaty.ServicePatyUtil.GetApplied(Base.GlobalStore.HisVServicePatys, WorkPlaceSDO.BranchId, this.WorkPlaceSDO.RoomId, this.WorkPlaceSDO.RoomId, this.WorkPlaceSDO.DepartmentId, intructionTime, this.CurrentTreatment.IN_TIME, data.BED_SERVICE_TYPE_ID ?? 0, item.ID, null, 1);
-                        if (itemPaty != null)
-                        {
-                            dataCombo.Add(item);
-                        }
-                    }
 
+                    List<MOS.EFMODEL.DataModels.HIS_PATIENT_TYPE> dataCombo = null;
+
+                    var patientType = currentPatientTypeWithPatientTypeAlter.Where(o => o.IS_ACTIVE == 1).ToList();
+                    if (BranchDataWorker.HasServicePatyWithListPatientType(data.BED_SERVICE_TYPE_ID ?? 0, patientType.Select(o=>o.ID).Distinct().ToList()))
+                    {
+                        var arrPatientTypeCode = BranchDataWorker.DicServicePatyInBranch[data.BED_SERVICE_TYPE_ID ?? 0].Where(o => ((!o.TREATMENT_TO_TIME.HasValue || o.TREATMENT_TO_TIME.Value >= treatmentTime) || (!o.TO_TIME.HasValue || o.TO_TIME.Value >= intructionTime))).Select(s => s.PATIENT_TYPE_CODE).Distinct().ToList();
+
+                        if (currentPatientTypeWithPatientTypeAlter != null && currentPatientTypeWithPatientTypeAlter.Count > 0)
+                        {
+                            foreach (var item in currentPatientTypeWithPatientTypeAlter)
+                            {
+                                var arrInheritPatientTypeCode = BranchDataWorker.DicServicePatyInBranch[data.BED_SERVICE_TYPE_ID ?? 0].Where(o => (o.INHERIT_PATIENT_TYPE_IDS != null && ("," + o.INHERIT_PATIENT_TYPE_IDS + ",").Contains("," + item.ID + ","))).ToList();
+
+                                if (arrInheritPatientTypeCode != null && arrInheritPatientTypeCode.Count > 0)
+                                {
+                                    var patientTypes = BackendDataWorker.Get<MOS.EFMODEL.DataModels.HIS_PATIENT_TYPE>().Where(o => o.ID == item.ID).Select(s => s.PATIENT_TYPE_CODE).ToList();
+                                    arrPatientTypeCode.AddRange(patientTypes);
+                                }
+                            }
+                        }
+
+                        arrPatientTypeCode = arrPatientTypeCode.Distinct().ToList();
+
+                        dataCombo = (arrPatientTypeCode != null && arrPatientTypeCode.Count > 0 ? currentPatientTypeWithPatientTypeAlter.Where(o => arrPatientTypeCode.Contains(o.PATIENT_TYPE_CODE)).ToList() : null);
+
+                    }
                     this.InitComboPatientType(patientTypeCombo, dataCombo);
                 }
             }
@@ -504,6 +541,79 @@ namespace HIS.Desktop.Plugins.BedHistory
                 Inventec.Common.Logging.LogSystem.Warn(ex);
             }
         }
+        private void LoadAppliedPatientType(long patientTypeId, long serviceId, ref HisBedHistoryADO sereServADO)
+        {
+            try
+            {
+                if (serviceId > 0)
+                {
+                    var checkService = _services.Find(o => o.ID == serviceId);
+                    if (checkService != null && (string.IsNullOrEmpty(checkService.APPLIED_PATIENT_TYPE_IDS) || IsContainString(checkService.APPLIED_PATIENT_TYPE_IDS, patientTypeId.ToString())))
+                    {
+                        sereServADO.IsContainAppliedPatientType = true;
+                    }
+                    else
+                    {
+                        sereServADO.IsContainAppliedPatientType = false;
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+
+        private void LoadAppliedPatientType(long patientTypeId, long serviceId, ref HisBedServiceTypeADO sereServADO)
+        {
+            try
+            {
+                if (serviceId > 0)
+                {
+                    var checkService = _services.Find(o => o.ID == serviceId);
+                    if (checkService != null && (string.IsNullOrEmpty(checkService.APPLIED_PATIENT_TYPE_IDS) || IsContainString(checkService.APPLIED_PATIENT_TYPE_IDS, patientTypeId.ToString())))
+                    {
+                        sereServADO.IsContainAppliedPatientType = true;
+                    }
+                    else
+                    {
+                        sereServADO.IsContainAppliedPatientType = false;
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+        private bool IsContainString(string arrStr, string str)
+        {
+            bool result = false;
+            try
+            {
+                if (arrStr.Contains(","))
+                {
+                    var arr = arrStr.Split(',');
+                    for (int i = 0; i < arr.Length; i++)
+                    {
+                        result = arr[i] == str;
+                        if (result) break;
+                    }
+                }
+                else
+                {
+                    result = arrStr == str;
+                }
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+            return result;
+        }
 
         /// <summary>
         /// Bổ sung: trong trường hợp đối tượng BN là BHYT và chưa đến ngày hiệu lực 
@@ -522,6 +632,7 @@ namespace HIS.Desktop.Plugins.BedHistory
                 var patientTypes = BackendDataWorker.Get<HIS_PATIENT_TYPE>();
                 if (patientTypes != null && patientTypes.Count > 0 && currentPatientTypeWithPatientTypeAlter != null && currentPatientTypeWithPatientTypeAlter.Count > 0)
                 {
+                    LoadAppliedPatientType(patientTypeId, serviceId, ref sereServADO);
                     long intructionTime = sereServADO.START_TIME;
                     long treatmentTime = this.CurrentTreatment.IN_TIME;
                     List<MOS.EFMODEL.DataModels.HIS_PATIENT_TYPE> currentPatientTypeTemps = new List<HIS_PATIENT_TYPE>();
@@ -606,7 +717,9 @@ namespace HIS.Desktop.Plugins.BedHistory
                         }
                         else if (Base.GlobalStore.IsPrimaryPatientType == commonString__true
                             && sereServADO.BILL_PATIENT_TYPE_ID.HasValue
-                            && sereServADO.PATIENT_TYPE_ID != sereServADO.BILL_PATIENT_TYPE_ID.Value)
+                            && sereServADO.PATIENT_TYPE_ID != sereServADO.BILL_PATIENT_TYPE_ID.Value
+                            && sereServADO.IsContainAppliedPatientType
+                            )
                         {
                             if (currentPatientTypeTemps.Exists(e => e.ID == sereServADO.BILL_PATIENT_TYPE_ID.Value))
                             {
@@ -663,6 +776,7 @@ namespace HIS.Desktop.Plugins.BedHistory
                 var patientTypes = BackendDataWorker.Get<HIS_PATIENT_TYPE>();
                 if (patientTypes != null && patientTypes.Count > 0 && currentPatientTypeWithPatientTypeAlter != null && currentPatientTypeWithPatientTypeAlter.Count > 0)
                 {
+                    LoadAppliedPatientType(patientTypeId, serviceId, ref sereServADO);
                     long intructionTime = sereServADO.START_TIME > 0 ? sereServADO.START_TIME : (Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(sereServADO.startTime) ?? 0);
                     long treatmentTime = this.CurrentTreatment.IN_TIME;
                     List<MOS.EFMODEL.DataModels.HIS_PATIENT_TYPE> currentPatientTypeTemps = new List<HIS_PATIENT_TYPE>();
@@ -744,7 +858,8 @@ namespace HIS.Desktop.Plugins.BedHistory
                         }
                         else if (Base.GlobalStore.IsPrimaryPatientType == commonString__true
                             && sereServADO.BILL_PATIENT_TYPE_ID.HasValue
-                            && sereServADO.PATIENT_TYPE_ID != sereServADO.BILL_PATIENT_TYPE_ID.Value)
+                            && sereServADO.PATIENT_TYPE_ID != sereServADO.BILL_PATIENT_TYPE_ID.Value
+                            && sereServADO.IsContainAppliedPatientType)
                         {
                             if (currentPatientTypeTemps.Exists(e => e.ID == sereServADO.BILL_PATIENT_TYPE_ID.Value))
                             {
@@ -792,7 +907,7 @@ namespace HIS.Desktop.Plugins.BedHistory
             try
             {
                 var hisEmployees = BackendDataWorker.Get<HIS_EMPLOYEE>().Where(o => o.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE).ToList();
-                if (Base.GlobalStore.RequserMustHaveDiploma == "1")
+                if(Base.GlobalStore.RequserMustHaveDiploma == "1")
                 {
                     hisEmployees = hisEmployees.Where(o => o.DIPLOMA != null).ToList();
                 }
@@ -994,6 +1109,28 @@ namespace HIS.Desktop.Plugins.BedHistory
             }
 
             return result;
+        }
+        private void InitComboEmployee()
+        {
+            try
+            {
+                lstEmployee = BackendDataWorker.Get<V_HIS_EMPLOYEE>().Where(o => o.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE).ToList();
+                List<ColumnInfo> columnInfos = new List<ColumnInfo>();
+                columnInfos.Add(new ColumnInfo("LOGINNAME", "Tên đăng nhập", 150, 1));
+                columnInfos.Add(new ColumnInfo("TDL_USERNAME", "Họ và tên", 250, 1));
+                ControlEditorADO controlEditorADO = new ControlEditorADO("TDL_USERNAME", "LOGINNAME", columnInfos, false, 400);
+                ControlEditorLoader.Load(cboEmployee, lstEmployee, controlEditorADO);
+                cboEmployee.Properties.ImmediatePopup = true;
+                cboEmployee.Properties.PopupFormMinSize = new Size(400, cboEmployee.Properties.PopupFormMinSize.Height);
+                if (!string.IsNullOrEmpty(loginName) && lstEmployee.FirstOrDefault(o => o.LOGINNAME == loginName) != null)
+                {
+                    cboEmployee.EditValue = loginName;
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
         }
     }
 }

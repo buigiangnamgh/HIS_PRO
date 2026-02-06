@@ -1,4 +1,21 @@
-﻿using System;
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -30,18 +47,6 @@ namespace HIS.Desktop.Plugins.BedHistory.Base
         public const string SHOW_PRIMARY_PATIENT_TYPE = "MOS.HIS_SERE_SERV.IS_SET_PRIMARY_PATIENT_TYPE";
         public const string REQ_USER_MUST_HAVE_DIPLOMA = "MOS.HIS_SERVICE_REQ.REQ_USER_MUST_HAVE_DIPLOMA";
         public const string SHOW_REQUEST_USER = "HIS.Desktop.Plugins.AssignConfig.ShowRequestUser";
-        /*
-         INSERT INTO HIS_CONFIG (KEY, DEFAULT_VALUE, DESCRIPTION,CONFIG_CODE, MODULE_LINKS) 
-SELECT 'HIS.Desktop.Plugins.BedHistory.OptionPreventChooseMultiBedLog', '', 
-'Tùy chọn cho phép chọn nhiều lịch sử giường cùng lúc'|| CHR(13) || CHR(10) ||
-'- 1: Chặn ' || CHR(13) || CHR(10) ||
-'- khác 1: cho phép', 'XXXXX',  'HIS.Desktop.Plugins.BedHistory'
-FROM DUAL 
-WHERE NOT EXISTS (SELECT 1 FROM HIS_CONFIG WHERE KEY = 'HIS.Desktop.Plugins.BedHistory.OptionPreventChooseMultiBedLog');
-commit;
-
-         */
-        public const string OptionPreventChooseMultiBedLog = "HIS.Desktop.Plugins.BedHistory.OptionPreventChooseMultiBedLog";
 
         public static string IsPrimaryPatientType
         {
@@ -62,13 +67,6 @@ commit;
             get
             {
                 return HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(SHOW_REQUEST_USER);
-            }
-        }
-        public static string PreventChooseMultiBedLog
-        {
-            get
-            {
-                return HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(OptionPreventChooseMultiBedLog);
             }
         }
 

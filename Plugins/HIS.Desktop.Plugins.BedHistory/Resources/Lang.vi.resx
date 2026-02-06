@@ -148,7 +148,7 @@
     <value>Thời gian bắt đầu</value>
   </data>
   <data name="IVT_LANGUAGE_KEY__FORM_BED_HISTORY__GV_BED_SERVICE_REQ__GC_INTRUCTION_TIME" xml:space="preserve">
-    <value>Thời gian y lệnh</value>
+    <value>Thời gian</value>
   </data>
   <data name="IVT_LANGUAGE_KEY__FORM_BED_HISTORY__GV_BED_SERVICE_REQ__GC_SERVICE_REQ_CODE" xml:space="preserve">
     <value>Mã</value>

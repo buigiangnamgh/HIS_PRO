@@ -1,4 +1,21 @@
-﻿namespace HIS.Desktop.Plugins.BedHistory
+/* IVT
+ * @Project : hisnguonmo
+ * Copyright (C) 2017 INVENTEC
+ *  
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+namespace HIS.Desktop.Plugins.BedHistory
 {
     partial class FormBedHistory
     {
@@ -69,8 +86,16 @@
             DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject38 = new DevExpress.Utils.SerializableAppearanceObject();
             DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject39 = new DevExpress.Utils.SerializableAppearanceObject();
             DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject40 = new DevExpress.Utils.SerializableAppearanceObject();
+            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject41 = new DevExpress.Utils.SerializableAppearanceObject();
+            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject42 = new DevExpress.Utils.SerializableAppearanceObject();
+            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject43 = new DevExpress.Utils.SerializableAppearanceObject();
+            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject44 = new DevExpress.Utils.SerializableAppearanceObject();
+            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject45 = new DevExpress.Utils.SerializableAppearanceObject();
+            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject46 = new DevExpress.Utils.SerializableAppearanceObject();
+            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject47 = new DevExpress.Utils.SerializableAppearanceObject();
+            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject48 = new DevExpress.Utils.SerializableAppearanceObject();
             this.layoutControl1 = new DevExpress.XtraLayout.LayoutControl();
-            this.chkBedAll = new DevExpress.XtraEditors.CheckEdit();
+            this.cboEmployee = new Inventec.Desktop.CustomControl.NoFocus.CustomGridLookUpEditWithFilterMultiColumnNoFocus();
             this.barManager1 = new DevExpress.XtraBars.BarManager();
             this.bar1 = new DevExpress.XtraBars.Bar();
             this.barButtonAssign = new DevExpress.XtraBars.BarButtonItem();
@@ -79,6 +104,8 @@
             this.barDockControlBottom = new DevExpress.XtraBars.BarDockControl();
             this.barDockControlLeft = new DevExpress.XtraBars.BarDockControl();
             this.barDockControlRight = new DevExpress.XtraBars.BarDockControl();
+            this.customGridLookUpEditWithFilterMultiColumnNoFocus1View = new Inventec.Desktop.CustomControl.NoFocus.CustomGridViewWithFilterMultiColumnNoFocus();
+            this.chkBedAll = new DevExpress.XtraEditors.CheckEdit();
             this.chkBHAll = new DevExpress.XtraEditors.CheckEdit();
             this.chkSplitByResult = new DevExpress.XtraEditors.CheckEdit();
             this.cboBedRoom = new DevExpress.XtraEditors.GridLookUpEdit();
@@ -103,11 +130,9 @@
             this.Gv_BedServiceReq__Gc_Delete = new DevExpress.XtraGrid.Columns.GridColumn();
             this.Gv_BedServiceReq__Gc_ServiceReqCode = new DevExpress.XtraGrid.Columns.GridColumn();
             this.Gv_BedServiceReq__Gc_IntructionTime = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.gridColumn5 = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.gridColumn6 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.Gv_BedServiceReq__Gc_ServiceName = new DevExpress.XtraGrid.Columns.GridColumn();
             this.Gv_BedServiceReq__Gc_Amount = new DevExpress.XtraGrid.Columns.GridColumn();
             this.repositoryItemSpinEditAmountDis = new DevExpress.XtraEditors.Repository.RepositoryItemSpinEdit();
-            this.Gv_BedServiceReq__Gc_ServiceName = new DevExpress.XtraGrid.Columns.GridColumn();
             this.Gv_BedServiceReq__Gc_Amount_Temp = new DevExpress.XtraGrid.Columns.GridColumn();
             this.repositoryItemSpinEditAmountTempDis = new DevExpress.XtraEditors.Repository.RepositoryItemSpinEdit();
             this.Gv_BedServiceReq__Gc_ShareCount = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -151,6 +176,8 @@
             this.gridViewBedHistory = new Inventec.Desktop.CustomControl.MyGridView();
             this.gridColumn1 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumn2 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn4 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.repEditFinishTimeDisable = new DevExpress.XtraEditors.Repository.RepositoryItemButtonEdit();
             this.Gv_BedHistory__Gc_StartTime = new DevExpress.XtraGrid.Columns.GridColumn();
             this.Gv_BedHistory__Gc_FinishTime = new DevExpress.XtraGrid.Columns.GridColumn();
             this.Gv_BedHistory__Gc_BedTypeCode = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -191,7 +218,9 @@
             this.colPATIENT_TYPE_IDUnb = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colPRIMARY_PATIENT_TYPE_IDUnb = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colPRICE_STRUnb = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.gridColumn4 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colFinishTimeEditUnb = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumn5 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colSERVICE_CONDITION_IDUnb = new DevExpress.XtraGrid.Columns.GridColumn();
             this.ButtonEdit = new DevExpress.XtraEditors.Repository.RepositoryItemButtonEdit();
             this.ButtonEditDisable = new DevExpress.XtraEditors.Repository.RepositoryItemButtonEdit();
             this.ButtonDelete = new DevExpress.XtraEditors.Repository.RepositoryItemButtonEdit();
@@ -208,6 +237,11 @@
             this.gridView2 = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.repositoryItemCboBedPrimaryPatientType = new DevExpress.XtraEditors.Repository.RepositoryItemGridLookUpEdit();
             this.repositoryItemGridLookUpEdit2View = new DevExpress.XtraGrid.Views.Grid.GridView();
+            this.repEditFinishTimeEnable = new DevExpress.XtraEditors.Repository.RepositoryItemButtonEdit();
+            this.repServiceCondition = new DevExpress.XtraEditors.Repository.RepositoryItemGridLookUpEdit();
+            this.gridView5 = new DevExpress.XtraGrid.Views.Grid.GridView();
+            this.repServiceConditionDis = new DevExpress.XtraEditors.Repository.RepositoryItemGridLookUpEdit();
+            this.gridView6 = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.layoutControlGroup1 = new DevExpress.XtraLayout.LayoutControlGroup();
             this.layoutControlItem1 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem2 = new DevExpress.XtraLayout.LayoutControlItem();
@@ -223,18 +257,20 @@
             this.layoutControlItem7 = new DevExpress.XtraLayout.LayoutControlItem();
             this.LciTreatmentResult = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem9 = new DevExpress.XtraLayout.LayoutControlItem();
+            this.LciSplitDay = new DevExpress.XtraLayout.LayoutControlItem();
             this.LciNotCountHours = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem5 = new DevExpress.XtraLayout.LayoutControlItem();
             this.lciBedRoom = new DevExpress.XtraLayout.LayoutControlItem();
             this.emptySpaceItem1 = new DevExpress.XtraLayout.EmptySpaceItem();
             this.layoutControlItem8 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem10 = new DevExpress.XtraLayout.LayoutControlItem();
-            this.emptySpaceItem3 = new DevExpress.XtraLayout.EmptySpaceItem();
-            this.LciSplitDay = new DevExpress.XtraLayout.LayoutControlItem();
+            this.layoutControlItem11 = new DevExpress.XtraLayout.LayoutControlItem();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).BeginInit();
             this.layoutControl1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.chkBedAll.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cboEmployee.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.barManager1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.customGridLookUpEditWithFilterMultiColumnNoFocus1View)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chkBedAll.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chkBHAll.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chkSplitByResult.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cboBedRoom.Properties)).BeginInit();
@@ -277,6 +313,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.customGridViewWithFilterMultiColumn1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridControlBedHistory)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewBedHistory)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.repEditFinishTimeDisable)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.repositoryItemCboBedCode)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.customGridView3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.repositoryItemCboBed)).BeginInit();
@@ -306,6 +343,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.gridView2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.repositoryItemCboBedPrimaryPatientType)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.repositoryItemGridLookUpEdit2View)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.repEditFinishTimeEnable)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.repServiceCondition)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridView5)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.repServiceConditionDis)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridView6)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlGroup1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem2)).BeginInit();
@@ -321,18 +363,19 @@
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem7)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.LciTreatmentResult)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem9)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.LciSplitDay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.LciNotCountHours)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem5)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.lciBedRoom)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.emptySpaceItem1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem8)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem10)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.emptySpaceItem3)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.LciSplitDay)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem11)).BeginInit();
             this.SuspendLayout();
             // 
             // layoutControl1
             // 
+            this.layoutControl1.Controls.Add(this.cboEmployee);
             this.layoutControl1.Controls.Add(this.chkBedAll);
             this.layoutControl1.Controls.Add(this.chkBHAll);
             this.layoutControl1.Controls.Add(this.chkSplitByResult);
@@ -353,26 +396,30 @@
             this.layoutControl1.Controls.Add(this.gridControlBedServiceType);
             this.layoutControl1.Controls.Add(this.gridControlBedHistory);
             this.layoutControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.layoutControl1.Location = new System.Drawing.Point(0, 38);
-            this.layoutControl1.Margin = new System.Windows.Forms.Padding(4);
+            this.layoutControl1.Location = new System.Drawing.Point(0, 29);
             this.layoutControl1.Name = "layoutControl1";
-            this.layoutControl1.OptionsCustomizationForm.DesignTimeCustomizationFormPositionAndSize = new System.Drawing.Rectangle(160, 386, 312, 437);
             this.layoutControl1.Root = this.layoutControlGroup1;
-            this.layoutControl1.Size = new System.Drawing.Size(1760, 654);
+            this.layoutControl1.Size = new System.Drawing.Size(1320, 533);
             this.layoutControl1.TabIndex = 0;
             this.layoutControl1.Text = "layoutControl1";
             // 
-            // chkBedAll
+            // cboEmployee
             // 
-            this.chkBedAll.Location = new System.Drawing.Point(525, 3);
-            this.chkBedAll.Margin = new System.Windows.Forms.Padding(4);
-            this.chkBedAll.MenuManager = this.barManager1;
-            this.chkBedAll.Name = "chkBedAll";
-            this.chkBedAll.Properties.Caption = "";
-            this.chkBedAll.Size = new System.Drawing.Size(148, 19);
-            this.chkBedAll.StyleController = this.layoutControl1;
-            this.chkBedAll.TabIndex = 25;
-            this.chkBedAll.CheckedChanged += new System.EventHandler(this.chkBedAll_CheckedChanged);
+            this.cboEmployee.Location = new System.Drawing.Point(669, 509);
+            this.cboEmployee.MenuManager = this.barManager1;
+            this.cboEmployee.Name = "cboEmployee";
+            this.cboEmployee.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
+            this.cboEmployee.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo),
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Delete)});
+            this.cboEmployee.Properties.NullText = "";
+            this.cboEmployee.Properties.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.Standard;
+            this.cboEmployee.Properties.View = this.customGridLookUpEditWithFilterMultiColumnNoFocus1View;
+            this.cboEmployee.Size = new System.Drawing.Size(159, 20);
+            this.cboEmployee.StyleController = this.layoutControl1;
+            this.cboEmployee.TabIndex = 26;
+            this.cboEmployee.ButtonClick += new DevExpress.XtraEditors.Controls.ButtonPressedEventHandler(this.cboEmployee_ButtonClick);
+            this.cboEmployee.EditValueChanged += new System.EventHandler(this.cboEmployee_EditValueChanged);
             // 
             // barManager1
             // 
@@ -421,57 +468,72 @@
             this.barDockControlTop.CausesValidation = false;
             this.barDockControlTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.barDockControlTop.Location = new System.Drawing.Point(0, 0);
-            this.barDockControlTop.Size = new System.Drawing.Size(1760, 38);
+            this.barDockControlTop.Size = new System.Drawing.Size(1320, 29);
             // 
             // barDockControlBottom
             // 
             this.barDockControlBottom.CausesValidation = false;
             this.barDockControlBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.barDockControlBottom.Location = new System.Drawing.Point(0, 692);
-            this.barDockControlBottom.Size = new System.Drawing.Size(1760, 0);
+            this.barDockControlBottom.Location = new System.Drawing.Point(0, 562);
+            this.barDockControlBottom.Size = new System.Drawing.Size(1320, 0);
             // 
             // barDockControlLeft
             // 
             this.barDockControlLeft.CausesValidation = false;
             this.barDockControlLeft.Dock = System.Windows.Forms.DockStyle.Left;
-            this.barDockControlLeft.Location = new System.Drawing.Point(0, 38);
-            this.barDockControlLeft.Size = new System.Drawing.Size(0, 654);
+            this.barDockControlLeft.Location = new System.Drawing.Point(0, 29);
+            this.barDockControlLeft.Size = new System.Drawing.Size(0, 533);
             // 
             // barDockControlRight
             // 
             this.barDockControlRight.CausesValidation = false;
             this.barDockControlRight.Dock = System.Windows.Forms.DockStyle.Right;
-            this.barDockControlRight.Location = new System.Drawing.Point(1760, 38);
-            this.barDockControlRight.Size = new System.Drawing.Size(0, 654);
+            this.barDockControlRight.Location = new System.Drawing.Point(1320, 29);
+            this.barDockControlRight.Size = new System.Drawing.Size(0, 533);
+            // 
+            // customGridLookUpEditWithFilterMultiColumnNoFocus1View
+            // 
+            this.customGridLookUpEditWithFilterMultiColumnNoFocus1View.FocusRectStyle = DevExpress.XtraGrid.Views.Grid.DrawFocusRectStyle.RowFocus;
+            this.customGridLookUpEditWithFilterMultiColumnNoFocus1View.Name = "customGridLookUpEditWithFilterMultiColumnNoFocus1View";
+            this.customGridLookUpEditWithFilterMultiColumnNoFocus1View.OptionsSelection.EnableAppearanceFocusedCell = false;
+            this.customGridLookUpEditWithFilterMultiColumnNoFocus1View.OptionsView.ShowGroupPanel = false;
+            // 
+            // chkBedAll
+            // 
+            this.chkBedAll.Location = new System.Drawing.Point(445, 2);
+            this.chkBedAll.MenuManager = this.barManager1;
+            this.chkBedAll.Name = "chkBedAll";
+            this.chkBedAll.Properties.Caption = "";
+            this.chkBedAll.Size = new System.Drawing.Size(60, 19);
+            this.chkBedAll.StyleController = this.layoutControl1;
+            this.chkBedAll.TabIndex = 25;
+            this.chkBedAll.CheckedChanged += new System.EventHandler(this.chkBedAll_CheckedChanged);
             // 
             // chkBHAll
             // 
-            this.chkBHAll.Location = new System.Drawing.Point(188, 3);
-            this.chkBHAll.Margin = new System.Windows.Forms.Padding(4);
+            this.chkBHAll.Location = new System.Drawing.Point(187, 2);
             this.chkBHAll.MenuManager = this.barManager1;
             this.chkBHAll.Name = "chkBHAll";
             this.chkBHAll.Properties.Caption = "";
-            this.chkBHAll.Size = new System.Drawing.Size(126, 19);
+            this.chkBHAll.Size = new System.Drawing.Size(49, 19);
             this.chkBHAll.StyleController = this.layoutControl1;
             this.chkBHAll.TabIndex = 24;
             this.chkBHAll.CheckedChanged += new System.EventHandler(this.chkBHAll_CheckedChanged);
             // 
             // chkSplitByResult
             // 
-            this.chkSplitByResult.Location = new System.Drawing.Point(1496, 624);
-            this.chkSplitByResult.Margin = new System.Windows.Forms.Padding(4);
+            this.chkSplitByResult.Location = new System.Drawing.Point(1225, 509);
             this.chkSplitByResult.MenuManager = this.barManager1;
             this.chkSplitByResult.Name = "chkSplitByResult";
             this.chkSplitByResult.Properties.Caption = "";
-            this.chkSplitByResult.Size = new System.Drawing.Size(66, 19);
+            this.chkSplitByResult.Size = new System.Drawing.Size(19, 19);
             this.chkSplitByResult.StyleController = this.layoutControl1;
             this.chkSplitByResult.TabIndex = 23;
             this.chkSplitByResult.CheckedChanged += new System.EventHandler(this.chkSplitByResult_CheckedChanged);
             // 
             // cboBedRoom
             // 
-            this.cboBedRoom.Location = new System.Drawing.Point(774, 3);
-            this.cboBedRoom.Margin = new System.Windows.Forms.Padding(4);
+            this.cboBedRoom.Location = new System.Drawing.Point(604, 2);
             this.cboBedRoom.MenuManager = this.barManager1;
             this.cboBedRoom.Name = "cboBedRoom";
             this.cboBedRoom.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
@@ -479,7 +541,7 @@
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
             this.cboBedRoom.Properties.NullText = "";
             this.cboBedRoom.Properties.View = this.gridView3;
-            this.cboBedRoom.Size = new System.Drawing.Size(640, 22);
+            this.cboBedRoom.Size = new System.Drawing.Size(457, 20);
             this.cboBedRoom.StyleController = this.layoutControl1;
             this.cboBedRoom.TabIndex = 22;
             this.cboBedRoom.Closed += new DevExpress.XtraEditors.Controls.ClosedEventHandler(this.cboBedRoom_Closed);
@@ -495,27 +557,24 @@
             // LblInTime
             // 
             this.LblInTime.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
-            this.LblInTime.Location = new System.Drawing.Point(128, 249);
-            this.LblInTime.Margin = new System.Windows.Forms.Padding(4);
+            this.LblInTime.Location = new System.Drawing.Point(127, 202);
             this.LblInTime.Name = "LblInTime";
-            this.LblInTime.Size = new System.Drawing.Size(309, 20);
+            this.LblInTime.Size = new System.Drawing.Size(201, 20);
             this.LblInTime.StyleController = this.layoutControl1;
             this.LblInTime.TabIndex = 21;
             // 
             // LblTreatmentDayCount
             // 
             this.LblTreatmentDayCount.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
-            this.LblTreatmentDayCount.Location = new System.Drawing.Point(1088, 282);
-            this.LblTreatmentDayCount.Margin = new System.Windows.Forms.Padding(4);
+            this.LblTreatmentDayCount.Location = new System.Drawing.Point(867, 228);
             this.LblTreatmentDayCount.Name = "LblTreatmentDayCount";
-            this.LblTreatmentDayCount.Size = new System.Drawing.Size(669, 20);
+            this.LblTreatmentDayCount.Size = new System.Drawing.Size(451, 20);
             this.LblTreatmentDayCount.StyleController = this.layoutControl1;
             this.LblTreatmentDayCount.TabIndex = 20;
             // 
             // ChkSplitDay
             // 
-            this.ChkSplitDay.Location = new System.Drawing.Point(1205, 624);
-            this.ChkSplitDay.Margin = new System.Windows.Forms.Padding(4);
+            this.ChkSplitDay.Location = new System.Drawing.Point(1074, 509);
             this.ChkSplitDay.MenuManager = this.barManager1;
             this.ChkSplitDay.Name = "ChkSplitDay";
             this.ChkSplitDay.Properties.Caption = "";
@@ -528,8 +587,7 @@
             // 
             this.DtOutTime.EditValue = null;
             this.DtOutTime.EnterMoveNextControl = true;
-            this.DtOutTime.Location = new System.Drawing.Point(568, 249);
-            this.DtOutTime.Margin = new System.Windows.Forms.Padding(4);
+            this.DtOutTime.Location = new System.Drawing.Point(457, 202);
             this.DtOutTime.MenuManager = this.barManager1;
             this.DtOutTime.Name = "DtOutTime";
             this.DtOutTime.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
@@ -541,15 +599,14 @@
             this.DtOutTime.Properties.EditFormat.FormatString = "dd/MM/yyyy HH:mm";
             this.DtOutTime.Properties.EditFormat.FormatType = DevExpress.Utils.FormatType.Custom;
             this.DtOutTime.Properties.Mask.EditMask = "dd/MM/yyyy HH:mm";
-            this.DtOutTime.Size = new System.Drawing.Size(309, 22);
+            this.DtOutTime.Size = new System.Drawing.Size(201, 20);
             this.DtOutTime.StyleController = this.layoutControl1;
             this.DtOutTime.TabIndex = 18;
             this.DtOutTime.EditValueChanged += new System.EventHandler(this.DtOutTime_EditValueChanged);
             // 
             // CboTreatmentResult
             // 
-            this.CboTreatmentResult.Location = new System.Drawing.Point(676, 281);
-            this.CboTreatmentResult.Margin = new System.Windows.Forms.Padding(4);
+            this.CboTreatmentResult.Location = new System.Drawing.Point(507, 228);
             this.CboTreatmentResult.MenuManager = this.barManager1;
             this.CboTreatmentResult.Name = "CboTreatmentResult";
             this.CboTreatmentResult.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
@@ -558,7 +615,7 @@
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Delete)});
             this.CboTreatmentResult.Properties.NullText = "";
             this.CboTreatmentResult.Properties.View = this.gridLookUpEdit2View;
-            this.CboTreatmentResult.Size = new System.Drawing.Size(202, 22);
+            this.CboTreatmentResult.Size = new System.Drawing.Size(151, 20);
             this.CboTreatmentResult.StyleController = this.layoutControl1;
             this.CboTreatmentResult.TabIndex = 17;
             this.CboTreatmentResult.ButtonClick += new DevExpress.XtraEditors.Controls.ButtonPressedEventHandler(this.CboTreatmentResult_ButtonClick);
@@ -573,19 +630,17 @@
             // 
             // TxtTreatmentResultCode
             // 
-            this.TxtTreatmentResultCode.Location = new System.Drawing.Point(567, 281);
-            this.TxtTreatmentResultCode.Margin = new System.Windows.Forms.Padding(4);
+            this.TxtTreatmentResultCode.Location = new System.Drawing.Point(457, 228);
             this.TxtTreatmentResultCode.MenuManager = this.barManager1;
             this.TxtTreatmentResultCode.Name = "TxtTreatmentResultCode";
-            this.TxtTreatmentResultCode.Size = new System.Drawing.Size(109, 22);
+            this.TxtTreatmentResultCode.Size = new System.Drawing.Size(50, 20);
             this.TxtTreatmentResultCode.StyleController = this.layoutControl1;
             this.TxtTreatmentResultCode.TabIndex = 16;
             this.TxtTreatmentResultCode.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.TxtTreatmentResultCode_PreviewKeyDown);
             // 
             // CboTreatmentEndType
             // 
-            this.CboTreatmentEndType.Location = new System.Drawing.Point(236, 281);
-            this.CboTreatmentEndType.Margin = new System.Windows.Forms.Padding(4);
+            this.CboTreatmentEndType.Location = new System.Drawing.Point(177, 228);
             this.CboTreatmentEndType.MenuManager = this.barManager1;
             this.CboTreatmentEndType.Name = "CboTreatmentEndType";
             this.CboTreatmentEndType.Properties.AllowNullInput = DevExpress.Utils.DefaultBoolean.True;
@@ -594,7 +649,7 @@
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Delete)});
             this.CboTreatmentEndType.Properties.NullText = "";
             this.CboTreatmentEndType.Properties.View = this.gridLookUpEdit1View;
-            this.CboTreatmentEndType.Size = new System.Drawing.Size(202, 22);
+            this.CboTreatmentEndType.Size = new System.Drawing.Size(151, 20);
             this.CboTreatmentEndType.StyleController = this.layoutControl1;
             this.CboTreatmentEndType.TabIndex = 15;
             this.CboTreatmentEndType.ButtonClick += new DevExpress.XtraEditors.Controls.ButtonPressedEventHandler(this.CboTreatmentEndType_ButtonClick);
@@ -609,21 +664,19 @@
             // 
             // TxtTreatmentEndTypeCode
             // 
-            this.TxtTreatmentEndTypeCode.Location = new System.Drawing.Point(127, 281);
-            this.TxtTreatmentEndTypeCode.Margin = new System.Windows.Forms.Padding(4);
+            this.TxtTreatmentEndTypeCode.Location = new System.Drawing.Point(127, 228);
             this.TxtTreatmentEndTypeCode.MenuManager = this.barManager1;
             this.TxtTreatmentEndTypeCode.Name = "TxtTreatmentEndTypeCode";
-            this.TxtTreatmentEndTypeCode.Size = new System.Drawing.Size(109, 22);
+            this.TxtTreatmentEndTypeCode.Size = new System.Drawing.Size(50, 20);
             this.TxtTreatmentEndTypeCode.StyleController = this.layoutControl1;
             this.TxtTreatmentEndTypeCode.TabIndex = 14;
             this.TxtTreatmentEndTypeCode.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.TxtTreatmentEndTypeCode_PreviewKeyDown);
             // 
             // BtnSaveBedLog
             // 
-            this.BtnSaveBedLog.Location = new System.Drawing.Point(1616, 249);
-            this.BtnSaveBedLog.Margin = new System.Windows.Forms.Padding(4);
+            this.BtnSaveBedLog.Location = new System.Drawing.Point(1212, 202);
             this.BtnSaveBedLog.Name = "BtnSaveBedLog";
-            this.BtnSaveBedLog.Size = new System.Drawing.Size(141, 27);
+            this.BtnSaveBedLog.Size = new System.Drawing.Size(106, 22);
             this.BtnSaveBedLog.StyleController = this.layoutControl1;
             this.BtnSaveBedLog.TabIndex = 13;
             this.BtnSaveBedLog.Text = "Lưu (Ctrl S)";
@@ -631,12 +684,11 @@
             // 
             // ChkNotCountHours
             // 
-            this.ChkNotCountHours.Location = new System.Drawing.Point(1325, 624);
-            this.ChkNotCountHours.Margin = new System.Windows.Forms.Padding(4);
+            this.ChkNotCountHours.Location = new System.Drawing.Point(927, 509);
             this.ChkNotCountHours.MenuManager = this.barManager1;
             this.ChkNotCountHours.Name = "ChkNotCountHours";
             this.ChkNotCountHours.Properties.Caption = "";
-            this.ChkNotCountHours.Size = new System.Drawing.Size(19, 19);
+            this.ChkNotCountHours.Size = new System.Drawing.Size(48, 19);
             this.ChkNotCountHours.StyleController = this.layoutControl1;
             this.ChkNotCountHours.TabIndex = 11;
             this.ChkNotCountHours.CheckedChanged += new System.EventHandler(this.ChkNotCountHours_CheckedChanged);
@@ -644,22 +696,18 @@
             // lblTotalServicePrice
             // 
             this.lblTotalServicePrice.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
-            this.lblTotalServicePrice.Location = new System.Drawing.Point(98, 624);
-            this.lblTotalServicePrice.Margin = new System.Windows.Forms.Padding(4);
+            this.lblTotalServicePrice.Location = new System.Drawing.Point(97, 509);
             this.lblTotalServicePrice.Name = "lblTotalServicePrice";
-            this.lblTotalServicePrice.Size = new System.Drawing.Size(1006, 20);
+            this.lblTotalServicePrice.Size = new System.Drawing.Size(440, 20);
             this.lblTotalServicePrice.StyleController = this.layoutControl1;
             this.lblTotalServicePrice.TabIndex = 10;
             // 
             // btnAssigns
             // 
             this.btnAssigns.Enabled = false;
-            this.btnAssigns.Location = new System.Drawing.Point(1568, 624);
-            this.btnAssigns.Margin = new System.Windows.Forms.Padding(4);
-            this.btnAssigns.MaximumSize = new System.Drawing.Size(189, 27);
-            this.btnAssigns.MinimumSize = new System.Drawing.Size(189, 27);
+            this.btnAssigns.Location = new System.Drawing.Point(1248, 509);
             this.btnAssigns.Name = "btnAssigns";
-            this.btnAssigns.Size = new System.Drawing.Size(189, 27);
+            this.btnAssigns.Size = new System.Drawing.Size(70, 22);
             this.btnAssigns.StyleController = this.layoutControl1;
             this.btnAssigns.TabIndex = 9;
             this.btnAssigns.Text = "Chỉ định (F9)";
@@ -667,10 +715,8 @@
             // 
             // gridControlBedServiceReq
             // 
-            this.gridControlBedServiceReq.EmbeddedNavigator.Margin = new System.Windows.Forms.Padding(4);
-            this.gridControlBedServiceReq.Location = new System.Drawing.Point(1110, 308);
+            this.gridControlBedServiceReq.Location = new System.Drawing.Point(832, 252);
             this.gridControlBedServiceReq.MainView = this.gridViewBedServiceReq;
-            this.gridControlBedServiceReq.Margin = new System.Windows.Forms.Padding(4);
             this.gridControlBedServiceReq.Name = "gridControlBedServiceReq";
             this.gridControlBedServiceReq.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
             this.repositoryItemBtnDeleteServiceReq,
@@ -679,7 +725,7 @@
             this.repositoryItemSpinEditAmountTemp,
             this.repositoryItemSpinEditAmountDis,
             this.repositoryItemSpinEditAmountTempDis});
-            this.gridControlBedServiceReq.Size = new System.Drawing.Size(647, 310);
+            this.gridControlBedServiceReq.Size = new System.Drawing.Size(486, 253);
             this.gridControlBedServiceReq.TabIndex = 6;
             this.gridControlBedServiceReq.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gridViewBedServiceReq});
@@ -691,10 +737,8 @@
             this.Gv_BedServiceReq__Gc_Delete,
             this.Gv_BedServiceReq__Gc_ServiceReqCode,
             this.Gv_BedServiceReq__Gc_IntructionTime,
-            this.gridColumn5,
-            this.gridColumn6,
-            this.Gv_BedServiceReq__Gc_Amount,
             this.Gv_BedServiceReq__Gc_ServiceName,
+            this.Gv_BedServiceReq__Gc_Amount,
             this.Gv_BedServiceReq__Gc_Amount_Temp,
             this.Gv_BedServiceReq__Gc_ShareCount,
             this.Gv_BedServiceReq__Gc_Price});
@@ -743,7 +787,7 @@
             this.Gv_BedServiceReq__Gc_IntructionTime.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
             this.Gv_BedServiceReq__Gc_IntructionTime.AppearanceHeader.Options.UseTextOptions = true;
             this.Gv_BedServiceReq__Gc_IntructionTime.AppearanceHeader.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
-            this.Gv_BedServiceReq__Gc_IntructionTime.Caption = "Thời gian y lệnh";
+            this.Gv_BedServiceReq__Gc_IntructionTime.Caption = "Thời gian";
             this.Gv_BedServiceReq__Gc_IntructionTime.FieldName = "INTRUCTION_TIME_DISPLAY";
             this.Gv_BedServiceReq__Gc_IntructionTime.Name = "Gv_BedServiceReq__Gc_IntructionTime";
             this.Gv_BedServiceReq__Gc_IntructionTime.OptionsColumn.AllowEdit = false;
@@ -752,25 +796,14 @@
             this.Gv_BedServiceReq__Gc_IntructionTime.VisibleIndex = 3;
             this.Gv_BedServiceReq__Gc_IntructionTime.Width = 120;
             // 
-            // gridColumn5
+            // Gv_BedServiceReq__Gc_ServiceName
             // 
-            this.gridColumn5.Caption = "Thời gian bắt đầu";
-            this.gridColumn5.FieldName = "START_TIME_STR";
-            this.gridColumn5.Name = "gridColumn5";
-            this.gridColumn5.OptionsColumn.AllowEdit = false;
-            this.gridColumn5.Visible = true;
-            this.gridColumn5.VisibleIndex = 4;
-            this.gridColumn5.Width = 120;
-            // 
-            // gridColumn6
-            // 
-            this.gridColumn6.Caption = "Thời gian kết thúc";
-            this.gridColumn6.FieldName = "FINISH_TIME_STR";
-            this.gridColumn6.Name = "gridColumn6";
-            this.gridColumn6.OptionsColumn.AllowEdit = false;
-            this.gridColumn6.Visible = true;
-            this.gridColumn6.VisibleIndex = 5;
-            this.gridColumn6.Width = 120;
+            this.Gv_BedServiceReq__Gc_ServiceName.Caption = "Tên dịch vụ";
+            this.Gv_BedServiceReq__Gc_ServiceName.FieldName = "TDL_SERVICE_NAME";
+            this.Gv_BedServiceReq__Gc_ServiceName.Name = "Gv_BedServiceReq__Gc_ServiceName";
+            this.Gv_BedServiceReq__Gc_ServiceName.Visible = true;
+            this.Gv_BedServiceReq__Gc_ServiceName.VisibleIndex = 4;
+            this.Gv_BedServiceReq__Gc_ServiceName.Width = 273;
             // 
             // Gv_BedServiceReq__Gc_Amount
             // 
@@ -779,7 +812,7 @@
             this.Gv_BedServiceReq__Gc_Amount.FieldName = "AMOUNT";
             this.Gv_BedServiceReq__Gc_Amount.Name = "Gv_BedServiceReq__Gc_Amount";
             this.Gv_BedServiceReq__Gc_Amount.Visible = true;
-            this.Gv_BedServiceReq__Gc_Amount.VisibleIndex = 6;
+            this.Gv_BedServiceReq__Gc_Amount.VisibleIndex = 5;
             // 
             // repositoryItemSpinEditAmountDis
             // 
@@ -789,15 +822,6 @@
             this.repositoryItemSpinEditAmountDis.Name = "repositoryItemSpinEditAmountDis";
             this.repositoryItemSpinEditAmountDis.ReadOnly = true;
             // 
-            // Gv_BedServiceReq__Gc_ServiceName
-            // 
-            this.Gv_BedServiceReq__Gc_ServiceName.Caption = "Tên dịch vụ";
-            this.Gv_BedServiceReq__Gc_ServiceName.FieldName = "TDL_SERVICE_NAME";
-            this.Gv_BedServiceReq__Gc_ServiceName.Name = "Gv_BedServiceReq__Gc_ServiceName";
-            this.Gv_BedServiceReq__Gc_ServiceName.Visible = true;
-            this.Gv_BedServiceReq__Gc_ServiceName.VisibleIndex = 7;
-            this.Gv_BedServiceReq__Gc_ServiceName.Width = 273;
-            // 
             // Gv_BedServiceReq__Gc_Amount_Temp
             // 
             this.Gv_BedServiceReq__Gc_Amount_Temp.Caption = "Số lượng tạm tính";
@@ -805,7 +829,7 @@
             this.Gv_BedServiceReq__Gc_Amount_Temp.FieldName = "AMOUNT_TEMP";
             this.Gv_BedServiceReq__Gc_Amount_Temp.Name = "Gv_BedServiceReq__Gc_Amount_Temp";
             this.Gv_BedServiceReq__Gc_Amount_Temp.Visible = true;
-            this.Gv_BedServiceReq__Gc_Amount_Temp.VisibleIndex = 8;
+            this.Gv_BedServiceReq__Gc_Amount_Temp.VisibleIndex = 6;
             this.Gv_BedServiceReq__Gc_Amount_Temp.Width = 100;
             // 
             // repositoryItemSpinEditAmountTempDis
@@ -822,7 +846,7 @@
             this.Gv_BedServiceReq__Gc_ShareCount.FieldName = "SHARE_COUNT";
             this.Gv_BedServiceReq__Gc_ShareCount.Name = "Gv_BedServiceReq__Gc_ShareCount";
             this.Gv_BedServiceReq__Gc_ShareCount.Visible = true;
-            this.Gv_BedServiceReq__Gc_ShareCount.VisibleIndex = 9;
+            this.Gv_BedServiceReq__Gc_ShareCount.VisibleIndex = 7;
             // 
             // Gv_BedServiceReq__Gc_Price
             // 
@@ -830,7 +854,7 @@
             this.Gv_BedServiceReq__Gc_Price.FieldName = "PRICE";
             this.Gv_BedServiceReq__Gc_Price.Name = "Gv_BedServiceReq__Gc_Price";
             this.Gv_BedServiceReq__Gc_Price.Visible = true;
-            this.Gv_BedServiceReq__Gc_Price.VisibleIndex = 10;
+            this.Gv_BedServiceReq__Gc_Price.VisibleIndex = 8;
             // 
             // repositoryItemBtnDeleteServiceReq
             // 
@@ -867,10 +891,8 @@
             // 
             // gridControlBedServiceType
             // 
-            this.gridControlBedServiceType.EmbeddedNavigator.Margin = new System.Windows.Forms.Padding(4);
-            this.gridControlBedServiceType.Location = new System.Drawing.Point(3, 308);
+            this.gridControlBedServiceType.Location = new System.Drawing.Point(2, 252);
             this.gridControlBedServiceType.MainView = this.gridViewBedServiceType;
-            this.gridControlBedServiceType.Margin = new System.Windows.Forms.Padding(4);
             this.gridControlBedServiceType.Name = "gridControlBedServiceType";
             this.gridControlBedServiceType.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
             this.Check_IsExpend,
@@ -883,7 +905,7 @@
             this.repositoryItemDtIntructionTime,
             this.repositoryItemCboOtherPaySource,
             this.repositoryItemCboRequestUser});
-            this.gridControlBedServiceType.Size = new System.Drawing.Size(1101, 310);
+            this.gridControlBedServiceType.Size = new System.Drawing.Size(826, 253);
             this.gridControlBedServiceType.TabIndex = 5;
             this.gridControlBedServiceType.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gridViewBedServiceType});
@@ -1026,11 +1048,6 @@
             this.repositoryItemSpinAmount.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Custom;
             this.repositoryItemSpinAmount.EditFormat.FormatString = "#,##0.00";
             this.repositoryItemSpinAmount.EditFormat.FormatType = DevExpress.Utils.FormatType.Custom;
-            this.repositoryItemSpinAmount.Increment = new decimal(new int[] {
-            5,
-            0,
-            0,
-            65536});
             this.repositoryItemSpinAmount.MaxValue = new decimal(new int[] {
             -1530494977,
             232830,
@@ -1218,10 +1235,8 @@
             // 
             // gridControlBedHistory
             // 
-            this.gridControlBedHistory.EmbeddedNavigator.Margin = new System.Windows.Forms.Padding(4);
-            this.gridControlBedHistory.Location = new System.Drawing.Point(3, 31);
+            this.gridControlBedHistory.Location = new System.Drawing.Point(2, 26);
             this.gridControlBedHistory.MainView = this.gridViewBedHistory;
-            this.gridControlBedHistory.Margin = new System.Windows.Forms.Padding(4);
             this.gridControlBedHistory.Name = "gridControlBedHistory";
             this.gridControlBedHistory.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
             this.ButtonEdit,
@@ -1243,8 +1258,12 @@
             this.repositoryItemCboBedCode,
             this.repositoryItemBtnAddDisable,
             this.repositoryItemCboBedPatientType,
-            this.repositoryItemCboBedPrimaryPatientType});
-            this.gridControlBedHistory.Size = new System.Drawing.Size(1754, 212);
+            this.repositoryItemCboBedPrimaryPatientType,
+            this.repEditFinishTimeEnable,
+            this.repEditFinishTimeDisable,
+            this.repServiceCondition,
+            this.repServiceConditionDis});
+            this.gridControlBedHistory.Size = new System.Drawing.Size(1316, 172);
             this.gridControlBedHistory.TabIndex = 4;
             this.gridControlBedHistory.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gridViewBedHistory});
@@ -1255,6 +1274,7 @@
             this.gridViewBedHistory.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
             this.gridColumn1,
             this.gridColumn2,
+            this.gridColumn4,
             this.Gv_BedHistory__Gc_StartTime,
             this.Gv_BedHistory__Gc_FinishTime,
             this.Gv_BedHistory__Gc_BedTypeCode,
@@ -1285,7 +1305,9 @@
             this.colPATIENT_TYPE_IDUnb,
             this.colPRIMARY_PATIENT_TYPE_IDUnb,
             this.colPRICE_STRUnb,
-            this.gridColumn4});
+            this.colFinishTimeEditUnb,
+            this.gridColumn5,
+            this.colSERVICE_CONDITION_IDUnb});
             this.gridViewBedHistory.GridControl = this.gridControlBedHistory;
             this.gridViewBedHistory.Name = "gridViewBedHistory";
             this.gridViewBedHistory.OptionsView.ShowGroupPanel = false;
@@ -1319,7 +1341,7 @@
             this.gridColumn1.UnboundType = DevExpress.Data.UnboundColumnType.Object;
             this.gridColumn1.Visible = true;
             this.gridColumn1.VisibleIndex = 0;
-            this.gridColumn1.Width = 26;
+            this.gridColumn1.Width = 22;
             // 
             // gridColumn2
             // 
@@ -1328,6 +1350,29 @@
             this.gridColumn2.Name = "gridColumn2";
             this.gridColumn2.OptionsColumn.ShowCaption = false;
             this.gridColumn2.Width = 20;
+            // 
+            // gridColumn4
+            // 
+            this.gridColumn4.Caption = "gridColumn4";
+            this.gridColumn4.ColumnEdit = this.repEditFinishTimeDisable;
+            this.gridColumn4.FieldName = "FinishTimeEdit";
+            this.gridColumn4.FieldNameSortGroup = "FinishTimeEditUnb";
+            this.gridColumn4.MaxWidth = 30;
+            this.gridColumn4.MinWidth = 30;
+            this.gridColumn4.Name = "gridColumn4";
+            this.gridColumn4.OptionsColumn.ShowCaption = false;
+            this.gridColumn4.OptionsFilter.FilterBySortField = DevExpress.Utils.DefaultBoolean.True;
+            this.gridColumn4.Visible = true;
+            this.gridColumn4.VisibleIndex = 1;
+            this.gridColumn4.Width = 30;
+            // 
+            // repEditFinishTimeDisable
+            // 
+            this.repEditFinishTimeDisable.AutoHeight = false;
+            this.repEditFinishTimeDisable.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Glyph, "", -1, false, true, false, DevExpress.XtraEditors.ImageLocation.MiddleCenter, ((System.Drawing.Image)(resources.GetObject("repEditFinishTimeDisable.Buttons"))), new DevExpress.Utils.KeyShortcut(System.Windows.Forms.Keys.None), serializableAppearanceObject9, serializableAppearanceObject10, serializableAppearanceObject11, serializableAppearanceObject12, "Cập nhật thời gian kết thúc lịch sử giường bằng thời gian lớn nhất y lệnh", null, null, true)});
+            this.repEditFinishTimeDisable.Name = "repEditFinishTimeDisable";
+            this.repEditFinishTimeDisable.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.HideTextEditor;
             // 
             // Gv_BedHistory__Gc_StartTime
             // 
@@ -1342,8 +1387,8 @@
             this.Gv_BedHistory__Gc_StartTime.OptionsFilter.FilterBySortField = DevExpress.Utils.DefaultBoolean.True;
             this.Gv_BedHistory__Gc_StartTime.UnboundType = DevExpress.Data.UnboundColumnType.Object;
             this.Gv_BedHistory__Gc_StartTime.Visible = true;
-            this.Gv_BedHistory__Gc_StartTime.VisibleIndex = 1;
-            this.Gv_BedHistory__Gc_StartTime.Width = 129;
+            this.Gv_BedHistory__Gc_StartTime.VisibleIndex = 2;
+            this.Gv_BedHistory__Gc_StartTime.Width = 113;
             // 
             // Gv_BedHistory__Gc_FinishTime
             // 
@@ -1358,8 +1403,8 @@
             this.Gv_BedHistory__Gc_FinishTime.OptionsFilter.FilterBySortField = DevExpress.Utils.DefaultBoolean.True;
             this.Gv_BedHistory__Gc_FinishTime.UnboundType = DevExpress.Data.UnboundColumnType.Object;
             this.Gv_BedHistory__Gc_FinishTime.Visible = true;
-            this.Gv_BedHistory__Gc_FinishTime.VisibleIndex = 2;
-            this.Gv_BedHistory__Gc_FinishTime.Width = 129;
+            this.Gv_BedHistory__Gc_FinishTime.VisibleIndex = 3;
+            this.Gv_BedHistory__Gc_FinishTime.Width = 113;
             // 
             // Gv_BedHistory__Gc_BedTypeCode
             // 
@@ -1373,8 +1418,7 @@
             this.Gv_BedHistory__Gc_BedTypeCode.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.False;
             this.Gv_BedHistory__Gc_BedTypeCode.OptionsFilter.FilterBySortField = DevExpress.Utils.DefaultBoolean.True;
             this.Gv_BedHistory__Gc_BedTypeCode.Visible = true;
-            this.Gv_BedHistory__Gc_BedTypeCode.VisibleIndex = 3;
-            this.Gv_BedHistory__Gc_BedTypeCode.Width = 86;
+            this.Gv_BedHistory__Gc_BedTypeCode.VisibleIndex = 4;
             // 
             // repositoryItemCboBedCode
             // 
@@ -1411,8 +1455,8 @@
             this.Gv_BedHistory__Gc_BedName.OptionsFilter.AllowFilter = false;
             this.Gv_BedHistory__Gc_BedName.OptionsFilter.FilterBySortField = DevExpress.Utils.DefaultBoolean.True;
             this.Gv_BedHistory__Gc_BedName.Visible = true;
-            this.Gv_BedHistory__Gc_BedName.VisibleIndex = 4;
-            this.Gv_BedHistory__Gc_BedName.Width = 135;
+            this.Gv_BedHistory__Gc_BedName.VisibleIndex = 5;
+            this.Gv_BedHistory__Gc_BedName.Width = 118;
             // 
             // repositoryItemCboBed
             // 
@@ -1449,8 +1493,8 @@
             this.Gv_BedHistory__Gc_BedTypeName.OptionsFilter.AllowFilter = false;
             this.Gv_BedHistory__Gc_BedTypeName.OptionsFilter.FilterBySortField = DevExpress.Utils.DefaultBoolean.True;
             this.Gv_BedHistory__Gc_BedTypeName.Visible = true;
-            this.Gv_BedHistory__Gc_BedTypeName.VisibleIndex = 5;
-            this.Gv_BedHistory__Gc_BedTypeName.Width = 155;
+            this.Gv_BedHistory__Gc_BedTypeName.VisibleIndex = 6;
+            this.Gv_BedHistory__Gc_BedTypeName.Width = 136;
             // 
             // Gv_BedHistory__Gc_BedServiceTypeCode
             // 
@@ -1461,8 +1505,8 @@
             this.Gv_BedHistory__Gc_BedServiceTypeCode.OptionsColumn.AllowEdit = false;
             this.Gv_BedHistory__Gc_BedServiceTypeCode.OptionsFilter.FilterBySortField = DevExpress.Utils.DefaultBoolean.True;
             this.Gv_BedHistory__Gc_BedServiceTypeCode.Visible = true;
-            this.Gv_BedHistory__Gc_BedServiceTypeCode.VisibleIndex = 6;
-            this.Gv_BedHistory__Gc_BedServiceTypeCode.Width = 100;
+            this.Gv_BedHistory__Gc_BedServiceTypeCode.VisibleIndex = 7;
+            this.Gv_BedHistory__Gc_BedServiceTypeCode.Width = 87;
             // 
             // Gv_BedHistory__Gc_BedServiceTypeName
             // 
@@ -1477,8 +1521,8 @@
             this.Gv_BedHistory__Gc_BedServiceTypeName.OptionsFilter.FilterBySortField = DevExpress.Utils.DefaultBoolean.True;
             this.Gv_BedHistory__Gc_BedServiceTypeName.UnboundType = DevExpress.Data.UnboundColumnType.Object;
             this.Gv_BedHistory__Gc_BedServiceTypeName.Visible = true;
-            this.Gv_BedHistory__Gc_BedServiceTypeName.VisibleIndex = 7;
-            this.Gv_BedHistory__Gc_BedServiceTypeName.Width = 247;
+            this.Gv_BedHistory__Gc_BedServiceTypeName.VisibleIndex = 8;
+            this.Gv_BedHistory__Gc_BedServiceTypeName.Width = 217;
             // 
             // repositoryItemCboBedServiceType
             // 
@@ -1511,7 +1555,8 @@
             this.Gv_BedHistory__Gc_PatientType.OptionsFilter.FilterBySortField = DevExpress.Utils.DefaultBoolean.True;
             this.Gv_BedHistory__Gc_PatientType.ToolTip = "Đối tượng thanh toán";
             this.Gv_BedHistory__Gc_PatientType.Visible = true;
-            this.Gv_BedHistory__Gc_PatientType.VisibleIndex = 8;
+            this.Gv_BedHistory__Gc_PatientType.VisibleIndex = 9;
+            this.Gv_BedHistory__Gc_PatientType.Width = 65;
             // 
             // Gv_BedHistory__Gc_PrimaryPatientTypeId
             // 
@@ -1522,7 +1567,8 @@
             this.Gv_BedHistory__Gc_PrimaryPatientTypeId.OptionsFilter.FilterBySortField = DevExpress.Utils.DefaultBoolean.True;
             this.Gv_BedHistory__Gc_PrimaryPatientTypeId.ToolTip = "Đối tượng phụ thu";
             this.Gv_BedHistory__Gc_PrimaryPatientTypeId.Visible = true;
-            this.Gv_BedHistory__Gc_PrimaryPatientTypeId.VisibleIndex = 9;
+            this.Gv_BedHistory__Gc_PrimaryPatientTypeId.VisibleIndex = 10;
+            this.Gv_BedHistory__Gc_PrimaryPatientTypeId.Width = 65;
             // 
             // Gv_BedHistory__Gc_Price
             // 
@@ -1533,7 +1579,8 @@
             this.Gv_BedHistory__Gc_Price.OptionsFilter.FilterBySortField = DevExpress.Utils.DefaultBoolean.True;
             this.Gv_BedHistory__Gc_Price.UnboundType = DevExpress.Data.UnboundColumnType.Object;
             this.Gv_BedHistory__Gc_Price.Visible = true;
-            this.Gv_BedHistory__Gc_Price.VisibleIndex = 10;
+            this.Gv_BedHistory__Gc_Price.VisibleIndex = 11;
+            this.Gv_BedHistory__Gc_Price.Width = 65;
             // 
             // Gv_BedHistory__Gc_NamGhep
             // 
@@ -1544,8 +1591,8 @@
             this.Gv_BedHistory__Gc_NamGhep.Name = "Gv_BedHistory__Gc_NamGhep";
             this.Gv_BedHistory__Gc_NamGhep.OptionsFilter.FilterBySortField = DevExpress.Utils.DefaultBoolean.True;
             this.Gv_BedHistory__Gc_NamGhep.Visible = true;
-            this.Gv_BedHistory__Gc_NamGhep.VisibleIndex = 11;
-            this.Gv_BedHistory__Gc_NamGhep.Width = 71;
+            this.Gv_BedHistory__Gc_NamGhep.VisibleIndex = 13;
+            this.Gv_BedHistory__Gc_NamGhep.Width = 62;
             // 
             // repositoryItemCboNamGhep2
             // 
@@ -1584,7 +1631,7 @@
             // 
             this.repositoryItemBtnSaveBedLog.AutoHeight = false;
             this.repositoryItemBtnSaveBedLog.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
-            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.OK, "", -1, true, true, false, DevExpress.XtraEditors.ImageLocation.MiddleCenter, null, new DevExpress.Utils.KeyShortcut(System.Windows.Forms.Keys.None), serializableAppearanceObject9, serializableAppearanceObject10, serializableAppearanceObject11, serializableAppearanceObject12, "Lưu", null, null, true)});
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.OK, "", -1, true, true, false, DevExpress.XtraEditors.ImageLocation.MiddleCenter, null, new DevExpress.Utils.KeyShortcut(System.Windows.Forms.Keys.None), serializableAppearanceObject13, serializableAppearanceObject14, serializableAppearanceObject15, serializableAppearanceObject16, "Lưu", null, null, true)});
             this.repositoryItemBtnSaveBedLog.Name = "repositoryItemBtnSaveBedLog";
             this.repositoryItemBtnSaveBedLog.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.HideTextEditor;
             this.repositoryItemBtnSaveBedLog.ButtonClick += new DevExpress.XtraEditors.Controls.ButtonPressedEventHandler(this.repositoryItemBtnSaveBedLog_ButtonClick);
@@ -1598,8 +1645,8 @@
             this.gridColumn3.OptionsColumn.ShowCaption = false;
             this.gridColumn3.OptionsFilter.FilterBySortField = DevExpress.Utils.DefaultBoolean.True;
             this.gridColumn3.Visible = true;
-            this.gridColumn3.VisibleIndex = 12;
-            this.gridColumn3.Width = 35;
+            this.gridColumn3.VisibleIndex = 14;
+            this.gridColumn3.Width = 30;
             // 
             // Gv_BedHistory__Gc_Add
             // 
@@ -1614,14 +1661,14 @@
             this.Gv_BedHistory__Gc_Add.OptionsFilter.AllowFilter = false;
             this.Gv_BedHistory__Gc_Add.OptionsFilter.FilterBySortField = DevExpress.Utils.DefaultBoolean.True;
             this.Gv_BedHistory__Gc_Add.Visible = true;
-            this.Gv_BedHistory__Gc_Add.VisibleIndex = 13;
-            this.Gv_BedHistory__Gc_Add.Width = 51;
+            this.Gv_BedHistory__Gc_Add.VisibleIndex = 15;
+            this.Gv_BedHistory__Gc_Add.Width = 44;
             // 
             // repositoryItemBtnAdd
             // 
             this.repositoryItemBtnAdd.AutoHeight = false;
             this.repositoryItemBtnAdd.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
-            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Plus, "", -1, true, true, false, DevExpress.XtraEditors.ImageLocation.MiddleCenter, null, new DevExpress.Utils.KeyShortcut(System.Windows.Forms.Keys.None), serializableAppearanceObject13, serializableAppearanceObject14, serializableAppearanceObject15, serializableAppearanceObject16, "Thêm", null, null, true)});
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Plus, "", -1, true, true, false, DevExpress.XtraEditors.ImageLocation.MiddleCenter, null, new DevExpress.Utils.KeyShortcut(System.Windows.Forms.Keys.None), serializableAppearanceObject17, serializableAppearanceObject18, serializableAppearanceObject19, serializableAppearanceObject20, "Thêm", null, null, true)});
             this.repositoryItemBtnAdd.Name = "repositoryItemBtnAdd";
             this.repositoryItemBtnAdd.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.HideTextEditor;
             this.repositoryItemBtnAdd.ButtonClick += new DevExpress.XtraEditors.Controls.ButtonPressedEventHandler(this.repositoryItemBtnAdd_ButtonClick);
@@ -1722,16 +1769,34 @@
             this.colPRICE_STRUnb.Name = "colPRICE_STRUnb";
             this.colPRICE_STRUnb.UnboundType = DevExpress.Data.UnboundColumnType.String;
             // 
-            // gridColumn4
+            // colFinishTimeEditUnb
             // 
-            this.gridColumn4.Caption = "gridColumn4";
-            this.gridColumn4.Name = "gridColumn4";
+            this.colFinishTimeEditUnb.FieldName = "FinishTimeEditUnb";
+            this.colFinishTimeEditUnb.Name = "colFinishTimeEditUnb";
+            this.colFinishTimeEditUnb.UnboundType = DevExpress.Data.UnboundColumnType.String;
+            // 
+            // gridColumn5
+            // 
+            this.gridColumn5.Caption = "Điều kiện";
+            this.gridColumn5.FieldName = "SERVICE_CONDITION_ID";
+            this.gridColumn5.FieldNameSortGroup = "SERVICE_CONDITION_IDUnb";
+            this.gridColumn5.Name = "gridColumn5";
+            this.gridColumn5.OptionsFilter.FilterBySortField = DevExpress.Utils.DefaultBoolean.True;
+            this.gridColumn5.Visible = true;
+            this.gridColumn5.VisibleIndex = 12;
+            this.gridColumn5.Width = 130;
+            // 
+            // colSERVICE_CONDITION_IDUnb
+            // 
+            this.colSERVICE_CONDITION_IDUnb.FieldName = "SERVICE_CONDITION_IDUnb";
+            this.colSERVICE_CONDITION_IDUnb.Name = "colSERVICE_CONDITION_IDUnb";
+            this.colSERVICE_CONDITION_IDUnb.UnboundType = DevExpress.Data.UnboundColumnType.String;
             // 
             // ButtonEdit
             // 
             this.ButtonEdit.AutoHeight = false;
             this.ButtonEdit.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
-            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Glyph, "", -1, true, true, false, DevExpress.XtraEditors.ImageLocation.MiddleCenter, ((System.Drawing.Image)(resources.GetObject("ButtonEdit.Buttons"))), new DevExpress.Utils.KeyShortcut(System.Windows.Forms.Keys.None), serializableAppearanceObject17, serializableAppearanceObject18, serializableAppearanceObject19, serializableAppearanceObject20, "Sửa", null, null, true)});
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Glyph, "", -1, true, true, false, DevExpress.XtraEditors.ImageLocation.MiddleCenter, ((System.Drawing.Image)(resources.GetObject("ButtonEdit.Buttons"))), new DevExpress.Utils.KeyShortcut(System.Windows.Forms.Keys.None), serializableAppearanceObject21, serializableAppearanceObject22, serializableAppearanceObject23, serializableAppearanceObject24, "Sửa", null, null, true)});
             this.ButtonEdit.Name = "ButtonEdit";
             this.ButtonEdit.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.HideTextEditor;
             this.ButtonEdit.ButtonClick += new DevExpress.XtraEditors.Controls.ButtonPressedEventHandler(this.ButtonEdit_ButtonClick);
@@ -1740,7 +1805,7 @@
             // 
             this.ButtonEditDisable.AutoHeight = false;
             this.ButtonEditDisable.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
-            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Glyph, "", -1, false, true, false, DevExpress.XtraEditors.ImageLocation.MiddleCenter, ((System.Drawing.Image)(resources.GetObject("ButtonEditDisable.Buttons"))), new DevExpress.Utils.KeyShortcut(System.Windows.Forms.Keys.None), serializableAppearanceObject21, serializableAppearanceObject22, serializableAppearanceObject23, serializableAppearanceObject24, "Sửa", null, null, true)});
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Glyph, "", -1, false, true, false, DevExpress.XtraEditors.ImageLocation.MiddleCenter, ((System.Drawing.Image)(resources.GetObject("ButtonEditDisable.Buttons"))), new DevExpress.Utils.KeyShortcut(System.Windows.Forms.Keys.None), serializableAppearanceObject25, serializableAppearanceObject26, serializableAppearanceObject27, serializableAppearanceObject28, "Sửa", null, null, true)});
             this.ButtonEditDisable.Name = "ButtonEditDisable";
             this.ButtonEditDisable.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.HideTextEditor;
             // 
@@ -1748,7 +1813,7 @@
             // 
             this.ButtonDelete.AutoHeight = false;
             this.ButtonDelete.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
-            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Glyph, "", -1, true, true, false, DevExpress.XtraEditors.ImageLocation.MiddleCenter, ((System.Drawing.Image)(resources.GetObject("ButtonDelete.Buttons"))), new DevExpress.Utils.KeyShortcut(System.Windows.Forms.Keys.None), serializableAppearanceObject25, serializableAppearanceObject26, serializableAppearanceObject27, serializableAppearanceObject28, "Xóa", null, null, true)});
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Glyph, "", -1, true, true, false, DevExpress.XtraEditors.ImageLocation.MiddleCenter, ((System.Drawing.Image)(resources.GetObject("ButtonDelete.Buttons"))), new DevExpress.Utils.KeyShortcut(System.Windows.Forms.Keys.None), serializableAppearanceObject29, serializableAppearanceObject30, serializableAppearanceObject31, serializableAppearanceObject32, "Xóa", null, null, true)});
             this.ButtonDelete.Name = "ButtonDelete";
             this.ButtonDelete.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.HideTextEditor;
             this.ButtonDelete.ButtonClick += new DevExpress.XtraEditors.Controls.ButtonPressedEventHandler(this.ButtonDelete_ButtonClick);
@@ -1757,7 +1822,7 @@
             // 
             this.ButtonDeleteDisable.AutoHeight = false;
             this.ButtonDeleteDisable.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
-            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Glyph, "", -1, false, true, false, DevExpress.XtraEditors.ImageLocation.MiddleCenter, ((System.Drawing.Image)(resources.GetObject("ButtonDeleteDisable.Buttons"))), new DevExpress.Utils.KeyShortcut(System.Windows.Forms.Keys.None), serializableAppearanceObject29, serializableAppearanceObject30, serializableAppearanceObject31, serializableAppearanceObject32, "Xóa", null, null, true)});
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Glyph, "", -1, false, true, false, DevExpress.XtraEditors.ImageLocation.MiddleCenter, ((System.Drawing.Image)(resources.GetObject("ButtonDeleteDisable.Buttons"))), new DevExpress.Utils.KeyShortcut(System.Windows.Forms.Keys.None), serializableAppearanceObject33, serializableAppearanceObject34, serializableAppearanceObject35, serializableAppearanceObject36, "Xóa", null, null, true)});
             this.ButtonDeleteDisable.Name = "ButtonDeleteDisable";
             this.ButtonDeleteDisable.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.HideTextEditor;
             // 
@@ -1824,7 +1889,7 @@
             // 
             this.repositoryItemBtnSaveDisable.AutoHeight = false;
             this.repositoryItemBtnSaveDisable.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
-            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.OK, "", -1, false, true, false, DevExpress.XtraEditors.ImageLocation.MiddleCenter, null, new DevExpress.Utils.KeyShortcut(System.Windows.Forms.Keys.None), serializableAppearanceObject33, serializableAppearanceObject34, serializableAppearanceObject35, serializableAppearanceObject36, "Lưu", null, null, true)});
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.OK, "", -1, false, true, false, DevExpress.XtraEditors.ImageLocation.MiddleCenter, null, new DevExpress.Utils.KeyShortcut(System.Windows.Forms.Keys.None), serializableAppearanceObject37, serializableAppearanceObject38, serializableAppearanceObject39, serializableAppearanceObject40, "Lưu", null, null, true)});
             this.repositoryItemBtnSaveDisable.Name = "repositoryItemBtnSaveDisable";
             this.repositoryItemBtnSaveDisable.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.HideTextEditor;
             // 
@@ -1841,7 +1906,7 @@
             // 
             this.repositoryItemBtnAddDisable.AutoHeight = false;
             this.repositoryItemBtnAddDisable.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
-            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Plus, "", -1, false, true, false, DevExpress.XtraEditors.ImageLocation.MiddleCenter, null, new DevExpress.Utils.KeyShortcut(System.Windows.Forms.Keys.None), serializableAppearanceObject37, serializableAppearanceObject38, serializableAppearanceObject39, serializableAppearanceObject40, "Thêm", null, null, true)});
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Plus, "", -1, false, true, false, DevExpress.XtraEditors.ImageLocation.MiddleCenter, null, new DevExpress.Utils.KeyShortcut(System.Windows.Forms.Keys.None), serializableAppearanceObject41, serializableAppearanceObject42, serializableAppearanceObject43, serializableAppearanceObject44, "Thêm", null, null, true)});
             this.repositoryItemBtnAddDisable.Name = "repositoryItemBtnAddDisable";
             this.repositoryItemBtnAddDisable.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.HideTextEditor;
             // 
@@ -1881,6 +1946,48 @@
             this.repositoryItemGridLookUpEdit2View.OptionsSelection.EnableAppearanceFocusedCell = false;
             this.repositoryItemGridLookUpEdit2View.OptionsView.ShowGroupPanel = false;
             // 
+            // repEditFinishTimeEnable
+            // 
+            this.repEditFinishTimeEnable.AutoHeight = false;
+            this.repEditFinishTimeEnable.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Glyph, "", -1, true, true, false, DevExpress.XtraEditors.ImageLocation.MiddleCenter, ((System.Drawing.Image)(resources.GetObject("repEditFinishTimeEnable.Buttons"))), new DevExpress.Utils.KeyShortcut(System.Windows.Forms.Keys.None), serializableAppearanceObject45, serializableAppearanceObject46, serializableAppearanceObject47, serializableAppearanceObject48, "Cập nhật thời gian kết thúc lịch sử giường bằng thời gian lớn nhất y lệnh", null, null, true)});
+            this.repEditFinishTimeEnable.Name = "repEditFinishTimeEnable";
+            this.repEditFinishTimeEnable.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.HideTextEditor;
+            this.repEditFinishTimeEnable.ButtonClick += new DevExpress.XtraEditors.Controls.ButtonPressedEventHandler(this.repEditFinishTimeEnable_ButtonClick);
+            // 
+            // repServiceCondition
+            // 
+            this.repServiceCondition.AutoHeight = false;
+            this.repServiceCondition.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo),
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Delete)});
+            this.repServiceCondition.Name = "repServiceCondition";
+            this.repServiceCondition.NullText = "";
+            this.repServiceCondition.View = this.gridView5;
+            this.repServiceCondition.ButtonClick += new DevExpress.XtraEditors.Controls.ButtonPressedEventHandler(this.repServiceCondition_ButtonClick);
+            // 
+            // gridView5
+            // 
+            this.gridView5.FocusRectStyle = DevExpress.XtraGrid.Views.Grid.DrawFocusRectStyle.RowFocus;
+            this.gridView5.Name = "gridView5";
+            this.gridView5.OptionsSelection.EnableAppearanceFocusedCell = false;
+            this.gridView5.OptionsView.ShowGroupPanel = false;
+            // 
+            // repServiceConditionDis
+            // 
+            this.repServiceConditionDis.AutoHeight = false;
+            this.repServiceConditionDis.Name = "repServiceConditionDis";
+            this.repServiceConditionDis.NullText = "";
+            this.repServiceConditionDis.ReadOnly = true;
+            this.repServiceConditionDis.View = this.gridView6;
+            // 
+            // gridView6
+            // 
+            this.gridView6.FocusRectStyle = DevExpress.XtraGrid.Views.Grid.DrawFocusRectStyle.RowFocus;
+            this.gridView6.Name = "gridView6";
+            this.gridView6.OptionsSelection.EnableAppearanceFocusedCell = false;
+            this.gridView6.OptionsView.ShowGroupPanel = false;
+            // 
             // layoutControlGroup1
             // 
             this.layoutControlGroup1.EnableIndentsWithoutBorders = DevExpress.Utils.DefaultBoolean.True;
@@ -1900,53 +2007,53 @@
             this.layoutControlItem7,
             this.LciTreatmentResult,
             this.layoutControlItem9,
+            this.LciSplitDay,
             this.LciNotCountHours,
             this.layoutControlItem5,
             this.lciBedRoom,
             this.emptySpaceItem1,
             this.layoutControlItem8,
             this.layoutControlItem10,
-            this.emptySpaceItem3,
-            this.LciSplitDay});
+            this.layoutControlItem11});
             this.layoutControlGroup1.Location = new System.Drawing.Point(0, 0);
-            this.layoutControlGroup1.Name = "Root";
+            this.layoutControlGroup1.Name = "layoutControlGroup1";
             this.layoutControlGroup1.Padding = new DevExpress.XtraLayout.Utils.Padding(0, 0, 0, 0);
-            this.layoutControlGroup1.Size = new System.Drawing.Size(1760, 654);
+            this.layoutControlGroup1.Size = new System.Drawing.Size(1320, 533);
             this.layoutControlGroup1.TextVisible = false;
             // 
             // layoutControlItem1
             // 
             this.layoutControlItem1.Control = this.gridControlBedHistory;
-            this.layoutControlItem1.Location = new System.Drawing.Point(0, 28);
+            this.layoutControlItem1.Location = new System.Drawing.Point(0, 24);
             this.layoutControlItem1.Name = "layoutControlItem1";
-            this.layoutControlItem1.Size = new System.Drawing.Size(1760, 218);
+            this.layoutControlItem1.Size = new System.Drawing.Size(1320, 176);
             this.layoutControlItem1.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem1.TextVisible = false;
             // 
             // layoutControlItem2
             // 
             this.layoutControlItem2.Control = this.gridControlBedServiceType;
-            this.layoutControlItem2.Location = new System.Drawing.Point(0, 305);
+            this.layoutControlItem2.Location = new System.Drawing.Point(0, 250);
             this.layoutControlItem2.Name = "layoutControlItem2";
-            this.layoutControlItem2.Size = new System.Drawing.Size(1107, 316);
+            this.layoutControlItem2.Size = new System.Drawing.Size(830, 257);
             this.layoutControlItem2.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem2.TextVisible = false;
             // 
             // layoutControlItem3
             // 
             this.layoutControlItem3.Control = this.gridControlBedServiceReq;
-            this.layoutControlItem3.Location = new System.Drawing.Point(1107, 305);
+            this.layoutControlItem3.Location = new System.Drawing.Point(830, 250);
             this.layoutControlItem3.Name = "layoutControlItem3";
-            this.layoutControlItem3.Size = new System.Drawing.Size(653, 316);
+            this.layoutControlItem3.Size = new System.Drawing.Size(490, 257);
             this.layoutControlItem3.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem3.TextVisible = false;
             // 
             // layoutControlItem6
             // 
             this.layoutControlItem6.Control = this.btnAssigns;
-            this.layoutControlItem6.Location = new System.Drawing.Point(1565, 621);
+            this.layoutControlItem6.Location = new System.Drawing.Point(1246, 507);
             this.layoutControlItem6.Name = "layoutControlItem6";
-            this.layoutControlItem6.Size = new System.Drawing.Size(195, 33);
+            this.layoutControlItem6.Size = new System.Drawing.Size(74, 26);
             this.layoutControlItem6.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem6.TextVisible = false;
             // 
@@ -1955,9 +2062,9 @@
             this.lciTotalServicePrice.AppearanceItemCaption.Options.UseTextOptions = true;
             this.lciTotalServicePrice.AppearanceItemCaption.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.lciTotalServicePrice.Control = this.lblTotalServicePrice;
-            this.lciTotalServicePrice.Location = new System.Drawing.Point(0, 621);
+            this.lciTotalServicePrice.Location = new System.Drawing.Point(0, 507);
             this.lciTotalServicePrice.Name = "lciTotalServicePrice";
-            this.lciTotalServicePrice.Size = new System.Drawing.Size(1107, 33);
+            this.lciTotalServicePrice.Size = new System.Drawing.Size(539, 26);
             this.lciTotalServicePrice.Text = "Tổng tiền:";
             this.lciTotalServicePrice.TextAlignMode = DevExpress.XtraLayout.TextAlignModeItem.CustomSize;
             this.lciTotalServicePrice.TextSize = new System.Drawing.Size(90, 20);
@@ -1966,18 +2073,18 @@
             // layoutControlItem4
             // 
             this.layoutControlItem4.Control = this.BtnSaveBedLog;
-            this.layoutControlItem4.Location = new System.Drawing.Point(1613, 246);
+            this.layoutControlItem4.Location = new System.Drawing.Point(1210, 200);
             this.layoutControlItem4.Name = "layoutControlItem4";
-            this.layoutControlItem4.Size = new System.Drawing.Size(147, 33);
+            this.layoutControlItem4.Size = new System.Drawing.Size(110, 26);
             this.layoutControlItem4.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem4.TextVisible = false;
             // 
             // emptySpaceItem2
             // 
             this.emptySpaceItem2.AllowHotTrack = false;
-            this.emptySpaceItem2.Location = new System.Drawing.Point(880, 246);
+            this.emptySpaceItem2.Location = new System.Drawing.Point(660, 200);
             this.emptySpaceItem2.Name = "emptySpaceItem2";
-            this.emptySpaceItem2.Size = new System.Drawing.Size(733, 33);
+            this.emptySpaceItem2.Size = new System.Drawing.Size(550, 26);
             this.emptySpaceItem2.TextSize = new System.Drawing.Size(0, 0);
             // 
             // LciEndTime
@@ -1985,10 +2092,10 @@
             this.LciEndTime.AppearanceItemCaption.Options.UseTextOptions = true;
             this.LciEndTime.AppearanceItemCaption.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.LciEndTime.Control = this.DtOutTime;
-            this.LciEndTime.Location = new System.Drawing.Point(440, 246);
+            this.LciEndTime.Location = new System.Drawing.Point(330, 200);
             this.LciEndTime.Name = "LciEndTime";
             this.LciEndTime.OptionsToolTip.ToolTip = "Thời gian ra viện dự kiến";
-            this.LciEndTime.Size = new System.Drawing.Size(440, 33);
+            this.LciEndTime.Size = new System.Drawing.Size(330, 26);
             this.LciEndTime.Text = "TG ra viện dự kiến:";
             this.LciEndTime.TextAlignMode = DevExpress.XtraLayout.TextAlignModeItem.CustomSize;
             this.LciEndTime.TextSize = new System.Drawing.Size(120, 20);
@@ -1999,10 +2106,10 @@
             this.LciTreatmentDayCount.AppearanceItemCaption.Options.UseTextOptions = true;
             this.LciTreatmentDayCount.AppearanceItemCaption.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.LciTreatmentDayCount.Control = this.LblTreatmentDayCount;
-            this.LciTreatmentDayCount.Location = new System.Drawing.Point(880, 279);
+            this.LciTreatmentDayCount.Location = new System.Drawing.Point(660, 226);
             this.LciTreatmentDayCount.Name = "LciTreatmentDayCount";
             this.LciTreatmentDayCount.OptionsToolTip.ToolTip = "Tổng số ngày điều trị dự kiến tính theo thông tư 39/2018/TT-BYT";
-            this.LciTreatmentDayCount.Size = new System.Drawing.Size(880, 26);
+            this.LciTreatmentDayCount.Size = new System.Drawing.Size(660, 24);
             this.LciTreatmentDayCount.Text = "Tổng số ngày điều trị dự kiến:";
             this.LciTreatmentDayCount.TextAlignMode = DevExpress.XtraLayout.TextAlignModeItem.CustomSize;
             this.LciTreatmentDayCount.TextSize = new System.Drawing.Size(200, 20);
@@ -2013,9 +2120,9 @@
             this.LciInTime.AppearanceItemCaption.Options.UseTextOptions = true;
             this.LciInTime.AppearanceItemCaption.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.LciInTime.Control = this.LblInTime;
-            this.LciInTime.Location = new System.Drawing.Point(0, 246);
+            this.LciInTime.Location = new System.Drawing.Point(0, 200);
             this.LciInTime.Name = "LciInTime";
-            this.LciInTime.Size = new System.Drawing.Size(440, 33);
+            this.LciInTime.Size = new System.Drawing.Size(330, 26);
             this.LciInTime.Text = "Thời gian vào viện:";
             this.LciInTime.TextAlignMode = DevExpress.XtraLayout.TextAlignModeItem.CustomSize;
             this.LciInTime.TextSize = new System.Drawing.Size(120, 20);
@@ -2026,10 +2133,10 @@
             this.LciEndType.AppearanceItemCaption.Options.UseTextOptions = true;
             this.LciEndType.AppearanceItemCaption.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.LciEndType.Control = this.TxtTreatmentEndTypeCode;
-            this.LciEndType.Location = new System.Drawing.Point(0, 279);
+            this.LciEndType.Location = new System.Drawing.Point(0, 226);
             this.LciEndType.Name = "LciEndType";
             this.LciEndType.Padding = new DevExpress.XtraLayout.Utils.Padding(2, 0, 2, 2);
-            this.LciEndType.Size = new System.Drawing.Size(236, 26);
+            this.LciEndType.Size = new System.Drawing.Size(177, 24);
             this.LciEndType.Text = "Loại ra viện dự kiến:";
             this.LciEndType.TextAlignMode = DevExpress.XtraLayout.TextAlignModeItem.CustomSize;
             this.LciEndType.TextSize = new System.Drawing.Size(120, 20);
@@ -2038,10 +2145,10 @@
             // layoutControlItem7
             // 
             this.layoutControlItem7.Control = this.CboTreatmentEndType;
-            this.layoutControlItem7.Location = new System.Drawing.Point(236, 279);
+            this.layoutControlItem7.Location = new System.Drawing.Point(177, 226);
             this.layoutControlItem7.Name = "layoutControlItem7";
             this.layoutControlItem7.Padding = new DevExpress.XtraLayout.Utils.Padding(0, 2, 2, 2);
-            this.layoutControlItem7.Size = new System.Drawing.Size(204, 26);
+            this.layoutControlItem7.Size = new System.Drawing.Size(153, 24);
             this.layoutControlItem7.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem7.TextVisible = false;
             // 
@@ -2050,10 +2157,10 @@
             this.LciTreatmentResult.AppearanceItemCaption.Options.UseTextOptions = true;
             this.LciTreatmentResult.AppearanceItemCaption.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.LciTreatmentResult.Control = this.TxtTreatmentResultCode;
-            this.LciTreatmentResult.Location = new System.Drawing.Point(440, 279);
+            this.LciTreatmentResult.Location = new System.Drawing.Point(330, 226);
             this.LciTreatmentResult.Name = "LciTreatmentResult";
             this.LciTreatmentResult.Padding = new DevExpress.XtraLayout.Utils.Padding(2, 0, 2, 2);
-            this.LciTreatmentResult.Size = new System.Drawing.Size(236, 26);
+            this.LciTreatmentResult.Size = new System.Drawing.Size(177, 24);
             this.LciTreatmentResult.Text = "Kết quả dự kiến:";
             this.LciTreatmentResult.TextAlignMode = DevExpress.XtraLayout.TextAlignModeItem.CustomSize;
             this.LciTreatmentResult.TextSize = new System.Drawing.Size(120, 20);
@@ -2062,46 +2169,57 @@
             // layoutControlItem9
             // 
             this.layoutControlItem9.Control = this.CboTreatmentResult;
-            this.layoutControlItem9.Location = new System.Drawing.Point(676, 279);
+            this.layoutControlItem9.Location = new System.Drawing.Point(507, 226);
             this.layoutControlItem9.Name = "layoutControlItem9";
             this.layoutControlItem9.Padding = new DevExpress.XtraLayout.Utils.Padding(0, 2, 2, 2);
-            this.layoutControlItem9.Size = new System.Drawing.Size(204, 26);
+            this.layoutControlItem9.Size = new System.Drawing.Size(153, 24);
             this.layoutControlItem9.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem9.TextVisible = false;
+            // 
+            // LciSplitDay
+            // 
+            this.LciSplitDay.AppearanceItemCaption.Options.UseTextOptions = true;
+            this.LciSplitDay.AppearanceItemCaption.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
+            this.LciSplitDay.Control = this.ChkSplitDay;
+            this.LciSplitDay.Location = new System.Drawing.Point(977, 507);
+            this.LciSplitDay.Name = "LciSplitDay";
+            this.LciSplitDay.Size = new System.Drawing.Size(118, 26);
+            this.LciSplitDay.Text = "Tách theo ngày:";
+            this.LciSplitDay.TextAlignMode = DevExpress.XtraLayout.TextAlignModeItem.CustomSize;
+            this.LciSplitDay.TextSize = new System.Drawing.Size(90, 20);
+            this.LciSplitDay.TextToControlDistance = 5;
             // 
             // LciNotCountHours
             // 
             this.LciNotCountHours.AppearanceItemCaption.Options.UseTextOptions = true;
             this.LciNotCountHours.AppearanceItemCaption.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.LciNotCountHours.Control = this.ChkNotCountHours;
-            this.LciNotCountHours.Location = new System.Drawing.Point(1227, 621);
+            this.LciNotCountHours.Location = new System.Drawing.Point(830, 507);
             this.LciNotCountHours.Name = "LciNotCountHours";
-            this.LciNotCountHours.Size = new System.Drawing.Size(120, 33);
+            this.LciNotCountHours.Size = new System.Drawing.Size(147, 26);
             this.LciNotCountHours.Text = "Tính theo ngày:";
             this.LciNotCountHours.TextAlignMode = DevExpress.XtraLayout.TextAlignModeItem.CustomSize;
             this.LciNotCountHours.TextSize = new System.Drawing.Size(90, 20);
             this.LciNotCountHours.TextToControlDistance = 5;
-            this.LciNotCountHours.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
             // 
             // layoutControlItem5
             // 
             this.layoutControlItem5.Control = this.chkSplitByResult;
-            this.layoutControlItem5.Location = new System.Drawing.Point(1357, 621);
+            this.layoutControlItem5.Location = new System.Drawing.Point(1095, 507);
             this.layoutControlItem5.Name = "layoutControlItem5";
             this.layoutControlItem5.OptionsToolTip.ToolTip = "Tách theo thông tư 39 dựa trên kết quả ra viện dự kiến";
-            this.layoutControlItem5.Size = new System.Drawing.Size(208, 33);
+            this.layoutControlItem5.Size = new System.Drawing.Size(151, 26);
             this.layoutControlItem5.Text = "Tách theo KQ dự kiến";
-            this.layoutControlItem5.TextSize = new System.Drawing.Size(133, 17);
-            this.layoutControlItem5.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
+            this.layoutControlItem5.TextSize = new System.Drawing.Size(125, 13);
             // 
             // lciBedRoom
             // 
             this.lciBedRoom.AppearanceItemCaption.Options.UseTextOptions = true;
             this.lciBedRoom.AppearanceItemCaption.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.lciBedRoom.Control = this.cboBedRoom;
-            this.lciBedRoom.Location = new System.Drawing.Point(676, 0);
+            this.lciBedRoom.Location = new System.Drawing.Point(507, 0);
             this.lciBedRoom.Name = "lciBedRoom";
-            this.lciBedRoom.Size = new System.Drawing.Size(741, 28);
+            this.lciBedRoom.Size = new System.Drawing.Size(556, 24);
             this.lciBedRoom.Text = "Buồng bệnh:";
             this.lciBedRoom.TextAlignMode = DevExpress.XtraLayout.TextAlignModeItem.CustomSize;
             this.lciBedRoom.TextSize = new System.Drawing.Size(90, 20);
@@ -2110,9 +2228,9 @@
             // emptySpaceItem1
             // 
             this.emptySpaceItem1.AllowHotTrack = false;
-            this.emptySpaceItem1.Location = new System.Drawing.Point(1417, 0);
+            this.emptySpaceItem1.Location = new System.Drawing.Point(1063, 0);
             this.emptySpaceItem1.Name = "emptySpaceItem1";
-            this.emptySpaceItem1.Size = new System.Drawing.Size(343, 28);
+            this.emptySpaceItem1.Size = new System.Drawing.Size(257, 24);
             this.emptySpaceItem1.TextSize = new System.Drawing.Size(0, 0);
             // 
             // layoutControlItem8
@@ -2123,7 +2241,7 @@
             this.layoutControlItem8.Location = new System.Drawing.Point(0, 0);
             this.layoutControlItem8.Name = "layoutControlItem8";
             this.layoutControlItem8.OptionsToolTip.ToolTip = "Hiển thị toàn bộ các lịch sử giường được tạo tại khoa khác";
-            this.layoutControlItem8.Size = new System.Drawing.Size(317, 28);
+            this.layoutControlItem8.Size = new System.Drawing.Size(238, 24);
             this.layoutControlItem8.Text = "Hiển thị lịch sử giường toàn viện:";
             this.layoutControlItem8.TextAlignMode = DevExpress.XtraLayout.TextAlignModeItem.CustomSize;
             this.layoutControlItem8.TextSize = new System.Drawing.Size(180, 20);
@@ -2134,48 +2252,35 @@
             this.layoutControlItem10.AppearanceItemCaption.Options.UseTextOptions = true;
             this.layoutControlItem10.AppearanceItemCaption.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.layoutControlItem10.Control = this.chkBedAll;
-            this.layoutControlItem10.Location = new System.Drawing.Point(317, 0);
+            this.layoutControlItem10.Location = new System.Drawing.Point(238, 0);
             this.layoutControlItem10.Name = "layoutControlItem10";
             this.layoutControlItem10.OptionsToolTip.ToolTip = "Hiển thị toàn bộ các giường trên hệ thống. Cho phép chọn giường gắn với buồng thu" +
     "ộc khoa khác";
-            this.layoutControlItem10.Size = new System.Drawing.Size(359, 28);
+            this.layoutControlItem10.Size = new System.Drawing.Size(269, 24);
             this.layoutControlItem10.Text = "Hiển thị giường toàn viện";
             this.layoutControlItem10.TextAlignMode = DevExpress.XtraLayout.TextAlignModeItem.CustomSize;
             this.layoutControlItem10.TextSize = new System.Drawing.Size(200, 20);
             this.layoutControlItem10.TextToControlDistance = 5;
             // 
-            // emptySpaceItem3
+            // layoutControlItem11
             // 
-            this.emptySpaceItem3.AllowHotTrack = false;
-            this.emptySpaceItem3.Location = new System.Drawing.Point(1347, 621);
-            this.emptySpaceItem3.Name = "emptySpaceItem3";
-            this.emptySpaceItem3.Size = new System.Drawing.Size(10, 33);
-            this.emptySpaceItem3.TextSize = new System.Drawing.Size(0, 0);
-            // 
-            // LciSplitDay
-            // 
-            this.LciSplitDay.AppearanceItemCaption.Options.UseTextOptions = true;
-            this.LciSplitDay.AppearanceItemCaption.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
-            this.LciSplitDay.Control = this.ChkSplitDay;
-            this.LciSplitDay.Location = new System.Drawing.Point(1107, 621);
-            this.LciSplitDay.Name = "LciSplitDay";
-            this.LciSplitDay.Size = new System.Drawing.Size(120, 33);
-            this.LciSplitDay.Text = "Tách theo ngày:";
-            this.LciSplitDay.TextAlignMode = DevExpress.XtraLayout.TextAlignModeItem.CustomSize;
-            this.LciSplitDay.TextSize = new System.Drawing.Size(90, 20);
-            this.LciSplitDay.TextToControlDistance = 5;
+            this.layoutControlItem11.Control = this.cboEmployee;
+            this.layoutControlItem11.Location = new System.Drawing.Point(539, 507);
+            this.layoutControlItem11.Name = "layoutControlItem11";
+            this.layoutControlItem11.Size = new System.Drawing.Size(291, 26);
+            this.layoutControlItem11.Text = "Người được chỉ định xử lý:";
+            this.layoutControlItem11.TextSize = new System.Drawing.Size(125, 13);
             // 
             // FormBedHistory
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1760, 692);
+            this.ClientSize = new System.Drawing.Size(1320, 562);
             this.Controls.Add(this.layoutControl1);
             this.Controls.Add(this.barDockControlLeft);
             this.Controls.Add(this.barDockControlRight);
             this.Controls.Add(this.barDockControlBottom);
             this.Controls.Add(this.barDockControlTop);
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "FormBedHistory";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Lịch sử giường";
@@ -2189,8 +2294,10 @@
             this.Controls.SetChildIndex(this.layoutControl1, 0);
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).EndInit();
             this.layoutControl1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.chkBedAll.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cboEmployee.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.barManager1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.customGridLookUpEditWithFilterMultiColumnNoFocus1View)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chkBedAll.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.chkBHAll.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.chkSplitByResult.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.cboBedRoom.Properties)).EndInit();
@@ -2233,6 +2340,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.customGridViewWithFilterMultiColumn1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridControlBedHistory)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewBedHistory)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.repEditFinishTimeDisable)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.repositoryItemCboBedCode)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.customGridView3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.repositoryItemCboBed)).EndInit();
@@ -2262,6 +2370,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.gridView2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.repositoryItemCboBedPrimaryPatientType)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.repositoryItemGridLookUpEdit2View)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.repEditFinishTimeEnable)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.repServiceCondition)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridView5)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.repServiceConditionDis)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridView6)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlGroup1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem2)).EndInit();
@@ -2277,14 +2390,14 @@
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem7)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.LciTreatmentResult)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem9)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.LciSplitDay)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.LciNotCountHours)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem5)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.lciBedRoom)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.emptySpaceItem1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem8)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem10)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.emptySpaceItem3)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.LciSplitDay)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem11)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -2450,9 +2563,18 @@
         private DevExpress.XtraGrid.Columns.GridColumn Gv_BedServiceType__Gc_RequestLoginname;
         private Inventec.Desktop.CustomControl.RepositoryItemCustomGridLookUpEdit repositoryItemCboRequestUser;
         private Inventec.Desktop.CustomControl.CustomGridViewWithFilterMultiColumn customGridViewWithFilterMultiColumn1;
+        private DevExpress.XtraEditors.Repository.RepositoryItemButtonEdit repEditFinishTimeEnable;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn4;
+        private DevExpress.XtraEditors.Repository.RepositoryItemButtonEdit repEditFinishTimeDisable;
+        private DevExpress.XtraGrid.Columns.GridColumn colFinishTimeEditUnb;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn5;
-        private DevExpress.XtraGrid.Columns.GridColumn gridColumn6;
-        private DevExpress.XtraLayout.EmptySpaceItem emptySpaceItem3;
+        private DevExpress.XtraEditors.Repository.RepositoryItemGridLookUpEdit repServiceCondition;
+        private DevExpress.XtraGrid.Views.Grid.GridView gridView5;
+        private DevExpress.XtraGrid.Columns.GridColumn colSERVICE_CONDITION_IDUnb;
+        private DevExpress.XtraEditors.Repository.RepositoryItemGridLookUpEdit repServiceConditionDis;
+        private DevExpress.XtraGrid.Views.Grid.GridView gridView6;
+        private Inventec.Desktop.CustomControl.NoFocus.CustomGridLookUpEditWithFilterMultiColumnNoFocus cboEmployee;
+        private Inventec.Desktop.CustomControl.NoFocus.CustomGridViewWithFilterMultiColumnNoFocus customGridLookUpEditWithFilterMultiColumnNoFocus1View;
+        private DevExpress.XtraLayout.LayoutControlItem layoutControlItem11;
     }
 }

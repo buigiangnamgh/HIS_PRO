@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+using MOS.EFMODEL.DataModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,33 +24,23 @@ using System.Threading.Tasks;
 
 namespace HIS.Desktop.Plugins.BedHistory.ADO
 {
-    public class HisBedADO : MOS.EFMODEL.DataModels.V_HIS_BED
+    public class ServicePatyConditionADO : V_HIS_SERVICE_PATY
     {
-        public string AMOUNT_STR { get; set; }
-        public long IsKey { get; set; }
-        public long BED_CODE_ID { get; set; }
-        public long AMOUNT { get; set; }
-        public List<long> TREATMENT_BED_ROOM_IDs { get; set; }
-        public List<long> BedLogStartIds { get; set; }
-        public List<long> BedLogFinishIds { get; set; }
-        public List<long> BedLogAllIds { get; set; }
-        public HisBedADO() { }
-
-        public HisBedADO(MOS.EFMODEL.DataModels.V_HIS_BED data)
+        public decimal? HEIN_RATIO_DISPLAY { get; set; }
+        public ServicePatyConditionADO() { }
+        public ServicePatyConditionADO(V_HIS_SERVICE_PATY data)
         {
+
             try
             {
-                if (data != null)
-                {
-                    Inventec.Common.Mapper.DataObjectMapper.Map<HisBedADO>(this, data);
-                    this.AMOUNT_STR = 0 + "/" + this.MAX_CAPACITY;
-                    this.BED_CODE_ID = data.ID;
-                }
+                Inventec.Common.Mapper.DataObjectMapper.Map<V_HIS_SERVICE_PATY>(this, data);
+                this.HEIN_RATIO_DISPLAY = data.HEIN_RATIO.HasValue ? (decimal?)Inventec.Common.Number.Convert.NumberToNumberRoundMax4((decimal)((data.HEIN_RATIO ?? 0) * 100)) : null;
             }
             catch (Exception ex)
             {
                 Inventec.Common.Logging.LogSystem.Error(ex);
             }
+
         }
     }
 }

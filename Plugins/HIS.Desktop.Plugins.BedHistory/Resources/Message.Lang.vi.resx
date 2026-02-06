@@ -181,7 +181,7 @@
     <value>Dịch vụ  {0}  có đối tượng phụ thu bắt buộc {1}, không cho phép sửa</value>
   </data>
   <data name="DichVuCoDTTTBatBuocKhongChoPhepSua" xml:space="preserve">
-    <value>Dịch vụ  {0}  có đối tượng thanh toán bắt buộc {1}, không cho phép sửa</value>
+    <value>Dịch vụ {0} có đối tượng thanh toán bắt buộc {1}, không cho phép sửa</value>
   </data>
   <data name="ChiDinhDichVu_BatBuocChonNguonKhac" xml:space="preserve">
     <value>Đối tượng thanh toán {0} bắt buộc chọn nguồn khác</value>
