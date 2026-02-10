@@ -328,6 +328,7 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                     Inventec.Common.Logging.LogSystem.Debug("ExamServiceReqExecuteControl_Load .1 this.moduleData RoomId" + this.moduleData.RoomId);
 
                 }
+                CheckConfigIsMaterial();
                 InitControlState();
                 timeClose = new Timer();
                 timeClose.Interval = 100;
@@ -8757,22 +8758,47 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                 GetUcIcdYHCT();
                 LogSystem.Debug("Valid ICD");
                 if (!ValidIcd(true)) return;
+
                 CommonParam param = new CommonParam();
                 WaitingManager.Show();
+                MOS.Filter.HisTrackingFilter trackingFilter = new HisTrackingFilter();
+                trackingFilter.TREATMENT_ID = treatment.ID;
+                var trackings = new BackendAdapter(new CommonParam()).Get<List<HIS_TRACKING>>("api/HisTracking/Get", ApiConsumer.ApiConsumers.MosConsumer, trackingFilter, new CommonParam());
                 HisTrackingSDO sdo = new HisTrackingSDO();
                 sdo.WorkingRoomId = moduleData.RoomId;
                 //--tracking
                 sdo.Tracking = new HIS_TRACKING();
+                if (trackings != null && trackings.Count() > 0)
+                {
+                    sdo.Tracking = trackings.FirstOrDefault();
+                    //--ServiceReqs
+                    MOS.Filter.HisServiceReqFilter _reqFilter = new HisServiceReqFilter();
+                    _reqFilter.TRACKING_ID = sdo.Tracking.ID;
+                    var dataReqs = new BackendAdapter(param).Get<List<HIS_SERVICE_REQ>>("api/HisServiceReq/Get", ApiConsumers.MosConsumer, _reqFilter, param);
+                    if (dataReqs != null && dataReqs.Count > 0)
+                    {
+                        sdo.ServiceReqs = new List<TrackingServiceReq>();
+                        foreach (var item in dataReqs)
+                        {
+                            TrackingServiceReq ado = new TrackingServiceReq();
+                            ado.ServiceReqId = item.ID;
+                            ado.IsNotShowMedicine = false;
+                            ado.IsNotShowMaterial = false;
+                            ado.IsNotShowOutMedi = false;
+                            ado.IsNotShowOutMate = false;
+                            sdo.ServiceReqs.Add(ado);
+                        }
+                    }
+                }
                 sdo.Tracking.DEPARTMENT_ID = HIS.Desktop.LocalStorage.LocalData.WorkPlace.WorkPlaceSDO.FirstOrDefault(o => o.RoomId == moduleData.RoomId).DepartmentId;
-                sdo.Tracking.CREATOR = Inventec.UC.Login.Base.ClientTokenManagerStore.ClientTokenManager.GetLoginName();
+
                 sdo.Tracking.ICD_TEXT = txtIcdText.Text.Trim();
                 sdo.Tracking.ICD_SUB_CODE = txtIcdSubCode.Text.Trim();
                 sdo.Tracking.ICD_NAME = txtIcdMainText.Text.Trim();
                 sdo.Tracking.ICD_CODE = txtIcdCode.Text.Trim();
-                sdo.Tracking.TRACKING_TIME = Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(DateTime.Now) ?? 0;
                 sdo.Tracking.TREATMENT_ID = treatment.ID;
                 sdo.Tracking.CONTENT = txtPathologicalProcess.Text + "\r\n" + txtPathologicalHistory.Text + "\r\n"
-                    + txtPathologicalHistoryFamily.Text + "\r\n" + txtHistoryAllergy.Text + "\r\n" + txtKhamToanThan.Text + "\r\n" + txtKhamBoPhan.Text.Trim();
+                    + txtPathologicalHistoryFamily.Text + "\r\n" + txtKhamToanThan.Text + "\r\n" + txtKhamBoPhan.Text.Trim();
                 sdo.Tracking.SUBCLINICAL_PROCESSES = txtSubclinical.Text.Trim();
                 //--dhst
                 sdo.Dhst = new HIS_DHST();
@@ -8804,39 +8830,53 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                     sdo.Dhst.WEIGHT = Inventec.Common.Number.Get.RoundCurrency(spinWeight.Value, 2);
                 if (spinSPO2.EditValue != null)
                     sdo.Dhst.SPO2 = Inventec.Common.Number.Get.RoundCurrency(spinSPO2.Value, 2) / 100;
-                //--ServiceReqs
-                MOS.Filter.HisServiceReqFilter _reqFilter = new HisServiceReqFilter();
-                _reqFilter.TREATMENT_ID = this.treatmentId;
-                _reqFilter.INTRUCTION_DATE__EQUAL = Int64.Parse(Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(DateTime.Now).ToString().Substring(0, 8) + "000000");
-                _reqFilter.REQUEST_LOGINNAME__EXACT = Inventec.UC.Login.Base.ClientTokenManagerStore.ClientTokenManager.GetLoginName();
-                _reqFilter.HAS_EXECUTE = true;
 
-                var dataReqs = new BackendAdapter(param).Get<List<HIS_SERVICE_REQ>>("api/HisServiceReq/Get", ApiConsumers.MosConsumer, _reqFilter, param);
-                dataReqs = dataReqs.Where(o => o.TRACKING_ID == null).ToList();
-                if (dataReqs != null && dataReqs.Count > 0)
+                bool success = false;
+                string uri = "";
+
+                if (trackings != null && trackings.Count > 0) // nếu đã có phiếu truyền dịch thì update
                 {
-                    sdo.ServiceReqs = new List<TrackingServiceReq>();
-                    foreach (var item in dataReqs)
+                    uri = "api/HisTracking/Update";
+                }
+                else
+                {
+                    sdo.Tracking.TRACKING_TIME = Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(DateTime.Now) ?? 0;
+                    sdo.Tracking.CREATOR = Inventec.UC.Login.Base.ClientTokenManagerStore.ClientTokenManager.GetLoginName();
+                    uri = "api/HisTracking/Create";
+                    //--ServiceReqs
+                    MOS.Filter.HisServiceReqFilter _reqFilter = new HisServiceReqFilter();
+                    _reqFilter.TREATMENT_ID = this.treatmentId;
+                    _reqFilter.INTRUCTION_DATE__EQUAL = Int64.Parse(Inventec.Common.DateTime.Convert.SystemDateTimeToTimeNumber(DateTime.Now).ToString().Substring(0, 8) + "000000");
+                    _reqFilter.REQUEST_LOGINNAME__EXACT = Inventec.UC.Login.Base.ClientTokenManagerStore.ClientTokenManager.GetLoginName();
+                    _reqFilter.HAS_EXECUTE = true;
+
+                    var dataReqs = new BackendAdapter(param).Get<List<HIS_SERVICE_REQ>>("api/HisServiceReq/Get", ApiConsumers.MosConsumer, _reqFilter, param);
+                    dataReqs = dataReqs.Where(o => o.TRACKING_ID == null).ToList();
+                    if (dataReqs != null && dataReqs.Count > 0)
                     {
-                        TrackingServiceReq ado = new TrackingServiceReq();
-                        ado.ServiceReqId = item.ID;
-                        ado.IsNotShowMedicine = false;
-                        ado.IsNotShowMaterial = false;
-                        ado.IsNotShowOutMedi = false;
-                        ado.IsNotShowOutMate = false;
-                        sdo.ServiceReqs.Add(ado);
+                        sdo.ServiceReqs = new List<TrackingServiceReq>();
+                        foreach (var item in dataReqs)
+                        {
+                            TrackingServiceReq ado = new TrackingServiceReq();
+                            ado.ServiceReqId = item.ID;
+                            ado.IsNotShowMedicine = false;
+                            ado.IsNotShowMaterial = false;
+                            ado.IsNotShowOutMedi = false;
+                            ado.IsNotShowOutMate = false;
+                            sdo.ServiceReqs.Add(ado);
+                        }
                     }
                 }
-                bool success = false;
-                Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => sdo), sdo));
 
-                var resultData = new BackendAdapter(param).Post<HIS_TRACKING>("api/HisTracking/Create", ApiConsumers.MosConsumer, sdo, param);
-                if (resultData != null)
+                Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => sdo), sdo));
+                this.currentTracking = new BackendAdapter(param).Post<HIS_TRACKING>(uri, ApiConsumers.MosConsumer, sdo, param);
+                WaitingManager.Hide();
+                if (this.currentTracking != null)
                 {
                     success = true;
-                    PrintProcess62(PrintType.IN_TO_DIEU_TRI);
+                    PrintProcess(PrintType.IN_TO_DIEU_TRI);
                 }
-                WaitingManager.Hide();
+               
                 #region Hien thi message thong bao
                 MessageManager.Show(param, success);
                 #endregion

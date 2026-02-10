@@ -21,7 +21,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HIS.Desktop.Plugins.HisTrackingList.Event
+namespace HIS.Desktop.Plugins.ExamServiceReqExecute
 {
     public class ConfigKeyss
     {
@@ -41,6 +41,9 @@ namespace HIS.Desktop.Plugins.HisTrackingList.Event
 
         public const string DBCODE__MOS_HIS_TRACKING_IS_READ_ONLY_SHEET_ORDER = "MOS.HIS_TRACKING.IS_READ_ONLY_SHEET_ORDER";
 
+        public const string DBCODE__HIS_DESKTOP_PLUGINS_TRACKING_CRETATE_DoNotShowExpendMaterial = "HIS.Desktop.Plugins.Tracking.DoNotShowExpendMaterial";
+
         internal const string BtnEdit = "HIS000033";
+     
     }
 }

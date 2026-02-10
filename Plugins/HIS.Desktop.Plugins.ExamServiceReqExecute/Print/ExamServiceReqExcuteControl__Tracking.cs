@@ -16,7 +16,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 using HIS.Desktop.ApiConsumer;
-using HIS.Desktop.Plugins.HisTrackingList.Event;
 using HIS.Desktop.Utility;
 using Inventec.Common.Adapter;
 using Inventec.Core;

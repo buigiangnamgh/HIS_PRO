@@ -575,6 +575,10 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                     case "Mps000178":
                         ProcessPrintMps000178(printTypeCode, fileName, ref result);
                         break;
+                    case PrintTypeCodeWorker.PRINT_TYPE_CODE__Mps000062:
+                        Mps000062(printTypeCode, fileName, ref result);
+                        //LoadBieuMauInToDieuTriTongHopMps000062(printTypeCode, fileName, ref result);
+                        break;
                     default:
                         break;
                 }
@@ -733,6 +737,9 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute
                         break;
                     case PrintType.PHIEU_THU_THANH_TOAN:
                         richEditorMain.RunPrintTemplate("Mps000111", DelegateRunPrinter);
+                        break;
+                    case PrintType.IN_TO_DIEU_TRI:
+                        richEditorMain.RunPrintTemplate("Mps000062", DelegateRunPrinter);
                         break;
                     default:
                         break;

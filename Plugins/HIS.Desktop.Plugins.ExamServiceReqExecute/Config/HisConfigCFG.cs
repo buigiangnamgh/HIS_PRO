@@ -171,6 +171,15 @@ namespace HIS.Desktop.Plugins.ExamServiceReqExecute.Config
             }
         }
 
+        internal static string Config_TrackingCreate_BloodPresOption
+        {
+            get
+            {
+                var result = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(ConfigKeyss.DBCODE__HIS_DESKTOP_PLUGINS_TRACKING_CREATE_BLOOD_PRES_OPTION);
+                return result;
+            }
+        }
+
         private static string GetValue(string code)
         {
             string result = null;

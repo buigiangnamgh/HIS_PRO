@@ -103,6 +103,10 @@
     <Reference Include="HIS.Desktop.Plugins.Library.ConnectWhoCnd">
       <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.Desktop.Plugins.Library.ConnectWhoCnd.dll</HintPath>
     </Reference>
+    <Reference Include="HIS.Desktop.Plugins.Library.ElectronicBill, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.Desktop.Plugins.Library.ElectronicBill.dll</HintPath>
+    </Reference>
     <Reference Include="HIS.Desktop.Plugins.Library.EmrGenerate, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\RELEASE\HIS\HIS.Desktop.Plugins.Library.EmrGenerate\HIS.Desktop.Plugins.Library.EmrGenerate.dll</HintPath>
@@ -474,7 +478,7 @@
     <Compile Include="ExamServiceReqExecuteControl_Dispose.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ExamServiceReqExecuteControl_PrintTracking.cs">
+    <Compile Include="ExamServiceReqExecuteControl_PrintTracking_V2.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="ExamServiceReqExecuteControl__Combo.cs">
@@ -718,10 +722,6 @@
     <ProjectReference Include="..\HIS.Desktop.Plugins.Library.CheckIcd\HIS.Desktop.Plugins.Library.CheckIcd.csproj">
       <Project>{2e5f2fa1-1b7d-40e4-b0c5-069231fb7746}</Project>
       <Name>HIS.Desktop.Plugins.Library.CheckIcd</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\HIS.Desktop.Plugins.Library.ElectronicBill\HIS.Desktop.Plugins.Library.ElectronicBill.csproj">
-      <Project>{c5aecd51-4be8-4937-a6c3-04f25b11b33f}</Project>
-      <Name>HIS.Desktop.Plugins.Library.ElectronicBill</Name>
     </ProjectReference>
     <ProjectReference Include="..\HIS.Desktop.Plugins.Library.PrintPrescription\HIS.Desktop.Plugins.Library.PrintPrescription.csproj">
       <Project>{e34c646c-1959-4b1e-9ebd-6cc75a5470fa}</Project>
