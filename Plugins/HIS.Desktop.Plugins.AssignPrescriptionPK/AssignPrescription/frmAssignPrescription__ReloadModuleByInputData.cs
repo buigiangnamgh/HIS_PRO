@@ -53,6 +53,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
 		{
 			try
             {
+                LogSystem.Info("AssignPrescriptionADO: " + LogUtil.TraceData("AssignPrescriptionADO: ", data));
                 LogSystem.Debug("ReloadModuleByInputData Start___"+ IsUseApplyFormClosingOption);
                 this.IsUseApplyFormClosingOption = true;
                 var watch = System.Diagnostics.Stopwatch.StartNew();
@@ -161,7 +162,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 LogSystem.Debug("ReloadModuleByInputData. 6");
                 this.LoadPrescriptionForEdit();
                 this.SetEnableButtonControl(this.actionType);
-                this.LoadData();
+                this.LoadDataDhstToControl();
                 this.isNotLoadMediMatyByMediStockInitForm = false;
                 this.IsHandlerWhileOpionGroupSelectedIndexChanged = false;
                 this.isNotLoadWhileChangeInstructionTimeInFirst = false;
@@ -329,6 +330,9 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             {
                 int heightUCTop = 0;
                 int heightUCBottom = 0;
+                Inventec.Desktop.Common.Modules.Module moduleData = GlobalVariables.currentModuleRaws.Where(o => o.ModuleLink == "HIS.Desktop.Plugins.AssignPrescriptionPK").FirstOrDefault();
+
+                var allowedModules = HisConfigCFG.MODULELINKS.Split(',');
 
                 if ((GlobalStore.IsTreatmentIn && !GlobalStore.IsCabinet) || GlobalStore.IsExecutePTTT)
                 {
@@ -337,9 +341,17 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                     heightUCBottom = lciUCBottomPanel.Height + 20;
                     heightUCTop = lciUCTopPanel.Height - 20;
 
-                    lciForchkSignForDPK.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
-                    lciForchkSignForDTT.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
-                    lciForchkSignForDDT.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Always;
+                    if (!string.IsNullOrWhiteSpace(HisConfigCFG.MODULELINKS) && moduleData != null && allowedModules.Contains(moduleData.ModuleLink))
+                    {
+                        layoutControlGroup9.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
+                    }
+                    else
+                    {
+                        layoutControlGroup9.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Always;
+                        lciForchkSignForDPK.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
+                        lciForchkSignForDTT.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
+                        lciForchkSignForDDT.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Always;
+                    }
                 }
                 else
                 {
@@ -350,15 +362,31 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
 
                     if (GlobalStore.IsCabinet)
                     {
-                        lciForchkSignForDPK.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
-                        lciForchkSignForDTT.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Always;
-                        lciForchkSignForDDT.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
+                        if (!string.IsNullOrWhiteSpace(HisConfigCFG.MODULELINKS) && moduleData != null && allowedModules.Contains(moduleData.ModuleLink))
+                        {
+                            layoutControlGroup9.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
+                        }
+                        else
+                        {
+                            layoutControlGroup9.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Always;
+                            lciForchkSignForDPK.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
+                            lciForchkSignForDTT.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Always;
+                            lciForchkSignForDDT.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
+                        }
                     }
                     else
                     {
-                        lciForchkSignForDPK.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Always;
-                        lciForchkSignForDTT.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
-                        lciForchkSignForDDT.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
+                        if (!string.IsNullOrWhiteSpace(HisConfigCFG.MODULELINKS) && moduleData != null && allowedModules.Contains(moduleData.ModuleLink))
+                        {
+                            layoutControlGroup9.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
+                        }
+                        else
+                        {
+                            layoutControlGroup9.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Always;
+                            lciForchkSignForDPK.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
+                            lciForchkSignForDTT.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Always;
+                            lciForchkSignForDDT.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
+                        }
                     }
                 }
                 this.lciUCBottomPanel.Height = heightUCBottom;

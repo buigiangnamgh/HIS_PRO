@@ -20,6 +20,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK
 {
     class RequestUriStore
     {
+        public const string HIS_DEPA_PATIENT_TYPE__GET = "api/HisDepaPatientType/Get";
+        internal const string HIS_TREATHER__CHECKSERVICE_fOLLOW = "api/HisTreatment/CheckServiceFollow";
 
         internal const string HIS_SERVICE_CONDITION_GET = "/api/HisServiceCondition/Get";
         internal const string HIS_SERVICE_REQ_GET_DYNAMIC = "api/HisServiceReq/GetDynamic";
@@ -110,5 +112,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK
         public const string HIS_MEDISTOCKDISDO_GET2 = "api/HisMediStock/GetDHisMediStock2";
 
         public const string HIS_PATIENT__GET_CARD_BALANCE = "api/HisPatient/GetCardBalance";
+
+        public const string HIS_MEDICINE_BEAN__GET_VIEW1 = "api/HisMedicineBean/GetView1";
     }
 }

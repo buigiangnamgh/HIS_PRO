@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+using DevExpress.XtraEditors;
 using DevExpress.XtraEditors.DXErrorProvider;
 using HIS.Desktop.LocalStorage.BackendData;
 using HIS.Desktop.LocalStorage.LocalData;
@@ -92,6 +93,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Edit
         protected long? HtuIdNotCheckAcinInteractive { get; set; }
         protected long? MedicineUseFormId { get; set; }
         protected string Tutorial { get; set; }
+        protected string HtuText { get; set; }
         protected bool IsExpend { get; set; }
         protected bool IsDisableExpend { get; set; }
         protected decimal? UseDays { get; set; }
@@ -151,6 +153,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Edit
             this.HtuIds = frmAssignPrescription.DataHtuList.Exists(o => o.IsChecked) ? frmAssignPrescription.DataHtuList.Where(o => o.IsChecked).Select(o => o.ID).ToList() : null;
             this.HtuIdNotCheckAcinInteractive = frmAssignPrescription.DataHtuList.Exists(o => o.IsChecked && o.CHECK_ACIN_INTERACTIVE != 1) ? (long?)frmAssignPrescription.DataHtuList.Where(o => o.IsChecked && o.CHECK_ACIN_INTERACTIVE != 1).OrderBy(o => o.NUM_ORDER).ToList()[0].ID : null;
             this.Tutorial = frmAssignPrescription.txtTutorial.Text.Trim();
+            this.HtuText = frmAssignPrescription.memHtu.Text.Trim();
             this.UseDays = frmAssignPrescription.spinSoLuongNgay.Value;
             if (!String.IsNullOrEmpty(frmAssignPrescription.spinSang.Text))
                 this.Sang = frmAssignPrescription.spinSang.Text;
@@ -249,6 +252,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Edit
                 medicineTypeSDO.BREATH_SPEED = this.BreathSpeed;
                 medicineTypeSDO.BREATH_TIME = this.BreathTime;
                 medicineTypeSDO.TUTORIAL = this.Tutorial;
+                medicineTypeSDO.HTU_TEXT = this.HtuText;
                 medicineTypeSDO.IsExpend = this.IsExpend;
                 medicineTypeSDO.MEDICINE_USE_FORM_ID = this.MedicineUseFormId;
                 medicineTypeSDO.HTU_IDs = this.HtuIds;
@@ -525,7 +529,14 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Edit
         {
             bool valid = true;
             try
-            {
+            {    
+                if (String.IsNullOrEmpty(this.HtuText))
+                {
+                    DialogResult result = XtraMessageBox.Show("Bắt buộc phải nhập cách dùng", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    valid = false;
+                    frmAssignPrescription.memHtu.Focus();
+                }
+
                 if (this.ServiceTypeId == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__THUOC
                     && String.IsNullOrEmpty(this.Tutorial) && !HisConfigCFG.IsNotAutoGenerateTutorial) //frmAssignPrescription.currentHisPatientTypeAlter.PATIENT_TYPE_ID == HisConfigCFG.PatientTypeId__BHYT
                 {
@@ -714,7 +725,14 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Edit
             {
                 try
                 {
-                    if (HisConfigCFG.IsAutoCreateSaleExpMest
+                    if ((HisConfigCFG.IsAutoCreateSaleExpMest == "1" || HisConfigCFG.IsAutoCreateSaleExpMest == "2")
+                        && (!GlobalStore.IsTreatmentIn || GlobalStore.IsCabinet)
+                        && this.frmAssignPrescription.cboNhaThuoc.EditValue != null
+                        && this.IS_OUT_HOSPITAL == 1)
+                    {
+                        return true;
+                    }
+                    if ((HisConfigCFG.IsAutoCreateSaleExpMest == "1" || HisConfigCFG.IsAutoCreateSaleExpMest == "2")
                         && (!GlobalStore.IsTreatmentIn || GlobalStore.IsCabinet)
                         && this.frmAssignPrescription.cboNhaThuoc.EditValue != null
                         && this.IS_OUT_HOSPITAL != 1)
@@ -733,6 +751,23 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Edit
                              + "__" + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => frmAssignPrescription.currentMedicineTypeADOForEdit.AMOUNT), frmAssignPrescription.currentMedicineTypeADOForEdit.AMOUNT)
                             );
                         Rectangle buttonBounds = new Rectangle(frmAssignPrescription.txtMediMatyForPrescription.Bounds.X, frmAssignPrescription.txtMediMatyForPrescription.Bounds.Y, frmAssignPrescription.txtMediMatyForPrescription.Bounds.Width, frmAssignPrescription.txtMediMatyForPrescription.Bounds.Height);
+                        
+                        bool isExceed = this.Amount > frmAssignPrescription.currentMedicineTypeADOForEdit.BK_AMOUNT
+                                        && (this.Amount - frmAssignPrescription.currentMedicineTypeADOForEdit.BK_AMOUNT + amountAdded) > (frmAssignPrescription.currentMedicineTypeADOForEdit.AMOUNT ?? 0);
+                        if (isExceed)
+                        {
+                            if (HisConfigCFG.IsExceedAvailableOutStock)
+                            {
+                                MessageBox.Show("Thuốc vật tư trong kho không đủ khả dụng");
+                                return false;
+                            }
+                            else
+                            {
+                                MessageBox.Show("Thuốc vật tư trong kho không đủ khả dụng. Bạn vẫn có thể kê đơn vượt tồn theo cấu hình.");
+                                return true;
+                            }
+                        }
+
                         if (this.Amount > frmAssignPrescription.currentMedicineTypeADOForEdit.BK_AMOUNT && (this.Amount - frmAssignPrescription.currentMedicineTypeADOForEdit.BK_AMOUNT + amountAdded) > (frmAssignPrescription.currentMedicineTypeADOForEdit.AMOUNT ?? 0))
                         {
                             MessageBox.Show("Thuốc vật tư trong kho không đủ khả dụng");
@@ -874,6 +909,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Edit
                 medicineTypeSDO__Category__SameMediAcin.Chieu = this.Chieu;
                 medicineTypeSDO__Category__SameMediAcin.Toi = this.Toi;
                 medicineTypeSDO__Category__SameMediAcin.TUTORIAL = this.Tutorial;
+                medicineTypeSDO__Category__SameMediAcin.HTU_TEXT = this.HtuText;
                 //UpdateUseTimeInDataRow(medicineTypeSDO__Category__SameMediAcin);
                 //medicineTypeSDO__Category__SameMediAcin.IsOutKtcFee = this.IsOutKtcFee;
                 //medicineTypeSDO__Category__SameMediAcin.IsStent = this.IsStent;
@@ -909,6 +945,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Edit
                 medicineTypeSDO__Category__SameMediAcin.Chieu = this.Chieu;
                 medicineTypeSDO__Category__SameMediAcin.Toi = this.Toi;
                 medicineTypeSDO__Category__SameMediAcin.TUTORIAL = this.Tutorial;
+                medicineTypeSDO__Category__SameMediAcin.HTU_TEXT = this.HtuText;
                 UpdateUseTimeInDataRow(medicineTypeSDO__Category__SameMediAcin);
                 medicineTypeSDO__Category__SameMediAcin.IsOutKtcFee = this.IsOutKtcFee;
                 medicineTypeSDO__Category__SameMediAcin.IsStent = this.IsStent;
@@ -946,6 +983,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Edit
                 medicineTypeSDO__Category__SameMediAcin.Chieu = this.Chieu;
                 medicineTypeSDO__Category__SameMediAcin.Toi = this.Toi;
                 medicineTypeSDO__Category__SameMediAcin.TUTORIAL = this.Tutorial;
+                medicineTypeSDO__Category__SameMediAcin.HTU_TEXT = this.HtuText;
                 UpdateUseTimeInDataRow(medicineTypeSDO__Category__SameMediAcin);
                 medicineTypeSDO__Category__SameMediAcin.IsOutKtcFee = this.IsOutKtcFee;
                 medicineTypeSDO__Category__SameMediAcin.IsStent = this.IsStent;

@@ -116,6 +116,9 @@
     <Reference Include="HIS.Desktop.LocalStorage.BackendData">
       <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.Desktop.LocalStorage.BackendData.dll</HintPath>
     </Reference>
+    <Reference Include="HIS.Desktop.MIMS.Integration">
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.Desktop.MIMS.Integration.dll</HintPath>
+    </Reference>
     <Reference Include="HIS.Desktop.Plugins.Library.AlertWarningFee">
       <HintPath>..\..\..\..\..\..\RELEASE\HIS\HIS.Desktop.Plugins.Library.AlertWarningFee\HIS.Desktop.Plugins.Library.AlertWarningFee.dll</HintPath>
     </Reference>
@@ -124,6 +127,9 @@
     </Reference>
     <Reference Include="HIS.Desktop.Plugins.Library.ConnectBloodPressure">
       <HintPath>..\..\..\..\..\..\RELEASE\HIS\HIS.Desktop.Plugins.Library.ConnectBloodPressure\HIS.Desktop.Plugins.Library.ConnectBloodPressure.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.Plugins.Library.ConnectWhoCnd">
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.Desktop.Plugins.Library.ConnectWhoCnd.dll</HintPath>
     </Reference>
     <Reference Include="HIS.Desktop.Plugins.Library.DrugInterventionInfo">
       <HintPath>..\..\..\..\..\..\RELEASE\HIS\HIS.Desktop.Plugins.Library.DrugInterventionInfo\HIS.Desktop.Plugins.Library.DrugInterventionInfo.dll</HintPath>
@@ -477,13 +483,17 @@
   <ItemGroup />
   <ItemGroup>
     <Compile Include="ADO\AdviseFormADO.cs" />
+    <Compile Include="ADO\AISuggestionData.cs" />
+    <Compile Include="ADO\AlertLogADO.cs" />
     <Compile Include="ADO\ConfigADO.cs" />
     <Compile Include="ADO\DMediStock1ADO.cs" />
     <Compile Include="ADO\HtuADO.cs" />
     <Compile Include="ADO\ICDADO.cs" />
     <Compile Include="ADO\IcdCheckADO.cs" />
     <Compile Include="ADO\IcdServiceADO.cs" />
+    <Compile Include="ADO\LoaiPhieuInADO.cs" />
     <Compile Include="ADO\MedicineAcinInteractiveWarnADO.cs" />
+    <Compile Include="ADO\MediMatySuggestionsADO.cs" />
     <Compile Include="ADO\MediMatyTypeADO.cs" />
     <Compile Include="ADO\MediStockADO.cs" />
     <Compile Include="ADO\MissingIcdADO.cs" />
@@ -492,6 +502,7 @@
     <Compile Include="ADO\PresMedicineADO.cs" />
     <Compile Include="ADO\RoomExamADO.cs" />
     <Compile Include="ADO\StringUtil.cs" />
+    <Compile Include="ADO\SuggestPrescriptionsInfoADO.cs" />
     <Compile Include="ADO\ThoiDiemADO.cs" />
     <Compile Include="ADO\threadMedicineADO.cs" />
     <Compile Include="ADO\TrackingADO.cs" />
@@ -785,6 +796,12 @@
     <Compile Include="Save\Update\SaveUpdateBehavior.cs" />
     <Compile Include="Save\Update\SaveUpdateBehavior__In.cs" />
     <Compile Include="Save\Update\SaveUpdateBehavior__Out.cs" />
+    <Compile Include="SuggestPrescriptionsInfo\frmSuggestPrescriptionsInfo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SuggestPrescriptionsInfo\frmSuggestPrescriptionsInfo.Designer.cs">
+      <DependentUpon>frmSuggestPrescriptionsInfo.cs</DependentUpon>
+    </Compile>
     <Compile Include="Util\ConvertNumber.cs" />
     <Compile Include="Util\DateTimeUtil.cs" />
     <Compile Include="Util\IcdUtil.cs" />
@@ -886,6 +903,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MixedInfusion\frmMixedInfusion.resx">
       <DependentUpon>frmMixedInfusion.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SuggestPrescriptionsInfo\frmSuggestPrescriptionsInfo.resx">
+      <DependentUpon>frmSuggestPrescriptionsInfo.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx" />

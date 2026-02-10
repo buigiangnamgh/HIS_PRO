@@ -42,6 +42,9 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
         {
             try
             {
+                Inventec.Desktop.Common.Modules.Module moduleData = GlobalVariables.currentModuleRaws.Where(o => o.ModuleLink == "HIS.Desktop.Plugins.AssignPrescriptionPK").FirstOrDefault();
+
+                var allowedModules = HisConfigCFG.MODULELINKS.Split(',');
                 LogSystem.Debug("InitMultipleThread => 1");
                 int heightUCTop = 0;
                 int heightUCBottom = 0;
@@ -50,11 +53,13 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 this.currentIcds = BackendDataWorker.Get<HIS_ICD>().Where(o => o.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE && o.IS_TRADITIONAL != 1).OrderBy(o => o.ICD_CODE).ToList();
                 this.currentTranditionalIcds = BackendDataWorker.Get<HIS_ICD>().Where(o => o.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE && o.IS_TRADITIONAL == 1).OrderBy(o => o.ICD_CODE).ToList();
                 VisibleLayoutSubIcd(HisConfigCFG.OptionSubIcdWhenFinish == "3");
+                LogSystem.Debug("InitMultipleThread => 2");
                 UCIcdInit();
                 UCIcdCauseInit();
                 UcDateInit();
                 InitUcIcdYhct();
                 InitUcSecondaryIcdYhct();
+                LogSystem.Debug("InitMultipleThread => 3");
                 if (HisConfigCFG.IsUsingServiceTime
                     && !GlobalStore.IsTreatmentIn
                     && !GlobalStore.IsExecutePTTT)
@@ -64,45 +69,71 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 }
 
                 InitControlState();
-
+                LogSystem.Debug("InitMultipleThread => 4");
                 if ((GlobalStore.IsTreatmentIn && !GlobalStore.IsCabinet) || GlobalStore.IsExecutePTTT)
                 {
                     this.InitUCPatientSelect();
+                    LogSystem.Debug("InitMultipleThread => 5");
                     this.InitUCPeriousExpMestList();
+                    LogSystem.Debug("InitMultipleThread => 6");
                     heightUCBottom = lciUCBottomPanel.Height + 20;
                     heightUCTop = lciUCTopPanel.Height - 20;
                     //heightUCTop = lciUCTopPanel.Height - 200;
                     //heightUCBottom = lciUCBottomPanel.Height + 200;
-
-                    lciForchkSignForDPK.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
-                    lciForchkSignForDTT.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
-                    lciForchkSignForDDT.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Always;
+                    if (!string.IsNullOrWhiteSpace(HisConfigCFG.MODULELINKS) && moduleData != null && allowedModules.Contains(moduleData.ModuleLink))
+                    {
+                        layoutControlGroup9.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
+                        chkSignForDPK.Checked = false;
+                        chkSignForDTT.Checked = false;
+                        chkSignForDDT.Checked = false;
+                    }
+                    else
+                    {
+                        lciForchkSignForDPK.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
+                        lciForchkSignForDTT.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
+                        lciForchkSignForDDT.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Always;
+                    }
                 }
                 else
                 {
                     this.InitUCPeriousExpMestList();
+                    LogSystem.Debug("InitMultipleThread => 7");
                     this.InitUcTreatmentFinish();
+                    LogSystem.Debug("InitMultipleThread => 8");
                     heightUCBottom = lciUCBottomPanel.Height + 20;
                     heightUCTop = lciUCTopPanel.Height - 20;
-
-                    if (GlobalStore.IsCabinet)
+                    if (!string.IsNullOrWhiteSpace(HisConfigCFG.MODULELINKS) && moduleData != null && allowedModules.Contains(moduleData.ModuleLink))
                     {
-                        lciForchkSignForDPK.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
-                        lciForchkSignForDTT.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Always;
-                        lciForchkSignForDDT.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
+                        layoutControlGroup9.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
+                        chkSignForDPK.Checked = false;
+                        chkSignForDTT.Checked = false;
+                        chkSignForDDT.Checked = false;
                     }
                     else
                     {
-                        lciForchkSignForDPK.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Always;
-                        lciForchkSignForDTT.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
-                        lciForchkSignForDDT.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
+                        if (GlobalStore.IsCabinet)
+                        {
+                            lciForchkSignForDPK.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
+                            lciForchkSignForDTT.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Always;
+                            lciForchkSignForDDT.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
+                        }
+                        else
+                        {
+                            lciForchkSignForDPK.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Always;
+                            lciForchkSignForDTT.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
+                            lciForchkSignForDDT.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
+                        }
                     }
                 }
+                if(string.IsNullOrEmpty(HisConfigCFG.SuggestPrescriptionsInfo))
+                    layoutControlItem44.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
+                else
+                    layoutControlItem44.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Always;
                 //this.lciUCBottomPanel.MinSize = new System.Drawing.Size(this.lciUCBottomPanel.Width, heightUCBottom);//110
                 //this.lciUCBottomPanel.Height = heightUCBottom;
                 //this.lciUCTopPanel.Height = heightUCTop;
                 Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => heightUCTop), heightUCTop) + "____" + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => heightUCBottom), heightUCBottom));
-                LogSystem.Debug("InitMultipleThread => 2");
+                LogSystem.Debug("InitMultipleThread => 9");
             }
             catch (Exception ex)
             {
@@ -149,8 +180,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
 
                 ado.DelegateGetStoreStateValue = GetStateTratmentFinishCheck;
                 ado.DelegateSetStoreStateValue = SetStateTratmentFinishCheck;
-
-                this.ucTreatmentFinish = (UserControl)this.treatmentFinishProcessor.Run(ado, "01");
+                string PatientTypeBHYT = Config.HisConfigCFG.PatientTypeCode__BHYT;
+                this.ucTreatmentFinish = (UserControl)this.treatmentFinishProcessor.Run(ado, PatientTypeBHYT);
                 if (this.ucTreatmentFinish != null)
                 {
                     this.pnlUCPanelRightBottom.Controls.Clear();
@@ -371,7 +402,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             return mainCode;
         }
 
-        private void SetDefaultUC()
+        private async Task SetDefaultUC()
         {
             try
             {
@@ -382,7 +413,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                     if (HisConfigCFG.IsUsingServiceTime)
                     {
                         //Lay gio server
-                        TimerSDO timeSync = new BackendAdapter(new CommonParam()).Get<TimerSDO>(AcsRequestUriStore.ACS_TIMER__SYNC, ApiConsumers.AcsConsumer, 1, new CommonParam());
+                        TimerSDO timeSync = await new BackendAdapter(new CommonParam()).GetAsync<TimerSDO>(AcsRequestUriStore.ACS_TIMER__SYNC, ApiConsumers.AcsConsumer, 1, new CommonParam());
                         Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => timeSync), timeSync));
                         if (timeSync != null)
                         {

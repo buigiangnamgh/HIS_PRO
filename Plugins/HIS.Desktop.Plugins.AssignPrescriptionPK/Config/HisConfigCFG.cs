@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+using DevExpress.XtraCharts.Native;
 using HIS.Desktop.LocalStorage.BackendData;
 using HIS.Desktop.LocalStorage.HisConfig;
 using HIS.Desktop.LocalStorage.LocalData;
@@ -26,8 +27,16 @@ using System.Linq;
 
 namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Config
 {
-    public class HisConfigCFG
+    class HisConfigCFG
     {
+        private const string CONFIG_KEY__IS_CHECK_PREVIOUS_PRESCRIPTION_DETAIL = "HIS.Desktop.Plugins.AssignPrescriptionPK.IsCheckPreviousPrescriptionDetail";      
+        private const string CONFIG_KEY__TREATMENT_FINISH_WARNING_HEIN_PATIENT_TYPE_CODE = "HIS.Desktop.Plugins.TreatmentFinish.WarningHeinPatientTypeCode";      
+        private const string CONFIG_KEY__MOS_MEDICINE_MATERIAL_USE_PAYMENT_OBJECT_BY_DEPT = "MOS.MEDICINE_MATERIAL.USE_PAYMENT_OBJECT_BY_DEPT";
+        private const string CONFIG_KEY__HIS_ICD_SERVICE__HAS_REQUIRE__PATIENT_BHYT = "HIS.HIS_ICD_SERVICE.HAS_REQUIRE.PATIENT.BHYT";
+        private const string CONFIG_KEY__IsCheckServiceFollwWhenOut = "HIS.Desktop.Plugins.IsCheckServiceFollowWhenOut";
+        private const string CONFIG_KEY__SuggestPrescriptionsInfo = "HIS.Desktop.AI.SuggestPrescriptionsInfo";
+        private const string IS_ALLOW_SIGNATURE_PRINT_MODULELINKS = "HIS.Desktop.Plugins.IsAllowSignaturePrint.ModuleLinks";
+        private const string CONFIG_KEY__ASSIGNPRESCRIPTION_EGFROPTION = "HIS.Desktop.Plugins.AssignPrescription.EgfrOption";   
         private const string CONFIG_KEY__ICD_SERVICE__CONTRAINDICATED__WARNING_OPTION = "HIS.ICD_SERVICE.CONTRAINDICATED.WARNING_OPTION";
         private const string CONFIG_KEY__TrackingCreate__UpdateTreatmentIcd = "HIS.Desktop.Plugins.TrackingCreate.UpdateTreatmentIcd";
         private const string CONFIG_KEY__HIS_SERVICE_REQ__DO_NOT_ALLOW_PRES_OUT_PATIENT_IN_CASE_OF_HAVING_DEBT = "MOS.HIS_SERVICE_REQ.DO_NOT_ALLOW_PRES_OUT_PATIENT_IN_CASE_OF_HAVING_DEBT";
@@ -115,9 +124,6 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Config
 
         private const string IS_CHECK_DEPARTMENT_IN_TIME_WHEN_PRES_OR_ASSIGN = "HIS.Desktop.Plugins.IsCheckDepartmentInTimeWhenPresOrAssign";
 
-        private const string CONFIG_KEY__MPS_PrintPrescription = "HIS.Desktop.Plugins.Library.PrintPrescription.Mps";
-        internal static string MPS_PrintPrescription;
-
         public const string CONFIG_KEY__MestRoomOption = "MOS.HIS_SERVICE_REQ.PRESCRIPTION.MEST_ROOM_OPTION";
 
         public const string CONFIG_KEY__DefaultPatientTypeOption = "HIS.Desktop.Plugins.Assign.DefaultPatientTypeOption";
@@ -129,9 +135,6 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Config
         internal static bool IsFormClosingOption;
 
         private const string CONFIG_KEY__ModuleLinkApply = "HIS.Desktop.FormClosingOption.ModuleLinkApply";
-
-        private const string CONFIG_KEY__IS_ALLOW_PRINT_NO_MEDICINE = "HIS.Desktop.Plugins.ExamServiceReqExecute.IsAllowPrintNoMedicinePrescription";
-        internal static bool IsAllowPrintNoMedicine;
 
         private const string CONFIG_KEY__ICD_CODE_TO_APPLY_RESTRICT_PATIENT_TYPE_BY_OTHER_SOURCE_PAID = "MOS.HIS_SERVICE_REQ.ICD_CODE_TO_APPLY_RESTRICT_PATIENT_TYPE_BY_OTHER_SOURCE_PAID";
         private const string CONFIG_KEY__ShowPresAmount = "HIS.Desktop.Plugins.AssignPrescriptionPK.ShowPresAmount";
@@ -148,13 +151,25 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Config
         private const string KEY_TreatmentEndTypeIsTransfer = "HIS.Desktop.Plugins.TreatmentFinish.TreatmentEndTypeIsTransfer";
         private const string KEY_TuberculosisOption = "HIS.Desktop.Plugins.AssignPrescriptionPK.TuberculosisOption";
         private const string KEY_ASSIGN_SERVICE_SIMULTANEITY_OPTION = "MOS.HIS_SERVICE_REQ.ASSIGN_SERVICE_SIMULTANEITY_OPTION";
+        private const string KEY_IsCheckValueMaxlengthOption = "HIS.Desktop.Plugins.TreatmentFinish.IsCheckValueMaxlengthOption";
+        private const string KEY_ASSIGN_SIMULTANEITY_OPTION = "MOS.HIS_SERVICE_REQ.ASSIGN_SIMULTANEITY_OPTION";
         private const string KEY_CheckSoNgay = "His.Desktop.Plugins.AssignPrescriptionPK.CheckSoNgay";
         private const string KEY_IsCheckSubIcdExceedLimit = "HIS.Desktop.Plugins.IsCheckSubIcdExceedLimit";
-        private const string KEY_IsRequiredHtu = "HIS.Desktop.Plugins.AssignPrescription.IsRequiredHtu";
+        private const string KEY_IsRequiredHtu = "HIS.Desktop.Plugins.AssignPrescription.IsRequiredHtu"; 
+        private const string KEY_SaveButtonOption = "HIS.Desktop.Plugins.AssignPrescriptionPK.SaveButtonOption";
+        private const string KEY_ALLOW_ASSIGN_OFF_LIST_MEDICINE_MATERIAL__HEIN_CARD_NUMBER_PREFIX = "MOS.BHYT.ALLOW_ASSIGN_OFF_LIST_MEDICINE_MATERIAL__HEIN_CARD_NUMBER_PREFIX";
+        private const string KEY_HIS_DESKTOP_PLUGINS_ASSIGNPRESCRIPTION_ALLOWKIDNEYPRESOUTPATIENT = "HIS.Desktop.Plugins.AssignPrescription.AllowKidneyPresOutPatient";
+        internal const string TUTORIAL_FORMAT_DAY = "HIS.Desktop.Plugins.AssignPrescription.TutorialFormatSoNgay";
+        private const string KEY_WARNING_OVER_TRANSFER = "HIS.Desktop.Plugins.RegisterV2.WarningOverMonthsTransfer";
+
+        internal static string AllowKidneyPresOutPatient;
+        internal static string AllowAssignOffListMedicineMaterialHeinCardNumberPrefix;
+        internal static string IsSaveButtonOption;
         internal static string IsRequiredHtu;
         internal static string IsCheckSubIcdExceedLimit;
-        internal static long? CheckSoNgay;
+        internal static bool CheckSoNgay;
         internal static string ASSIGN_SERVICE_SIMULTANEITY_OPTION;
+        internal static string ASSIGN_SIMULTANEITY_OPTION;
         internal static string TuberculosisOption;
         internal static string OptionTreatmentEndTypeIsTransfer;
         internal static string InstructionTimeServiceMustBeGreaterThanStartTimeExam;
@@ -166,7 +181,14 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Config
         internal static string AcinInteractiveOption;
         internal static string OptionSubIcdWhenFinish;
         internal static bool IsServiceReqIcdOption;
+        internal static string IsCheckValueMaxlengthOption;
         internal static string ModuleLinkApply;
+        internal static string MODULELINKS;
+        internal static string ASSIGNPRESCRIPTION_EGFROPTION;
+        internal static string SuggestPrescriptionsInfo;
+        internal static string IsCheckServiceFollowWhenOut;
+        internal static string HisIcdServiceHasRequirePatientBhyt;
+
         /// <summary>
         /// :Có tự động focus vào ô lời dặn không. 1-có, 0-không
         ///Mặc định= 0
@@ -206,7 +228,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Config
         ///+ 1 dòng là số lượng phần bù, và có đánh dấu là IsNotPres = true
         /// </summary>
         internal static string SplitOffset;
-        internal static bool IsTrackingRequired;
+        internal static string IsTrackingRequired;
 
         /// <summary>
         /// 1: Tự động làm tròn căn cứ theo đơn vị quy đổi. Trong trường hợp kê thuốc/vật tư theo đơn vị quy đổi và tỷ lệ quy đổi > 1 , thì tự động làm tròn để tính ra số lượng theo đơn vị gốc luôn là số nguyên. 0: Không tự động
@@ -231,7 +253,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Config
         internal static bool IsDontPresExpiredTime;
         internal static string DefaultDrugStoreCode;//Se bo sau
         internal static string IsUsingWarningHeinFee;
-        internal static bool IsAutoCreateSaleExpMest;
+        internal static string IsAutoCreateSaleExpMest;
         internal static bool IsAutoTickExpendWithAssignPresPTTT;
         internal static bool IsNotAllowingExpendWithoutHavingParent;
         public static int AmountDecimalNumber { get; set; }
@@ -295,6 +317,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Config
         /// </summary>
         internal static long TutorialFormat;
 
+        internal static long TutorialFormatDay;
+
         internal static string MedicineHasPaymentLimitBHYT;
         internal static bool IsCheckPreviousPrescription;
 
@@ -332,6 +356,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Config
         internal static List<long> autoFinishServiceIds;
         internal static string BlockingInteractiveGrade;
         internal static bool IsloadIcdFromExamServiceExecute;
+        internal static string UsePaymentObjectByDept;
 
         /// <summary>
         /// Cấu hình cho phép kê thuốc/vật tư theo lô hoặc theo loại. Đăt 1: cho phép kê theo lô. Đặt khác 1: kê theo loại.
@@ -408,6 +433,9 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Config
         internal static bool IsReasonRequired;
 
         internal static string IcdCodeToApplyRestrictPatientTypeByOtherSourcePaid;
+        internal static string WarningHeinPatientTypeCode;
+        internal static string WarningOverTransfer;
+        internal static string CheckPreviousPrescriptionDetail;
 
         static MOS.EFMODEL.DataModels.HIS_PATIENT_TYPE GetPatientTypeByCode(string code)
         {
@@ -443,18 +471,21 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Config
         {
             try
             {
+                CheckPreviousPrescriptionDetail = GetValue(CONFIG_KEY__IS_CHECK_PREVIOUS_PRESCRIPTION_DETAIL);
+                WarningHeinPatientTypeCode = GetValue(CONFIG_KEY__TREATMENT_FINISH_WARNING_HEIN_PATIENT_TYPE_CODE);
+                UsePaymentObjectByDept = GetValue(CONFIG_KEY__MOS_MEDICINE_MATERIAL_USE_PAYMENT_OBJECT_BY_DEPT);
+                HisIcdServiceHasRequirePatientBhyt = GetValue(CONFIG_KEY__HIS_ICD_SERVICE__HAS_REQUIRE__PATIENT_BHYT);
+                IsCheckServiceFollowWhenOut = GetValue(CONFIG_KEY__IsCheckServiceFollwWhenOut);    
+                SuggestPrescriptionsInfo = GetValue(CONFIG_KEY__SuggestPrescriptionsInfo);
+                ASSIGNPRESCRIPTION_EGFROPTION = GetValue(CONFIG_KEY__ASSIGNPRESCRIPTION_EGFROPTION);
+                MODULELINKS = GetValue(IS_ALLOW_SIGNATURE_PRINT_MODULELINKS);
+                AllowAssignOffListMedicineMaterialHeinCardNumberPrefix = GetValue(KEY_ALLOW_ASSIGN_OFF_LIST_MEDICINE_MATERIAL__HEIN_CARD_NUMBER_PREFIX);
+                IsSaveButtonOption = GetValue(KEY_SaveButtonOption);
                 IsRequiredHtu = GetValue(KEY_IsRequiredHtu);
                 IsCheckSubIcdExceedLimit = GetValue(KEY_IsCheckSubIcdExceedLimit);
-                string soNgay = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(KEY_CheckSoNgay);// GetValue(KEY_CheckSoNgay);
-                if (!String.IsNullOrWhiteSpace(soNgay))
-                {
-                    CheckSoNgay = Inventec.Common.TypeConvert.Parse.ToInt64(soNgay);
-                }
-                else
-                {
-                    CheckSoNgay = null;
-                }
+                CheckSoNgay = GetValue(KEY_CheckSoNgay) == GlobalVariables.CommonStringTrue;
                 ASSIGN_SERVICE_SIMULTANEITY_OPTION = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(KEY_ASSIGN_SERVICE_SIMULTANEITY_OPTION);
+                ASSIGN_SIMULTANEITY_OPTION = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(KEY_ASSIGN_SIMULTANEITY_OPTION);
                 TuberculosisOption = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(KEY_TuberculosisOption);
                 OptionTreatmentEndTypeIsTransfer = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(KEY_TreatmentEndTypeIsTransfer);
                 InstructionTimeServiceMustBeGreaterThanStartTimeExam = GetValue(KEY__InstructionTimeServiceMustBeGreaterThanStartTimeExam);
@@ -462,6 +493,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Config
                 ExecuteRoomPaymentOption = GetValue(KEY__EXECUTE_ROOM_PAYMENT_OPTION);
                 MustChooseSeviceExamOption = GetValue(KEY__MustChooseSeviceExam);
                 CheckIcdWhenSave = GetValue(CHECK_ICD_WHEN_SAVE);
+                IsCheckValueMaxlengthOption = GetValue(KEY_IsCheckValueMaxlengthOption);
                 IsShowServerTimeByDefault = GetValue(CONFIG__ShowServerTimeByDefault) == GlobalVariables.CommonStringTrue;
                 IsDrugStoreComboboxOption = GetValue(CONFIG__DrugStoreComboboxOption) == GlobalVariables.CommonStringTrue;
                 AcinInteractiveOption = GetValue(CONFIG__AcinInteractiveOption);
@@ -504,7 +536,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Config
                 {
                     WarningOptionWhenExceedingMaxOfAppointmentDays = null;
                 }
-                IsTrackingRequired = GetValue(CONFIG_KEY__MOS_HIS_SERVICE_REQ_PRESCRIPTION_IS_TRACKING_REQUIRED) == GlobalVariables.CommonStringTrue;
+                IsTrackingRequired = GetValue(CONFIG_KEY__MOS_HIS_SERVICE_REQ_PRESCRIPTION_IS_TRACKING_REQUIRED);
                 BhytColorCode = GetValue(CONFIG_KEY__BhytColorCode);
                 UserMustHaveDiploma = GetValue(CONFIG_KEY__MOS_HIS_SERVICE_REQ_REQ_USER_MUST_HAVE_DIPLOMA) == GlobalVariables.CommonStringTrue;
                 IsShowingInTheSameDepartment = GetValue(CONFIG_KEY__IsShowingInTheSameDepartment) == GlobalVariables.CommonStringTrue;
@@ -517,7 +549,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Config
                 ManyDayPrescriptionOption = Inventec.Common.TypeConvert.Parse.ToInt64(GetValue(CONFIG_KEY__MOS_HIS_SERVICE_REQ_MANY_DAYS_PRESCRIPTION_OPTION));
                 IsAllowAssignPresByPackage = GetValue(CONFIG_KEY__IsAllowAssignPresByPackage) == GlobalVariables.CommonStringTrue;
                 IsloadIcdFromExamServiceExecute = GetValue(CONFIG_KEY__IsloadIcdFromExamServiceExecute) == GlobalVariables.CommonStringTrue;
-                IsAutoCreateSaleExpMest = GetValue(CONFIG_KEY__IS_AUTO_CREATE_SALE_EXP_MEST) == GlobalVariables.CommonStringTrue;
+                //IsAutoCreateSaleExpMest = GetValue(CONFIG_KEY__IS_AUTO_CREATE_SALE_EXP_MEST) == GlobalVariables.CommonStringTrue;
+                IsAutoCreateSaleExpMest = GetValue(CONFIG_KEY__IS_AUTO_CREATE_SALE_EXP_MEST);
                 IsAutoTickExpendWithAssignPresPTTT = GetValue(CONFIG_KEY__IsAutoTickExpendWithAssignPresPTTT) == GlobalVariables.CommonStringTrue;
                 icdServiceHasCheck = Inventec.Common.TypeConvert.Parse.ToInt64(GetValue(ICD_SERVICE__HAS_CHECK));
                 icdServiceHasRequireCheck = GetValue(ICD_SERVICE__HAS_REQUIRE_CHECK) == GlobalVariables.CommonStringTrue;
@@ -579,7 +612,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Config
                 InitWarningOverCeiling();
 
                 TutorialFormat = Inventec.Common.TypeConvert.Parse.ToInt64(GetValue(TUTORIAL_FORMAT));
-
+                TutorialFormatDay = Inventec.Common.TypeConvert.Parse.ToInt64(GetValue(TUTORIAL_FORMAT_DAY));
                 IsWarningOverTotalPatientPrice = GetValue(WARNING_OVER_TOTAL_PATIENT_PRICE__IS_CHECK) == GlobalVariables.CommonStringTrue;
                 WarningOverTotalPatientPrice = Inventec.Common.TypeConvert.Parse.ToDecimal(GetValue(WARNING_OVER_TOTAL_PATIENT_PRICE));
                 IsWarringUseDayAndExpTimeBHYT = GetValue(WARRING_USE_DAY_AND_EXP_TIME_BHYT) == GlobalVariables.CommonStringTrue;
@@ -597,12 +630,12 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Config
                 IsCheckDepartmentInTimeWhenPresOrAssign = (GetValue(IS_CHECK_DEPARTMENT_IN_TIME_WHEN_PRES_OR_ASSIGN) == "1");
                 MestRoomOption = Inventec.Common.TypeConvert.Parse.ToInt64(GetValue(CONFIG_KEY__MestRoomOption));
                 DefaultPatientTypeOption = (GetValue(CONFIG_KEY__DefaultPatientTypeOption) == "1");
+                AllowKidneyPresOutPatient = GetValue(KEY_HIS_DESKTOP_PLUGINS_ASSIGNPRESCRIPTION_ALLOWKIDNEYPRESOUTPATIENT);
 
                 GroupOption = (GetValue(CONFIG_KEY__GroupOption) == "1");
                 IsReasonRequired = (GetValue(CONFIG_KEY__IS_REASON_REQUIRED) == "1");
                 IcdCodeToApplyRestrictPatientTypeByOtherSourcePaid = GetValue(CONFIG_KEY__ICD_CODE_TO_APPLY_RESTRICT_PATIENT_TYPE_BY_OTHER_SOURCE_PAID);
-                MPS_PrintPrescription = GetValue(CONFIG_KEY__MPS_PrintPrescription);
-                IsAllowPrintNoMedicine = GetValue(CONFIG_KEY__IS_ALLOW_PRINT_NO_MEDICINE) == GlobalVariables.CommonStringTrue;
+                WarningOverTransfer = GetValue(KEY_WARNING_OVER_TRANSFER);
             }
             catch (Exception ex)
             {

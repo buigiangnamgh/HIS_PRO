@@ -15,8 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+using AutoMapper;
 using DevExpress.Utils;
 using DevExpress.XtraBars;
+using DevExpress.XtraCharts.Native;
 using DevExpress.XtraEditors;
 using DevExpress.XtraEditors.DXErrorProvider;
 using HIS.Desktop.ADO;
@@ -45,6 +47,7 @@ using Inventec.Core;
 using Inventec.Desktop.Common.Message;
 using MOS.EFMODEL.DataModels;
 using MOS.Filter;
+using MOS.LibraryHein.Bhyt.HeinRightRouteType;
 using MOS.SDO;
 using System;
 using System.Collections.Generic;
@@ -53,7 +56,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-//using System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
+
 
 namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
 {
@@ -403,6 +406,201 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             return result;
         }
 
+        private string AppendIcd(string icdMain, string oldValue, string newValue)
+        {
+           if (icdMain != null)
+                icdMain = icdMain.Trim();
+
+            if (oldValue != null)
+                oldValue = oldValue.Trim();
+
+            if (newValue != null)
+                newValue = newValue.Trim();
+
+            // Không có ICD phụ mới → giữ nguyên
+            if (string.IsNullOrEmpty(newValue))
+                return oldValue ?? icdMain ?? "";
+
+            // Không có ICD phụ cũ → nối ICD chính + mới
+            if (string.IsNullOrEmpty(oldValue))
+                return (icdMain ?? "") + ";" + newValue;
+
+            // Đủ cả 3: ICD chính ; ICD phụ cũ ; ICD phụ mới
+            return (icdMain ?? "") + ";" + oldValue + ";" + newValue;
+        }
+
+        //huannh bổ sung Cảnh báo đơn thuốc nếu vượt số tiền
+        private bool CheckMaxPrescriptionAmount(List<MediMatyTypeADO> serviceCheckeds__Send)
+        {
+            bool result = true;
+            try
+            {
+                if (serviceCheckeds__Send == null || serviceCheckeds__Send.Count == 0)
+                    return result;
+
+                // Lấy thông tin HIS_TREATMENT_TYPE theo TDL_TREATMENT_TYPE_ID của TREATMENT hiện tại
+                if (this.currentHisPatientTypeAlter == null || this.currentHisPatientTypeAlter.TREATMENT_TYPE_ID <= 0)
+                    return result;
+
+                // Lấy thông tin HIS_TREATMENT_TYPE từ BackendData hoặc gọi API
+                CommonParam param = new CommonParam();
+                HisTreatmentTypeFilter treatmentTypeFilter = new HisTreatmentTypeFilter();
+                treatmentTypeFilter.ID = this.currentHisPatientTypeAlter.TREATMENT_TYPE_ID;
+
+                var treatmentTypes = new BackendAdapter(param)
+                    .Get<List<HIS_TREATMENT_TYPE>>("api/HisTreatmentType/Get", ApiConsumers.MosConsumer, treatmentTypeFilter, param);
+
+                if (treatmentTypes == null || treatmentTypes.Count == 0)
+                    return result;
+
+                HIS_TREATMENT_TYPE treatmentType = treatmentTypes.FirstOrDefault();
+
+                // Kiểm tra có cấu hình MAX_PRESCRIPTION_AMOUNT không
+                if (treatmentType.MAX_PRESCRIPTION_AMOUNT == null || treatmentType.MAX_PRESCRIPTION_AMOUNT <= 0)
+                    return result;
+
+                // Kiểm tra có cấu hình MAX_PRESCRIPTION_AMOUNT_OPTION không
+                if (treatmentType.MAX_PRESCRIPTION_AMOUNT_OPTION == null || treatmentType.MAX_PRESCRIPTION_AMOUNT_OPTION <= 0)
+                    return result;
+
+                // Tính tổng tiền của đơn thuốc người dùng kê
+                decimal totalPrescriptionAmount = 0;
+                foreach (var item in serviceCheckeds__Send)
+                {
+                    totalPrescriptionAmount += item.TotalPrice;
+                }
+
+                Inventec.Common.Logging.LogSystem.Debug(
+                    "CheckMaxPrescriptionAmount: " +
+                    "TotalPrescriptionAmount=" + totalPrescriptionAmount +
+                    ", MAX_PRESCRIPTION_AMOUNT=" + treatmentType.MAX_PRESCRIPTION_AMOUNT +
+                    ", MAX_PRESCRIPTION_AMOUNT_OPTION=" + treatmentType.MAX_PRESCRIPTION_AMOUNT_OPTION);
+
+                // So sánh tổng tiền với giới hạn
+                if (totalPrescriptionAmount > treatmentType.MAX_PRESCRIPTION_AMOUNT.Value)
+                {
+                    string totalAmountStr = Inventec.Common.Number.Convert.NumberToString(totalPrescriptionAmount, ConfigApplications.NumberSeperator);
+                    string maxAmountStr = Inventec.Common.Number.Convert.NumberToString(treatmentType.MAX_PRESCRIPTION_AMOUNT.Value, ConfigApplications.NumberSeperator);
+
+                    if (treatmentType.MAX_PRESCRIPTION_AMOUNT_OPTION == 1)
+                    {
+                        // Hiển thị cảnh báo và hỏi người dùng
+                        string message = string.Format(
+                            "Tổng tiền {0} của đơn thuốc lớn hơn số tiền {1} được kê tối đa của 1 đơn thuốc theo diện điều trị. Bạn có muốn tiếp tục?",
+                            totalAmountStr,
+                            maxAmountStr);
+
+                        DialogResult dialogResult = MessageBox.Show(
+                            message,
+                            "Thông báo",
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Warning);
+
+                        if (dialogResult != DialogResult.Yes)
+                        {
+                            result = false;
+                        }
+                    }
+                    else if (treatmentType.MAX_PRESCRIPTION_AMOUNT_OPTION == 2)
+                    {
+                        // Chặn và hiển thị thông báo
+                        string message = string.Format(
+                            "Tổng tiền {0} của đơn thuốc lớn hơn số tiền {1} được kê tối đa của 1 đơn thuốc theo diện điều trị",
+                            totalAmountStr,
+                            maxAmountStr);
+
+                        MessageBox.Show(
+                            message,
+                            "Thông báo",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Warning);
+
+                        result = false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+
+            return result;
+        }
+
+
+        public bool CheckedTreatmentFinishV2()
+        {
+            bool result = true;
+            try
+            {
+              
+                bool isHasUcTreatmentFinish =
+                    !GlobalStore.IsTreatmentIn &&
+                    this.treatmentFinishProcessor != null &&
+                    this.ucTreatmentFinish != null;
+
+              
+                var treatUC = isHasUcTreatmentFinish
+                    ? this.treatmentFinishProcessor.GetDataOutput(this.ucTreatmentFinish)
+                    : null;
+
+                if (isHasUcTreatmentFinish && treatUC != null)
+                {
+                    if (HisConfigCFG.IsCheckValueMaxlengthOption == "1"
+                        || HisConfigCFG.IsCheckValueMaxlengthOption == "2")
+                    {
+                        bool hasOverLength = false;
+                        string message = "";
+
+                        if ((!string.IsNullOrEmpty(treatUC.ClinicalNote)
+                                && Encoding.UTF8.GetByteCount(treatUC.ClinicalNote) > 4000)
+                            || (!string.IsNullOrEmpty(treatUC.SubclinicalResult)
+                                && Encoding.UTF8.GetByteCount(treatUC.SubclinicalResult) > 4000))
+                        {
+                            hasOverLength = true;
+                            message = ResourceMessage.DuLieuTruongQuaTrinhBenhLyTomTatKetQuaVuotQuaKyTu;
+                        }
+
+                        if (hasOverLength)
+                        {
+                            if (HisConfigCFG.IsCheckValueMaxlengthOption == "1")
+                            {
+                                var dialogResult = DevExpress.XtraEditors.XtraMessageBox.Show(
+                                    message + ". " + ResourceMessage.BanCoMuonTiepTucKhong,
+                                    "Cảnh báo",
+                                    System.Windows.Forms.MessageBoxButtons.YesNo,
+                                    System.Windows.Forms.MessageBoxIcon.Warning);
+
+                                if (dialogResult == System.Windows.Forms.DialogResult.Yes)
+                                {
+                                    return false;
+                                }
+                            }
+                            else // option == "2"
+                            {
+                                DevExpress.XtraEditors.XtraMessageBox.Show(
+                                    message,
+                                    "Thông báo",
+                                    System.Windows.Forms.MessageBoxButtons.OK,
+                                    System.Windows.Forms.MessageBoxIcon.Information);
+
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result = true;
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+
+            return result;
+        }
+
+
         private void ProcessSaveData(HIS.Desktop.Plugins.AssignPrescriptionPK.SAVETYPE saveType)
         {
             try
@@ -410,6 +608,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 Inventec.Common.Logging.LogSystem.Info("frmAssignPrescription.ProcessSaveData.1");
                 IsValidForSave = true;
                 bool valid = true;
+                ListExpMestMedicineAntibioticRequired = null;
                 this.positionHandleControl = -1;
                 this.resultDataPrescription = null;
                 List<HIS_SERVICE_REQ> lstserviceReqResult = null;
@@ -496,8 +695,87 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 bool isHasUcTreatmentFinish = ((!GlobalStore.IsTreatmentIn) && this.treatmentFinishProcessor != null && this.ucTreatmentFinish != null);
                 var treatUC = isHasUcTreatmentFinish ? treatmentFinishProcessor.GetDataOutput(this.ucTreatmentFinish) : null;
                 bool isHasTreatmentFinishChecked = (treatUC != null && treatUC.IsAutoTreatmentFinish);
+                var bhyt = BackendDataWorker.Get<MOS.EFMODEL.DataModels.HIS_PATIENT_TYPE>()
+                        .FirstOrDefault(o => o.PATIENT_TYPE_CODE == Config.HisConfigCFG.PatientTypeCode__BHYT);
+
+                //if (treatUC != null && !string.IsNullOrEmpty(treatUC.HeinPatientTypeCode) && treatUC.HeinPatientTypeCode?.Trim().Length > 10)
+                //{
+                //    IsValidForSave = false;
+                //    XtraMessageBox.Show(string.Format("Mã đối tượng khám bệnh không được quá {0} ký tự", 10));
+                //    return;
+                //}
+
+                //if (treatUC != null && !string.IsNullOrEmpty(treatUC.HeinPatientTypeCode) && treatUC.HeinPatientTypeCode.Any(char.IsLetter))
+                //{
+                //    IsValidForSave = false;
+                //    XtraMessageBox.Show("Mã đối tượng khám bệnh không được nhập chữ");
+                //    return;
+                //}
+                HIS_TREATMENT checkTmWho = new HIS_TREATMENT();
+
+                Inventec.Common.Mapper.DataObjectMapper.Map<HIS_TREATMENT>(checkTmWho, currentTreatment);
+                // Append ICD_SUB_CODE
+                checkTmWho.ICD_SUB_CODE = AppendIcd(
+                    this.currentTreatment.ICD_CODE,            // ICD chính
+                    this.currentTreatment.ICD_SUB_CODE,        // ICD phụ cũ trong DB
+                    txtIcdSubCode.EditValue as string          // ICD phụ mới
+                );
+
+                // Append ICD_TEXT
+                checkTmWho.ICD_TEXT = AppendIcd(
+                    this.currentTreatment.ICD_NAME,            // Tên ICD chính
+                    this.currentTreatment.ICD_TEXT,            // Tên ICD phụ cũ
+                    txtIcdText.EditValue as string             // Tên ICD phụ mới
+                );
+                checkTmWho.ICD_CODE = txtIcdCode.EditValue.ToString();
+                if(isHasTreatmentFinishChecked && treatUC != null)
+                {
+                    checkTmWho.TREATMENT_END_TYPE_ID = treatUC.TreatmentEndTypeId; 
+                }
+                checkTmWho.ICD_NAME = txtIcdMainText.EditValue.ToString();
+                var medicine = new List<V_HIS_EXP_MEST_MEDICINE>();
+
+                foreach (var item in this.mediMatyTypeADOs)
+                {
+                    var med = new V_HIS_EXP_MEST_MEDICINE();
+                    Inventec.Common.Mapper.DataObjectMapper.Map<V_HIS_EXP_MEST_MEDICINE>(med, item);
+                    medicine.Add(med);
+                }
+                Inventec.Common.Logging.LogSystem.Debug("Số thuốc được kê qtcode " + Inventec.Common.Logging.LogUtil.TraceData("DataA", medicine.Count()));
+                HIS.Desktop.Plugins.Library.ConnectWhoCnd.ConnectWhoCndProcessor who = new HIS.Desktop.Plugins.Library.ConnectWhoCnd.ConnectWhoCndProcessor(checkTmWho, currentDhst, medicine);
                 if (isHasTreatmentFinishChecked && treatUC != null)
                 {
+                    if (!who.CheckData())
+                    {
+                        return;
+                    }
+                    if (Config.HisConfigCFG.WarningHeinPatientTypeCode == "2" && treatUC.HeinPatientTypeCode == "")
+                    {
+                        var result = DevExpress.XtraEditors.XtraMessageBox.Show("Chưa nhập mã đối tượng của hồ sơ điều trị. Bạn có muốn tiếp tục?", "Cảnh báo", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+                        if (result == DialogResult.No)
+                        {
+                            return;
+                        }
+                    }
+                    else if (Config.HisConfigCFG.WarningHeinPatientTypeCode == "3" && treatUC.HeinPatientTypeCode == "")
+                    {
+                        DevExpress.XtraEditors.XtraMessageBox.Show("Chưa nhập mã đối tượng của hồ sơ điều trị.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    if (HisConfigCFG.IsCheckServiceFollowWhenOut == "1" && this.currentTreatment.TDL_PATIENT_TYPE_ID == bhyt.ID)
+                    {
+                           
+                        CommonParam param = new CommonParam();  
+                        bool checkFollow = new BackendAdapter(param).Post<bool>(RequestUriStore.HIS_TREATHER__CHECKSERVICE_fOLLOW, ApiConsumers.MosConsumer, this.treatmentId, param);
+                        if (!checkFollow)
+                        {
+                            var result = XtraMessageBox.Show( param.GetMessage() + ". Bạn có muốn tiếp tục?", "Thông báo", MessageBoxButtons.YesNo);
+                            if (result == DialogResult.No)
+                                return;
+                        }
+                    }
                     if (subIcd != null && !string.IsNullOrEmpty(subIcd.ICD_SUB_CODE))
                     {
                         var subIcdList = subIcd.ICD_SUB_CODE.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
@@ -515,13 +793,13 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                     }
                     if ((string.IsNullOrEmpty(currentTreatment.TREATMENT_METHOD) || string.IsNullOrEmpty(treatUC.TreatmentMethod)) && ((HisConfigCFG.RequiredTreatmentMethodOption == "1" && currentTreatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNOITRU && (treatUC.TreatmentEndTypeId == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__CHUYEN || treatUC.TreatmentEndTypeId == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__HEN || treatUC.TreatmentEndTypeId == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__RAVIEN || treatUC.TreatmentEndTypeId == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__XINRAVIEN || treatUC.TreatmentEndTypeId == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__CTCV)) || (HisConfigCFG.RequiredTreatmentMethodOption == "2" && (treatUC.TreatmentEndTypeExtId == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE_EXT.ID__NGHI_OM || ((currentTreatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNOITRU || currentTreatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNGOAITRU || currentTreatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTBANNGAY) && (treatUC.TreatmentEndTypeId == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__CHUYEN || treatUC.TreatmentEndTypeId == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__HEN || treatUC.TreatmentEndTypeId == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__RAVIEN || treatUC.TreatmentEndTypeId == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__XINRAVIEN || treatUC.TreatmentEndTypeId == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__CTCV))))))
                     {
-                        //frmTreatmentMethod frm = new frmTreatmentMethod(TreatmentMethod, treatmentMethod =>
-                        //{
-                        //    TreatmentMethod = treatmentMethod;
-                        //});
-                        //frm.ShowDialog();
-                        //if (string.IsNullOrEmpty(TreatmentMethod))
-                        //    return;
+                        frmTreatmentMethod frm = new frmTreatmentMethod(TreatmentMethod, treatmentMethod =>
+                        {
+                            TreatmentMethod = treatmentMethod;
+                        });
+                        frm.ShowDialog();
+                        if (string.IsNullOrEmpty(TreatmentMethod))
+                            return;
                     }
                     var treatmentType = BackendDataWorker.Get<HIS_TREATMENT_TYPE>().FirstOrDefault(o => o.ID == this.currentHisPatientTypeAlter.TREATMENT_TYPE_ID);
                     var price = GetPrice();
@@ -630,7 +908,15 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 validFolow += "valid.3=" + valid + ";";
                 valid = valid && this.CheckTreatmentFinish();
                 validFolow += "valid.4=" + valid + ";";
-                valid = valid && this.CheckICDService();//TODO cần check với TH chọn nhiều BN kê
+                if (Config.HisConfigCFG.HisIcdServiceHasRequirePatientBhyt == "1" && this.currentTreatment.TDL_PATIENT_TYPE_ID == bhyt.ID)
+                {
+                    valid = valid && this.CheckICDService();//TODO cần check với TH chọn nhiều BN kê    
+                }
+                else if(Config.HisConfigCFG.HisIcdServiceHasRequirePatientBhyt != "1")
+                {
+                    valid = valid && this.CheckICDService();//TODO cần check với TH chọn nhiều BN kê
+                }
+
                 validFolow += "valid.5=" + valid + ";";
                 valid = valid && this.CheckUseDayAndExpTimeBHYT();
                 validFolow += "valid.6=" + valid + ";";
@@ -728,9 +1014,14 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                     }
                     if ((HisConfigCFG.MustChooseSeviceExamOption == "1" || (isHasTreatmentFinishChecked && HisConfigCFG.MustChooseSeviceExamOption == "2")) && !this.CheckMustChooseSeviceExamOption(HisConfigCFG.MustChooseSeviceExamOption))
                         return;
+                    //huanzz
+                    if (!CheckedTreatmentFinishV2()) return;
                 }
-
                 Inventec.Common.Logging.LogSystem.Info("frmAssignPrescription.ProcessSaveData.3");
+                //huannh KDPk
+                var serviceCheckeds__Send = this.mediMatyTypeADOs;
+                valid = valid && this.CheckMaxPrescriptionAmount(serviceCheckeds__Send);
+                if (!valid) return;
 
 
                 bool isSaveAndPrint = (saveType == SAVETYPE.SAVE_PRINT_NOW);
@@ -744,6 +1035,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 //mediMatyTypeADOTemps = AutoMapper.Mapper.Map<List<MediMatyTypeADO>>(this.mediMatyTypeADOs);
                 //mediMatyTypeADOTemps.AddRange(this.mediMatyTypeADOs);
 
+
                 ISave isave = SaveFactory.MakeISave(
                     paramCommon,
                     mediMatyTypeADOs,
@@ -755,10 +1047,12 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                     );
 
                 Inventec.Common.Logging.LogSystem.Info("frmAssignPrescription.ProcessSaveData.4");
+
                 this.resultDataPrescription = (isave != null ? isave.Run() : null);
                 Inventec.Common.Logging.LogSystem.Info("frmAssignPrescription.ProcessSaveData.5");
                 if (this.resultDataPrescription != null)
                 {
+                    who.SendData();
                     HIS_SERVICE_REQ serviceReqResult = null;
                     HIS_EXP_MEST expMestResult = null;
                     ListExpMestResult = null;
@@ -798,6 +1092,28 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                             lstSereServObeyCantraindi.AddRange(outPatientPresResultSDO.SereServs);
                         }
                     }
+
+                    try
+                    {
+                        if (this.mimsInteractionLog != null && this.mimsInteractionLog.HAS_ALERT > 0)
+                        {
+                            this.mimsInteractionLog.TREATMENT_ID = VHistreatment.ID;
+                            this.mimsInteractionLog.PATIENT_ID = VHistreatment.PATIENT_ID;
+                            this.mimsInteractionLog.SERVICE_REQ_ID = serviceReqResult.ID;
+                            this.mimsInteractionLog.EXP_MEST_ID = expMestResult.ID;
+
+                            bool logCreated = new BackendAdapter(new CommonParam()).Post<bool>("api/HisMimsInteractionLog/Create", ApiConsumers.MosConsumer, this.mimsInteractionLog, new CommonParam());
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Inventec.Common.Logging.LogSystem.Error(ex);
+                    }
+                    finally
+                    {
+                        this.mimsInteractionLog = null; // luôn clear
+                    }
+
                     TaskUpdateObeyCantraindi(lstSereServObeyCantraindi, ListExpMestResult, lstserviceReqResult);
                     List<long> mediTypeIds = new List<long>();
                     List<long> mateTypeIds = new List<long>();
@@ -926,56 +1242,75 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                     //- Nếu checkbox "Xem trước khi in" được check thì xử lý:
                     //+ Nếu checkbox "Ký" được check, thì thực hiện tự động hiển thị màn hình print-preview ra văn bản sau khi ký (văn bản do EMR trả về).
                     //+ Nếu checkbox "Ký" không được check, thì thực hiện tự động hiển thị màn hình print preview đơn thuốc trên HIS
-
                     MPS.ProcessorBase.PrintConfig.PreviewType? previewType = null;
                     bool printNow = (isSaveAndPrint || chkPrint.Checked);
-                    //nếu kết thúc đt thì in ra phiếu tổng hợp
-                    if (isHasTreatmentFinishChecked)
+                    switch (saveType)
                     {
-                        this.InDonPhongKhamTongHop(chkPrint.Checked, chkSignForDPK.Checked, false);
-                    }
-                    else
-                    {
-                        switch (saveType)
-                        {
-                            case SAVETYPE.SAVE:
-                                if ((lciForchkSignForDDT.Visibility == DevExpress.XtraLayout.Utils.LayoutVisibility.Always && chkSignForDDT.Checked) || (lciForchkSignForDPK.Visibility == DevExpress.XtraLayout.Utils.LayoutVisibility.Always && chkSignForDPK.Checked) || (lciForchkSignForDTT.Visibility == DevExpress.XtraLayout.Utils.LayoutVisibility.Always && chkSignForDTT.Checked))
-                                {
-                                    if (printNow)
+                        case SAVETYPE.SAVE:
+                            if ((lciForchkSignForDDT.Visibility == DevExpress.XtraLayout.Utils.LayoutVisibility.Always && chkSignForDDT.Checked) || (lciForchkSignForDPK.Visibility == DevExpress.XtraLayout.Utils.LayoutVisibility.Always && chkSignForDPK.Checked) || (lciForchkSignForDTT.Visibility == DevExpress.XtraLayout.Utils.LayoutVisibility.Always && chkSignForDTT.Checked))
+                            {
+                                if (printNow)
+                                {    
+                                    Inventec.Desktop.Common.Modules.Module moduleData = GlobalVariables.currentModuleRaws.Where(o => o.ModuleLink == "HIS.Desktop.Plugins.AssignPrescriptionPK").FirstOrDefault();
+
+                                    var allowedModules = HisConfigCFG.MODULELINKS.Split(',');
+
+                                    if (!string.IsNullOrWhiteSpace(HisConfigCFG.MODULELINKS) && moduleData != null && allowedModules.Contains(moduleData.ModuleLink))
+                                    {
+                                        if (allowedModules.Contains(moduleData.ModuleLink))
+                                        {
+                                            previewType = MPS.ProcessorBase.PrintConfig.PreviewType.EmrSignAndPrintNow;
+                                        }
+                                    }
+                                    else
                                     {
                                         previewType = MPS.ProcessorBase.PrintConfig.PreviewType.EmrSignAndPrintNow;
                                     }
-                                    else if (chkPreviewBeforePrint.Checked)
+                                }
+                                else if (chkPreviewBeforePrint.Checked)
+                                {
+                                    previewType = MPS.ProcessorBase.PrintConfig.PreviewType.EmrSignAndPrintPreview;
+                                }
+                                else
+                                    previewType = MPS.ProcessorBase.PrintConfig.PreviewType.EmrSignNow;
+                            }
+                            else if (printNow)
+                            {
+                                Inventec.Desktop.Common.Modules.Module moduleData = GlobalVariables.currentModuleRaws.Where(o => o.ModuleLink == "HIS.Desktop.Plugins.AssignPrescriptionPK").FirstOrDefault();
+
+                                var allowedModules = HisConfigCFG.MODULELINKS.Split(',');
+
+                                if (!string.IsNullOrWhiteSpace(HisConfigCFG.MODULELINKS) && moduleData != null && allowedModules.Contains(moduleData.ModuleLink))
+                                {
+                                    if (allowedModules.Contains(moduleData.ModuleLink))
                                     {
-                                        previewType = MPS.ProcessorBase.PrintConfig.PreviewType.EmrSignAndPrintPreview;
+                                        previewType = MPS.ProcessorBase.PrintConfig.PreviewType.EmrSignAndPrintNow;
                                     }
-                                    else
-                                        previewType = MPS.ProcessorBase.PrintConfig.PreviewType.EmrSignNow;
                                 }
                                 else
                                 {
-                                    if (printNow)
-                                    {
-                                        previewType = MPS.ProcessorBase.PrintConfig.PreviewType.PrintNow;
-                                    }
-                                    else if (chkPreviewBeforePrint.Checked)
-                                    {
-                                        previewType = MPS.ProcessorBase.PrintConfig.PreviewType.Show;
-                                    }
+                                    previewType = MPS.ProcessorBase.PrintConfig.PreviewType.PrintNow;
                                 }
-                                if (previewType != null)
-                                {
-                                    this.PrescriptionSavePrintShowHasClickSave(printNow ? "" : MPS.Processor.Mps000118.PDO.Mps000118PDO.PrintTypeCode, printNow, previewType);
-                                }
-                                break;
-                            case SAVETYPE.SAVE_PRINT_NOW:
-                                this.PrescriptionSavePrintShowHasClickSave("", true, null);
-                                break;
-                            case SAVETYPE.SAVE_SHOW_PRINT_PREVIEW:
-                                this.PrescriptionSavePrintShowHasClickSave(MPS.Processor.Mps000118.PDO.Mps000118PDO.PrintTypeCode, false);
-                                break;
-                        }
+
+                            }
+                            else if (chkPreviewBeforePrint.Checked)
+                            {
+                                previewType = MPS.ProcessorBase.PrintConfig.PreviewType.ShowDialog;
+                            }
+
+                            if (previewType != null)
+                            {
+                                this.PrescriptionSavePrintShowHasClickSave(printNow ? "" : MPS.Processor.Mps000118.PDO.Mps000118PDO.PrintTypeCode, printNow, previewType);
+                            }
+                            break;
+                        case SAVETYPE.SAVE_PRINT_NOW:
+                            this.PrescriptionSavePrintShowHasClickSave(this.PrintPrescription, true, null);
+                            break;
+                        case SAVETYPE.SAVE_SHOW_PRINT_PREVIEW:
+                            this.PrescriptionSavePrintShowHasClickSave(MPS.Processor.Mps000118.PDO.Mps000118PDO.PrintTypeCode, false, null);
+                            break;
                     }
+
 
                     Inventec.Common.Logging.LogSystem.Info("frmAssignPrescription.ProcessSaveData.8");
 
@@ -1047,7 +1382,38 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                         this.patientSelectProcessor.ReloadStatePrescriptionPerious(this.ucPatientSelect);
                         this.OpionGroupSelectedChangedAsync();
                     }
+                    bool isDifferentExist = currentTreatmentWithPatientType != null && BackendDataWorker.Get<HIS_MEDI_ORG>().FirstOrDefault(p => p.MEDI_ORG_CODE != currentTreatmentWithPatientType.HEIN_MEDI_ORG_CODE) != null;
+                    int warnMonths;
 
+                    if ((int.TryParse(HisConfigCFG.WarningOverTransfer, out warnMonths) && warnMonths > 0)
+                        && currentTreatmentWithPatientType != null
+                        && currentTreatmentWithPatientType.PROGRAM_ID != null
+                       // && currentTreatmentWithPatientType.TREATMENT_END_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_END_TYPE.ID__HEN
+                       && currentTreatmentWithPatientType.RIGHT_ROUTE_TYPE_CODE == HeinRightRouteTypeCode.APPOINTMENT
+                        && isDifferentExist
+                        )
+                    {
+                        if (currentTreatmentWithPatientType.TRANSFER_IN_TIME_FROM.HasValue && currentTreatmentWithPatientType.TRANSFER_IN_TIME_FROM.Value > 0)
+                        {
+                            DateTime? surgeryBeginTime = Inventec.Common.DateTime.Convert.TimeNumberToSystemDateTime(currentTreatmentWithPatientType.TRANSFER_IN_TIME_FROM.Value);
+                            if (surgeryBeginTime.HasValue)
+                            {
+                                int monthDiff = (DateTime.Now.Year - surgeryBeginTime.Value.Year) * 12
+                                                + (DateTime.Now.Month - surgeryBeginTime.Value.Month);
+
+                                if (monthDiff >= warnMonths)
+                                {
+                                    string messErr = String.Format("Thời gian chuyển tuyến của bệnh nhân đã được {0} tháng. Lưu ý bệnh nhân cần xin giấy chuyển tuyến mới",monthDiff);
+                                    if (DevExpress.XtraEditors.XtraMessageBox.Show(messErr + ". Bạn có muốn tiếp tục?",
+                                            HIS.Desktop.LibraryMessage.MessageUtil.GetMessage(LibraryMessage.Message.Enum.TieuDeCuaSoThongBaoLaCanhBao),
+                                            MessageBoxButtons.YesNo) == DialogResult.No)
+                                    {
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                    }
                     this.FillDataToComboPriviousExpMest(this.currentTreatmentWithPatientType);
 
                     if (this.oldServiceReq != null)
@@ -1096,6 +1462,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
 
                 if (success)
                 {
+                    LockByKeyConfig();
                     Thread PortI3 = new Thread(CallPortI3);
                     PortI3.Start();
                     PortI3.Join();
@@ -1109,6 +1476,23 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 WaitingManager.Hide();
                 MessageManager.Show(this, paramCommon, false);
             }
+        }
+        private void LockByKeyConfig()
+        {
+
+            try
+            {
+                if (resultDataPrescription != null && HisConfigCFG.IsSaveButtonOption != "1")
+                {
+                    ChangeLockButtonWhileProcess(false);
+                    btnAdd.Enabled = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+
         }
         private bool CheckMustChooseSeviceExamOption(string KeyMustChooseSeviceExam)
         {
@@ -1332,13 +1716,15 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
 
                             AntibioticRequestADO ado = new AntibioticRequestADO();
 
-                            List<HIS_ANTIBIOTIC_NEW_REG> NewRegimen = new List<HIS_ANTIBIOTIC_NEW_REG>();
+                            
                             var acinIngredientID = acinIngredients.Select(o => o.ID).ToList();
                             var TypeAcinMedicineType = medicineTypeAcinByMety.Where(o => acinIngredientID.Contains(o.ACTIVE_INGREDIENT_ID)).Select(p => p.MEDICINE_TYPE_ID).ToList();
                             var medicineType = this.mediMatyTypeADOs.Where(o => TypeAcinMedicineType.Contains(o.ID)).ToList();
-                            var ExpMestId = ListExpMestMedicineAntibioticRequired.Select(o => o.EXP_MEST_ID).Distinct().ToList();
+                            var ExpMestId = ListExpMestMedicineAntibioticRequired.Where(o => TypeAcinMedicineType.Exists
+                                (p => p == o.TDL_MEDICINE_TYPE_ID)).Select(o => o.EXP_MEST_ID).Distinct().ToList();
                             foreach (var em in ExpMestId)
                             {
+                                List<HIS_ANTIBIOTIC_NEW_REG> NewRegimen = new List<HIS_ANTIBIOTIC_NEW_REG>();
                                 var medicineTypeExpMest = medicineType.Where(o => ListExpMestMedicineAntibioticRequired.Where(p => p.EXP_MEST_ID == em).ToList().Exists(p => p.TDL_MEDICINE_TYPE_ID == o.ID)).ToList();
                                 foreach (var item in medicineTypeExpMest)
                                 {

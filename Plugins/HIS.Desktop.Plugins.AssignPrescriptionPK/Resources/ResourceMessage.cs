@@ -2761,5 +2761,82 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Resources
             }
         }
 
+        internal static string BanNhapQuaKyTuChoTruongDauHieuLamSang
+        {
+            get
+            {
+                try
+                {
+                    return Inventec.Common.Resource.Get.Value("BanNhapQuaKyTuChoTruongDauHieuLamSang", languageMessage, Inventec.Desktop.Common.LanguageManager.LanguageManager.GetCulture());
+                }
+                catch (Exception ex)
+                {
+                    Inventec.Common.Logging.LogSystem.Warn(ex);
+                }
+                return "";
+            }
+        }
+
+        internal static string DuLieuTruongQuaTrinhBenhLyTomTatKetQuaVuotQuaKyTu
+        {
+            get
+            {
+                try
+                {
+                    return Inventec.Common.Resource.Get.Value("DuLieuTruongQuaTrinhBenhLyTomTatKetQuaVuotQuaKyTu", languageMessage, Inventec.Desktop.Common.LanguageManager.LanguageManager.GetCulture());
+                }
+                catch (Exception ex)
+                {
+                    Inventec.Common.Logging.LogSystem.Warn(ex);
+                }
+                return "";
+            }
+        }
+
+        internal static string BanCoMuonTiepTucKhong
+        {
+            get
+            {
+                try
+                {
+                    return Inventec.Common.Resource.Get.Value("BanCoMuonTiepTucKhong", languageMessage, Inventec.Desktop.Common.LanguageManager.LanguageManager.GetCulture());
+                }
+                catch (Exception ex)
+                {
+                    Inventec.Common.Logging.LogSystem.Warn(ex);
+                }
+                return "";
+            }
+        }
+        internal static string ThongTinThuoc
+        {
+            get
+            {
+                try
+                {
+                    return Inventec.Common.Resource.Get.Value("Plugin_AssignPrescription__PopupMenu_ThongTinThuoc", languageMessage, Inventec.Desktop.Common.LanguageManager.LanguageManager.GetCulture());
+                }
+                catch (Exception ex)
+                {
+                    Inventec.Common.Logging.LogSystem.Warn(ex);
+                }
+                return "";
+            }
+        }
+        internal static string DanhGiaThongTinThuoc
+        {
+            get
+            {
+                try
+                {
+                    return Inventec.Common.Resource.Get.Value("Plugin_AssignPrescription__PopupMenu_DanhGiaThongTinThuoc", languageMessage, Inventec.Desktop.Common.LanguageManager.LanguageManager.GetCulture());
+                }
+                catch (Exception ex)
+                {
+                    Inventec.Common.Logging.LogSystem.Warn(ex);
+                }
+                return "";
+            }
+        }
     }
 }

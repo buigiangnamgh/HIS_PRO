@@ -40,8 +40,10 @@ using MPS.ProcessorBase;
 using HIS.Desktop.LocalStorage.ConfigApplication;
 using Inventec.Desktop.Common.Message;
 using HIS.Desktop.Plugins.Library.EmrGenerate;
-using HIS.Desktop.Plugins.Library.PrintPrescription;
-using HIS.Desktop.Plugins.AssignPrescriptionPK.Base;
+using HIS.Desktop.Plugins.AssignPrescriptionPK.Config;
+using HIS.Desktop.ADO;
+using DevExpress.XtraBars;
+using DevExpress.XtraCharts;
 
 namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
 {
@@ -55,6 +57,13 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 Inventec.Common.Logging.LogSystem.Debug("InitMenuToButtonPrint .1");
                 HIS.UC.MenuPrint.MenuPrintProcessor menuPrintProcessor = new HIS.UC.MenuPrint.MenuPrintProcessor();
                 menuPrintADOs = new List<HIS.UC.MenuPrint.ADO.MenuPrintADO>();
+
+                //HIS.UC.MenuPrint.ADO.MenuPrintADO qr = new HIS.UC.MenuPrint.ADO.MenuPrintADO();
+                //qr.Caption = "tạo qr thanh toán (in phiếu thu tiền)";
+                //qr.EventHandler = new EventHandler(OnClickPrintQR);f
+                //qr.PrintTypeCode = "";
+                //qr.Tag = "";
+                //menuPrintADOs.Add(qr);
 
                 HIS.UC.MenuPrint.ADO.MenuPrintADO vttsd = new HIS.UC.MenuPrint.ADO.MenuPrintADO();
                 vttsd.Caption = "In tem vật tư tái sử dụng";
@@ -205,6 +214,118 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 Inventec.Common.Logging.LogSystem.Warn(ex);
             }
         }
+        //List<HIS_CONFIG> listConfig = new List<HIS_CONFIG>();
+        //private HIS_CONFIG selectedConfig = new HIS_CONFIG();
+        //private void OnClickPrintQR(object sender, EventArgs e)
+        //{
+        //    List<HIS.UC.MenuPrint.ADO.MenuPrintADO> menuPrintQR = new List<HIS.UC.MenuPrint.ADO.MenuPrintADO>(); ;
+        //    try
+        //    {
+        //        if (this.requestRoom.QR_CONFIG_JSON != null)
+        //        {
+        //            List<object> listArgs = new List<object>();
+        //            TransReqQRADO adoqr = new TransReqQRADO();
+        //            try
+        //            {
+        //                var json = Newtonsoft.Json.JsonConvert.DeserializeObject<BankInfo>(this.requestRoom.QR_CONFIG_JSON);
+        //                if (json != null)
+        //                {
+        //                    adoqr.ConfigValue = new HIS_CONFIG() { VALUE = json.VALUE, KEY = string.Format("HIS.Desktop.Plugins.PaymentQrCode.{0}Info", json.BANK) };
+        //                    adoqr.BankName = json.BANK;
+        //                }
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                Inventec.Common.Logging.LogSystem.Error(ex);
+        //                XtraMessageBox.Show("Định dạng Qr thiết lập trong kho phòng không hợp lệ");
+        //                return;
+        //            }
+        //            listArgs.Add(adoqr);
+        //            HIS.Desktop.ModuleExt.PluginInstanceBehavior.ShowModule("HIS.Desktop.Plugins.CreateTransReqQR", this.currentModule.RoomId, this.currentModule.RoomTypeId, listArgs);
+        //        }
+        //        else
+        //        {
+        //            if (listConfig != null)
+        //            {
+        //                if (listConfig.Count > 1)
+        //                {
+        //                    menuPrintQR.Clear();
+        //                    foreach (var item in listConfig)
+        //                    {
+        //                        string key = "";
+        //                        string value = item.KEY;
+        //                        int index = value.IndexOf("Info");
+        //                        if (index > 0)
+        //                        {
+        //                            var shotkey = value.Substring(0, index);
+        //                            string[] parts = shotkey.Split('.');
+        //                            if (parts.Length > 0)
+        //                            {
+        //                                key = parts[parts.Length - 1];
+        //                            }
+        //                        }
+        //                        else
+        //                        {
+        //                            key = item.KEY;
+        //                        }
+
+        //                        selectedConfig = item;
+        //                        List<object> listArgs = new List<object>();
+        //                        TransReqQRADO adoqr = new TransReqQRADO();
+        //                        adoqr.ConfigValue = selectedConfig;
+        //                        adoqr.BankName = key;
+        //                        listArgs.Add(adoqr);
+        //                        LogSystem.Debug("_____Load module : HIS.Desktop.Plugins.CreateTransReqQR ; KEY: " + selectedConfig.KEY);
+
+        //                        HIS.Desktop.ModuleExt.PluginInstanceBehavior.ShowModule("HIS.Desktop.Plugins.CreateTransReqQR", this.currentModule.RoomId, this.currentModule.RoomTypeId, listArgs);
+
+        //                        HIS.UC.MenuPrint.ADO.MenuPrintADO PrintQR = new HIS.UC.MenuPrint.ADO.MenuPrintADO();
+        //                        PrintQR.Caption = key;
+        //                        menuPrintQR.Add(PrintQR);
+        //                    }
+
+        //                }
+        //                else
+        //                {
+        //                    selectedConfig = listConfig[0];
+        //                    List<object> listArgs = new List<object>();
+        //                    TransReqQRADO adoqr = new TransReqQRADO();
+        //                    adoqr.ConfigValue = selectedConfig;
+
+        //                    string key = "";
+        //                    string value = selectedConfig.KEY;
+        //                    int index = value.IndexOf("Info");
+        //                    if (index > 0)
+        //                    {
+        //                        var shotkey = value.Substring(0, index);
+        //                        string[] parts = shotkey.Split('.');
+        //                        if (parts.Length > 0)
+        //                        {
+        //                            key = parts[parts.Length - 1];
+        //                        }
+        //                    }
+        //                    else
+        //                    {
+        //                        key = selectedConfig.KEY;
+        //                    }
+
+        //                    adoqr.BankName = key;
+        //                    listArgs.Add(adoqr);
+        //                    LogSystem.Debug("_____Load module : HIS.Desktop.Plugins.CreateTransReqQR " + selectedConfig.KEY);
+        //                    HIS.Desktop.ModuleExt.PluginInstanceBehavior.ShowModule("HIS.Desktop.Plugins.CreateTransReqQR", this.currentModule.RoomId, this.currentModule.RoomTypeId, listArgs);
+
+
+        //                }
+
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+
+        //        throw;
+        //    }
+        //}
 
         /// <summary>
         /// Hàm khi báo cho sự kiện nhấn nút in động
@@ -249,8 +370,29 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                     var bbtnItem = sender as SimpleButton;
                     printTypeCode = (bbtnItem.Tag ?? "").ToString();
                 }
+                if (!string.IsNullOrWhiteSpace(HisConfigCFG.MODULELINKS))
+                {
+                    //currentModule
+                    Inventec.Desktop.Common.Modules.Module moduleData = GlobalVariables.currentModuleRaws.Where(o => o.ModuleLink == "HIS.Desktop.Plugins.AssignPrescriptionPK").FirstOrDefault();
 
-                PrescriptionSavePrintShowHasClickSave(printTypeCode, false);
+                    if (moduleData != null)
+                    {
+                        var allowedModules = HisConfigCFG.MODULELINKS.Split(',');
+                             
+                        if (allowedModules.Contains(moduleData.ModuleLink))
+                        {
+                            PrescriptionSavePrintShowHasClickSave(printTypeCode, false, MPS.ProcessorBase.PrintConfig.PreviewType.EmrSignAndPrintNow);
+                        }
+                        else
+                        {
+                            PrescriptionSavePrintShowHasClickSave(printTypeCode, false, null);
+                        }
+                    }
+                }
+                else
+                {
+                    PrescriptionSavePrintShowHasClickSave(printTypeCode, false, null);
+                }
 
                 //PrescriptionPrintShowPrintOnly(printTypeCode, false);
                 Inventec.Common.Logging.LogSystem.Debug("OnClickPrintWithPrintTypeCfg.2____" + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => printTypeCode), printTypeCode));
@@ -400,9 +542,9 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             }
         }
 
-        private void PrescriptionSavePrintShowHasClickSave(string printTypeCode, bool isPrintNow, MPS.ProcessorBase.PrintConfig.PreviewType? previewType = null)
+        private async Task PrescriptionSavePrintShowHasClickSave(string printTypeCode, bool isPrintNow, MPS.ProcessorBase.PrintConfig.PreviewType? previewType = null)
         {
-            try
+            try  
             {
                 var IsNotShow = lstConfig.Exists(o => o.IsChecked && o.ID == (int)ConfigADO.RowConfigID.KhongHienThiDonKhongLayODonThuocTH);
                 Inventec.Common.Logging.LogSystem.Debug("PrescriptionSavePrintShowHasClickSave.1____"
@@ -418,7 +560,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                     HIS_TREATMENT treatment = new HIS_TREATMENT();
                     Inventec.Common.Mapper.DataObjectMapper.Map<HIS_TREATMENT>(treatment, currentTreatmentWithPatientType);
 
-                    PrintTreatmentFinishProcessor printTreatmentFinishProcessor = new PrintTreatmentFinishProcessor(treatment, LoadServiceReq(treatment.ID), currentModule != null ? currentModule.RoomId : 0);
+                    PrintTreatmentFinishProcessor printTreatmentFinishProcessor = new PrintTreatmentFinishProcessor(treatment, LoadServiceReq(treatment.ID), currentModule != null ? currentModule.RoomId : 0, previewType);
                     if (printTypeCode == PrintTypeCodeStore.PRINT_TYPE_CODE__TOM_TAT_Y_LENH_PTTT_VA_DON_THUOC__MPS000478)
                     {
                         printTreatmentFinishProcessor.Print(MPS.Processor.Mps000478.PDO.Mps000478PDO.printTypeCode, isPrintNow);
@@ -437,9 +579,19 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                     }
                 }
                 else
-                {
+                {   
                     this.lstMatePrintMps494 = new List<HIS_EXP_MEST_MATERIAL>();
                     HIS.Desktop.Plugins.Library.PrintPrescription.PrintPrescriptionProcessor printPrescriptionProcessor;
+                    List<OutPatientPresResultSDO> OutPatientPresResultSDOForPrints = new List<OutPatientPresResultSDO>();
+                    OutPatientPresResultSDO OutPatientPresResultSDO = new OutPatientPresResultSDO();
+           
+                    List<HIS_EXP_MEST> expMestPrintPlus = new List<HIS_EXP_MEST>();
+                    List<HIS_SERVICE_REQ> serviceReqPrintPlus = new List<HIS_SERVICE_REQ>();
+                    List<HIS_EXP_MEST_MEDICINE> expMestMedicinePrintPlus = new List<HIS_EXP_MEST_MEDICINE>();
+                    List<HIS_EXP_MEST_MATERIAL> expMestMaterialPrintPlus = new List<HIS_EXP_MEST_MATERIAL>();
+
+                    var hisConfigCFGprintTypeCode = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(HisConfigCFG.SAVE_PRINT_MPS_DEFAULT);
+                    Inventec.Common.Logging.LogSystem.Info("GlobalStore.IsTreatmentIn " + GlobalStore.IsTreatmentIn + " !GlobalStore.IsCabinet " + !GlobalStore.IsCabinet);     
                     if (GlobalStore.IsTreatmentIn && !GlobalStore.IsCabinet)
                     {
                         //List<InPatientPresResultSDO> InPatientPresResultSDOForPrints = new List<InPatientPresResultSDO>();
@@ -449,7 +601,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                         InPatientPresResultSDO inPatientPresResultSDO = new InPatientPresResultSDO();
                         if (inPrescriptionResultSDOs != null)
                         {
-                            if(inPrescriptionResultSDOs.Materials != null && inPrescriptionResultSDOs.Materials.Count > 0)
+                            if (inPrescriptionResultSDOs.Materials != null && inPrescriptionResultSDOs.Materials.Count > 0)
                                 lstMatePrintMps494.AddRange(inPrescriptionResultSDOs.Materials);
                             InPatientPresResultSDOForPrints.Add(inPrescriptionResultSDOs);
                         }
@@ -494,387 +646,280 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                         Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => InPatientPresResultSDOForPrints), InPatientPresResultSDOForPrints));
                         printPrescriptionProcessor = new Library.PrintPrescription.PrintPrescriptionProcessor(InPatientPresResultSDOForPrints, IsNotShow, this.currentModule, true);
                         printPrescriptionProcessor.SetOutHospital((currentMediStockNhaThuocSelecteds != null && currentMediStockNhaThuocSelecteds.Count > 0));
+
+                        this.isPrintNow = isPrintNow;
+                        if (printTypeCode == "Mps000494")
+                        {
+                            Inventec.Common.RichEditor.RichEditorStore richEditorMain = new Inventec.Common.RichEditor.RichEditorStore(ApiConsumer.ApiConsumers.SarConsumer, HIS.Desktop.LocalStorage.ConfigSystem.ConfigSystems.URI_API_SAR, Inventec.Desktop.Common.LanguageManager.LanguageManager.GetLanguage(), HIS.Desktop.LocalStorage.Location.PrintStoreLocation.ROOT_PATH);
+                            richEditorMain.RunPrintTemplate("Mps000494", DelegateRunPrinter);
+                        }
+                        else if (isPrintNow)
+                            printPrescriptionProcessor.Print(previewType);
+                        else
+                            printPrescriptionProcessor.Print(printTypeCode, isPrintNow, previewType);
                     }
                     else
                     {
-                        List<OutPatientPresResultSDO> OutPatientPresResultSDOForPrints = new List<OutPatientPresResultSDO>();
-                        OutPatientPresResultSDO OutPatientPresResultSDO = new OutPatientPresResultSDO();
-                        string savePrintMpsDefault = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(HIS.Desktop.Plugins.AssignPrescriptionPK.Config.HisConfigCFG.SAVE_PRINT_MPS_DEFAULT);
-
-                        Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => savePrintMpsDefault), savePrintMpsDefault)
-                            + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => printTypeCode), printTypeCode)
-                            + "((this.expMestPrints != null && this.expMestPrints.Count > 0) || (this.serviceReqPrints != null && this.serviceReqPrints.Count > 0)) =" + ((this.expMestPrints != null && this.expMestPrints.Count > 0) || (this.serviceReqPrints != null && this.serviceReqPrints.Count > 0)));
-
-                        if ((String.IsNullOrEmpty(printTypeCode) || printTypeCode == "Mps000234")
-                            //&& ((this.expMestPrints != null && this.expMestPrints.Count > 0) || (this.serviceReqPrints != null && this.serviceReqPrints.Count > 0))
-                            && !GlobalStore.IsTreatmentIn && !GlobalStore.IsCabinet)
+                        if (hisConfigCFGprintTypeCode == "Mps000234" && !GlobalStore.IsCabinet)
                         {
-                            List<HIS_EXP_MEST> expMestPrintPlus = new List<HIS_EXP_MEST>();
-                            List<HIS_SERVICE_REQ> serviceReqPrintPlus = new List<HIS_SERVICE_REQ>();
-                            List<HIS_EXP_MEST_MEDICINE> expMestMedicinePrintPlus = new List<HIS_EXP_MEST_MEDICINE>();
-                            List<HIS_EXP_MEST_MATERIAL> expMestMaterialPrintPlus = new List<HIS_EXP_MEST_MATERIAL>();
+                            CommonParam param = new CommonParam();
 
-                            if (this.expMestPrints != null && this.expMestPrints.Count > 0)
+                            // 1. Gọi ServiceReq trước vì các API sau cần ID từ đây
+                            HisServiceReqFilter serviceReqFilter = new HisServiceReqFilter
                             {
-                                if (this.outPrescriptionResultSDOs != null && this.outPrescriptionResultSDOs.ExpMests != null && this.outPrescriptionResultSDOs.ExpMests.Count > 0)
+                                TREATMENT_ID = this.treatmentId,
+                                SERVICE_REQ_TYPE_ID = IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__DONK
+                            };
+
+                            var serviceReqPrintAlls = new BackendAdapter(param)
+                                .Get<List<MOS.EFMODEL.DataModels.HIS_SERVICE_REQ>>(
+                                    "api/HisServiceReq/Get", ApiConsumers.MosConsumer, serviceReqFilter, param);
+
+                            if (serviceReqPrintAlls == null || serviceReqPrintAlls.Count == 0)
+                                return;
+
+                            var serviceReqIds = serviceReqPrintAlls.Select(o => o.ID).ToList();
+
+                            // 2. Tạo các task bất đồng bộ
+                            var expMestTask = new BackendAdapter(param)
+                                .GetAsync<List<MOS.EFMODEL.DataModels.HIS_EXP_MEST>>(
+                                    "api/HisExpMest/Get", ApiConsumers.MosConsumer,
+                                    new HisExpMestFilter { SERVICE_REQ_IDs = serviceReqIds }, param);
+
+                            var metyTask = Task.Run(() =>
+                            {
+                                var filter = new HisServiceReqMetyFilter { SERVICE_REQ_IDs = serviceReqIds };
+                                return new BackendAdapter(param).Get<List<HIS_SERVICE_REQ_METY>>(
+                                    RequestUriStore.HIS_SERVICE_REQ_METY__GET,
+                                    ApiConsumers.MosConsumer, filter, ProcessLostToken, param);
+                            });
+
+                            var matyTask = Task.Run(() =>
+                            {
+                                var filter = new HisServiceReqMatyFilter { SERVICE_REQ_IDs = serviceReqIds };
+                                return new BackendAdapter(param).Get<List<HIS_SERVICE_REQ_MATY>>(
+                                    RequestUriStore.HIS_SERVICE_REQ_MATY__GET,
+                                    ApiConsumers.MosConsumer, filter, ProcessLostToken, param);
+                            });
+
+                            // 3. Chờ expMest để có ID cho medicine + material
+                            var expMestPrints = await expMestTask;   // ✅ giờ expMestPrints là List<HIS_EXP_MEST>
+                            var expMestIds = expMestPrints.Select(o => o.ID).ToList();
+
+                            var medicineTask = Task.Run(() =>
+                            {
+                                var filter = new HisExpMestMedicineFilter { EXP_MEST_IDs = expMestIds };
+                                return new BackendAdapter(param).Get<List<MOS.EFMODEL.DataModels.HIS_EXP_MEST_MEDICINE>>(
+                                    "api/HisExpMestMedicine/Get", ApiConsumers.MosConsumer, filter, param);
+                            });
+
+                            var materialTask = Task.Run(() =>
+                            {
+                                var filter = new HisExpMestMaterialFilter { EXP_MEST_IDs = expMestIds };
+                                return new BackendAdapter(param).Get<List<MOS.EFMODEL.DataModels.HIS_EXP_MEST_MATERIAL>>(
+                                    "api/HisExpMestMaterial/Get", ApiConsumers.MosConsumer, filter, param);
+                            });
+
+                            // 4. Chờ tất cả task hoàn thành
+                            await Task.WhenAll(metyTask, matyTask, medicineTask, materialTask);
+
+                            // 5. Gán kết quả
+                            OutPatientPresResultSDO.ServiceReqs = serviceReqPrintAlls;
+                            OutPatientPresResultSDO.ExpMests = expMestPrints;
+                            OutPatientPresResultSDO.Medicines = medicineTask.Result;
+                            OutPatientPresResultSDO.Materials = materialTask.Result;
+                            OutPatientPresResultSDO.ServiceReqMeties = metyTask.Result;
+                            OutPatientPresResultSDO.ServiceReqMaties = matyTask.Result;
+
+                            OutPatientPresResultSDOForPrints.Add(OutPatientPresResultSDO);
+                            // 6. In ấn
+                            printPrescriptionProcessor = new Library.PrintPrescription.PrintPrescriptionProcessor(
+                                OutPatientPresResultSDOForPrints, IsNotShow, this.currentModule, true);
+
+                            printPrescriptionProcessor.SetOutHospital(
+                                currentMediStockNhaThuocSelecteds != null && currentMediStockNhaThuocSelecteds.Count > 0);
+
+                            this.isPrintNow = isPrintNow;
+
+                            if (printTypeCode == "Mps000494")
+                            {
+                                var richEditorMain = new Inventec.Common.RichEditor.RichEditorStore(
+                                    ApiConsumer.ApiConsumers.SarConsumer,
+                                    HIS.Desktop.LocalStorage.ConfigSystem.ConfigSystems.URI_API_SAR,
+                                    Inventec.Desktop.Common.LanguageManager.LanguageManager.GetLanguage(),
+                                    HIS.Desktop.LocalStorage.Location.PrintStoreLocation.ROOT_PATH);
+
+                                richEditorMain.RunPrintTemplate("Mps000494", DelegateRunPrinter);
+                            }
+                            else if (isPrintNow)
+                                printPrescriptionProcessor.Print(previewType);
+                            else
+                                printPrescriptionProcessor.Print(printTypeCode, isPrintNow, previewType);
+                        }
+                        else
+                        {
+                            string savePrintMpsDefault = HIS.Desktop.LocalStorage.HisConfig.HisConfigs.Get<string>(HIS.Desktop.Plugins.AssignPrescriptionPK.Config.HisConfigCFG.SAVE_PRINT_MPS_DEFAULT);
+
+                            Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => savePrintMpsDefault), savePrintMpsDefault)
+                                + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => printTypeCode), printTypeCode)
+                                + "((this.expMestPrints != null && this.expMestPrints.Count > 0) || (this.serviceReqPrints != null && this.serviceReqPrints.Count > 0)) =" + ((this.expMestPrints != null && this.expMestPrints.Count > 0) || (this.serviceReqPrints != null && this.serviceReqPrints.Count > 0)));
+
+                            if ((String.IsNullOrEmpty(printTypeCode) || printTypeCode == "Mps000234")
+                                //&& ((this.expMestPrints != null && this.expMestPrints.Count > 0) || (this.serviceReqPrints != null && this.serviceReqPrints.Count > 0))
+                                && !GlobalStore.IsTreatmentIn && !GlobalStore.IsCabinet)
+                            {
+                                if (this.expMestPrints != null && this.expMestPrints.Count > 0)
                                 {
-                                    expMestPrintPlus = expMestPrints.Where(o => !this.outPrescriptionResultSDOs.ExpMests.Exists(k => k.ID == o.ID)).ToList();
+                                    if (this.outPrescriptionResultSDOs != null && this.outPrescriptionResultSDOs.ExpMests != null && this.outPrescriptionResultSDOs.ExpMests.Count > 0)
+                                    {
+                                        expMestPrintPlus = expMestPrints.Where(o => !this.outPrescriptionResultSDOs.ExpMests.Exists(k => k.ID == o.ID)).ToList();
+                                        expMestPrintPlus.AddRange(this.outPrescriptionResultSDOs.ExpMests);
+
+                                        if (this.expMestMedicinePrints != null && this.expMestMedicinePrints.Count > 0)
+                                        {
+                                            expMestMedicinePrintPlus = this.expMestMedicinePrints.Where(o => !this.outPrescriptionResultSDOs.ExpMests.Exists(k => k.ID == o.EXP_MEST_ID)).ToList();
+                                        }
+
+                                        if (this.expMestMaterialPrints != null && this.expMestMaterialPrints.Count > 0)
+                                        {
+                                            expMestMaterialPrintPlus = this.expMestMaterialPrints.Where(o => !this.outPrescriptionResultSDOs.ExpMests.Exists(k => k.ID == o.EXP_MEST_ID)).ToList();
+                                        }
+                                    }
+                                    else
+                                    {
+                                        expMestPrintPlus.AddRange(expMestPrints);
+                                        if (this.expMestMedicinePrints != null && this.expMestMedicinePrints.Count > 0)
+                                        {
+                                            expMestMedicinePrintPlus.AddRange(this.expMestMedicinePrints);
+                                        }
+
+                                        if (this.expMestMaterialPrints != null && this.expMestMaterialPrints.Count > 0)
+                                        {
+                                            expMestMaterialPrintPlus.AddRange(this.expMestMaterialPrints);
+                                        }
+                                    }
+                                }
+                                else if (this.outPrescriptionResultSDOs != null && this.outPrescriptionResultSDOs.ExpMests != null && this.outPrescriptionResultSDOs.ExpMests.Count > 0)
+                                {
                                     expMestPrintPlus.AddRange(this.outPrescriptionResultSDOs.ExpMests);
+                                }
 
-                                    if (this.expMestMedicinePrints != null && this.expMestMedicinePrints.Count > 0)
+                                if (this.outPrescriptionResultSDOs.Medicines != null && this.outPrescriptionResultSDOs.Medicines.Count > 0)
+                                {
+                                    expMestMedicinePrintPlus.AddRange(this.outPrescriptionResultSDOs.Medicines);
+                                }
+                                if (this.outPrescriptionResultSDOs.Materials != null && this.outPrescriptionResultSDOs.Materials.Count > 0)
+                                {
+                                    expMestMaterialPrintPlus.AddRange(this.outPrescriptionResultSDOs.Materials);
+                                }
+
+                                if (this.serviceReqPrints != null && this.serviceReqPrints.Count > 0)
+                                {
+                                    if (this.outPrescriptionResultSDOs != null && this.outPrescriptionResultSDOs.ServiceReqs != null && this.outPrescriptionResultSDOs.ServiceReqs.Count > 0)
                                     {
-                                        expMestMedicinePrintPlus = this.expMestMedicinePrints.Where(o => !this.outPrescriptionResultSDOs.ExpMests.Exists(k => k.ID == o.EXP_MEST_ID)).ToList();
+                                        serviceReqPrintPlus = this.serviceReqPrints.Where(o => !this.outPrescriptionResultSDOs.ServiceReqs.Exists(k => k.ID == o.ID)).ToList();
+                                        serviceReqPrintPlus.AddRange(this.outPrescriptionResultSDOs.ServiceReqs);
                                     }
-
-                                    if (this.expMestMaterialPrints != null && this.expMestMaterialPrints.Count > 0)
+                                    else
                                     {
-                                        expMestMaterialPrintPlus = this.expMestMaterialPrints.Where(o => !this.outPrescriptionResultSDOs.ExpMests.Exists(k => k.ID == o.EXP_MEST_ID)).ToList();
+                                        serviceReqPrintPlus.AddRange(this.serviceReqPrints);
                                     }
                                 }
-                                else
+                                else if (this.outPrescriptionResultSDOs != null && this.outPrescriptionResultSDOs.ServiceReqs != null && this.outPrescriptionResultSDOs.ServiceReqs.Count > 0)
                                 {
-                                    expMestPrintPlus.AddRange(expMestPrints);
-                                    if (this.expMestMedicinePrints != null && this.expMestMedicinePrints.Count > 0)
-                                    {
-                                        expMestMedicinePrintPlus.AddRange(this.expMestMedicinePrints);
-                                    }
-
-                                    if (this.expMestMaterialPrints != null && this.expMestMaterialPrints.Count > 0)
-                                    {
-                                        expMestMaterialPrintPlus.AddRange(this.expMestMaterialPrints);
-                                    }
-                                }
-                            }
-                            else if (this.outPrescriptionResultSDOs != null && this.outPrescriptionResultSDOs.ExpMests != null && this.outPrescriptionResultSDOs.ExpMests.Count > 0)
-                            {
-                                expMestPrintPlus.AddRange(this.outPrescriptionResultSDOs.ExpMests);
-                            }
-
-                            if (this.outPrescriptionResultSDOs.Medicines != null && this.outPrescriptionResultSDOs.Medicines.Count > 0)
-                            {
-                                expMestMedicinePrintPlus.AddRange(this.outPrescriptionResultSDOs.Medicines);
-                            }
-                            if (this.outPrescriptionResultSDOs.Materials != null && this.outPrescriptionResultSDOs.Materials.Count > 0)
-                            {
-                                expMestMaterialPrintPlus.AddRange(this.outPrescriptionResultSDOs.Materials);
-                            }
-
-                            if (this.serviceReqPrints != null && this.serviceReqPrints.Count > 0)
-                            {
-                                if (this.outPrescriptionResultSDOs != null && this.outPrescriptionResultSDOs.ServiceReqs != null && this.outPrescriptionResultSDOs.ServiceReqs.Count > 0)
-                                {
-                                    serviceReqPrintPlus = this.serviceReqPrints.Where(o => !this.outPrescriptionResultSDOs.ServiceReqs.Exists(k => k.ID == o.ID)).ToList();
                                     serviceReqPrintPlus.AddRange(this.outPrescriptionResultSDOs.ServiceReqs);
                                 }
-                                else
+
+                                if (this.outPrescriptionResultSDOs != null && this.outPrescriptionResultSDOs.ServiceReqMaties != null && this.outPrescriptionResultSDOs.ServiceReqMaties.Count > 0)
                                 {
-                                    serviceReqPrintPlus.AddRange(this.serviceReqPrints);
+                                    OutPatientPresResultSDO.ServiceReqMaties = this.outPrescriptionResultSDOs.ServiceReqMaties;
                                 }
-                            }
-                            else if (this.outPrescriptionResultSDOs != null && this.outPrescriptionResultSDOs.ServiceReqs != null && this.outPrescriptionResultSDOs.ServiceReqs.Count > 0)
-                            {
-                                serviceReqPrintPlus.AddRange(this.outPrescriptionResultSDOs.ServiceReqs);
-                            }
-
-                            if (this.outPrescriptionResultSDOs != null && this.outPrescriptionResultSDOs.ServiceReqMaties != null && this.outPrescriptionResultSDOs.ServiceReqMaties.Count > 0)
-                            {
-                                OutPatientPresResultSDO.ServiceReqMaties = this.outPrescriptionResultSDOs.ServiceReqMaties;
-                            }
-                            if (this.outPrescriptionResultSDOs != null && this.outPrescriptionResultSDOs.ServiceReqMeties != null && this.outPrescriptionResultSDOs.ServiceReqMeties.Count > 0)
-                            {
-                                OutPatientPresResultSDO.ServiceReqMeties = this.outPrescriptionResultSDOs.ServiceReqMeties;
-                            }
-
-                            if (expMestPrintPlus != null && expMestPrintPlus.Count > 0)
-                            {
-                                expMestPrintPlus = expMestPrintPlus.Where(o => o.EXP_MEST_TYPE_ID != IMSys.DbConfig.HIS_RS.HIS_EXP_MEST_TYPE.ID__DTT).ToList();
-                            }
-
-                            OutPatientPresResultSDO.ExpMests = expMestPrintPlus;
-                            OutPatientPresResultSDO.Medicines = expMestMedicinePrintPlus;
-                            OutPatientPresResultSDO.Materials = expMestMaterialPrintPlus;
-                            if (OutPatientPresResultSDO.Materials != null && OutPatientPresResultSDO.Materials.Count > 0)
-                                lstMatePrintMps494.AddRange(OutPatientPresResultSDO.Materials);
-                            OutPatientPresResultSDO.ServiceReqs = serviceReqPrintPlus;
-                            OutPatientPresResultSDOForPrints.Add(OutPatientPresResultSDO);
-                        }
-                        else
-                        {
-                            if (outPrescriptionResultSDOs != null)
-                            {
-                                if (outPrescriptionResultSDOs.Materials != null && outPrescriptionResultSDOs.Materials.Count > 0)
-                                    lstMatePrintMps494.AddRange(outPrescriptionResultSDOs.Materials);
-                                OutPatientPresResultSDOForPrints.Add(outPrescriptionResultSDOs);
-                            }
-                            else if (this.oldServiceReq != null)
-                            {
-                                if (this.oldExpMest != null)
+                                if (this.outPrescriptionResultSDOs != null && this.outPrescriptionResultSDOs.ServiceReqMeties != null && this.outPrescriptionResultSDOs.ServiceReqMeties.Count > 0)
                                 {
-                                    OutPatientPresResultSDO.ExpMests = new List<HIS_EXP_MEST>();
-                                    OutPatientPresResultSDO.ExpMests.Add(oldExpMest);
+                                    OutPatientPresResultSDO.ServiceReqMeties = this.outPrescriptionResultSDOs.ServiceReqMeties;
                                 }
 
-                                if (this.oldServiceReq != null)
+                                if (expMestPrintPlus != null && expMestPrintPlus.Count > 0)
                                 {
-                                    OutPatientPresResultSDO.ServiceReqs = new List<HIS_SERVICE_REQ>();
-                                    OutPatientPresResultSDO.ServiceReqs.Add(this.oldServiceReq);
+                                    expMestPrintPlus = expMestPrintPlus.Where(o => o.EXP_MEST_TYPE_ID != IMSys.DbConfig.HIS_RS.HIS_EXP_MEST_TYPE.ID__DTT).ToList();
                                 }
 
-                                if (this.expMestMedicineEditPrints != null)
-                                {
-                                    AutoMapper.Mapper.CreateMap<V_HIS_EXP_MEST_MEDICINE, HIS_EXP_MEST_MEDICINE>();
-                                    OutPatientPresResultSDO.Medicines = AutoMapper.Mapper.Map<List<HIS_EXP_MEST_MEDICINE>>(this.expMestMedicineEditPrints);
-                                }
-
-                                if (this.expMestMaterialEditPrints != null)
-                                {
-                                    AutoMapper.Mapper.CreateMap<V_HIS_EXP_MEST_MATERIAL, HIS_EXP_MEST_MATERIAL>();
-                                    OutPatientPresResultSDO.Materials = AutoMapper.Mapper.Map<List<HIS_EXP_MEST_MATERIAL>>(this.expMestMaterialEditPrints);
-                                    if (OutPatientPresResultSDO.Materials != null && OutPatientPresResultSDO.Materials.Count > 0)
-                                        lstMatePrintMps494.AddRange(OutPatientPresResultSDO.Materials);
-                                }
-                                if (this.serviceReqMetys != null && this.serviceReqMetys.Count > 0)
-                                {
-                                    OutPatientPresResultSDO.ServiceReqMeties = serviceReqMetys;
-                                }
-                                if (this.serviceReqMatys != null && this.serviceReqMatys.Count > 0)
-                                {
-                                    OutPatientPresResultSDO.ServiceReqMaties = serviceReqMatys;
-                                }
-
+                                OutPatientPresResultSDO.ExpMests = expMestPrintPlus;
+                                OutPatientPresResultSDO.Medicines = expMestMedicinePrintPlus;
+                                OutPatientPresResultSDO.Materials = expMestMaterialPrintPlus;
+                                if (OutPatientPresResultSDO.Materials != null && OutPatientPresResultSDO.Materials.Count > 0)
+                                    lstMatePrintMps494.AddRange(OutPatientPresResultSDO.Materials);
+                                OutPatientPresResultSDO.ServiceReqs = serviceReqPrintPlus;
                                 OutPatientPresResultSDOForPrints.Add(OutPatientPresResultSDO);
                             }
-                        }
-
-                        Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => OutPatientPresResultSDOForPrints), OutPatientPresResultSDOForPrints));
-
-                        printPrescriptionProcessor = new Library.PrintPrescription.PrintPrescriptionProcessor(OutPatientPresResultSDOForPrints, IsNotShow, this.currentModule, true);
-                        printPrescriptionProcessor.SetOutHospital((currentMediStockNhaThuocSelecteds != null && currentMediStockNhaThuocSelecteds.Count > 0));
-                    }
-                    this.isPrintNow = isPrintNow;
-                    if (printTypeCode == "Mps000494")
-                    {
-                        Inventec.Common.RichEditor.RichEditorStore richEditorMain = new Inventec.Common.RichEditor.RichEditorStore(ApiConsumer.ApiConsumers.SarConsumer, HIS.Desktop.LocalStorage.ConfigSystem.ConfigSystems.URI_API_SAR, Inventec.Desktop.Common.LanguageManager.LanguageManager.GetLanguage(), HIS.Desktop.LocalStorage.Location.PrintStoreLocation.ROOT_PATH);
-                        richEditorMain.RunPrintTemplate("Mps000494", DelegateRunPrinter);
-                    }
-                    else if (isPrintNow)
-                        printPrescriptionProcessor.Print(previewType);
-                    else
-                        printPrescriptionProcessor.Print(printTypeCode, isPrintNow, previewType);
-                }
-                Inventec.Common.Logging.LogSystem.Debug("PrescriptionSavePrintShowHasClickSave.2");
-            }
-            catch (Exception ex)
-            {
-                Inventec.Common.Logging.LogSystem.Warn(ex);
-            }
-        }
-
-        private void InDonPhongKhamTongHop(bool printPrescripsion, bool signPrescripsion, bool IsMenuButton)
-        {
-            try
-            {
-                Inventec.Common.Logging.LogSystem.Info("InDonPhongKhamTongHop printPrescripsion " + printPrescripsion + "signPrescripsion  " + signPrescripsion + " IsMenuButton " + IsMenuButton);
-                MPS.ProcessorBase.PrintConfig.PreviewType previewType = MPS.ProcessorBase.PrintConfig.PreviewType.PrintNow;
-                if (printPrescripsion && signPrescripsion)
-                {
-                    previewType = MPS.ProcessorBase.PrintConfig.PreviewType.EmrSignAndPrintNow;
-                }
-                else if (printPrescripsion && !signPrescripsion)
-                {
-                    previewType = MPS.ProcessorBase.PrintConfig.PreviewType.PrintNow;
-                }
-                else if (!printPrescripsion && !signPrescripsion)
-                {
-                    previewType = MPS.ProcessorBase.PrintConfig.PreviewType.ShowDialog;
-                }
-
-                Inventec.Common.Logging.LogSystem.Fatal("InDonPhongKhamTongHop previewType" + previewType);
-
-                CommonParam param = new CommonParam();
-                //Load expmest
-                HisExpMestFilter expMestFilter = new HisExpMestFilter();
-                expMestFilter.TDL_TREATMENT_ID = this.treatmentId;
-                List<HIS_EXP_MEST> expMests = new BackendAdapter(param)
-                     .Get<List<MOS.EFMODEL.DataModels.HIS_EXP_MEST>>("api/HisExpMest/Get", ApiConsumers.MosConsumer, expMestFilter, param);
-
-                List<HIS_EXP_MEST> expMestsFake = new List<HIS_EXP_MEST>();
-                List<HIS_SERVICE_REQ> ServiceReqFake = new List<HIS_SERVICE_REQ>();
-                if ((expMests == null || expMests.Count == 0) || (expMests != null && (expMests.Where(o => o.EXP_MEST_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_EXP_MEST_TYPE.ID__DPK).ToList() == null || expMests.Where(o => o.EXP_MEST_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_EXP_MEST_TYPE.ID__DPK).ToList().Count == 0)))
-                {
-                    if (IsMenuButton)
-                    {
-                        HIS_EXP_MEST obj = new HIS_EXP_MEST();
-                        //Inventec.Common.Mapper.DataObjectMapper.Map<HIS_EXP_MEST>(obj, treatment);
-                        obj.ID = -1;
-                        obj.SERVICE_REQ_ID = -1;
-                        expMestsFake.Add(obj);
-
-                        HIS_SERVICE_REQ hIS_SERVICE_REQ = new HIS_SERVICE_REQ();
-                        //Inventec.Common.Mapper.DataObjectMapper.Map<HIS_SERVICE_REQ>(hIS_SERVICE_REQ, treatmentData);
-                        hIS_SERVICE_REQ.ID = -1;
-                        hIS_SERVICE_REQ.TREATMENT_ID = treatmentId;
-                        hIS_SERVICE_REQ.REQUEST_ROOM_ID = this.currentModule.RoomId;
-                        ServiceReqFake.Add(hIS_SERVICE_REQ);
-
-                    }
-                    else
-                    {
-                        if (!HIS.Desktop.Plugins.AssignPrescriptionPK.Config.HisConfigCFG.IsAllowPrintNoMedicine)
-                        {
-                            return;
-                        }
-                        else
-                        {
-                            HIS_EXP_MEST obj = new HIS_EXP_MEST();
-                            //Inventec.Common.Mapper.DataObjectMapper.Map<HIS_EXP_MEST>(obj, treatment);
-                            obj.ID = -1;
-                            obj.SERVICE_REQ_ID = -1;
-                            expMestsFake.Add(obj);
-
-                            HIS_SERVICE_REQ hIS_SERVICE_REQ = new HIS_SERVICE_REQ();
-                            //Inventec.Common.Mapper.DataObjectMapper.Map<HIS_SERVICE_REQ>(hIS_SERVICE_REQ, treatment);
-                            hIS_SERVICE_REQ.ID = -1;
-                            hIS_SERVICE_REQ.TREATMENT_ID = treatmentId;
-                            hIS_SERVICE_REQ.REQUEST_ROOM_ID = this.currentModule.RoomId;
-                            ServiceReqFake.Add(hIS_SERVICE_REQ);
-
-                        }
-                    }
-                }
-
-                HisServiceReqFilter serviceReqFilter = new HisServiceReqFilter();
-                serviceReqFilter.TREATMENT_ID = this.treatmentId;
-                List<HIS_SERVICE_REQ> serviceReqs = new BackendAdapter(param)
-                     .Get<List<MOS.EFMODEL.DataModels.HIS_SERVICE_REQ>>("api/HisServiceReq/Get", ApiConsumers.MosConsumer, serviceReqFilter, param);
-
-                //Lays thuoc vat tu trong kho
-                IEnumerable<IGrouping<long?, HIS_EXP_MEST>> expMestGroups = null;
-                List<HIS_EXP_MEST_MEDICINE> expMestMedicines = null;
-                List<HIS_EXP_MEST_MATERIAL> expMestMaterials = null;
-                if (expMests != null && expMests.Count > 0)
-                {
-                    HisExpMestMedicineFilter expMestMedicineFilter = new HisExpMestMedicineFilter();
-                    expMestMedicineFilter.EXP_MEST_IDs = expMests.Select(o => o.ID).ToList();
-                    expMestMedicines = new BackendAdapter(param)
-                        .Get<List<MOS.EFMODEL.DataModels.HIS_EXP_MEST_MEDICINE>>("api/HisExpMestMedicine/Get", ApiConsumers.MosConsumer, expMestMedicineFilter, param);
-
-                    HisExpMestMaterialFilter expMestMaterialFilter = new HisExpMestMaterialFilter();
-                    expMestMaterialFilter.EXP_MEST_IDs = expMests.Select(o => o.ID).ToList();
-                    expMestMaterials = new BackendAdapter(param)
-                        .Get<List<MOS.EFMODEL.DataModels.HIS_EXP_MEST_MATERIAL>>("api/HisExpMestMaterial/Get", ApiConsumers.MosConsumer, expMestMaterialFilter, param);
-
-                    expMestGroups = expMests.Where(o => o.EXP_MEST_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_EXP_MEST_TYPE.ID__DPK).GroupBy(o => o.AGGR_EXP_MEST_ID);
-                }
-                string printTypeCode = HIS.Desktop.Plugins.AssignPrescriptionPK.Config.HisConfigCFG.MPS_PrintPrescription;
-                if (string.IsNullOrEmpty(printTypeCode))
-                {
-                    printTypeCode = PrintTypeCodeWorker.PRINT_TYPE_CODE__BIEUMAU__IN_GOP_DON_THUOC__MPS000234;
-
-                }
-
-                if (expMestGroups != null && expMestGroups.ToList().Count > 0)
-                {
-                    #region Có ExpMest
-                    foreach (var listExpMest in expMestGroups)
-                    {
-                        if (listExpMest.First().AGGR_EXP_MEST_ID == null)
-                        {
-                            foreach (var expMest in listExpMest)
+                            else
                             {
-                                List<long> serviceReqIdTemps = new List<long> { expMest.SERVICE_REQ_ID ?? 0 };
-                                List<long> expMestIdTemps = new List<long> { expMest.ID };
-                                List<HIS_SERVICE_REQ> serviceReqTemps = serviceReqs.Where(o => serviceReqIdTemps.Contains(o.ID)).ToList();
-                                List<HIS_EXP_MEST_MEDICINE> expMestMedicineTemps = expMestMedicines.Where(o => expMestIdTemps.Contains(o.EXP_MEST_ID ?? 0)).ToList();
-                                List<HIS_EXP_MEST_MATERIAL> expMestMaterialTemps = expMestMaterials.Where(o => expMestIdTemps.Contains(o.EXP_MEST_ID ?? 0)).ToList();
-
-                                List<OutPatientPresResultSDO> OutPatientPresResultSDOForPrints = new List<OutPatientPresResultSDO>();
-                                if ((expMestMedicineTemps != null && expMestMedicineTemps.Count > 0)
-                                            || (expMestMaterialTemps != null && expMestMaterialTemps.Count > 0))
+                                if (outPrescriptionResultSDOs != null)
                                 {
-                                    OutPatientPresResultSDO outPatientPresResultSDO = new OutPatientPresResultSDO();
-                                    outPatientPresResultSDO.ExpMests = new List<HIS_EXP_MEST> { expMest };
-                                    outPatientPresResultSDO.ServiceReqs = serviceReqTemps;
-                                    outPatientPresResultSDO.Medicines = expMestMedicineTemps;
-                                    outPatientPresResultSDO.Materials = expMestMaterialTemps;
-                                    OutPatientPresResultSDOForPrints.Add(outPatientPresResultSDO);
+                                    if (outPrescriptionResultSDOs.Materials != null && outPrescriptionResultSDOs.Materials.Count > 0)
+                                        lstMatePrintMps494.AddRange(outPrescriptionResultSDOs.Materials);
+                                    OutPatientPresResultSDOForPrints.Add(outPrescriptionResultSDOs);
                                 }
-                                PrintPrescriptionProcessor printPrescriptionProcessor = new PrintPrescriptionProcessor(OutPatientPresResultSDOForPrints, expMest, this.currentModule);
-                                printPrescriptionProcessor.Print(printTypeCode, previewType);
+                                else if (this.oldServiceReq != null)
+                                {
+                                    if (this.oldExpMest != null)
+                                    {
+                                        OutPatientPresResultSDO.ExpMests = new List<HIS_EXP_MEST>();
+                                        OutPatientPresResultSDO.ExpMests.Add(oldExpMest);
+                                    }
+
+                                    if (this.oldServiceReq != null)
+                                    {
+                                        OutPatientPresResultSDO.ServiceReqs = new List<HIS_SERVICE_REQ>();
+                                        OutPatientPresResultSDO.ServiceReqs.Add(this.oldServiceReq);
+                                    }
+
+                                    if (this.expMestMedicineEditPrints != null)
+                                    {
+                                        AutoMapper.Mapper.CreateMap<V_HIS_EXP_MEST_MEDICINE, HIS_EXP_MEST_MEDICINE>();
+                                        OutPatientPresResultSDO.Medicines = AutoMapper.Mapper.Map<List<HIS_EXP_MEST_MEDICINE>>(this.expMestMedicineEditPrints);
+                                    }
+
+                                    if (this.expMestMaterialEditPrints != null)
+                                    {
+                                        AutoMapper.Mapper.CreateMap<V_HIS_EXP_MEST_MATERIAL, HIS_EXP_MEST_MATERIAL>();
+                                        OutPatientPresResultSDO.Materials = AutoMapper.Mapper.Map<List<HIS_EXP_MEST_MATERIAL>>(this.expMestMaterialEditPrints);
+                                        if (OutPatientPresResultSDO.Materials != null && OutPatientPresResultSDO.Materials.Count > 0)
+                                            lstMatePrintMps494.AddRange(OutPatientPresResultSDO.Materials);
+                                    }
+                                    if (this.serviceReqMetys != null && this.serviceReqMetys.Count > 0)
+                                    {
+                                        OutPatientPresResultSDO.ServiceReqMeties = serviceReqMetys;
+                                    }
+                                    if (this.serviceReqMatys != null && this.serviceReqMatys.Count > 0)
+                                    {
+                                        OutPatientPresResultSDO.ServiceReqMaties = serviceReqMatys;
+                                    }
+
+                                    OutPatientPresResultSDOForPrints.Add(OutPatientPresResultSDO);
+                                }
                             }
-                        }
-                        else
-                        {
-                            HIS_EXP_MEST expMestPrimary = expMests.FirstOrDefault(o => o.ID == listExpMest.First().AGGR_EXP_MEST_ID);
-                            List<long> serviceReqIdTemps = listExpMest.Select(o => o.SERVICE_REQ_ID ?? 0).ToList();
-                            List<long> expMestIdTemps = listExpMest.Select(o => o.ID).ToList();
+                            Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => OutPatientPresResultSDOForPrints), OutPatientPresResultSDOForPrints));
 
-                            List<HIS_SERVICE_REQ> serviceReqTemps = serviceReqs.Where(o => serviceReqIdTemps.Contains(o.ID)).ToList();
-                            List<HIS_EXP_MEST_MEDICINE> expMestMedicineTemps = expMestMedicines.Where(o => expMestIdTemps.Contains(o.EXP_MEST_ID ?? 0)).ToList();
-                            List<HIS_EXP_MEST_MATERIAL> expMestMaterialTemps = expMestMaterials.Where(o => expMestIdTemps.Contains(o.EXP_MEST_ID ?? 0)).ToList();
+                            printPrescriptionProcessor = new Library.PrintPrescription.PrintPrescriptionProcessor(OutPatientPresResultSDOForPrints, IsNotShow, this.currentModule, true);
+                            printPrescriptionProcessor.SetOutHospital((currentMediStockNhaThuocSelecteds != null && currentMediStockNhaThuocSelecteds.Count > 0));
 
-                            List<OutPatientPresResultSDO> OutPatientPresResultSDOForPrints = new List<OutPatientPresResultSDO>();
-                            if ((expMestMedicineTemps != null && expMestMedicineTemps.Count > 0)
-                                        || (expMestMaterialTemps != null && expMestMaterialTemps.Count > 0))
+                            this.isPrintNow = isPrintNow;
+                            if (printTypeCode == "Mps000494")
                             {
-                                OutPatientPresResultSDO outPatientPresResultSDO = new OutPatientPresResultSDO();
-                                outPatientPresResultSDO.ExpMests = listExpMest.ToList();
-                                outPatientPresResultSDO.ServiceReqs = serviceReqTemps;
-                                outPatientPresResultSDO.Medicines = expMestMedicineTemps;
-                                outPatientPresResultSDO.Materials = expMestMaterialTemps;
-                                OutPatientPresResultSDOForPrints.Add(outPatientPresResultSDO);
+                                Inventec.Common.RichEditor.RichEditorStore richEditorMain = new Inventec.Common.RichEditor.RichEditorStore(ApiConsumer.ApiConsumers.SarConsumer, HIS.Desktop.LocalStorage.ConfigSystem.ConfigSystems.URI_API_SAR, Inventec.Desktop.Common.LanguageManager.LanguageManager.GetLanguage(), HIS.Desktop.LocalStorage.Location.PrintStoreLocation.ROOT_PATH);
+                                richEditorMain.RunPrintTemplate("Mps000494", DelegateRunPrinter);
                             }
-                            PrintPrescriptionProcessor printPrescriptionProcessor = new PrintPrescriptionProcessor(OutPatientPresResultSDOForPrints, expMestPrimary, this.currentModule);
-                            printPrescriptionProcessor.Print(printTypeCode, previewType);
+                            else if (isPrintNow)
+                                printPrescriptionProcessor.Print(previewType);
+                            else
+                                printPrescriptionProcessor.Print(printTypeCode, isPrintNow, previewType);
                         }
+                        
                     }
-                    #endregion
                 }
-                else
-                {
-                    List<OutPatientPresResultSDO> OutPatientPresResultSDOForPrints = new List<OutPatientPresResultSDO>();
-
-                    OutPatientPresResultSDO outPatientPresResultSDO = new OutPatientPresResultSDO();
-                    outPatientPresResultSDO.ExpMests = expMestsFake;
-                    outPatientPresResultSDO.ServiceReqs = ServiceReqFake;
-                    outPatientPresResultSDO.Medicines = new List<HIS_EXP_MEST_MEDICINE>();
-                    outPatientPresResultSDO.Materials = new List<HIS_EXP_MEST_MATERIAL>();
-                    OutPatientPresResultSDOForPrints.Add(outPatientPresResultSDO);
-
-                    PrintPrescriptionProcessor printPrescriptionProcessor = new PrintPrescriptionProcessor(OutPatientPresResultSDOForPrints, expMestsFake.First(), this.currentModule);
-                    printPrescriptionProcessor.Print(previewType);
-                }
-
-                // lấy thuốc vật tự ngoài kho
-                HisServiceReqFilter Filter = new HisServiceReqFilter();
-                Filter.TREATMENT_ID = this.treatmentId;
-                Filter.SERVICE_REQ_TYPE_ID = IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__DONK;
-                List<HIS_SERVICE_REQ> serviceReqDonks = new BackendAdapter(param)
-                     .Get<List<MOS.EFMODEL.DataModels.HIS_SERVICE_REQ>>("api/HisServiceReq/Get", ApiConsumers.MosConsumer, Filter, param);
-                if (serviceReqDonks != null)
-                {
-                    HisServiceReqMetyFilter metyFilters = new HisServiceReqMetyFilter();
-                    metyFilters.SERVICE_REQ_IDs = serviceReqDonks.Select(o => o.ID).ToList();
-                    var serviceReqMeties = new BackendAdapter(new CommonParam()).Get<List<HIS_SERVICE_REQ_METY>>("api/HisServiceReqMety/Get", ApiConsumer.ApiConsumers.MosConsumer, metyFilters, new CommonParam());
-
-                    HisServiceReqMetyFilter matyFilters = new HisServiceReqMetyFilter();
-                    matyFilters.SERVICE_REQ_IDs = serviceReqDonks.Select(o => o.ID).ToList();
-                    var serviceReqMaties = new BackendAdapter(new CommonParam()).Get<List<HIS_SERVICE_REQ_MATY>>("api/HisServiceReqMaty/Get", ApiConsumer.ApiConsumers.MosConsumer, matyFilters, new CommonParam());
-
-                    List<OutPatientPresResultSDO> OutPatientPresResultSDOForPrints = new List<OutPatientPresResultSDO>();
-
-                    OutPatientPresResultSDO outPatientPresResultSDO = new OutPatientPresResultSDO();
-                    outPatientPresResultSDO.ExpMests = new List<HIS_EXP_MEST>();
-                    outPatientPresResultSDO.ServiceReqs = serviceReqDonks;
-                    outPatientPresResultSDO.Medicines = new List<HIS_EXP_MEST_MEDICINE>();
-                    outPatientPresResultSDO.Materials = new List<HIS_EXP_MEST_MATERIAL>();
-                    outPatientPresResultSDO.ServiceReqMaties = serviceReqMaties;
-                    outPatientPresResultSDO.ServiceReqMeties = serviceReqMeties;
-                    OutPatientPresResultSDOForPrints.Add(outPatientPresResultSDO);
-
-                    PrintPrescriptionProcessor printPrescriptionProcessor = new PrintPrescriptionProcessor(OutPatientPresResultSDOForPrints, null, this.currentModule);
-                    printPrescriptionProcessor.Print(printTypeCode, previewType);
-                }
+                    
+                Inventec.Common.Logging.LogSystem.Debug("PrescriptionSavePrintShowHasClickSave.2");
             }
             catch (Exception ex)
             {
@@ -1004,5 +1049,11 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             return result;
         }
 
+    }
+    public class BankInfo
+    {
+        public BankInfo() { }
+        public string BANK { get; set; }
+        public string VALUE { get; set; }
     }
 }

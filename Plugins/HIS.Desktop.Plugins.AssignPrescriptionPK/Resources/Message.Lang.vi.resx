@@ -184,7 +184,7 @@
     <value>Trùng nhóm dược tính: 
 	{0}</value>
   </data>
-	<data name="CacThuocCoCungMaGroupATC_BanCoMuonTiepTuc" xml:space="preserve">
+  <data name="CacThuocCoCungMaGroupATC_BanCoMuonTiepTuc" xml:space="preserve">
     <value>Trùng nhóm dược lý: 
 	{0}</value>
   </data>
@@ -320,9 +320,6 @@
   <data name="Plugin_AssignPrescription__BenhNhanDoiTuongTTBhytBatBuocPhaiNhapDuongDung" xml:space="preserve">
     <value>Đối tượng bệnh nhân BHYT bắt buộc phải nhập đường dùng khi chỉ định thuốc</value>
   </data>
-  <data name="Plugin_AssignPrescription__BatBuocPhaiNhapDuongDung" xml:space="preserve">
-    <value>Bắt buộc phải nhập đường dùng khi chỉ định thuốc</value>
-  </data>
   <data name="Plugin_AssignPrescription__BuoiChieu" xml:space="preserve">
     <value>buổi chiều</value>
   </data>
@@ -345,13 +342,13 @@
     <value>Vật tư đã kê trong ngày</value>
   </data>
   <data name="Plugin_AssignPrescription__Chieu" xml:space="preserve">
-    <value>Chiều {0} {1}</value>
+    <value>Chiều: {0} {1}</value>
   </data>
   <data name="Plugin_AssignPrescription__ChuaChonNgayChiDinh" xml:space="preserve">
     <value>Chưa chọn ngày chỉ định</value>
   </data>
   <data name="Plugin_AssignPrescription__DoiTuongBHYTBatBuocPhaiNhapHDSD" xml:space="preserve">
-    <value>Bắt buộc phải nhập hướng dẫn sử dụng cho thuốc</value>
+    <value>Bắt buộc phải nhập liều dùng thuốc</value>
   </data>
   <data name="Plugin_AssignPrescription__HDSDVuotQuaKyTu" xml:space="preserve">
     <value>Hướng dẫn sử dụng vượt độ dài cho phép</value>
@@ -395,9 +392,6 @@
   <data name="Plugin_AssignPrescription__NgayUongTemp4" xml:space="preserve">
     <value>{0}{1} ngày. Ngày {2}{3} lần</value>
   </data>
-  <data name="Plugin_AssignPrescription__NgayUongTemp5" xml:space="preserve">
-    <value>{0}, {1}</value>
-  </data>
   <data name="Plugin_AssignPrescription__NgayXVienBuoiYZ" xml:space="preserve">
     <value>Ngày {0}{1} {2} {3}</value>
   </data>
@@ -413,8 +407,14 @@
   <data name="Plugin_AssignPrescription__PopupMenu_SuaSoNgay" xml:space="preserve">
     <value>Sửa số ngày</value>
   </data>
+	<data name="Plugin_AssignPrescription__PopupMenu_ThongTinThuoc" xml:space="preserve">
+    <value>Thông tin thuốc</value>
+  </data>
+	<data name="Plugin_AssignPrescription__PopupMenu_DanhGiaThongTinThuoc" xml:space="preserve">
+    <value>Đánh giá thông tin thuốc</value>
+  </data>
   <data name="Plugin_AssignPrescription__Sang" xml:space="preserve">
-    <value>Sáng {0} {1}</value>
+    <value>Sáng: {0} {1}</value>
   </data>
   <data name="Plugin_AssignPrescription__SoLuongXuatLonHonSpoLuongKhadungTrongKho" xml:space="preserve">
     <value>Số lượng kê đã vượt quá số khả dụng trong kho.</value>
@@ -459,7 +459,7 @@
     <value>Tiền BHYT đã kê vượt quá mức giới hạn</value>
   </data>
   <data name="Plugin_AssignPrescription__Toi" xml:space="preserve">
-    <value>Tối {0} {1}</value>
+    <value>Tối: {0} {1}</value>
   </data>
   <data name="Plugin_AssignPrescription__TongTienHaoPhiVuotQuaDinhMucHaoPhiKhongTheChonDichVuNay" xml:space="preserve">
     <value>Tổng số tiền hao phí {0} đã vượt quá số tiền định mức hao phí {1} của dịch vụ chính {2}. Các thuốc/vật tư hao phí đã kê: {3}</value>
@@ -468,7 +468,7 @@
     <value>Tổng số tiền của các dịch vụ đã chỉ định của bệnh nhân đối thuộc diện điều trị {0} cho BHYT là {1} đã vượt quá mức giới hạn {2}</value>
   </data>
   <data name="Plugin_AssignPrescription__Trua" xml:space="preserve">
-    <value>Trưa {0} {1}</value>
+    <value>Trưa: {0} {1}</value>
   </data>
   <data name="Plugin_AssignPrescription__TruongSoLuongNhapSaiDinhDang" xml:space="preserve">
     <value>Số lượng chỉ cho phép nhập ký tự số (0-9), dấu phân tách thập phân ("," "." vd: 0.5; 0,5) và dấu phân số (/ vd: 3/4)</value>
@@ -605,24 +605,6 @@
   <data name="WarnThuocVatTuCoHanSuDungNhoHonThoiGianYLenh" xml:space="preserve">
     <value>Thuốc/ vật tư  ({0} - {1}) có hạn sử dụng nhỏ hơn thời gian y lệnh. Ngày hết hạn: {2} --- Ngày y lệnh: {3}</value>
   </data>
-  <data name="Plugin_AssignPrescription__BanChuaNhapLyDoXuat" xml:space="preserve">
-    <value>Bạn chưa nhập lý do xuất</value>
-  </data>
-  <data name="Plugin_AssignPrescription__ThuocVatTuChuaNhapLyDoXuat" xml:space="preserve">
-    <value>Thuốc/vật tư {0} chưa nhập lý do xuất</value>
-  </data>
-  <data name="Plugin_AssignPrescription__BoSungThongTinChanDoanPhuHoacDoiDoiTuongThanhToan" xml:space="preserve">
-    <value>Bạn cần bổ sung thông tin ”Chẩn đoán phụ" hoặc đối tượng thanh toán của thuốc/vật tư {0} cần đổi đối tượng thanh toán sang “Viện phí”</value>
-  </data>
-  <data name="Plugin_AssignPrescription__ChuongTrinh" xml:space="preserve">
-    <value>Chương trình {0} bắt buộc chọn diện điều trị ngoại trú hồ sơ sẽ được tự động cập nhật sang diện điều trị ngoại trú</value>
-  </data>
-  <data name="BanChuaChonKhoXuat" xml:space="preserve">
-    <value>Bạn chưa chọn kho xuất</value>
-  </data>
-  <data name="ThuocVatTuKhongDuocPhepKeLe" xml:space="preserve">
-    <value>Thuốc (vật tư) không được phép kê lẻ</value>
-  </data>
   <data name="ThuocVatTuChuaNhapLyDoKeQuaSoLuongToiDaTrongDon" xml:space="preserve">
     <value>Thuốc/vật tư {0} chưa nhập lý do kê quá số lượng tối đa trong đơn.</value>
   </data>
@@ -646,5 +628,38 @@
   </data>
   <data name="TrongTruongHopCoVuiLongNhapLyDo" xml:space="preserve">
     <value>Trong trường hợp chọn “Có”, vui lòng nhập lý do.”</value>
+  </data>
+  <data name="Plugin_AssignPrescription__BatBuocPhaiNhapDuongDung" xml:space="preserve">
+    <value>Bắt buộc phải nhập đường dùng khi chỉ định thuốc</value>
+  </data>
+  <data name="Plugin_AssignPrescription__NgayUongTemp5" xml:space="preserve">
+    <value>{0}, {1}</value>
+  </data>
+  <data name="Plugin_AssignPrescription__BanChuaNhapLyDoXuat" xml:space="preserve">
+    <value>Bạn chưa nhập lý do xuất</value>
+  </data>
+  <data name="Plugin_AssignPrescription__ThuocVatTuChuaNhapLyDoXuat" xml:space="preserve">
+    <value>Thuốc/vật tư {0} chưa nhập lý do xuất</value>
+  </data>
+  <data name="Plugin_AssignPrescription__BoSungThongTinChanDoanPhuHoacDoiDoiTuongThanhToan" xml:space="preserve">
+    <value>Bạn cần bổ sung thông tin ”Chẩn đoán phụ" hoặc đối tượng thanh toán của thuốc/vật tư {0} cần đổi đối tượng thanh toán sang “Viện phí”</value>
+  </data>
+  <data name="Plugin_AssignPrescription__ChuongTrinh" xml:space="preserve">
+    <value>Chương trình {0} bắt buộc chọn diện điều trị ngoại trú hồ sơ sẽ được tự động cập nhật sang diện điều trị ngoại trú</value>
+  </data>
+  <data name="BanChuaChonKhoXuat" xml:space="preserve">
+    <value>Bạn chưa chọn kho xuất</value>
+  </data>
+  <data name="ThuocVatTuKhongDuocPhepKeLe" xml:space="preserve">
+    <value>Thuốc (vật tư) không được phép kê lẻ</value>
+  </data>
+  <data name="BanNhapQuaKyTuChoTruongDauHieuLamSang" xml:space="preserve">
+    <value>Bạn nhập quá ký tự cho trường Dấu hiệu lâm sàng</value>
+  </data>
+  <data name="DuLieuTruongQuaTrinhBenhLyTomTatKetQuaVuotQuaKyTu" xml:space="preserve">
+    <value>Dữ liệu trường quá trình bệnh lý, tóm tắt kết quả vượt quá ký tự</value>
+  </data>
+  <data name="BanCoMuonTiepTucKhong" xml:space="preserve">
+    <value>Bạn có muốn sửa không</value>
   </data>
 </root>

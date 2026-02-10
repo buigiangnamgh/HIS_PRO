@@ -45,6 +45,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.layoutControl1 = new DevExpress.XtraLayout.LayoutControl();
             this.btnSave = new DevExpress.XtraEditors.SimpleButton();
             this.mem = new DevExpress.XtraEditors.MemoEdit();
@@ -52,14 +53,14 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.layoutControlItem1 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem2 = new DevExpress.XtraLayout.LayoutControlItem();
             this.emptySpaceItem1 = new DevExpress.XtraLayout.EmptySpaceItem();
-            this.barManager1 = new DevExpress.XtraBars.BarManager();
+            this.barManager1 = new DevExpress.XtraBars.BarManager(this.components);
             this.bar1 = new DevExpress.XtraBars.Bar();
             this.barButtonItem1 = new DevExpress.XtraBars.BarButtonItem();
             this.barDockControlTop = new DevExpress.XtraBars.BarDockControl();
             this.barDockControlBottom = new DevExpress.XtraBars.BarDockControl();
             this.barDockControlLeft = new DevExpress.XtraBars.BarDockControl();
             this.barDockControlRight = new DevExpress.XtraBars.BarDockControl();
-            this.dxValidationProvider1 = new DevExpress.XtraEditors.DXErrorProvider.DXValidationProvider();
+            this.dxValidationProvider1 = new DevExpress.XtraEditors.DXErrorProvider.DXValidationProvider(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).BeginInit();
             this.layoutControl1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mem.Properties)).BeginInit();
@@ -76,20 +77,18 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.layoutControl1.Controls.Add(this.btnSave);
             this.layoutControl1.Controls.Add(this.mem);
             this.layoutControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.layoutControl1.Location = new System.Drawing.Point(0, 38);
-            this.layoutControl1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.layoutControl1.Location = new System.Drawing.Point(0, 29);
             this.layoutControl1.Name = "layoutControl1";
             this.layoutControl1.Root = this.layoutControlGroup1;
-            this.layoutControl1.Size = new System.Drawing.Size(516, 158);
+            this.layoutControl1.Size = new System.Drawing.Size(387, 130);
             this.layoutControl1.TabIndex = 0;
             this.layoutControl1.Text = "layoutControl1";
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(331, 128);
-            this.btnSave.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSave.Location = new System.Drawing.Point(248, 106);
             this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(182, 27);
+            this.btnSave.Size = new System.Drawing.Size(137, 22);
             this.btnSave.StyleController = this.layoutControl1;
             this.btnSave.TabIndex = 5;
             this.btnSave.Text = "Đồng ý (Ctrl S)";
@@ -97,10 +96,9 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             // mem
             // 
-            this.mem.Location = new System.Drawing.Point(3, 23);
-            this.mem.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.mem.Location = new System.Drawing.Point(2, 18);
             this.mem.Name = "mem";
-            this.mem.Size = new System.Drawing.Size(510, 99);
+            this.mem.Size = new System.Drawing.Size(383, 84);
             this.mem.StyleController = this.layoutControl1;
             this.mem.TabIndex = 4;
             // 
@@ -114,7 +112,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.emptySpaceItem1});
             this.layoutControlGroup1.Location = new System.Drawing.Point(0, 0);
             this.layoutControlGroup1.Name = "layoutControlGroup1";
-            this.layoutControlGroup1.Size = new System.Drawing.Size(516, 158);
+            this.layoutControlGroup1.Size = new System.Drawing.Size(387, 130);
             this.layoutControlGroup1.TextVisible = false;
             // 
             // layoutControlItem1
@@ -124,26 +122,26 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.layoutControlItem1.Control = this.mem;
             this.layoutControlItem1.Location = new System.Drawing.Point(0, 0);
             this.layoutControlItem1.Name = "layoutControlItem1";
-            this.layoutControlItem1.Size = new System.Drawing.Size(516, 125);
+            this.layoutControlItem1.Size = new System.Drawing.Size(387, 104);
             this.layoutControlItem1.Text = "Phương pháp điều trị:";
             this.layoutControlItem1.TextLocation = DevExpress.Utils.Locations.Top;
-            this.layoutControlItem1.TextSize = new System.Drawing.Size(134, 17);
+            this.layoutControlItem1.TextSize = new System.Drawing.Size(104, 13);
             // 
             // layoutControlItem2
             // 
             this.layoutControlItem2.Control = this.btnSave;
-            this.layoutControlItem2.Location = new System.Drawing.Point(328, 125);
+            this.layoutControlItem2.Location = new System.Drawing.Point(246, 104);
             this.layoutControlItem2.Name = "layoutControlItem2";
-            this.layoutControlItem2.Size = new System.Drawing.Size(188, 33);
+            this.layoutControlItem2.Size = new System.Drawing.Size(141, 26);
             this.layoutControlItem2.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem2.TextVisible = false;
             // 
             // emptySpaceItem1
             // 
             this.emptySpaceItem1.AllowHotTrack = false;
-            this.emptySpaceItem1.Location = new System.Drawing.Point(0, 125);
+            this.emptySpaceItem1.Location = new System.Drawing.Point(0, 104);
             this.emptySpaceItem1.Name = "emptySpaceItem1";
-            this.emptySpaceItem1.Size = new System.Drawing.Size(328, 33);
+            this.emptySpaceItem1.Size = new System.Drawing.Size(246, 26);
             this.emptySpaceItem1.TextSize = new System.Drawing.Size(0, 0);
             // 
             // barManager1
@@ -183,32 +181,28 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             this.barDockControlTop.CausesValidation = false;
             this.barDockControlTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.barDockControlTop.Location = new System.Drawing.Point(0, 0);
-            this.barDockControlTop.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.barDockControlTop.Size = new System.Drawing.Size(516, 38);
+            this.barDockControlTop.Size = new System.Drawing.Size(387, 29);
             // 
             // barDockControlBottom
             // 
             this.barDockControlBottom.CausesValidation = false;
             this.barDockControlBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.barDockControlBottom.Location = new System.Drawing.Point(0, 196);
-            this.barDockControlBottom.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.barDockControlBottom.Size = new System.Drawing.Size(516, 0);
+            this.barDockControlBottom.Location = new System.Drawing.Point(0, 159);
+            this.barDockControlBottom.Size = new System.Drawing.Size(387, 0);
             // 
             // barDockControlLeft
             // 
             this.barDockControlLeft.CausesValidation = false;
             this.barDockControlLeft.Dock = System.Windows.Forms.DockStyle.Left;
-            this.barDockControlLeft.Location = new System.Drawing.Point(0, 38);
-            this.barDockControlLeft.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.barDockControlLeft.Size = new System.Drawing.Size(0, 158);
+            this.barDockControlLeft.Location = new System.Drawing.Point(0, 29);
+            this.barDockControlLeft.Size = new System.Drawing.Size(0, 130);
             // 
             // barDockControlRight
             // 
             this.barDockControlRight.CausesValidation = false;
             this.barDockControlRight.Dock = System.Windows.Forms.DockStyle.Right;
-            this.barDockControlRight.Location = new System.Drawing.Point(516, 38);
-            this.barDockControlRight.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.barDockControlRight.Size = new System.Drawing.Size(0, 158);
+            this.barDockControlRight.Location = new System.Drawing.Point(387, 29);
+            this.barDockControlRight.Size = new System.Drawing.Size(0, 130);
             // 
             // dxValidationProvider1
             // 
@@ -216,15 +210,14 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             // 
             // frmTreatmentMethod
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(516, 196);
+            this.ClientSize = new System.Drawing.Size(387, 159);
             this.Controls.Add(this.layoutControl1);
             this.Controls.Add(this.barDockControlLeft);
             this.Controls.Add(this.barDockControlRight);
             this.Controls.Add(this.barDockControlBottom);
             this.Controls.Add(this.barDockControlTop);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "frmTreatmentMethod";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Phương pháp điều trị";

@@ -32,8 +32,11 @@ using MOS.Filter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using DevExpress.XtraPrinting.Native;
 
 namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
 {
@@ -49,9 +52,10 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 //Tại màn hình kê đơn, nếu phòng mà người dùng đang làm việc có "Giới hạn thuốc được phép sử dụng" (IS_RESTRICT_MEDICINE_TYPE trong HIS_ROOM bằng true) thì danh sách thuốc khi kê thuốc trong kho chỉ hiển thị các thuốc được khai cấu hình tương ứng với phòng đấy (dữ liệu lưu trong bảng HIS_MEDICINE_TYPE_ROOM)
                 dMediStock1s = new List<DMediStock1ADO>();
                 dMediStock1s.AddRange(this.mediStockD1ADOs);
-
+                dMediStock1s = dMediStock1s.OrderByDescending(o => o.IS_PRIORITY == 1).ThenBy(o => o.PARENT_NAME).ToList();
+                LogSystem.Info("dMediStock1s.Count: " + dMediStock1s.Where(o => o.IS_PRIORITY == 1).ToList().Count());
                 gridViewMediMaty.BeginUpdate();
-                gridViewMediMaty.Columns.Clear();
+                gridViewMediMaty.Columns.Clear();   
                 popupControlContainerMediMaty.Width = theRequiredWidth;
                 popupControlContainerMediMaty.Height = theRequiredHeight;
 
@@ -262,6 +266,19 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 col15.VisibleIndex = 16;
                 gridViewMediMaty.Columns.Add(col15);
 
+
+                DevExpress.XtraGrid.Columns.GridColumn colDes = new DevExpress.XtraGrid.Columns.GridColumn();
+                colDes.FieldName = "DESCRIPTION";
+                colDes.Caption = Inventec.Common.Resource.Get.Value
+                    ("IVT_LANGUAGE_KEY__UC_HIS_ASSIGN_PRESCRIPTION__GV_MEDICINE__GC_DESCRIPTION",
+                    Resources.ResourceLanguageManager.LanguagefrmAssignPrescription,
+                    Inventec.Desktop.Common.LanguageManager.LanguageManager.GetCulture());
+                colDes.Width = 150;
+                colDes.VisibleIndex = 17;
+                gridViewMediMaty.Columns.Add(colDes);
+
+
+
                 if (HisConfigCFG.GroupOption)
                 {
                     DevExpress.XtraGrid.Columns.GridColumn col17 = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -355,6 +372,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 //Tại màn hình kê đơn, nếu phòng mà người dùng đang làm việc có "Giới hạn thuốc được phép sử dụng" (IS_RESTRICT_MEDICINE_TYPE trong HIS_ROOM bằng true) thì danh sách thuốc khi kê thuốc trong kho chỉ hiển thị các thuốc được khai cấu hình tương ứng với phòng đấy (dữ liệu lưu trong bảng HIS_MEDICINE_TYPE_ROOM)
                 dMediStock1s = new List<DMediStock1ADO>();
                 dMediStock1s.AddRange(this.mediStockD1ADOs);
+                dMediStock1s = dMediStock1s.OrderByDescending(o => o.IS_PRIORITY == 1).ThenBy(o => o.PARENT_NAME).ToList();
 
                 gridViewMediMaty.BeginUpdate();
                 gridViewMediMaty.Columns.Clear();
@@ -569,9 +587,9 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 gridViewMediMaty.Columns.Add(col16);
 
                 DevExpress.XtraGrid.Columns.GridColumn col15 = new DevExpress.XtraGrid.Columns.GridColumn();
-                col15.FieldName = "MATERIAL_TYPE_MAP_NAME";
+                col15.FieldName = "DESCRIPTION";
                 col15.Caption = Inventec.Common.Resource.Get.Value
-                    ("IVT_LANGUAGE_KEY__UC_HIS_ASSIGN_PRESCRIPTION__GV_MEDICINE__GC_MATERIAL_TYPE_MAP_NAME",
+                    ("IVT_LANGUAGE_KEY__UC_HIS_ASSIGN_PRESCRIPTION__GV_MEDICINE__GC_DESCRIPTION",
                     Resources.ResourceLanguageManager.LanguagefrmAssignPrescription,
                     Inventec.Desktop.Common.LanguageManager.LanguageManager.GetCulture());
                 col15.Width = 150;
@@ -751,16 +769,17 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                             //- Với kê tủ trực, kê thuốc điều trị:
                             //--nếu thuốc có hdsd => nhảy con trỏ vào ô số lượng sau khi chọn thuốc.
                             //--nếu không có hdsd => như kê đơn phòng khám
-                            if (GlobalStore.IsTreatmentIn || GlobalStore.IsCabinet || GlobalStore.IsExecutePTTT)
-                            {
-                                spinAmount.Focus();
-                                spinAmount.SelectAll();
-                            }
-                            else
+                            //if (GlobalStore.IsTreatmentIn || GlobalStore.IsCabinet || GlobalStore.IsExecutePTTT)
+                            //{
+                            //    spinAmount.Focus();
+                            //    spinAmount.SelectAll();
+                            //}
+                            //else
                             {
                                 //this.btnAdd.Focus();
                                 this.txtTutorial.Focus();
                                 this.txtTutorial.SelectionStart = txtTutorial.Text.Length + 1;
+                                this.memHtu.SelectionStart = memHtu.Text.Length + 1;
                             }
                         }
                         //Ngược lại kiểm tra có cấu hình PM cho phép sau khi chọn thuốc thì nhảy vào ô số lượng hay ô ngày
@@ -800,11 +819,11 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                     }
 
                     ///Khoi tao cbo PatientType va set gia tri mac dinh theo service
-                    FillDataIntoPatientTypeCombo(this.currentMedicineTypeADOForEdit, cboPatientType);
+                    FillDataIntoPatientTypeCombo(this.currentMedicineTypeADOForEdit, cboPatientType);    
                     SetPatientType();
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex)      
             {
                 Inventec.Common.Logging.LogSystem.Error(ex);
             }
@@ -829,7 +848,16 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                             if (acMety != null && acMety.Count > 0)
                             {
                                 acMety = acMety.OrderByDescending(o => o.ID).ToList();
-                                cboPatientType.EditValue = acMety.FirstOrDefault().PATIENT_TYPE_ID;
+                                var patientType = this.listSourcePatientType.FirstOrDefault(o => o.ID == acMety.FirstOrDefault().PATIENT_TYPE_ID);
+                                if (patientType != null)
+                                {
+                                    cboPatientType.EditValue = patientType.ID;
+                                }
+                                else
+                                {
+                                    cboPatientType.EditValue = listSourcePatientType.FirstOrDefault().ID;
+                                }
+
                                 IsHasPatientType = true;
                             }
                         }
@@ -859,11 +887,28 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                         var SereServ = new BackendAdapter(param).Get<List<HIS_SERE_SERV>>("api/HisSereServ/Get", ApiConsumers.MosConsumer, filter, param);
                         if (SereServ != null && SereServ.Count > 0)
                         {
-                            cboPatientType.EditValue = SereServ.FirstOrDefault().PATIENT_TYPE_ID;
+                            var patientType = this.listSourcePatientType.FirstOrDefault(o => o.ID == SereServ.FirstOrDefault().PATIENT_TYPE_ID);
+                            if (patientType != null)
+                            {
+                                cboPatientType.EditValue = patientType.ID;
+                            }
+                            else
+                            {
+                                cboPatientType.EditValue = listSourcePatientType.FirstOrDefault().ID;
+                            }
+                            
                         }
                         else if (patientTypeDefault != null)
                         {
-                            cboPatientType.EditValue = patientTypeDefault.ID;
+                            var patientType = this.listSourcePatientType.FirstOrDefault(o => o.ID == patientTypeDefault.ID);
+                            if (patientType != null)
+                            {
+                                cboPatientType.EditValue = patientType.ID;
+                            }
+                            else
+                            {
+                                cboPatientType.EditValue = listSourcePatientType.FirstOrDefault().ID;
+                            }
                         }
                         else
                         {
@@ -873,7 +918,15 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                     }
                     else if (patientTypeDefault != null)
                     {
-                        cboPatientType.EditValue = patientTypeDefault.ID;
+                        var patientType = this.listSourcePatientType.FirstOrDefault(o => o.ID == patientTypeDefault.ID);
+                        if (patientType != null)
+                        {
+                            cboPatientType.EditValue = patientType.ID;
+                        }
+                        else
+                        {
+                            cboPatientType.EditValue = listSourcePatientType.FirstOrDefault().ID;
+                        }
                     }
                     else
                     {
@@ -927,6 +980,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
 
                     this.btnAdd.Focus();
 
+                    Inventec.Common.Logging.LogSystem.Warn("MaterialTypeTSD_RowClick");
                     //this.currentMedicineTypeADOForEdit.IsAllowOdd = this.GetIsAllowOdd(this.currentMedicineTypeADOForEdit.ID, this.currentMedicineTypeADOForEdit.SERVICE_TYPE_ID);
 
                     ///Khoi tao cbo PatientType va set gia tri mac dinh theo service
@@ -982,9 +1036,10 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 var medicineTypeTuts = BackendDataWorker.Get<MOS.EFMODEL.DataModels.HIS_MEDICINE_TYPE_TUT>();
                 if (medicineTypeTuts != null && medicineTypeTuts.Count > 0)
                 {
-                    List<HIS_MEDICINE_TYPE_TUT> medicineTypeTutFilters = medicineTypeTuts.OrderByDescending(o => o.MODIFY_TIME).Where(o => o.MEDICINE_TYPE_ID == medicineTypeId && o.LOGINNAME == loginName).ToList();
+                    this.medicineTypeTutFilters = medicineTypeTuts.OrderByDescending(o => o.MODIFY_TIME).Where(o => o.MEDICINE_TYPE_ID == medicineTypeId).ToList();
 
-                    this.RebuildTutorialWithInControlContainer(medicineTypeTutFilters);
+                    this.RebuildTutorialWithInControlContainer(medicineTypeTutFilters);      
+                    this.RebuildHtuWithInControlContainer(medicineTypeTutFilters);
                     this.medicineTypeTutSelected = medicineTypeTutFilters.FirstOrDefault();
                     if (this.medicineTypeTutSelected != null)
                     {
@@ -993,7 +1048,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                         if (this.medicineTypeTutSelected.MEDICINE_USE_FORM_ID > 0)
                         {
                             this.cboMedicineUseForm.EditValue = this.medicineTypeTutSelected.MEDICINE_USE_FORM_ID;
-                        }
+                        }   
                         //Nếu không có đường dùng thì lấy đường dùng từ danh mục loại thuốc
                         else
                         {
@@ -1012,20 +1067,21 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                         if (this.medicineTypeTutSelected.HTU_ID != null)
                             this.cboHtu.Properties.Buttons[1].Visible = true;
                         else
-                            this.cboHtu.Properties.Buttons[1].Visible = false;
+                            this.cboHtu.Properties.Buttons[1].Visible = false;   
 
                         if (this.spinSoNgay.Value < (this.medicineTypeTutSelected.DAY_COUNT ?? 0))
                             this.spinSoNgay.EditValue = this.medicineTypeTutSelected.DAY_COUNT;
                         this.spinSoLuongNgay.EditValue = this.medicineTypeTutSelected.DAY_COUNT;
 
                         Inventec.Common.Logging.LogSystem.Info("Truong hop co HDSD thuoc theo tai khoan cua loai thuoc (HIS_MEDICINE_TYPE_TUT)--> lay truong DAY_COUNT gan vao spinSoNgay" + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => medicineTypeTutSelected), medicineTypeTutSelected));
-
+                        IsSetByMedicineTut = true;
                         this.spinSang.EditValue = this.medicineTypeTutSelected.MORNING;
                         this.spinTrua.EditValue = this.medicineTypeTutSelected.NOON;
                         this.spinChieu.EditValue = this.medicineTypeTutSelected.AFTERNOON;
                         this.spinToi.EditValue = this.medicineTypeTutSelected.EVENING;
-                        if (String.IsNullOrEmpty(this.txtTutorial.Text)
-                            || String.IsNullOrEmpty(txtLadder.Text))
+                        IsSetByMedicineTut = false;
+                        if (!String.IsNullOrEmpty(this.medicineTypeTutSelected.TUTORIAL) || string.IsNullOrEmpty(this.txtTutorial.Text)
+                            || (lciLadder.Visible && String.IsNullOrEmpty(txtLadder.Text)))
                         {
                             //Nếu có trường hướng dẫn thì sử dụng luôn
                             if (!String.IsNullOrEmpty(this.medicineTypeTutSelected.TUTORIAL))
@@ -1039,7 +1095,20 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                                 this.SetHuongDanFromSoLuongNgay();
                             }
                         }
+
+                        if (String.IsNullOrEmpty(this.memHtu.Text))
+                        {
+                            if (this.medicineTypeTutSelected.HTU_TEXT != null)
+                                this.memHtu.Text = this.medicineTypeTutSelected.HTU_TEXT;
+                            else
+                            {
+                                string autoValue = cboMedicineUseForm.Text + " " + cboHtu.Text;
+
+                                memHtu.Text = autoValue;
+                            }
+                        }
                     }
+                    
                 }
                 //Trường hợp thuốc không có cấu hình hướng dẫn sử dụng thì lấy hướng dẫn sử dụng ở danh mục loại thuốc fill vào
                 else
@@ -1053,6 +1122,10 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                         if ((medicineType.MEDICINE_USE_FORM_ID ?? 0) > 0)
                         {
                             this.cboMedicineUseForm.EditValue = medicineType.MEDICINE_USE_FORM_ID;
+
+                            string autoValue = cboMedicineUseForm.Text;
+
+                            memHtu.Text = autoValue;
                         }
                         if ((String.IsNullOrEmpty(this.txtTutorial.Text)
                             || String.IsNullOrEmpty(txtLadder.Text)))
@@ -1172,6 +1245,9 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
         /// Trong đó, XXX là tên thuốc đã kê trong ngày.
         /// </summary>
         List<HIS_SERVICE_REQ> serviceReqAllInDays = null;
+
+        public bool IsSetByMedicineTut { get; private set; }
+
         private async Task InitDataServiceReqAllInDay()
         {
             try
@@ -1381,6 +1457,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 {
                     mediStockD1s = mediStockD1s.Where(o => (o.IS_REUSABLE == null || o.IS_REUSABLE != 1) && (o.IS_IDENTITY_MANAGEMENT == null || o.IS_IDENTITY_MANAGEMENT != 1)).ToList();
                     this.mediStockD1ADOs = this.ConvertToDMediStock2(mediStockD1s);
+                    //this.PriorityMaterials(this.mediStockD1ADOs, mediStockIds);
+                    //this.PriorityMedicine(this.mediStockD1ADOs, mediStockIds);    
                 }
             }
             catch (Exception ex)
@@ -1476,6 +1554,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             {
                 if (listMediStock != null && listMediStock.Count > 0)
                 {
+                    LogSystem.Info("Count listMediStock: " + listMediStock.Where(o => o.IS_PRIORITY == 1).ToList().Count);
                     var currentMedicineTypeTemps = BackendDataWorker.Get<V_HIS_MEDICINE_TYPE>().Where(o => o.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE).ToList();
                     var currentMaterialTypeTemps = BackendDataWorker.Get<V_HIS_MATERIAL_TYPE>().Where(o => o.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE).ToList();
                     foreach (var item in listMediStock)
@@ -1549,10 +1628,9 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                             dMediStock1ADO.LAST_EXP_PRICE = item.LAST_EXP_PRICE;
                             dMediStock1ADO.LAST_EXP_VAT_RATIO = item.LAST_EXP_VAT_RATIO;
                             dMediStock1ADO.EXP_PRICE_DISPLAY = (item.LAST_EXP_PRICE * (1 + item.LAST_EXP_VAT_RATIO));
-
+                            dMediStock1ADO.IS_PRIORITY = item.IS_PRIORITY;
                             dMediStock1ADO.PARENT_ID = item.PARENT_ID;
                             dMediStock1ADO.PARENT_CODE = item.PARENT_CODE;
-
                             dMediStock1ADO.PARENT_NAME = item.PARENT_NAME;
 
                             if (chkShowLo.Checked)
@@ -1610,6 +1688,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                                 dMediStock1ADO.MATERIAL_TYPE_MAP_ID = maty.MATERIAL_TYPE_MAP_ID;
                                 dMediStock1ADO.MATERIAL_TYPE_MAP_CODE = maty.MATERIAL_TYPE_MAP_CODE;
                                 dMediStock1ADO.MATERIAL_TYPE_MAP_NAME = maty.MATERIAL_TYPE_MAP_NAME;
+                                dMediStock1ADO.DESCRIPTION = maty.DESCRIPTION;
                                 dMediStock1ADO.IsAllowOdd = (maty.IS_ALLOW_ODD == 1) ? true : false;
                                 dMediStock1ADO.IsAllowOddAndExportOdd = (maty.IS_ALLOW_ODD == 1 && maty.IS_ALLOW_EXPORT_ODD == 1) ? true : false;
                                 dMediStock1ADO.ALERT_MAX_IN_DAY = maty.ALERT_MAX_IN_DAY;
@@ -1654,7 +1733,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 Inventec.Common.Logging.LogSystem.Error(ex);
             }
             return success;
-        }
+        }   
 
         private List<DMediStock1ADO> ConvertToDMediStockForNhaThuoc(List<D_HIS_MEDI_STOCK_2> listMediStock)
         {
@@ -1699,7 +1778,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
 
                             DMediStock1ADO m1 = null;
                             //if (!HisConfigCFG.IsAutoCreateSaleExpMest)
-                            if ((!HisConfigCFG.IsAutoCreateSaleExpMest) || (HisConfigCFG.OutStockListItemInCaseOfNoStockChosenOption == "2" && !(currentMediStockNhaThuocSelecteds != null && currentMediStockNhaThuocSelecteds.Count > 0)))
+                            if ((!(HisConfigCFG.IsAutoCreateSaleExpMest == "1")) || (HisConfigCFG.OutStockListItemInCaseOfNoStockChosenOption == "2" && !(currentMediStockNhaThuocSelecteds != null && currentMediStockNhaThuocSelecteds.Count > 0)))
                             {
                                 m1 = result.Where(o => o.ID == item.ID && o.SERVICE_TYPE_ID == item.SERVICE_TYPE_ID && o.EXP_PRICE_DISPLAY == (o.LAST_EXP_PRICE * (1 + o.LAST_EXP_VAT_RATIO))).FirstOrDefault();
                                 if (m1 != null)
@@ -1758,7 +1837,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                                 dMediStock1ADO.MEDICINE_TYPE_CODE__UNSIGN = StringUtil.convertToUnSign3(item.MEDICINE_TYPE_CODE) + item.MEDICINE_TYPE_CODE;
                                 dMediStock1ADO.MEDICINE_TYPE_NAME__UNSIGN = StringUtil.convertToUnSign3(item.MEDICINE_TYPE_NAME) + item.MEDICINE_TYPE_NAME;
                                 dMediStock1ADO.ACTIVE_INGR_BHYT_NAME__UNSIGN = StringUtil.convertToUnSign3(item.ACTIVE_INGR_BHYT_NAME) + item.ACTIVE_INGR_BHYT_NAME;
-
+                                dMediStock1ADO.IS_PRIORITY = item.IS_PRIORITY;
                                 dMediStock1ADO.PARENT_ID = item.PARENT_ID;
                                 dMediStock1ADO.PARENT_CODE = item.PARENT_CODE;
                                 dMediStock1ADO.PARENT_NAME = item.PARENT_NAME;
@@ -1799,6 +1878,8 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                                     dMediStock1ADO.MATERIAL_TYPE_MAP_ID = maty.MATERIAL_TYPE_MAP_ID;
                                     dMediStock1ADO.MATERIAL_TYPE_MAP_CODE = maty.MATERIAL_TYPE_MAP_CODE;
                                     dMediStock1ADO.MATERIAL_TYPE_MAP_NAME = maty.MATERIAL_TYPE_MAP_NAME;
+                                   
+
                                     dMediStock1ADO.IS_OUT_HOSPITAL = maty.IS_OUT_HOSPITAL;
                                     dMediStock1ADO.IsAllowOdd = (maty.IS_ALLOW_ODD == 1) ? true : false;
                                     dMediStock1ADO.IsAllowOddAndExportOdd = (maty.IS_ALLOW_ODD == 1 && maty.IS_ALLOW_EXPORT_ODD == 1) ? true : false;
@@ -2113,6 +2194,62 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                     medicineTypeSDO.MEDICINE_USE_FORM_NAME = "";
                     medicineTypeSDO.ErrorMessageMedicineUseForm = "";
                     medicineTypeSDO.ErrorTypeMedicineUseForm = ErrorType.None;
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+
+        private void PriorityMaterials(List<DMediStock1ADO> dMediStock1ADO, List<long> mediStockIds)
+        {
+            try
+            {
+                CommonParam param = new CommonParam();
+                MOS.Filter.HisMaterialBeanView1Filter materialBeanViewFilter = new MOS.Filter.HisMaterialBeanView1Filter();
+                materialBeanViewFilter.MEDI_STOCK_IDs = mediStockIds;
+                materialBeanViewFilter.MATERIAL_IS_ACTIVE = IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE;
+                materialBeanViewFilter.IS_ACTIVE = IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE;
+                materialBeanViewFilter.IS_PRIORITY = true;
+
+                var material = new BackendAdapter(param).Get<List<V_HIS_MATERIAL_BEAN_1>>(RequestUriStore.HIS_MATERIAL_BEAN__GET_VIEW1, ApiConsumers.MosConsumer, materialBeanViewFilter, ProcessLostToken, param);
+                var materialPriority = material.Select(o => o.MATERIAL_TYPE_ID).ToList();
+                var materialDMediStock1ADO = dMediStock1ADO.Where(o => o.SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__VT).ToList();
+                foreach (var item in materialDMediStock1ADO)
+                {
+                    if (materialPriority.Contains(item.ID ?? 0))
+                    {
+                        item.IS_PRIORITY = 1;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+
+        private void PriorityMedicine(List<DMediStock1ADO> dMediStock1ADO, List<long> mediStockIds)
+        {
+            try
+            {
+                CommonParam param = new CommonParam();
+                MOS.Filter.HisMedicineBeanView1Filter materialBeanViewFilter = new MOS.Filter.HisMedicineBeanView1Filter();
+                materialBeanViewFilter.MEDI_STOCK_IDs = mediStockIds;
+                materialBeanViewFilter.MEDICINE_IS_ACTIVE = IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE;
+                materialBeanViewFilter.IS_ACTIVE = IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE;
+                materialBeanViewFilter.IS_PRIORITY = true;
+
+                var medicene = new BackendAdapter(param).Get<List<V_HIS_MEDICINE_BEAN_1>>(RequestUriStore.HIS_MEDICINE_BEAN__GET_VIEW1, ApiConsumers.MosConsumer, materialBeanViewFilter, ProcessLostToken, param);
+                var medicenePriority = medicene.Select(o => o.MEDICINE_TYPE_ID).ToList();
+                var medicineDMediStock1ADO = dMediStock1ADO.Where(o => o.SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__THUOC).ToList();
+                foreach (var item in medicineDMediStock1ADO)
+                {
+                    if (medicenePriority.Contains(item.ID ?? 0))
+                    {
+                        item.IS_PRIORITY = 1;
+                    }
                 }
             }
             catch (Exception ex)

@@ -46,6 +46,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Save.Update
                 prescriptionSDO.PrescriptionTypeId = PrescriptionType.NEW;
                 prescriptionSDO.IsTemporaryPres = (short?)this.IsTemporaryPres;
                 prescriptionSDO.PrescriptionPhaseNum = (short?)this.PrescriptionPhaseNum;
+                prescriptionSDO.HisGfrAlertLogs = AlertLogSDOs;
                 this.ProcessPrescriptionUpdateSDO(prescriptionSDO);
                 this.ProcessPrescriptionUpdateSDOICD(prescriptionSDO);
                 this.ProcessPrescriptionSDOForSereServInKip(prescriptionSDO);
@@ -63,7 +64,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Save.Update
                     Inventec.Common.Logging.LogSystem.Debug("Goi api sua don thuoc that bai. Du lieu dau vao____" + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => prescriptionSDO), prescriptionSDO) + ". Du lieu dau ra____" + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => result), result) + "____" + Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => Param), Param));
                     result = null;
                 }
-            }
+            }      
 
             return result;
         }
@@ -155,6 +156,11 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Save.Update
         {
             try
             {
+                long? sereServParentId = null;
+                if (prescriptionSDO.Medicines != null && prescriptionSDO.Medicines.Count > 0)
+                    sereServParentId = prescriptionSDO.Medicines.Exists(o => o.SereServParentId != null) ? prescriptionSDO.Medicines.FirstOrDefault(o => o.SereServParentId != null).SereServParentId : null;
+                if (prescriptionSDO.Materials != null && prescriptionSDO.Materials.Count > 0)
+                    sereServParentId = prescriptionSDO.Materials.Exists(o => o.SereServParentId != null) ? prescriptionSDO.Materials.FirstOrDefault(o => o.SereServParentId != null).SereServParentId : null;
                 if (prescriptionSDO.Materials.Count > 0
                     || prescriptionSDO.Medicines.Count > 0
                     || prescriptionSDO.SerialNumbers.Count > 0
@@ -194,6 +200,11 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Save.Update
                         {
                             item.SereServParentId = frmAssignPrescription.currentSereServInEkip.ID;
                         }
+                    }
+
+                    foreach (var item in frmAssignPrescription.mediMatyTypeADOs)
+                    {
+                        item.SereServParentId = sereServParentId;
                     }
                 }
             }

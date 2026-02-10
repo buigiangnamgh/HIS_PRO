@@ -30,6 +30,8 @@ using HIS.UC.Icd.ADO;
 using HIS.UC.SecondaryIcd.ADO;
 using Inventec.Common.Adapter;
 using Inventec.Common.Logging;
+using Inventec.Common.SignLibrary.ADO;
+using Inventec.Common.SignLibrary.DTO;
 using Inventec.Core;
 using Inventec.Desktop.Common.LanguageManager;
 using Inventec.Desktop.Common.Message;
@@ -225,7 +227,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             }
         }
 
-        private async Task ThreadLoadDonThuocCu()
+        private async Task ThreadLoadDonThuocCu(List<MOS.EFMODEL.DataModels.HIS_SERVICE_REQ> _serviceReqPrintAlls = null)
         {
             try
             {
@@ -236,12 +238,20 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                     return;
 
                 CommonParam param = new CommonParam();
-                //Load đơn phòng khám
-                HisServiceReqFilter serviceReqFilter = new HisServiceReqFilter();
-                serviceReqFilter.TREATMENT_ID = this.treatmentId;
-                serviceReqFilter.SERVICE_REQ_TYPE_IDs = new List<long> { IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__DONK, IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__DONTT, IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__DONDT };
-                serviceReqPrintAlls = await new BackendAdapter(param)
-                      .GetAsync<List<MOS.EFMODEL.DataModels.HIS_SERVICE_REQ>>("api/HisServiceReq/Get", ApiConsumers.MosConsumer, serviceReqFilter, param);
+                //if (_serviceReqPrintAlls == null)
+                {
+
+                    //Load đơn phòng khám
+                    HisServiceReqFilter serviceReqFilter = new HisServiceReqFilter();
+                    serviceReqFilter.TREATMENT_ID = this.treatmentId;
+                    serviceReqFilter.SERVICE_REQ_TYPE_IDs = new List<long> { IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__DONK, IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__DONTT, IMSys.DbConfig.HIS_RS.HIS_SERVICE_REQ_TYPE.ID__DONDT };
+                    serviceReqPrintAlls = await new BackendAdapter(param)
+                          .GetAsync<List<MOS.EFMODEL.DataModels.HIS_SERVICE_REQ>>("api/HisServiceReq/Get", ApiConsumers.MosConsumer, serviceReqFilter, param);
+                }
+                //else
+                //{
+                //    serviceReqPrintAlls = _serviceReqPrintAlls;
+                //}
 
                 if (serviceReqPrintAlls == null || serviceReqPrintAlls.Count == 0)
                     return;
@@ -944,7 +954,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 totalRepay = treatmentFees[0].TOTAL_REPAY_AMOUNT ?? 0;
                 total_obtained_price = (totalDeposit + totalBill - totalBillTransferAmount - totalRepay + exemption);//Da thu benh nhan
                 transferTotal = totalPatientPrice - totalDebtAmount - total_obtained_price;//Phai thu benh nhan
-
+                //transferTotal = Inventec.Common.Number.Convert.NumberToNumberRoundAuto(transferTotal, ConfigApplications.NumberSeperator);
                 //- Bổ sung thông tin viện phí lấy theo dữ liệu trong V_HIS_TREATMENT_FEE_1, cụ thể:
                 //+ "Tổng tiền" --> sửa lại thành "Phát sinh" (chính là số tiền tương ứng với chỉ định bs đang kê)
                 //+ Tổng chi phí BN phải trả = TOTAL_PATIENT_PRICE
@@ -1012,7 +1022,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                     this.Close();
                     return;
                 }
-
+                transferTotal = transferTotal < 1 ? 0 : transferTotal;
                 if (patientTypeByPT != null && patientTypeByPT.IS_CHECK_FEE_WHEN_PRES == 1
                     && treatmentFees[0].TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__KHAM
                     && transferTotal > 0
@@ -1090,20 +1100,33 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
 
                 // Trong trường hợp ĐỐI TƯỢNG BỆNH NHÂN được check "Không cho phép chỉ định dịch vụ nếu thiếu tiền" (HIS_PATIENT_TYPE có IS_CHECK_FEE_WHEN_ASSIGN = 1) và hồ sơ là "Khám" (HIS_TREATMENT có TDL_TREATMENT_TYPE_ID = IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__KHAM) thì kiểm tra:
                 //+ Nếu hồ sơ đang không thừa tiền ("Còn thừa" = 0 hoặc hiển thị "Còn thiếu") thì hiển thị thông báo "Bệnh nhân đang nợ tiền, không cho phép chỉ định dịch vụ", người dùng nhấn "Đồng ý" thì tắt form kê đơn.
+
+                var SereServ = new List<HIS_SERE_SERV>();
+                if (this.transferTotal > 0)
+                {
+
+                    HisSereServFilter filterSs = new HisSereServFilter();
+                    filterSs.TREATMENT_ID = treatmentId;
+                    SereServ = await new BackendAdapter(param).GetAsync<List<HIS_SERE_SERV>>("api/HisSereServ/Get", ApiConsumer.ApiConsumers.MosConsumer, filterSs, param);
+                    //SereSerView = SereSerView.Where(o => o.IS_GUARANTEED != 1).ToList();
+                    //transferTotal = transferTotal - SereServ.Where(o => o.IS_GUARANTEED == 1).Sum(o => o.VIR_TOTAL_PATIENT_PRICE ?? 0);
+                }
                 if ((!GlobalStore.IsTreatmentIn
                         && !GlobalStore.IsCabinet
                         && !GlobalStore.IsExecutePTTT)
                         && patientTypeByPT != null && patientTypeByPT.IS_CHECK_FEE_WHEN_PRES == 1
                         && this.currentHisPatientTypeAlter.TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__KHAM
-                        && transferTotal > 0
+                        && transferTotal > 0 && (this.currentTreatment != null && string.IsNullOrEmpty(this.currentTreatment.GUARANTEE_CODE))
                     )
                 {
-                    HisSereServView17Filter filterSs = new HisSereServView17Filter();
-                    filterSs.TDL_TREATMENT_ID = treatmentId;
-                    var SereSerView17 = await new BackendAdapter(param).GetAsync<List<V_HIS_SERE_SERV_17>>("api/HisSereServ/GetView17", ApiConsumer.ApiConsumers.MosConsumer, filterSs, param);
-                    frmDetailsSereServ frm = new frmDetailsSereServ(SereSerView17.ToList(), (RefeshReference)this.Close);
-                    frm.ShowDialog();
-                    return;
+                    SereServ = SereServ.Where(o => o.IS_GUARANTEED != 1).ToList();
+                    if (SereServ.Any())
+                    {
+                        frmDetailsSereServ frm = new frmDetailsSereServ(SereServ.ToList(), (RefeshReference)this.Close);
+                        frm.ShowDialog();
+                        return;
+                    }
+
                 }
 
                 //Kiem tra cau hinh
@@ -1529,15 +1552,63 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 bool isFullHeinInfoData = IsFullHeinInfo(medimaty);
                 if (patientTypeId == HisConfigCFG.PatientTypeId__BHYT && isFullHeinInfoData)
                 {
-                    result = currentPatientTypeWithPatientTypeAlter.Where(o => o.ID == HisConfigCFG.PatientTypeId__BHYT).FirstOrDefault();
+                    var data = listSourcePatientType.Where(o => o.ID == HisConfigCFG.PatientTypeId__BHYT).ToList();
+                    if (data.Count > 0 && data != null)
+                    {
+                        result = data.FirstOrDefault();
+                    }
+                    else
+                    {
+                        long id;
+                        if (cboPatientType.EditValue != null && long.TryParse(cboPatientType.EditValue.ToString(), out id))
+                        {
+                            result = listSourcePatientType.FirstOrDefault(o => o.ID == id);
+                        }
+                        else
+                        {
+                            result = listSourcePatientType.FirstOrDefault();
+                        }
+                    }
                 }
                 else if (patientTypeId == HisConfigCFG.PatientTypeId__BHYT && !isFullHeinInfoData)
                 {
-                    result = currentPatientTypeWithPatientTypeAlter.Where(o => o.ID == HisConfigCFG.PatientTypeId__VP).FirstOrDefault();
+                    var data = listSourcePatientType.Where(o => o.ID == HisConfigCFG.PatientTypeId__VP).ToList();
+                    if (data.Count > 0 && data != null)
+                    {
+                        result = data.FirstOrDefault();
+                    }
+                    else
+                    {
+                        long id;
+                        if (cboPatientType.EditValue != null && long.TryParse(cboPatientType.EditValue.ToString(), out id))
+                        {
+                            result = listSourcePatientType.FirstOrDefault(o => o.ID == id);
+                        }
+                        else
+                        {
+                            result = listSourcePatientType.FirstOrDefault();
+                        }
+                    }
                 }
                 else
                 {
-                    result = currentPatientTypeWithPatientTypeAlter.Where(o => o.ID == patientTypeId).FirstOrDefault();
+                    var data = listSourcePatientType.Where(o => o.ID == patientTypeId).ToList();
+                    if (data.Count > 0 && data != null)
+                    {
+                        result = data.FirstOrDefault();
+                    }
+                    else
+                    {
+                        long id;
+                        if (cboPatientType.EditValue != null && long.TryParse(cboPatientType.EditValue.ToString(), out id))
+                        {
+                            result = listSourcePatientType.FirstOrDefault(o => o.ID == id);
+                        }
+                        else
+                        {
+                            result = listSourcePatientType.FirstOrDefault();
+                        }
+                    }
                 }
                 if (result == null || result.ID == 0)
                 {
@@ -1590,6 +1661,37 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                     };
                 }
 
+                if (HisConfigCFG.UsePaymentObjectByDept == "1" && mediMatyTypeADO != null)
+                {
+                    var Department = BackendDataWorker.Get<MOS.EFMODEL.DataModels.HIS_DEPARTMENT>().Where(o => o.ID == requestRoom.DEPARTMENT_ID).FirstOrDefault();
+                    CommonParam common = new CommonParam();
+                    HisDepaPatientTypeFilter filter = new HisDepaPatientTypeFilter();
+                    filter.SERVICE_ID = mediMatyTypeADO.SERVICE_ID;
+
+                    var DepaPatientType = new BackendAdapter(common).Get<List<MOS.EFMODEL.DataModels.HIS_DEPA_PATIENT_TYPE>>(RequestUriStore.HIS_DEPA_PATIENT_TYPE__GET, ApiConsumers.MosConsumer, filter, common);
+
+                    if (DepaPatientType != null && DepaPatientType.Count > 0)
+                    {
+                        List<long> PatientTypeId = DepaPatientType.Where(o => o.DEPARTMENT_ID == Department.ID).Select(o => o.PATIENT_TYPE_ID ?? 0).ToList();
+                        //currentPatientTypeWithPatientTypeAlter = currentPatientTypeWithPatientTypeAlter.Where(o => PatientTypeId.Contains(o.ID)).ToList();
+                        this.listSourcePatientType = currentPatientTypeWithPatientTypeAlter;
+                        this.listSourcePatientType = this.listSourcePatientType.Where(o => PatientTypeId.Contains(o.ID)).ToList();
+                    }
+                    else
+                    {
+                        var dt = IsFullHeinInfo(mediMatyTypeADO);
+                        this.listSourcePatientType = currentPatientTypeWithPatientTypeAlter;
+                        if (!dt)
+                            this.listSourcePatientType = this.listSourcePatientType.Where(o => o.ID != HisConfigCFG.PatientTypeId__BHYT).ToList();
+                    }
+                }
+                else
+                {
+                    var dt = IsFullHeinInfo(mediMatyTypeADO);
+                    this.listSourcePatientType = currentPatientTypeWithPatientTypeAlter;
+                    if (!dt)
+                        this.listSourcePatientType = this.listSourcePatientType.Where(o => o.ID != HisConfigCFG.PatientTypeId__BHYT).ToList();
+                }
                 return this.ChoosePatientTypeDefaultlService(patientTypeId, mediMatyTypeADO);
             }
             catch (Exception ex)
@@ -1601,7 +1703,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
 
         /// <summary>
         /// - 1 thuốc được coi là "Có đủ thông tin BHYT" khi thỏa mãn:
-        /// Khai báo đủ các thông tin: mã hoạt chất BHYT (ACTIVE_INGR_BHYT_CODE), số đăng ký (REGISTER_NUMBER), và nhóm BHYT thuộc 1 trong các loại: "Thuốc trong danh mục", "Thuốc thanh toán theo tỷ lệ" hoặc "Thuốc ung thư, chống thải ghép"
+        /// Khai báo đủ các thông tin: mã hoạt chất BHYT (ACTIVE_INGR_BHYT_CODE), và nhóm BHYT thuộc 1 trong các loại: "Thuốc trong danh mục", "Thuốc thanh toán theo tỷ lệ" hoặc "Thuốc ung thư, chống thải ghép"
         /// - 1 vật tư được coi là "Có đủ thông tin BHYT" khi thỏa mãn:
         /// Khai báo đủ các thông tin: mã BHYT (HEIN_SERVICE_BHYT_CODE), tên BHYT (HEIN_SERVICE_BHYT_NAME), và nhóm BHYT thuộc 1 trong các loại: "Vật tư thay thế", "Vật tư trong danh mục", "Vật tư thanh toán theo tỷ lệ"
         /// </summary>
@@ -1612,18 +1714,20 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             try
             {
                 valid = (medimaty.SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__THUOC &&
-                            !String.IsNullOrEmpty(medimaty.ACTIVE_INGR_BHYT_CODE)
+                            (!String.IsNullOrEmpty(medimaty.ACTIVE_INGR_BHYT_CODE) || !string.IsNullOrEmpty(HisConfigCFG.AllowAssignOffListMedicineMaterialHeinCardNumberPrefix) && !string.IsNullOrEmpty(currentTreatmentWithPatientType.HEIN_CARD_NUMBER) && HisConfigCFG.AllowAssignOffListMedicineMaterialHeinCardNumberPrefix.Split(',').ToList().Exists(o => currentTreatmentWithPatientType.HEIN_CARD_NUMBER.StartsWith(o)))
                             //&& !String.IsNullOrEmpty(medimaty.REGISTER_NUMBER)
                             && (medimaty.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__TH_TDM
                             || medimaty.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__TH_TL
-                            || medimaty.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__TH_UT))
+                            || medimaty.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__TH_UT)
+                            || (!string.IsNullOrEmpty(HisConfigCFG.AllowAssignOffListMedicineMaterialHeinCardNumberPrefix) && !string.IsNullOrEmpty(currentTreatmentWithPatientType.HEIN_CARD_NUMBER) && HisConfigCFG.AllowAssignOffListMedicineMaterialHeinCardNumberPrefix.Split(',').ToList().Exists(o => currentTreatmentWithPatientType.HEIN_CARD_NUMBER.StartsWith(o)) && medimaty.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__TH_NDM && !String.IsNullOrEmpty(medimaty.ACTIVE_INGR_BHYT_CODE)))
                         ||
                         (medimaty.SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__VT &&
                             !String.IsNullOrEmpty(medimaty.HEIN_SERVICE_BHYT_CODE)
                             && !String.IsNullOrEmpty(medimaty.HEIN_SERVICE_BHYT_NAME)
                             && (medimaty.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__VT_TT
                             || medimaty.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__VT_TL
-                            || medimaty.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__VT_TDM));
+                            || medimaty.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__VT_TDM)
+                            || (!string.IsNullOrEmpty(HisConfigCFG.AllowAssignOffListMedicineMaterialHeinCardNumberPrefix) && !string.IsNullOrEmpty(currentTreatmentWithPatientType.HEIN_CARD_NUMBER) && HisConfigCFG.AllowAssignOffListMedicineMaterialHeinCardNumberPrefix.Split(',').ToList().Exists(o => currentTreatmentWithPatientType.HEIN_CARD_NUMBER.StartsWith(o)) && medimaty.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__VT_NDM));
             }
             catch (Exception ex)
             {
@@ -1645,18 +1749,20 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             try
             {
                 valid = (medimaty.SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__THUOC &&
-                            !String.IsNullOrEmpty(medimaty.ACTIVE_INGR_BHYT_CODE)
-                            //&& !String.IsNullOrEmpty(medimaty.REGISTER_NUMBER)
-                            && (medimaty.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__TH_TDM
-                            || medimaty.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__TH_TL
-                            || medimaty.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__TH_UT))
-                        ||
-                        (medimaty.SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__VT &&
-                            !String.IsNullOrEmpty(medimaty.HEIN_SERVICE_BHYT_CODE)
-                            && !String.IsNullOrEmpty(medimaty.HEIN_SERVICE_BHYT_NAME)
-                            && (medimaty.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__VT_TT
-                            || medimaty.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__VT_TL
-                            || medimaty.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__VT_TDM));
+                              (!String.IsNullOrEmpty(medimaty.ACTIVE_INGR_BHYT_CODE) || !string.IsNullOrEmpty(HisConfigCFG.AllowAssignOffListMedicineMaterialHeinCardNumberPrefix) && !string.IsNullOrEmpty(currentTreatmentWithPatientType.HEIN_CARD_NUMBER) && HisConfigCFG.AllowAssignOffListMedicineMaterialHeinCardNumberPrefix.Split(',').ToList().Exists(o => currentTreatmentWithPatientType.HEIN_CARD_NUMBER.StartsWith(o)))
+                              //&& !String.IsNullOrEmpty(medimaty.REGISTER_NUMBER)
+                              && (medimaty.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__TH_TDM
+                              || medimaty.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__TH_TL
+                              || medimaty.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__TH_UT)
+                              || (!string.IsNullOrEmpty(HisConfigCFG.AllowAssignOffListMedicineMaterialHeinCardNumberPrefix) && !string.IsNullOrEmpty(currentTreatmentWithPatientType.HEIN_CARD_NUMBER) && HisConfigCFG.AllowAssignOffListMedicineMaterialHeinCardNumberPrefix.Split(',').ToList().Exists(o => currentTreatmentWithPatientType.HEIN_CARD_NUMBER.StartsWith(o)) && medimaty.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__TH_NDM && !String.IsNullOrEmpty(medimaty.ACTIVE_INGR_BHYT_CODE)))
+                          ||
+                          (medimaty.SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__VT &&
+                              !String.IsNullOrEmpty(medimaty.HEIN_SERVICE_BHYT_CODE)
+                              && !String.IsNullOrEmpty(medimaty.HEIN_SERVICE_BHYT_NAME)
+                              && (medimaty.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__VT_TT
+                              || medimaty.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__VT_TL
+                              || medimaty.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__VT_TDM)
+                              || (!string.IsNullOrEmpty(HisConfigCFG.AllowAssignOffListMedicineMaterialHeinCardNumberPrefix) && !string.IsNullOrEmpty(currentTreatmentWithPatientType.HEIN_CARD_NUMBER) && HisConfigCFG.AllowAssignOffListMedicineMaterialHeinCardNumberPrefix.Split(',').ToList().Exists(o => currentTreatmentWithPatientType.HEIN_CARD_NUMBER.StartsWith(o)) && medimaty.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__VT_NDM));
             }
             catch (Exception ex)
             {
@@ -1678,18 +1784,20 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             try
             {
                 valid = (medimaty.SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__THUOC &&
-                            !String.IsNullOrEmpty(medimaty.ACTIVE_INGR_BHYT_CODE)
+                            (!String.IsNullOrEmpty(medimaty.ACTIVE_INGR_BHYT_CODE) || !string.IsNullOrEmpty(HisConfigCFG.AllowAssignOffListMedicineMaterialHeinCardNumberPrefix) && !string.IsNullOrEmpty(currentTreatmentWithPatientType.HEIN_CARD_NUMBER) && HisConfigCFG.AllowAssignOffListMedicineMaterialHeinCardNumberPrefix.Split(',').ToList().Exists(o => currentTreatmentWithPatientType.HEIN_CARD_NUMBER.StartsWith(o)))
                             //&& !String.IsNullOrEmpty(medimaty.REGISTER_NUMBER)
                             && (medimaty.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__TH_TDM
                             || medimaty.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__TH_TL
-                            || medimaty.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__TH_UT))
+                            || medimaty.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__TH_UT)
+                            || (!string.IsNullOrEmpty(HisConfigCFG.AllowAssignOffListMedicineMaterialHeinCardNumberPrefix) && !string.IsNullOrEmpty(currentTreatmentWithPatientType.HEIN_CARD_NUMBER) && HisConfigCFG.AllowAssignOffListMedicineMaterialHeinCardNumberPrefix.Split(',').ToList().Exists(o => currentTreatmentWithPatientType.HEIN_CARD_NUMBER.StartsWith(o)) && medimaty.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__TH_NDM && !String.IsNullOrEmpty(medimaty.ACTIVE_INGR_BHYT_CODE)))
                         ||
                         (medimaty.SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__VT &&
                             !String.IsNullOrEmpty(medimaty.HEIN_SERVICE_BHYT_CODE)
                             && !String.IsNullOrEmpty(medimaty.HEIN_SERVICE_BHYT_NAME)
                             && (medimaty.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__VT_TT
                             || medimaty.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__VT_TL
-                            || medimaty.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__VT_TDM));
+                            || medimaty.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__VT_TDM)
+                            || (!string.IsNullOrEmpty(HisConfigCFG.AllowAssignOffListMedicineMaterialHeinCardNumberPrefix) && !string.IsNullOrEmpty(currentTreatmentWithPatientType.HEIN_CARD_NUMBER) && HisConfigCFG.AllowAssignOffListMedicineMaterialHeinCardNumberPrefix.Split(',').ToList().Exists(o => currentTreatmentWithPatientType.HEIN_CARD_NUMBER.StartsWith(o)) && medimaty.HEIN_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_HEIN_SERVICE_TYPE.ID__VT_NDM));
             }
             catch (Exception ex)
             {
@@ -2178,11 +2286,11 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 LogSystem.Debug("LoadDataTracking => 1");
                 //Init Control
                 CommonParam param = new CommonParam();
-                //if (!GlobalStore.IsTreatmentIn && !GlobalStore.IsCabinet) nambg sửa 
+                //if (!GlobalStore.IsTreatmentIn && !GlobalStore.IsCabinet && HisConfigCFG.IsTrackingRequired != "2")
                 //{
-                    //this.isInitTracking = false;
-                    //lciPhieuDieuTri.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
-                    //return;
+                //    this.isInitTracking = false;
+                //    lciPhieuDieuTri.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
+                //    return;
                 //}
 
                 //if (GlobalStore.IsCabinet)
@@ -2294,6 +2402,50 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
             {
                 Inventec.Common.Logging.LogSystem.Warn(ex);
             }
+        }
+        private void LoadDataForPrint()
+        {
+            try
+            {
+                if (this.currentTreatmentWithPatientType != null)
+                {
+                    MOS.Filter.HisPatientViewFilter patientViewFilter = new MOS.Filter.HisPatientViewFilter();
+                    patientViewFilter.ID = this.currentTreatmentWithPatientType.PATIENT_ID;
+                    var patients = new BackendAdapter(null).Get<List<V_HIS_PATIENT>>("api/HisPatient/GetView", ApiConsumer.ApiConsumers.MosConsumer, patientViewFilter, null);
+                    if (patients != null && patients.Count > 0)
+                    {
+                        this.patientPrint = patients.FirstOrDefault();
+                    }
+
+                    MOS.Filter.HisTreatmentFeeViewFilter filterTreatmentFee = new MOS.Filter.HisTreatmentFeeViewFilter();
+                    filterTreatmentFee.ID = this.currentTreatmentWithPatientType.ID;
+                    var listTreatment = new BackendAdapter(null)
+                      .Get<List<MOS.EFMODEL.DataModels.V_HIS_TREATMENT_FEE>>("api/HisTreatment/GetFeeView", ApiConsumer.ApiConsumers.MosConsumer, filterTreatmentFee, null);
+                    if (listTreatment != null && listTreatment.Count > 0)
+                    {
+                        this.treatmentPrint = listTreatment.FirstOrDefault();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+        }
+
+        private void GetDocmentSigned(DocumentSignedUpdateIGSysResultDTO dTO)
+        {
+            try
+            {
+                if (!dSignedList.ContainsKey(this.serviceReqComboResultSDO.ServiceReqs[0].TREATMENT_ID))
+                    dSignedList[this.serviceReqComboResultSDO.ServiceReqs[0].TREATMENT_ID] = new List<DocumentSignedUpdateIGSysResultDTO>();
+                dSignedList[this.serviceReqComboResultSDO.ServiceReqs[0].TREATMENT_ID].Add(dTO);
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Error(ex);
+            }
+
         }
     }
 }

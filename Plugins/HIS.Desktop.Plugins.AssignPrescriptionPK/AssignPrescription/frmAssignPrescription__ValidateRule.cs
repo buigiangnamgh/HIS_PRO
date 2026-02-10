@@ -25,6 +25,7 @@ using HIS.Desktop.Plugins.AssignPrescriptionPK.Validate.ValidateRule;
 using HIS.Desktop.Utility.ValidateRule;
 using Inventec.Desktop.Common.Controls.ValidationRule;
 using Inventec.Desktop.Common.LibraryMessage;
+using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
 
@@ -116,6 +117,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 this.dxValidProviderBoXung.SetValidationRule(txtUnitOther, null);
                 this.dxValidProviderBoXung.SetValidationRule(txtMediMatyForPrescription, null);
                 this.dxValidProviderBoXung.SetValidationRule(spinAmount, null);
+                this.dxValidProviderBoXung.SetValidationRule(memHtu, null);
                 this.ValidationSingleControl(this.spinKidneyCount, this.dxValidProviderBoXung, LibraryMessage.MessageUtil.GetMessage(LibraryMessage.Message.Enum.TruongDuLieuBatBuoc), this.ValidKidneyShift);
                 if (txtMedicineTypeOther.Enabled && String.IsNullOrEmpty(txtMediMatyForPrescription.Text))
                 {
@@ -148,6 +150,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
 
                 this.dxValidationProviderControl.SetValidationRule(txtAdvise, null);
                 this.ValidMaxLengthControl(this.txtAdvise, false, 1024);
+                this.ValidationMaxLengthControl(this.memHtu, 1024, this.dxValidProviderBoXung);
                 if (HisConfigCFG.IsRequiredHtu == "1")
                 {
                     this.ValidationSingleControl(this.cboHtu, this.dxValidProviderBoXung);
@@ -267,6 +270,22 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 Inventec.Common.Logging.LogSystem.Warn(ex);
             }
         }
+        private void ValidationMaxLengthControl(BaseEdit control, int maxLength, DevExpress.XtraEditors.DXErrorProvider.DXValidationProvider dxValidationProviderEditor)
+        {
+            try
+            {
+
+                Inventec.Desktop.Common.Controls.ValidationRule.ControlMaxLengthValidationRule icdMainRule = new Inventec.Desktop.Common.Controls.ValidationRule.ControlMaxLengthValidationRule();
+                icdMainRule.editor = control;
+                icdMainRule.maxLength = maxLength;
+                icdMainRule.ErrorType = ErrorType.Warning;
+                dxValidationProviderEditor.SetValidationRule(control, icdMainRule);
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
 
         private void ValidationSingleControl(BaseEdit control, DevExpress.XtraEditors.DXErrorProvider.DXValidationProvider dxValidationProviderEditor, string messageErr, IsValidControl isValidControl)
         {
@@ -309,7 +328,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 }
                 ValidationSingleControlWithMaxLength(txtIcdCodeCause, false, 10);
                 ValidationSingleControlWithMaxLength(txtIcdMainTextCause, false, 500);
-                if (HisConfigCFG.IsTrackingRequired)
+                if (HisConfigCFG.IsTrackingRequired == "1")
                 {
                     ValidationSingleControl(cboPhieuDieuTri, dxValidationProviderControl, Inventec.Desktop.Common.LibraryMessage.MessageUtil.GetMessage(Inventec.Desktop.Common.LibraryMessage.Message.Enum.TruongDuLieuBatBuoc), ValidTracking);
                     this.lciPhieuDieuTri.AppearanceItemCaption.ForeColor = System.Drawing.Color.Maroon;

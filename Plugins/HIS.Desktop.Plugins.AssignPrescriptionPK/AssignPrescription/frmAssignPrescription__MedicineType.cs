@@ -179,6 +179,15 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 col12.OptionsFilter.AutoFilterCondition = DevExpress.XtraGrid.Columns.AutoFilterCondition.Like;
                 gridViewMediMaty.Columns.Add(col12);
 
+
+                DevExpress.XtraGrid.Columns.GridColumn col16 = new DevExpress.XtraGrid.Columns.GridColumn();
+                col16.FieldName = "DESCRIPTION";
+                col16.Caption = "Ghi chú";
+                col16.Width = 150;
+                col16.VisibleIndex = 9;
+                gridViewMediMaty.Columns.Add(col16);
+
+
                 this.currentMediMateTypeComboADOs = BackendDataWorker.Get<MedicineMaterialTypeComboADO>(false, true, false, false);
                 mediMateTypeComboADOs = new List<MedicineMaterialTypeComboADO>();
                 //Tại màn hình kê đơn, nếu phòng mà người dùng đang làm việc có "Giới hạn thuốc được phép sử dụng" (IS_RESTRICT_MEDICINE_TYPE trong HIS_ROOM bằng true) thì danh sách thuốc khi kê thuốc trong kho chỉ hiển thị các thuốc được khai cấu hình tương ứng với phòng đấy (dữ liệu lưu trong bảng HIS_MEDICINE_TYPE_ROOM)
@@ -278,8 +287,10 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 this.ProcessFilterDontPresExpiredTime(ref filter);//TODO
 
                 this.mediMatyTypeAvailables = new BackendAdapter(param).Get<List<D_HIS_MEDI_STOCK_2>>(HisRequestUriStore.HIS_MEDISTOCKDISDO_GET1, ApiConsumers.MosConsumer, filter, ProcessLostToken, param);
+                LogSystem.Info("count mediMatyTypeAvailables: " + mediMatyTypeAvailables.Where(o => o.IS_PRIORITY == 1).ToList().Count);
                 this.mediStockD1ADOs = ConvertToDMediStockForNhaThuoc(this.mediMatyTypeAvailables);
-
+                //this.PriorityMedicine(this.mediStockD1ADOs, mediStockIds);
+                //this.PriorityMaterials(this.mediStockD1ADOs, mediStockIds);
                 this.RebuildPopupContainerNhaThuocShowMediMatyForSelect(this.mediStockD1ADOs);
             }
             catch (Exception ex)
@@ -501,6 +512,13 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 col14.VisibleIndex = 10;
                 gridViewMediMaty.Columns.Add(col14);
 
+                DevExpress.XtraGrid.Columns.GridColumn col16 = new DevExpress.XtraGrid.Columns.GridColumn();
+                col16.FieldName = "DESCRIPTION";
+                col16.Caption = "Ghi chú";
+                col16.Width = 150;
+                col16.VisibleIndex = 11;
+                gridViewMediMaty.Columns.Add(col16);
+
                 if (chkPDDT.Checked)
                 {
                     List<HIS_ICD_SERVICE> icdServices = geticdServices();
@@ -532,6 +550,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                 }
                 long index = 1;
                 dMediStock1ADOs.ForEach(o => o.IdRow = index++);
+                dMediStock1ADOs = dMediStock1ADOs.OrderByDescending(o => o.IS_PRIORITY).ThenBy(o => o.PARENT_NAME).ToList();
                 gridViewMediMaty.GridControl.DataSource = dMediStock1ADOs;
                 //TickIsAssignPres();
                 gridViewMediMaty.EndUpdate();
@@ -613,6 +632,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.AssignPrescription
                         //Neu la thuoc thi kiem tra co mẫu HDSD chưa, có thì focus vào nút "Bổ sung"
                         if (this.medicineTypeTutSelected != null && !String.IsNullOrEmpty(this.medicineTypeTutSelected.TUTORIAL))
                         {
+                            Inventec.Common.Logging.LogSystem.Warn("MedicineType_RowClick");
                             this.btnAdd.Focus();
                         }
                         //Ngược lại kiểm tra có cấu hình PM cho phép sau khi chọn thuốc thì nhảy vào ô số lượng hay ô ngày

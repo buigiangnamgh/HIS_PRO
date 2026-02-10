@@ -21,7 +21,9 @@ using HIS.Desktop.LocalStorage.LocalData;
 using HIS.Desktop.Plugins.AssignPrescriptionPK.Config;
 using HIS.Desktop.Plugins.AssignPrescriptionPK.Resources;
 using HIS.Desktop.Plugins.AssignPrescriptionPK.Worker;
+using IMSys.DbConfig.HIS_RS;
 using MOS.EFMODEL.DataModels;
+using MOS.SDO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,8 +32,7 @@ using System.Threading.Tasks;
 
 namespace HIS.Desktop.Plugins.AssignPrescriptionPK.ADO
 {
-    public class
-        MediMatyTypeADO : MOS.EFMODEL.DataModels.V_HIS_MEDICINE_TYPE
+    public class MediMatyTypeADO : MOS.EFMODEL.DataModels.V_HIS_MEDICINE_TYPE
     {
         public MediMatyTypeADO()
         {
@@ -50,6 +51,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.ADO
                     this.SERVICE_UNIT_ID = (inputData.SERVICE_UNIT_ID ?? 0);
                     this.SERVICE_UNIT_CODE = inputData.SERVICE_UNIT_CODE;
                     this.SERVICE_UNIT_NAME = inputData.SERVICE_UNIT_NAME;
+                    this.HTU_TEXT = inputData.HTU_TEXT;
                     this.TUTORIAL = (String.IsNullOrEmpty(inputData.TUTORIAL) ? mety.TUTORIAL : inputData.TUTORIAL);
                     if (
                         (HisConfigCFG.SplitOffset == GlobalVariables.CommonStringTrue || (mety.IS_SPLIT_COMPENSATION.HasValue && mety.IS_SPLIT_COMPENSATION == 1))
@@ -173,6 +175,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.ADO
                     this.SERVICE_UNIT_ID = (inputData.SERVICE_UNIT_ID ?? 0);
                     this.SERVICE_UNIT_NAME = inputData.SERVICE_UNIT_NAME;
                     this.SERVICE_UNIT_CODE = inputData.SERVICE_UNIT_CODE;
+                    this.HTU_TEXT = inputData.HTU_TEXT;  
                     this.DataType = maty != null && (maty.IS_REUSABLE == 1 || maty.IS_IDENTITY_MANAGEMENT == 1) ? HIS.Desktop.LocalStorage.BackendData.ADO.MedicineMaterialTypeComboADO.VATTU_TSD : HIS.Desktop.LocalStorage.BackendData.ADO.MedicineMaterialTypeComboADO.VATTU;
                     if (
                         (HisConfigCFG.SplitOffset == GlobalVariables.CommonStringTrue)
@@ -330,7 +333,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.ADO
                 var mst = BackendDataWorker.Get<V_HIS_MEDI_STOCK>().FirstOrDefault(o => o.ID == inputData.TDL_MEDI_STOCK_ID);
                 if (mst != null)
                 {
-                    this.MEDI_STOCK_ID = mst.ID;
+                    this.MEDI_STOCK_ID = mst.ID;   
                     this.MEDI_STOCK_CODE = mst.MEDI_STOCK_CODE;
                     this.MEDI_STOCK_NAME = mst.MEDI_STOCK_NAME;
                     MestMetyUnitWorker.UpdateUnit(this, GlobalStore.HisMestMetyUnit);
@@ -385,6 +388,14 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.ADO
                     this.ATC_GROUP_CODES = mety.ATC_GROUP_CODES;
                     this.ACTIVE_INGR_BHYT_CODE = mety.ACTIVE_INGR_BHYT_CODE;
                     this.ACTIVE_INGR_BHYT_NAME = mety.ACTIVE_INGR_BHYT_NAME;
+
+                    /// bổ sung các trường tương tác thuốc
+                    this.MIMS_MAPPING_STATUS = mety.MIMS_MAPPING_STATUS;
+                    this.MIMS_MAPPING_NOTE = mety.MIMS_MAPPING_NOTE;
+                    this.MIMS_TYPE = mety.MIMS_TYPE;
+                    this.MIMS_NAME = mety.MIMS_NAME;
+                    this.MIMS_LAST_SYNC_TIME = mety.MIMS_LAST_SYNC_TIME;
+                    this.MIMS_GUID = mety.MIMS_GUID;
                 }
 
 
@@ -564,6 +575,14 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.ADO
                     this.ATC_GROUP_CODES = mety.ATC_GROUP_CODES;
                     this.ACTIVE_INGR_BHYT_CODE = mety.ACTIVE_INGR_BHYT_CODE;
                     this.ACTIVE_INGR_BHYT_NAME = mety.ACTIVE_INGR_BHYT_NAME;
+
+                    /// bổ sung các trường tương tác thuốc
+                    this.MIMS_MAPPING_STATUS = mety.MIMS_MAPPING_STATUS;
+                    this.MIMS_MAPPING_NOTE = mety.MIMS_MAPPING_NOTE;
+                    this.MIMS_TYPE = mety.MIMS_TYPE;
+                    this.MIMS_NAME = mety.MIMS_NAME;
+                    this.MIMS_LAST_SYNC_TIME = mety.MIMS_LAST_SYNC_TIME;
+                    this.MIMS_GUID = mety.MIMS_GUID;
                 }
 
                 this.SERVICE_UNIT_NAME = inputData.SERVICE_UNIT_NAME;
@@ -1209,6 +1228,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.ADO
                     }
                 }
 
+                this.HTU_TEXT = inputData.HTU_TEXT;
                 //Chi dinh tu man hinh phau thuat, thu thuat
                 //#18124
                 //Bổ sung cấu hình và sửa lại cách tự động hao phí
@@ -1354,6 +1374,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.ADO
                 }
                 this.UseTimeTo = inputData.USE_TIME_TO;
 
+                this.HTU_TEXT = inputData.HTU_TEXT;
                 if (!String.IsNullOrEmpty(inputData.MORNING))
                     this.Sang = ConvertNumber.ProcessNumberInterger(inputData.MORNING);
                 if (!String.IsNullOrEmpty(inputData.NOON))
@@ -1445,6 +1466,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.ADO
                     this.SERVICE_UNIT_NAME = inputData.UNIT_NAME;
                     this.MEDICINE_TYPE_NAME = inputData.MATERIAL_TYPE_NAME;
                 }
+                this.HTU_TEXT = inputData.HTU_TEXT;
                 this.SERVICE_REQ_ID = inputData.SERVICE_REQ_ID;
                 this.SERVICE_REQ_METY_MATY_ID = inputData.ID;
                 this.TUTORIAL = inputData.TUTORIAL;
@@ -1550,6 +1572,181 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.ADO
             }
         }
 
+        public MediMatyTypeADO(MediMatySuggestionsADO inputData, HIS_SERVICE_UNIT unit, HIS_HTU htu)
+        {
+            try
+            {
+                if (inputData.DataType == HIS.Desktop.LocalStorage.BackendData.ADO.MedicineMaterialTypeComboADO.THUOC_DM || inputData.DataType == HIS.Desktop.LocalStorage.BackendData.ADO.MedicineMaterialTypeComboADO.THUOC)
+                {
+
+                    this.DataType = inputData.DataType;
+                    var mety = BackendDataWorker.Get<V_HIS_MEDICINE_TYPE>().FirstOrDefault(o => o.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE && o.MEDICINE_TYPE_CODE == inputData.MEDICINE_TYPE_CODE);
+                    if (mety != null)
+                    {
+                        Inventec.Common.Mapper.DataObjectMapper.Map<MediMatyTypeADO>(this, mety);
+
+                        this.TUTORIAL = (String.IsNullOrEmpty(inputData.TUTORIAL) ? mety.TUTORIAL : inputData.TUTORIAL);
+                        if (
+                            (HisConfigCFG.SplitOffset == GlobalVariables.CommonStringTrue || (mety.IS_SPLIT_COMPENSATION.HasValue && mety.IS_SPLIT_COMPENSATION == 1))
+                            && (GlobalStore.IsTreatmentIn && !GlobalStore.IsCabinet)
+                            && (this.IS_ALLOW_ODD == null || this.IS_ALLOW_ODD.Value != 1)
+                            && (int)inputData.AMOUNT != inputData.AMOUNT
+                             )
+                        {
+                            this.RAW_AMOUNT = inputData.AMOUNT;
+                            this.AMOUNT = (decimal)Inventec.Common.Number.Convert.RoundUpValue((double)inputData.AMOUNT, 0);
+                        }
+                        else
+                            this.AMOUNT = inputData.AMOUNT;
+
+
+                        //Lay doi tuong mac dinh
+                        MOS.EFMODEL.DataModels.HIS_PATIENT_TYPE patientType = new MOS.EFMODEL.DataModels.HIS_PATIENT_TYPE();
+                        patientType = AssignPrescriptionWorker.Instance.MediMatyCreateWorker.choosePatientTypeDefaultlServiceOther(AssignPrescriptionWorker.Instance.MediMatyCreateWorker.getPatientTypeId(), mety.SERVICE_ID, mety.SERVICE_TYPE_ID);
+                        if (patientType != null && inputData.DataType == HIS.Desktop.LocalStorage.BackendData.ADO.MedicineMaterialTypeComboADO.THUOC)
+                        {
+                            this.PATIENT_TYPE_ID = patientType.ID;
+                            this.PATIENT_TYPE_CODE = patientType.PATIENT_TYPE_CODE;
+                            this.PATIENT_TYPE_NAME = patientType.PATIENT_TYPE_NAME;
+                        }
+
+
+
+                        this.PRES_AMOUNT = inputData.AMOUNT;
+                        this.CONTRAINDICATION = mety.CONTRAINDICATION;
+                        this.MEDICINE_GROUP_ID = mety.MEDICINE_GROUP_ID;
+                        this.TUTORIAL = inputData.TUTORIAL;
+
+                        this.IsExpend = inputData.IsExpend;
+                        this.IsAllowOdd = (mety.IS_ALLOW_ODD == 1) ? true : false;
+                        this.IsAllowOddAndExportOdd = (mety.IS_ALLOW_ODD == 1 && mety.IS_ALLOW_EXPORT_ODD == 1) ? true : false;
+                        this.IsKHBHYT = false;
+                        this.PrimaryKey = mety.SERVICE_ID + "__" + Inventec.Common.DateTime.Get.Now() + "__" + Guid.NewGuid().ToString();
+                        goto Base;
+                    }
+                    else
+                        goto TuTuc;
+                }
+                else if (inputData.DataType == HIS.Desktop.LocalStorage.BackendData.ADO.MedicineMaterialTypeComboADO.VATTU_DM || inputData.DataType == HIS.Desktop.LocalStorage.BackendData.ADO.MedicineMaterialTypeComboADO.VATTU || inputData.DataType == HIS.Desktop.LocalStorage.BackendData.ADO.MedicineMaterialTypeComboADO.VATTU_TSD)
+                {
+
+                    this.DataType = inputData.DataType;
+                    var maty = BackendDataWorker.Get<V_HIS_MATERIAL_TYPE>().FirstOrDefault(o => o.IS_ACTIVE == IMSys.DbConfig.HIS_RS.COMMON.IS_ACTIVE__TRUE && o.MATERIAL_TYPE_CODE == inputData.MEDICINE_TYPE_CODE);
+                    if (maty != null)
+                    {
+                        Inventec.Common.Mapper.DataObjectMapper.Map<MediMatyTypeADO>(this, maty);
+
+                        this.MEDICINE_TYPE_CODE = maty.MATERIAL_TYPE_CODE;
+                        this.MEDICINE_TYPE_NAME = maty.MATERIAL_TYPE_NAME;
+                        if (
+                            (HisConfigCFG.SplitOffset == GlobalVariables.CommonStringTrue)
+                            && (GlobalStore.IsTreatmentIn && !GlobalStore.IsCabinet)
+                            && (this.IS_ALLOW_ODD == null || this.IS_ALLOW_ODD.Value != 1)
+                            && (int)inputData.AMOUNT != inputData.AMOUNT
+                             )
+                        {
+                            this.RAW_AMOUNT = inputData.AMOUNT;
+                            this.AMOUNT = (decimal)Inventec.Common.Number.Convert.RoundUpValue((double)inputData.AMOUNT, 0);
+                        }
+                        else if (this.IS_ALLOW_ODD == 1 && this.IS_ALLOW_EXPORT_ODD != 1)
+                        {
+                            this.AMOUNT = (decimal)Inventec.Common.Number.Convert.RoundUpValue((double)inputData.AMOUNT, 0);
+                        }
+                        else
+                            this.AMOUNT = inputData.AMOUNT;
+
+                        this.PRES_AMOUNT = inputData.AMOUNT;
+
+                        MOS.EFMODEL.DataModels.HIS_PATIENT_TYPE patientType = new MOS.EFMODEL.DataModels.HIS_PATIENT_TYPE();
+                        patientType = AssignPrescriptionWorker.Instance.MediMatyCreateWorker.choosePatientTypeDefaultlServiceOther(AssignPrescriptionWorker.Instance.MediMatyCreateWorker.getPatientTypeId(), (maty.SERVICE_ID), maty.SERVICE_TYPE_ID);
+                        if (patientType != null && (inputData.DataType == HIS.Desktop.LocalStorage.BackendData.ADO.MedicineMaterialTypeComboADO.VATTU || inputData.DataType == HIS.Desktop.LocalStorage.BackendData.ADO.MedicineMaterialTypeComboADO.VATTU_TSD))
+                        {
+                            this.PATIENT_TYPE_ID = patientType.ID;
+                            this.PATIENT_TYPE_CODE = patientType.PATIENT_TYPE_CODE;
+                            this.PATIENT_TYPE_NAME = patientType.PATIENT_TYPE_NAME;
+                        }
+
+
+                        this.TUTORIAL = inputData.TUTORIAL;
+                        this.UseDays = 1;
+                        this.MEDICINE_USE_FORM_ID = null;
+                        this.MEDICINE_USE_FORM_NAME = "";
+                        this.IsExpend = inputData.IsExpend;
+                        this.IsStent = ((maty.IS_STENT ?? 0) == GlobalVariables.CommonNumberTrue ? true : false);
+                        this.IsAllowOdd = maty.IS_ALLOW_ODD == 1 ? true : false;
+                        this.IsAllowOddAndExportOdd = (maty.IS_ALLOW_ODD == 1 && maty.IS_ALLOW_EXPORT_ODD == 1) ? true : false;
+                        this.IsKHBHYT = false;
+                        this.PrimaryKey = maty.SERVICE_ID + "__" + Inventec.Common.DateTime.Get.Now() + "__" + Guid.NewGuid().ToString();
+                        goto Base;
+                    }
+                    else
+                        goto TuTuc;
+                }
+                else
+                {
+                    goto TuTuc;
+                }
+            TuTuc:
+
+                this.MEDICINE_TYPE_CODE = inputData.MEDICINE_TYPE_CODE;
+                this.MEDICINE_TYPE_NAME = inputData.MEDICINE_TYPE_NAME;
+                this.IsExpend = inputData.IsExpend;
+
+                this.TUTORIAL = inputData.TUTORIAL;
+                this.AMOUNT = inputData.AMOUNT;
+                this.PRES_AMOUNT = this.AMOUNT;
+                this.TotalPrice = (this.PRICE ?? 0) * (this.AMOUNT ?? 0);
+
+
+                this.PrimaryKey = 0 + "__" + Inventec.Common.DateTime.Get.Now() + "__" + Guid.NewGuid().ToString();
+                this.DataType = HIS.Desktop.LocalStorage.BackendData.ADO.MedicineMaterialTypeComboADO.THUOC_TUTUC;
+                goto Base;
+            Base:
+                if (unit != null)
+                {
+                    this.SERVICE_UNIT_ID = unit.ID;
+                    this.SERVICE_UNIT_CODE = unit.SERVICE_UNIT_CODE;
+                    this.SERVICE_UNIT_NAME = unit.SERVICE_UNIT_NAME;
+                }
+                else
+                {
+                    this.SERVICE_UNIT_NAME = inputData.SERVICE_UNIT_CODE_NAME;
+                }
+                this.NUM_ORDER = AssignPrescriptionWorker.Instance.MediMatyCreateWorker.getNumRow();
+                if (htu != null)
+                {
+                    this.HTU_IDs = new List<long>() { htu.ID };
+                    this.HTU_TEXT = htu.HTU_NAME;
+                }
+                else
+                {
+                    this.HTU_TEXT = inputData.HTU_CODE_NAME;
+                }
+
+                if (inputData.Morning > 0)
+                {
+                    this.Sang = inputData.Morning.ToString();
+                }
+                if (inputData.Noon > 0)
+                {
+                    this.Trua = inputData.Noon.ToString();
+                }
+                if (inputData.Afternoon > 0)
+                {
+                    this.Chieu = inputData.Afternoon.ToString();
+                }
+                if (inputData.Evening > 0)
+                {
+                    this.Toi = inputData.Evening.ToString();
+                }
+                AssignPrescriptionWorker.Instance.MediMatyCreateWorker.setNumRow();
+            }
+            catch (Exception ex)
+            {
+                Inventec.Common.Logging.LogSystem.Warn(ex);
+            }
+        }
+
         private void UpdateMedicineUseFormInDataRow(MediMatyTypeADO medicineTypeSDO)
         {
             try
@@ -1564,7 +1761,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.ADO
                         if (useForm != null)
                         {
                             medicineTypeSDO.MEDICINE_USE_FORM_ID = useForm.ID;
-                            medicineTypeSDO.MEDICINE_USE_FORM_CODE = useForm.MEDICINE_USE_FORM_CODE;
+                            medicineTypeSDO.MEDICINE_USE_FORM_CODE = useForm.MEDICINE_USE_FORM_CODE; 
                             medicineTypeSDO.MEDICINE_USE_FORM_NAME = useForm.MEDICINE_USE_FORM_NAME;
                             hasUseForm = true;
                         }
@@ -1786,6 +1983,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.ADO
         public long IntructionTime { get; set; }
         public short? IS_IDENTITY_MANAGEMENT { get; set; }
         public short? IS_REUSABLE { get; set; }
+        public string HTU_TEXT { get; set; }
         public DevExpress.XtraEditors.DXErrorProvider.ErrorType ErrorTypeAmountHasRound { get; set; }
         public string ErrorMessageAmountHasRound { get; set; }
         public DevExpress.XtraEditors.DXErrorProvider.ErrorType ErrorTypeAmount { get; set; }

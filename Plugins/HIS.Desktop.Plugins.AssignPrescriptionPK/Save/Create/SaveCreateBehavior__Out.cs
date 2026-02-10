@@ -142,7 +142,7 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Save.Create
                 prescriptionSDO.PrescriptionPhaseNum = (short?)this.PrescriptionPhaseNum;
                 if (this.ParentServiceReqId > 0)
                     prescriptionSDO.ParentServiceReqId = this.ParentServiceReqId;
-
+                prescriptionSDO.HisGfrAlertLogs = AlertLogSDOs;
                 this.ProcessPrescriptionUpdateSDO(prescriptionSDO, useTime, intructionTime);
                 this.ProcessPrescriptionUpdateSDOICD(prescriptionSDO);
                 this.ProcessPrescriptionSDOForSereServInKip(prescriptionSDO);
@@ -166,6 +166,15 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Save.Create
                 prescriptionSDO.RequestLoginName = this.RequestLoginname;
                 prescriptionSDO.RequestUserName = this.RequestUserName;
                 //prescriptionSDO.ExpMestReasonId = this.ExpMestReasonId;
+                if (frmAssignPrescription.chkPreKidneyShift.Checked)
+                {
+                    prescriptionSDO.IsKidney = true;
+                    prescriptionSDO.KidneyTimes = Convert.ToInt64(frmAssignPrescription.spinKidneyCount.Value);
+                }
+                if (frmAssignPrescription.chkHomePres.Checked)
+                {
+                    prescriptionSDO.IsHomePres = true;
+                }
                 if (this.ParentServiceReqId > 0)
                     prescriptionSDO.ParentServiceReqId = this.ParentServiceReqId;
                 prescriptionSDO.InstructionTime = intructionTime;
@@ -250,6 +259,11 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Save.Create
                         {
                             item.SereServParentId = frmAssignPrescription.currentSereServ.ID;
                         }
+
+                        foreach (var item in frmAssignPrescription.mediMatyTypeADOs)
+                        {
+                            item.SereServParentId = frmAssignPrescription.currentSereServ.ID;
+                        }
                     }
 
                     if (frmAssignPrescription.currentSereServInEkip != null)
@@ -260,6 +274,11 @@ namespace HIS.Desktop.Plugins.AssignPrescriptionPK.Save.Create
                         }
 
                         foreach (var item in prescriptionSDO.Medicines)
+                        {
+                            item.SereServParentId = frmAssignPrescription.currentSereServInEkip.ID;
+                        }
+
+                        foreach (var item in frmAssignPrescription.mediMatyTypeADOs)
                         {
                             item.SereServParentId = frmAssignPrescription.currentSereServInEkip.ID;
                         }
