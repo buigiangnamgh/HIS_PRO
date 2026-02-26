@@ -1,561 +1,531 @@
-/* IVT
- * @Project : hisnguonmo
- * Copyright (C) 2017 INVENTEC
- *  
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *  
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
- * GNU General Public License for more details.
- *  
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Net;
 using HIS.Desktop.ApiConsumer;
-using HIS.Desktop.LocalStorage.ConfigApplication;
+using HIS.Desktop.LocalStorage.BackendData;
 using HIS.Desktop.Plugins.Library.ElectronicBill.Base;
-using HIS.Desktop.Plugins.Library.ElectronicBill.Config;
 using HIS.Desktop.Plugins.Library.ElectronicBill.Data;
+using HIS.Desktop.Plugins.Library.ElectronicBill.InvoiceInfo;
+using HIS.Desktop.Plugins.Library.ElectronicBill.Template;
 using Inventec.Common.Adapter;
-using Inventec.Common.ElectronicBill.MD;
+using Inventec.Common.DateTime;
+using Inventec.Common.EHoaDon;
 using Inventec.Common.Logging;
 using Inventec.Core;
 using MOS.EFMODEL.DataModels;
 using MOS.Filter;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
-using System.Xml.Serialization;
-using System.Configuration;
-using HIS.Desktop.Plugins.Library.ElectronicBill.Template;
+using Newtonsoft.Json;
 
 namespace HIS.Desktop.Plugins.Library.ElectronicBill.ProviderBehavior.BKAV
 {
-    public class BKAVBehavior : IRun
-    {
-        string config { get; set; }
-        string accountConfig { get; set; }
-        ElectronicBillDataInput ElectronicBillDataInput { get; set; }
-        TemplateEnum.TYPE TempType { get; set; }
-        ElectronicBillType.ENUM ElectronicBillTypeEnum { get; set; }
+    public class BKAVBehavior : HIS.Desktop.Plugins.Library.ElectronicBill.Base.IRun
+	{
+		private string config { get; set; }
 
-        public BKAVBehavior(ElectronicBillDataInput _electronicBillDataInput, string _config, string _accountConfig)
-            : base()
-        {
-            this.config = _config;
-            this.accountConfig = _accountConfig;
-            this.ElectronicBillDataInput = _electronicBillDataInput;
-        }
+		private string accountConfig { get; set; }
 
-        ElectronicBillResult IRun.Run(ElectronicBillType.ENUM _electronicBillTypeEnum, TemplateEnum.TYPE _tempType)
-        {
-            ElectronicBillResult result = new ElectronicBillResult();
-            try
-            {
-                this.TempType = _tempType;
-                this.ElectronicBillTypeEnum = _electronicBillTypeEnum;
+		private ElectronicBillDataInput ElectronicBillDataInput { get; set; }
 
-                if (this.Check(ref result))
-                {
-                    string[] configArr = config.Split('|');
+		private TemplateEnum.TYPE TempType { get; set; }
 
-                    string serviceUrl = configArr[1]; //ConfigurationManager.AppSettings[AppConfigKey.WEBSERVICE_URL];
-                    if (String.IsNullOrEmpty(serviceUrl))
-                    {
-                        Inventec.Common.Logging.LogSystem.Error("Khong tim thay dia chi Webservice URL");
-                        ElectronicBillResultUtil.Set(ref result, false, "Không tìm thấy địa chỉ Webservice URL");
-                        return result;
-                    }
+		private ElectronicBillType.ENUM ElectronicBillTypeEnum { get; set; }
 
-                    string[] accountConfigArr = accountConfig.Split('|');
+		public BKAVBehavior(ElectronicBillDataInput _electronicBillDataInput, string _config, string _accountConfig)
+		{
+			config = _config;
+			accountConfig = _accountConfig;
+			ElectronicBillDataInput = _electronicBillDataInput;
+		}
 
-                    Inventec.Common.EHoaDon.BkavPartner bkavPartner = new Inventec.Common.EHoaDon.BkavPartner();
-                    bkavPartner.BkavPartnerGUID = accountConfigArr[0].Trim();
-                    bkavPartner.BkavPartnerToken = accountConfigArr[1].Trim();
+        ElectronicBillResult HIS.Desktop.Plugins.Library.ElectronicBill.Base.IRun.Run(ElectronicBillType.ENUM _electronicBillTypeEnum, TemplateEnum.TYPE _tempType)
+		{
+			//IL_0091: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0098: Expected O, but got Unknown
+			//IL_01ff: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0206: Expected O, but got Unknown
+			//IL_04a0: Unknown result type (might be due to invalid IL or missing references)
+			//IL_04a7: Expected O, but got Unknown
+			ElectronicBillResult electronicBillResult = new ElectronicBillResult();
+			try
+			{
+				TempType = _tempType;
+				ElectronicBillTypeEnum = _electronicBillTypeEnum;
+				if (Check(ref electronicBillResult))
+				{
+					string[] array = config.Split('|');
+					string text = array[1];
+					if (string.IsNullOrEmpty(text))
+					{
+						LogSystem.Error("Khong tim thay dia chi Webservice URL");
+						ElectronicBillResultUtil.Set(ref electronicBillResult, false, "Không tìm thấy địa chỉ Webservice URL");
+						return electronicBillResult;
+					}
+					string[] array2 = accountConfig.Split('|');
+					BkavPartner val = new BkavPartner();
+					val.BkavPartnerGUID = array2[0].Trim();
+					val.BkavPartnerToken = array2[1].Trim();
+					if (array2[2] != null)
+					{
+						uint result = 0u;
+						uint.TryParse(array2[2].Trim(), out result);
+						val.Mode = result;
+					}
+					List<InvoiceDataWS> invoiceDataWSs = GetInvoiceContrBKAV(ElectronicBillDataInput);
+					string cmdTypeCFG = "";
+					if (array.Length > 3)
+					{
+						cmdTypeCFG = array[3];
+					}
+					if (ElectronicBillTypeEnum == ElectronicBillType.ENUM.CREATE_INVOICE && invoiceDataWSs.SelectMany((InvoiceDataWS s) => s.ListInvoiceDetailsWS).Sum((InvoiceDetailsWS s) => s.Amount) <= 0.0)
+					{
+						LogSystem.Error("Lỗi dữ liệu không có thành tiền dịch vụ");
+						LogSystem.Debug(LogUtil.TraceData(LogUtil.GetMemberName<List<InvoiceDataWS>>((Expression<Func<List<InvoiceDataWS>>>)(() => invoiceDataWSs)), (object)invoiceDataWSs));
+						ElectronicBillResultUtil.Set(ref electronicBillResult, false, "Tổng tiền hóa đơn phải lớn hơn 0");
+						return electronicBillResult;
+					}
+					int cmdType = GetCmdType(cmdTypeCFG);
+					EHoaDonManager val2 = new EHoaDonManager(text, val, invoiceDataWSs);
+					LogSystem.Info(LogUtil.TraceData(LogUtil.GetMemberName<List<InvoiceDataWS>>((Expression<Func<List<InvoiceDataWS>>>)(() => invoiceDataWSs)), (object)invoiceDataWSs));
+					List<InvoiceResult> list = val2.Run(cmdType);
+					bool flag = false;
+					if (list != null && list.Count > 0)
+					{
+						foreach (InvoiceResult item in list)
+						{
+							if (item.Status == 0)
+							{
+								electronicBillResult.Success = true;
+								electronicBillResult.InvoiceSys = "BKAV";
+								electronicBillResult.InvoiceCode = ((item.PartnerInvoiceID > 0) ? item.PartnerInvoiceID.ToString() : "");
+								electronicBillResult.InvoiceLink = array[2] + "/" + item.MessLog;
+								electronicBillResult.InvoiceNumOrder = item.InvoiceNo.ToString();
+								electronicBillResult.InvoiceTime = Inventec.Common.DateTime.Get.Now();
+								electronicBillResult.InvoiceLoginname = val.BkavPartnerGUID;
+								electronicBillResult.InvoiceLookupCode = item.MTC;
+								LogSystem.Debug(LogUtil.TraceData("___invoiceResults___", (object)item));
+								continue;
+							}
+							if (ElectronicBillTypeEnum == ElectronicBillType.ENUM.GET_INVOICE_LINK)
+							{
+								flag = true;
+								break;
+							}
+							ElectronicBillResultUtil.Set(ref electronicBillResult, false, item.MessLog);
+							LogSystem.Error("gui thong tin hoa don dien tu that bai. " + LogUtil.TraceData(LogUtil.GetMemberName<string>((Expression<Func<string>>)(() => item.MessLog)), (object)item.MessLog) + LogUtil.TraceData(LogUtil.GetMemberName<List<InvoiceDataWS>>((Expression<Func<List<InvoiceDataWS>>>)(() => invoiceDataWSs)), (object)invoiceDataWSs));
+							return electronicBillResult;
+						}
+					}
+					if (ElectronicBillTypeEnum == ElectronicBillType.ENUM.GET_INVOICE_LINK && flag)
+					{
+						ServicePointManager.Expect100Continue = true;
+						ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+						EHoaDonManager val3 = new EHoaDonManager(text, val, invoiceDataWSs);
+						LogSystem.Info(LogUtil.TraceData("invoiceDataWSs_SHOW: ", (object)invoiceDataWSs));
+						List<InvoiceResult> list2 = val3.Run(816);
+						if (list2 != null && list2.Count > 0)
+						{
+							foreach (InvoiceResult item2 in list2)
+							{
+								if (item2.Status == 0)
+								{
+									electronicBillResult.Success = true;
+									electronicBillResult.InvoiceSys = "BKAV";
+									electronicBillResult.InvoiceCode = ((item2.PartnerInvoiceID > 0) ? item2.PartnerInvoiceID.ToString() : "");
+									electronicBillResult.InvoiceLink = array[2] + "/" + item2.MessLog;
+									electronicBillResult.InvoiceNumOrder = item2.InvoiceNo.ToString();
+									electronicBillResult.InvoiceTime = Inventec.Common.DateTime.Get.Now();
+									electronicBillResult.InvoiceLoginname = val.BkavPartnerGUID;
+									electronicBillResult.InvoiceLookupCode = item2.MTC;
+									LogSystem.Debug(LogUtil.TraceData("___invoiceResults_Show___", (object)item2));
+									continue;
+								}
+								if (ElectronicBillDataInput.Transaction != null && ElectronicBillDataInput.Transaction.ORIGINAL_TRANSACTION_ID.HasValue && ElectronicBillTypeEnum == ElectronicBillType.ENUM.CREATE_INVOICE)
+								{
+									ElectronicBillResultUtil.Set(ref electronicBillResult, false, "Thay thế hóa đơn thất bại. " + item2.MessLog);
+								}
+								else
+								{
+									ElectronicBillResultUtil.Set(ref electronicBillResult, false, item2.MessLog);
+								}
+								LogSystem.Error("gui thong tin hoa don dien tu that bai. " + LogUtil.TraceData(LogUtil.GetMemberName<string>((Expression<Func<string>>)(() => item2.MessLog)), (object)item2.MessLog) + LogUtil.TraceData(LogUtil.GetMemberName<List<InvoiceDataWS>>((Expression<Func<List<InvoiceDataWS>>>)(() => invoiceDataWSs)), (object)invoiceDataWSs));
+								return electronicBillResult;
+							}
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				electronicBillResult.Success = false;
+				ElectronicBillResultUtil.Set(ref electronicBillResult, false, ex.Message);
+				LogSystem.Warn(ex);
+			}
+			return electronicBillResult;
+		}
 
-                    if (accountConfigArr[2] != null)
-                    {
-                        uint Mode = 0;
-                        uint.TryParse(accountConfigArr[2].Trim(), out Mode);
-                        bkavPartner.Mode = Mode;
-                    }
+		private int GetCmdType(string cmdTypeCFG)
+		{
+			int result = -1;
+			try
+			{
+				switch (ElectronicBillTypeEnum)
+				{
+				case ElectronicBillType.ENUM.CREATE_INVOICE:
+					result = ((ElectronicBillDataInput.Transaction != null && ElectronicBillDataInput.Transaction.ORIGINAL_TRANSACTION_ID.HasValue) ? ((!(cmdTypeCFG == "1")) ? 120 : 123) : ((!(cmdTypeCFG == "1")) ? 101 : 112));
+					break;
+				case ElectronicBillType.ENUM.GET_INVOICE_LINK:
+					result = 804;
+					break;
+				case ElectronicBillType.ENUM.GET_INVOICE_SHOW:
+					result = 816;
+					break;
+				case ElectronicBillType.ENUM.CANCEL_INVOICE:
+					result = 202;
+					break;
+				case ElectronicBillType.ENUM.DELETE_INVOICE:
+					result = 301;
+					break;
+				case ElectronicBillType.ENUM.CONVERT_INVOICE:
+				case ElectronicBillType.ENUM.CREATE_INVOICE_DATA:
+				case ElectronicBillType.ENUM.GET_INVOICE_INFO:
+					break;
+				}
+			}
+			catch (Exception ex)
+			{
+				LogSystem.Warn(ex);
+			}
+			return result;
+		}
 
-                    List<Inventec.Common.EHoaDon.InvoiceDataWS> invoiceDataWSs = this.GetInvoiceContrBKAV(this.ElectronicBillDataInput);
+		private bool Check(ref ElectronicBillResult electronicBillResult)
+		{
+			bool result = true;
+			try
+			{
+				string[] array = config.Split('|');
+				if (array.Length < 3)
+				{
+					throw new Exception("Sai định dạng cấu hình hệ thống.");
+				}
+				if (array[0] != "BKAV")
+				{
+					throw new Exception("Không đúng cấu hình nhà cung cấp BKAV");
+				}
+				string[] array2 = accountConfig.Split('|');
+				if (array2.Length != 3)
+				{
+					throw new Exception("Sai định dạng cấu hình tài khoản.");
+				}
+				if (ElectronicBillTypeEnum == ElectronicBillType.ENUM.CREATE_INVOICE)
+				{
+					if (ElectronicBillDataInput == null)
+					{
+						throw new Exception("Không có dữ liệu phát hành hóa đơn.");
+					}
+					if (ElectronicBillDataInput.Treatment == null)
+					{
+						throw new Exception("Không có thông tin hồ sơ điều trị.");
+					}
+					if (ElectronicBillDataInput.Branch == null)
+					{
+						throw new Exception("Không có thông tin chi nhánh.");
+					}
+					if (array.Length > 3)
+					{
+						string text = array[3];
+						if (text == "1" && (string.IsNullOrWhiteSpace(ElectronicBillDataInput.TemplateCode) || string.IsNullOrWhiteSpace(ElectronicBillDataInput.SymbolCode)))
+						{
+							List<string> list = new List<string>();
+							if (string.IsNullOrWhiteSpace(ElectronicBillDataInput.TemplateCode))
+							{
+								list.Add("Mẫu số");
+							}
+							if (string.IsNullOrWhiteSpace(ElectronicBillDataInput.SymbolCode))
+							{
+								list.Add("Ký hiệu");
+							}
+							throw new Exception(string.Format("Không có thông tin {0}.", string.Join(",", list)));
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				result = false;
+				ElectronicBillResultUtil.Set(ref electronicBillResult, false, ex.Message);
+				LogSystem.Warn(ex);
+			}
+			return result;
+		}
 
-                    string cmdTypeCFG = "";
-                    if (configArr.Length > 3)
-                    {
-                        cmdTypeCFG = configArr[3];
-                    }
+		private List<InvoiceDataWS> GetInvoiceContrBKAV(ElectronicBillDataInput electronicBillDataInput)
+		{
+			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000d: Expected O, but got Unknown
+			//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00aa: Expected O, but got Unknown
+			List<InvoiceDataWS> list = new List<InvoiceDataWS>();
+			InvoiceDataWS val = new InvoiceDataWS();
+			if (electronicBillDataInput != null)
+			{
+				switch (ElectronicBillTypeEnum)
+				{
+				case ElectronicBillType.ENUM.CREATE_INVOICE:
+					val.Invoice = SetInvoice();
+					val.ListInvoiceDetailsWS = GetProductElectronicBill(ElectronicBillDataInput);
+					val.PartnerInvoiceID = GetTransactionCode();
+					val.PartnerInvoiceStringID = "";
+					list.Add(val);
+					break;
+				case ElectronicBillType.ENUM.GET_INVOICE_LINK:
+				case ElectronicBillType.ENUM.DELETE_INVOICE:
+				case ElectronicBillType.ENUM.CANCEL_INVOICE:
+				case ElectronicBillType.ENUM.GET_INVOICE_SHOW:
+					val.PartnerInvoiceID = electronicBillDataInput.PartnerInvoiceID;
+					val.Invoice = new InvoiceWS();
+					val.ListInvoiceAttachFileWS = new List<InvoiceAttachFileWS>();
+					val.ListInvoiceDetailsWS = new List<InvoiceDetailsWS>();
+					val.PartnerInvoiceStringID = "";
+					val.Reason = GetReason();
+					list.Add(val);
+					break;
+				}
+			}
+			return list;
+		}
 
-                    if (this.ElectronicBillTypeEnum == ElectronicBillType.ENUM.CREATE_INVOICE)
-                    {
-                        if (invoiceDataWSs.SelectMany(s => s.ListInvoiceDetailsWS).Sum(s => s.Amount) <= 0)
-                        {
-                            Inventec.Common.Logging.LogSystem.Error("Lỗi dữ liệu không có thành tiền dịch vụ");
-                            Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => invoiceDataWSs), invoiceDataWSs));
-                            ElectronicBillResultUtil.Set(ref result, false, "Tổng tiền hóa đơn phải lớn hơn 0");
-                            return result;
-                        }
-                    }
+		private string GetReason()
+		{
+			string result = "";
+			try
+			{
+				if (ElectronicBillDataInput == null)
+				{
+					return result;
+				}
+				LogSystem.Debug(LogUtil.TraceData("__ElectronicBillDataInput", (object)ElectronicBillDataInput));
+				result = ElectronicBillDataInput.CancelReason;
+			}
+			catch (Exception ex)
+			{
+				result = "";
+				LogSystem.Error(ex);
+			}
+			return result;
+		}
 
-                    int cmdType = GetCmdType(cmdTypeCFG);
+		private long GetTransactionCode()
+		{
+			if (ElectronicBillDataInput.Transaction != null)
+			{
+				return long.Parse(ElectronicBillDataInput.Transaction.TRANSACTION_CODE);
+			}
+			if (ElectronicBillDataInput.ListTransaction != null && ElectronicBillDataInput.ListTransaction.Count > 0)
+			{
+				return long.Parse(ElectronicBillDataInput.ListTransaction.OrderByDescending((V_HIS_TRANSACTION o) => o.TRANSACTION_CODE).First().TRANSACTION_CODE);
+			}
+			return long.Parse(ElectronicBillDataInput.Treatment.TREATMENT_CODE + DateTime.Now.ToString("yyyyMMdd"));
+		}
 
-                    Inventec.Common.EHoaDon.EHoaDonManager eHoaDon = new Inventec.Common.EHoaDon.EHoaDonManager(serviceUrl, bkavPartner, invoiceDataWSs);
-                    Inventec.Common.Logging.LogSystem.Info(Inventec.Common.Logging.LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => invoiceDataWSs), invoiceDataWSs));
-                    List<Inventec.Common.EHoaDon.InvoiceResult> invoiceResults = eHoaDon.Run(cmdType);
+		private InvoiceWS SetInvoice()
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0007: Expected O, but got Unknown
+			//IL_00fd: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0104: Expected O, but got Unknown
+			//IL_017d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0184: Expected O, but got Unknown
+			InvoiceWS val = new InvoiceWS();
+			val.InvoiceTypeID = 1;
+			val.InvoiceDate = DateTime.Now;
+			val.InvoiceForm = ElectronicBillDataInput.TemplateCode;
+			val.InvoiceSerial = ElectronicBillDataInput.SymbolCode;
+			int result = 1;
+			if (int.TryParse(ElectronicBillDataInput.TemplateCode, out result))
+			{
+				val.InvoiceTypeID = result;
+			}
+			InvoiceInfoADO data = InvoiceInfoProcessor.GetData(ElectronicBillDataInput);
+			val.BuyerName = data.BuyerName ?? "";
+			val.BuyerBankAccount = data.BuyerAccountNumber ?? "";
+			val.BuyerAddress = data.BuyerAddress ?? "";
+			val.BuyerUnitName = data.BuyerOrganization ?? "";
+			val.BuyerTaxCode = data.BuyerTaxCode ?? "";
+			val.PayMethodID = 1;
+			int payMethodID = 1;
+			if (ElectronicBillDataInput.Transaction != null)
+			{
+				HIS_PAY_FORM val2 = new HIS_PAY_FORM();
+				val2 = BackendDataWorker.Get<HIS_PAY_FORM>().FirstOrDefault((HIS_PAY_FORM o) => o.ID == ElectronicBillDataInput.Transaction.PAY_FORM_ID);
+				int result2;
+				payMethodID = ((val2 == null || string.IsNullOrEmpty(val2.ELECTRONIC_PAY_FORM_NAME) || !int.TryParse(val2.ELECTRONIC_PAY_FORM_NAME, out result2)) ? 3 : result2);
+			}
+			else if (ElectronicBillDataInput.ListTransaction != null && ElectronicBillDataInput.ListTransaction.Count > 0)
+			{
+				HIS_PAY_FORM val3 = new HIS_PAY_FORM();
+				val3 = BackendDataWorker.Get<HIS_PAY_FORM>().FirstOrDefault((HIS_PAY_FORM o) => o.ID == ElectronicBillDataInput.ListTransaction.First().PAY_FORM_ID);
+				int result3;
+				payMethodID = ((val3 == null || string.IsNullOrEmpty(val3.ELECTRONIC_PAY_FORM_NAME) || !int.TryParse(val3.ELECTRONIC_PAY_FORM_NAME, out result3)) ? 3 : result3);
+			}
+			val.PayMethodID = payMethodID;
+			val.ReceiveTypeID = 3;
+			val.ReceiverEmail = data.BuyerEmail ?? "";
+			val.ReceiverMobile = data.BuyerPhone ?? "";
+			val.ReceiverAddress = data.BuyerAddress ?? "";
+			val.ReceiverName = data.BuyerName ?? "";
+			val.Note = "";
+			val.BillCode = "";
+			val.CurrencyID = ((!string.IsNullOrEmpty(ElectronicBillDataInput.Currency)) ? ElectronicBillDataInput.Currency : "");
+			val.ExchangeRate = 1.0;
+			val.InvoiceStatusID = 1;
+			val.SignedDate = DateTime.Now;
+			UserDefineADO userDefine = GetUserDefine(ElectronicBillDataInput.Treatment);
+			if (userDefine != null)
+			{
+				val.UserDefine = JsonConvert.SerializeObject((object)userDefine);
+				val.Note = userDefine.DEPARTMENT_NAME;
+			}
+			if (ElectronicBillDataInput.Transaction != null && ElectronicBillDataInput.Transaction.ORIGINAL_TRANSACTION_ID.HasValue)
+			{
+				val.Reason = ElectronicBillDataInput.Transaction.REPLACE_REASON;
+				string arg = long.Parse(ElectronicBillDataInput.Transaction.TDL_ORIGINAL_EI_NUM_ORDER).ToString("D7");
+				val.OriginalInvoiceIdentify = string.Format("[{0}]_[{1}]_[{2}]", ElectronicBillDataInput.TemplateCode, ElectronicBillDataInput.SymbolCode, arg);
+			}
+			return val;
+		}
 
-                    bool IsError = false;
+		private UserDefineADO GetUserDefine(V_HIS_TREATMENT_FEE treatment)
+		{
+			//IL_011a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0120: Expected O, but got Unknown
+			//IL_0120: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0126: Expected O, but got Unknown
+			//IL_0134: Unknown result type (might be due to invalid IL or missing references)
+			UserDefineADO userDefineADO = null;
+			try
+			{
+				if (treatment != null)
+				{
+					userDefineADO = new UserDefineADO();
+					userDefineADO.END_CODE = treatment.END_CODE;
+					userDefineADO.EXTRA_END_CODE = treatment.EXTRA_END_CODE;
+					userDefineADO.MAIN_CAUSE = treatment.MAIN_CAUSE;
+					userDefineADO.OUT_CODE = treatment.OUT_CODE;
+					userDefineADO.STORE_CODE = treatment.STORE_CODE;
+					userDefineADO.TOTAL_BILL_AMOUNT = treatment.TOTAL_BILL_AMOUNT;
+					userDefineADO.TOTAL_BILL_EXEMPTION = treatment.TOTAL_BILL_EXEMPTION;
+					userDefineADO.TOTAL_BILL_FUND = treatment.TOTAL_BILL_FUND;
+					userDefineADO.TOTAL_BILL_OTHER_AMOUNT = treatment.TOTAL_BILL_OTHER_AMOUNT;
+					userDefineADO.TOTAL_BILL_TRANSFER_AMOUNT = treatment.TOTAL_BILL_TRANSFER_AMOUNT;
+					userDefineADO.TOTAL_DEBT_AMOUNT = treatment.TOTAL_DEBT_AMOUNT;
+					userDefineADO.TOTAL_DEPOSIT_AMOUNT = treatment.TOTAL_DEPOSIT_AMOUNT;
+					userDefineADO.TOTAL_DISCOUNT = treatment.TOTAL_DISCOUNT;
+					userDefineADO.TOTAL_HEIN_PRICE = treatment.TOTAL_HEIN_PRICE;
+					userDefineADO.TOTAL_PATIENT_PRICE = treatment.TOTAL_PATIENT_PRICE;
+					userDefineADO.TOTAL_PRICE = treatment.TOTAL_PRICE;
+					userDefineADO.TOTAL_PRICE_EXPEND = treatment.TOTAL_PRICE_EXPEND;
+					userDefineADO.TOTAL_REPAY_AMOUNT = treatment.TOTAL_REPAY_AMOUNT;
+					userDefineADO.TREATMENT_CODE = treatment.TREATMENT_CODE;
+					userDefineADO.TREATMENT_DAY_COUNT = treatment.TREATMENT_DAY_COUNT;
+					CommonParam val = new CommonParam();
+					HisDepartmentTranLastFilter val2 = new HisDepartmentTranLastFilter();
+					val2.TREATMENT_ID = treatment.ID;
+					V_HIS_DEPARTMENT_TRAN val3 = ((AdapterBase)new BackendAdapter(val)).Get<V_HIS_DEPARTMENT_TRAN>("/api/HisDepartmentTran/GetLastByTreatmentId", ApiConsumers.MosConsumer, (object)val2, val);
+					if (val3 != null)
+					{
+						userDefineADO.DEPARTMENT_CODE = val3.DEPARTMENT_CODE;
+						userDefineADO.DEPARTMENT_NAME = val3.DEPARTMENT_NAME;
+						userDefineADO.Khoa = val3.DEPARTMENT_NAME;
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				userDefineADO = null;
+				LogSystem.Error(ex);
+			}
+			return userDefineADO;
+		}
 
-                    if (invoiceResults != null && invoiceResults.Count > 0)
-                    {
-                        foreach (var item in invoiceResults)
-                        {
-                            if (item.Status == 0)
-                            {
-                                //Thanh cong
-                                result.Success = true;
-                                result.InvoiceSys = "BKAV";
-                                result.InvoiceCode = item.PartnerInvoiceID > 0 ? item.PartnerInvoiceID.ToString() : "";
-                                result.InvoiceLink = configArr[2] + "/" + item.MessLog;
-                                result.InvoiceNumOrder = item.InvoiceNo.ToString();
-                                result.InvoiceTime = Inventec.Common.DateTime.Get.Now();
-                                result.InvoiceLoginname = bkavPartner.BkavPartnerGUID;
-                                result.InvoiceLookupCode = item.MTC;
-                                Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData("___invoiceResults___", item));
-                            }
-                            else
-                            {
-                                if (this.ElectronicBillTypeEnum == ElectronicBillType.ENUM.GET_INVOICE_LINK)
-                                {
-                                    IsError = true;
-                                    break;
-                                }
-                                ElectronicBillResultUtil.Set(ref result, false, item.MessLog);
-                                LogSystem.Error("gui thong tin hoa don dien tu that bai. " + LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => item.MessLog), item.MessLog) + LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => invoiceDataWSs), invoiceDataWSs));
-                                return result;
-                            }
-                        }
-                    }
-
-                    if (this.ElectronicBillTypeEnum == ElectronicBillType.ENUM.GET_INVOICE_LINK && IsError)
-                    {
-                        Inventec.Common.EHoaDon.EHoaDonManager eHoaDon_Show = new Inventec.Common.EHoaDon.EHoaDonManager(serviceUrl, bkavPartner, invoiceDataWSs);
-                        Inventec.Common.Logging.LogSystem.Info(Inventec.Common.Logging.LogUtil.TraceData("invoiceDataWSs_SHOW: ", invoiceDataWSs));
-                        List<Inventec.Common.EHoaDon.InvoiceResult> invoiceResults_Show = eHoaDon_Show.Run(Inventec.Common.EHoaDon.CmdType.GetInvoiceShow);
-
-                        if (invoiceResults_Show != null && invoiceResults_Show.Count > 0)
-                        {
-                            foreach (var item in invoiceResults_Show)
-                            {
-                                if (item.Status == 0)
-                                {
-                                    //Thanh cong
-                                    result.Success = true;
-                                    result.InvoiceSys = "BKAV";
-                                    result.InvoiceCode = item.PartnerInvoiceID > 0 ? item.PartnerInvoiceID.ToString() : "";
-                                    result.InvoiceLink = configArr[2] + "/" + item.MessLog;
-                                    result.InvoiceNumOrder = item.InvoiceNo.ToString();
-                                    result.InvoiceTime = Inventec.Common.DateTime.Get.Now();
-                                    result.InvoiceLoginname = bkavPartner.BkavPartnerGUID;
-                                    result.InvoiceLookupCode = item.MTC;
-                                    Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData("___invoiceResults_Show___", item));
-                                }
-                                else
-                                {
-                                    ElectronicBillResultUtil.Set(ref result, false, item.MessLog);
-                                    LogSystem.Error("gui thong tin hoa don dien tu that bai. " + LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => item.MessLog), item.MessLog) + LogUtil.TraceData(Inventec.Common.Logging.LogUtil.GetMemberName(() => invoiceDataWSs), invoiceDataWSs));
-                                    return result;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                result.Success = false;
-                ElectronicBillResultUtil.Set(ref result, false, ex.Message);
-                Inventec.Common.Logging.LogSystem.Warn(ex);
-            }
-            return result;
-        }
-
-        private int GetCmdType(string cmdTypeCFG)
-        {
-            int result = -1;
-            try
-            {
-                switch (this.ElectronicBillTypeEnum)
-                {
-                    case ElectronicBillType.ENUM.CREATE_INVOICE:
-                        if (cmdTypeCFG == "1")
-                        {
-                            result = Inventec.Common.EHoaDon.CmdType.CreateInvoiceWithFormSerialReturnNo;
-                        }
-                        else
-                        {
-                            result = Inventec.Common.EHoaDon.CmdType.CreateInvoiceTR;
-                        }
-                        break;
-                    case ElectronicBillType.ENUM.GET_INVOICE_LINK:
-                        result = Inventec.Common.EHoaDon.CmdType.GetInvoiceLink;
-                        break;
-                    case ElectronicBillType.ENUM.GET_INVOICE_SHOW:
-                        result = Inventec.Common.EHoaDon.CmdType.GetInvoiceShow;
-                        break;
-                    case ElectronicBillType.ENUM.CANCEL_INVOICE:
-                        result = Inventec.Common.EHoaDon.CmdType.CancelInvoiceByPartnerInvoiceID;
-                        break;
-                    case ElectronicBillType.ENUM.DELETE_INVOICE:
-                        result = Inventec.Common.EHoaDon.CmdType.DeleteInvoiceByPartnerInvoiceID;
-                        break;
-                    default:
-                        break;
-                }
-            }
-            catch (Exception ex)
-            {
-                Inventec.Common.Logging.LogSystem.Warn(ex);
-            }
-            return result;
-        }
-
-        private bool Check(ref ElectronicBillResult electronicBillResult)
-        {
-            bool result = true;
-            try
-            {
-                string[] configArr = config.Split('|');
-                if (configArr.Length < 3)
-                    throw new Exception("Sai định dạng cấu hình hệ thống.");
-                if (configArr[0] != ProviderType.BKAV)
-                    throw new Exception("Không đúng cấu hình nhà cung cấp BKAV");
-
-                string[] accountArr = accountConfig.Split('|');
-                if (accountArr.Length != 3)
-                    throw new Exception("Sai định dạng cấu hình tài khoản.");
-
-                if (this.ElectronicBillTypeEnum == ElectronicBillType.ENUM.CREATE_INVOICE)
-                {
-                    if (this.ElectronicBillDataInput == null)
-                        throw new Exception("Không có dữ liệu phát hành hóa đơn.");
-                    if (this.ElectronicBillDataInput.Treatment == null)
-                        throw new Exception("Không có thông tin hồ sơ điều trị.");
-                    if (this.ElectronicBillDataInput.Branch == null)
-                        throw new Exception("Không có thông tin chi nhánh.");
-
-                    if (configArr.Length > 3)
-                    {
-                        string cmdTypeCFG = configArr[3];
-                        if (cmdTypeCFG == "1" && (String.IsNullOrWhiteSpace(this.ElectronicBillDataInput.TemplateCode) || String.IsNullOrWhiteSpace(this.ElectronicBillDataInput.SymbolCode)))
-                        {
-                            List<string> messError = new List<string>();
-                            if (String.IsNullOrWhiteSpace(this.ElectronicBillDataInput.TemplateCode))
-                            {
-                                messError.Add("Mẫu số");
-                            }
-
-                            if (String.IsNullOrWhiteSpace(this.ElectronicBillDataInput.SymbolCode))
-                            {
-                                messError.Add("Ký hiệu");
-                            }
-
-                            throw new Exception(string.Format("Không có thông tin {0}.", string.Join(",", messError)));
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                result = false;
-                ElectronicBillResultUtil.Set(ref electronicBillResult, false, ex.Message);
-                Inventec.Common.Logging.LogSystem.Warn(ex);
-            }
-            return result;
-        }
-
-        private List<Inventec.Common.EHoaDon.InvoiceDataWS> GetInvoiceContrBKAV(ElectronicBillDataInput electronicBillDataInput)
-        {
-            List<Inventec.Common.EHoaDon.InvoiceDataWS> InvoiceDataWSs = new List<Inventec.Common.EHoaDon.InvoiceDataWS>();
-            Inventec.Common.EHoaDon.InvoiceDataWS invoiceDataWS = new Inventec.Common.EHoaDon.InvoiceDataWS();
-            if (electronicBillDataInput != null)
-            {
-                switch (ElectronicBillTypeEnum)
-                {
-                    case ElectronicBillType.ENUM.CREATE_INVOICE:
-                        #region CREATE INVOICE
-                        invoiceDataWS.Invoice = SetInvoice();
-                        invoiceDataWS.ListInvoiceDetailsWS = this.GetProductElectronicBill(this.ElectronicBillDataInput);
-                        //Hien thi thong tin dich vu
-                        invoiceDataWS.PartnerInvoiceID = GetTransactionCode();
-                        invoiceDataWS.PartnerInvoiceStringID = "";
-                        InvoiceDataWSs.Add(invoiceDataWS);
-                        #endregion
-                        break;
-                    case ElectronicBillType.ENUM.GET_INVOICE_LINK:
-                    case ElectronicBillType.ENUM.GET_INVOICE_SHOW:
-                    case ElectronicBillType.ENUM.DELETE_INVOICE:
-                    case ElectronicBillType.ENUM.CANCEL_INVOICE:
-                        #region GET INVOICE LINK
-                        invoiceDataWS.PartnerInvoiceID = electronicBillDataInput.PartnerInvoiceID;
-                        invoiceDataWS.Invoice = new Inventec.Common.EHoaDon.InvoiceWS();
-                        invoiceDataWS.ListInvoiceAttachFileWS = new List<Inventec.Common.EHoaDon.InvoiceAttachFileWS>();
-                        invoiceDataWS.ListInvoiceDetailsWS = new List<Inventec.Common.EHoaDon.InvoiceDetailsWS>();
-                        invoiceDataWS.PartnerInvoiceStringID = "";
-                        invoiceDataWS.Reason = GetReason();
-                        InvoiceDataWSs.Add(invoiceDataWS);
-                        #endregion
-                        break;
-                    default:
-                        break;
-                }
-            }
-            return InvoiceDataWSs;
-        }
-
-        private string GetReason()
-        {
-            string result = "";
-            try
-            {
-                if (this.ElectronicBillDataInput == null)
-                    return result;
-                Inventec.Common.Logging.LogSystem.Debug(Inventec.Common.Logging.LogUtil.TraceData("__ElectronicBillDataInput", ElectronicBillDataInput));
-
-                result = this.ElectronicBillDataInput.CancelReason;
-            }
-            catch (Exception ex)
-            {
-                result = "";
-                Inventec.Common.Logging.LogSystem.Error(ex);
-            }
-            return result;
-        }
-
-        private long GetTransactionCode()
-        {
-            if (this.ElectronicBillDataInput.Transaction != null)
-            {
-                return long.Parse(this.ElectronicBillDataInput.Transaction.TRANSACTION_CODE);
-            }
-            else if (this.ElectronicBillDataInput.ListTransaction != null && this.ElectronicBillDataInput.ListTransaction.Count > 0)
-            {
-                return long.Parse(this.ElectronicBillDataInput.ListTransaction.OrderByDescending(o => o.TRANSACTION_CODE).First().TRANSACTION_CODE);
-            }
-            else
-            {
-                return long.Parse(this.ElectronicBillDataInput.Treatment.TREATMENT_CODE + DateTime.Now.ToString("yyyyMMdd"));
-            }
-        }
-
-        private Inventec.Common.EHoaDon.InvoiceWS SetInvoice()
-        {
-            Inventec.Common.EHoaDon.InvoiceWS invoiceWS = new Inventec.Common.EHoaDon.InvoiceWS();
-            invoiceWS.InvoiceTypeID = 1;
-            invoiceWS.InvoiceDate = DateTime.Now;
-            invoiceWS.InvoiceForm = this.ElectronicBillDataInput.TemplateCode;
-            invoiceWS.InvoiceSerial = this.ElectronicBillDataInput.SymbolCode;
-
-            InvoiceInfo.InvoiceInfoADO adoInfo = InvoiceInfo.InvoiceInfoProcessor.GetData(this.ElectronicBillDataInput);
-            invoiceWS.BuyerName = adoInfo.BuyerName ?? "";
-            invoiceWS.BuyerBankAccount = adoInfo.BuyerAccountNumber ?? "";
-            invoiceWS.BuyerAddress = adoInfo.BuyerAddress ?? "";
-            invoiceWS.BuyerUnitName = adoInfo.BuyerOrganization ?? "";
-            invoiceWS.BuyerTaxCode = adoInfo.BuyerTaxCode ?? "";
-
-            invoiceWS.PayMethodID = 1;
-
-            int payFormId = 1;
-
-            if (ElectronicBillDataInput.Transaction != null)
-            {
-                if (ElectronicBillDataInput.Transaction.PAY_FORM_ID == IMSys.DbConfig.HIS_RS.HIS_PAY_FORM.ID__CK)
-                {
-                    payFormId = 2;
-                }
-                else if (ElectronicBillDataInput.Transaction.PAY_FORM_ID == IMSys.DbConfig.HIS_RS.HIS_PAY_FORM.ID__TMCK)
-                {
-                    payFormId = 3;
-                }
-            }
-            else if (ElectronicBillDataInput.ListTransaction != null && ElectronicBillDataInput.ListTransaction.Count > 0)
-            {
-                if (ElectronicBillDataInput.ListTransaction.First().PAY_FORM_ID == IMSys.DbConfig.HIS_RS.HIS_PAY_FORM.ID__CK)
-                {
-                    payFormId = 2;
-                }
-                else if (ElectronicBillDataInput.ListTransaction.First().PAY_FORM_ID == IMSys.DbConfig.HIS_RS.HIS_PAY_FORM.ID__TMCK)
-                {
-                    payFormId = 3;
-                }
-            }
-
-            invoiceWS.PayMethodID = payFormId;
-            invoiceWS.ReceiveTypeID = 3;
-
-            invoiceWS.ReceiverEmail = adoInfo.BuyerEmail ?? "";
-            invoiceWS.ReceiverMobile = adoInfo.BuyerPhone ?? "";
-            invoiceWS.ReceiverAddress = adoInfo.BuyerAddress ?? "";
-            invoiceWS.ReceiverName = adoInfo.BuyerName ?? "";
-
-            invoiceWS.Note = "";
-            invoiceWS.BillCode = "";
-            invoiceWS.CurrencyID = !String.IsNullOrEmpty(this.ElectronicBillDataInput.Currency) ? this.ElectronicBillDataInput.Currency : "";
-            invoiceWS.ExchangeRate = 1;
-            invoiceWS.InvoiceStatusID = 1;
-            invoiceWS.SignedDate = DateTime.Now;
-
-            UserDefineADO ado = GetUserDefine(this.ElectronicBillDataInput.Treatment);
-            if (ado != null)
-            {
-                invoiceWS.UserDefine = Newtonsoft.Json.JsonConvert.SerializeObject(ado);
-                invoiceWS.Note = ado.DEPARTMENT_NAME;
-            }
-            return invoiceWS;
-        }
-
-        private UserDefineADO GetUserDefine(V_HIS_TREATMENT_FEE treatment)
-        {
-            UserDefineADO result = null;
-            try
-            {
-                if (treatment != null)
-                {
-                    result = new UserDefineADO();
-                    result.END_CODE = treatment.END_CODE;
-                    result.EXTRA_END_CODE = treatment.EXTRA_END_CODE;
-                    result.MAIN_CAUSE = treatment.MAIN_CAUSE;
-                    result.OUT_CODE = treatment.OUT_CODE;
-                    result.STORE_CODE = treatment.STORE_CODE;
-                    result.TOTAL_BILL_AMOUNT = treatment.TOTAL_BILL_AMOUNT;
-                    result.TOTAL_BILL_EXEMPTION = treatment.TOTAL_BILL_EXEMPTION;
-                    result.TOTAL_BILL_FUND = treatment.TOTAL_BILL_FUND;
-                    result.TOTAL_BILL_OTHER_AMOUNT = treatment.TOTAL_BILL_OTHER_AMOUNT;
-                    result.TOTAL_BILL_TRANSFER_AMOUNT = treatment.TOTAL_BILL_TRANSFER_AMOUNT;
-                    result.TOTAL_DEBT_AMOUNT = treatment.TOTAL_DEBT_AMOUNT;
-                    result.TOTAL_DEPOSIT_AMOUNT = treatment.TOTAL_DEPOSIT_AMOUNT;
-                    result.TOTAL_DISCOUNT = treatment.TOTAL_DISCOUNT;
-                    result.TOTAL_HEIN_PRICE = treatment.TOTAL_HEIN_PRICE;
-                    result.TOTAL_PATIENT_PRICE = treatment.TOTAL_PATIENT_PRICE;
-                    result.TOTAL_PRICE = treatment.TOTAL_PRICE;
-                    result.TOTAL_PRICE_EXPEND = treatment.TOTAL_PRICE_EXPEND;
-                    result.TOTAL_REPAY_AMOUNT = treatment.TOTAL_REPAY_AMOUNT;
-                    result.TREATMENT_CODE = treatment.TREATMENT_CODE;
-                    result.TREATMENT_DAY_COUNT = treatment.TREATMENT_DAY_COUNT;
-
-                    CommonParam param = new CommonParam();
-                    HisDepartmentTranLastFilter depaFilter = new HisDepartmentTranLastFilter();
-                    depaFilter.TREATMENT_ID = treatment.ID;
-                    var lastDepartment = new BackendAdapter(param).Get<V_HIS_DEPARTMENT_TRAN>("/api/HisDepartmentTran/GetLastByTreatmentId", ApiConsumers.MosConsumer, depaFilter, param);
-                    if (lastDepartment != null)
-                    {
-                        result.DEPARTMENT_CODE = lastDepartment.DEPARTMENT_CODE;
-                        result.DEPARTMENT_NAME = lastDepartment.DEPARTMENT_NAME;
-                        result.Khoa = lastDepartment.DEPARTMENT_NAME;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                result = null;
-                Inventec.Common.Logging.LogSystem.Error(ex);
-            }
-            return result;
-        }
-
-        private List<Inventec.Common.EHoaDon.InvoiceDetailsWS> GetProductElectronicBill(ElectronicBillDataInput dataInput)
-        {
-            List<Inventec.Common.EHoaDon.InvoiceDetailsWS> products = new List<Inventec.Common.EHoaDon.InvoiceDetailsWS>();
-            IRunTemplate iRunTemplate = TemplateFactory.MakeIRun(this.TempType, dataInput);
-            var listProduct = iRunTemplate.Run();
-            if (listProduct == null)
-            {
-                throw new Exception("Không có thông tin chi tiết dịch vụ.");
-            }
-
-            if (this.TempType != TemplateEnum.TYPE.TemplateNhaThuoc)
-            {
-                List<ProductBase> listProductBase = (List<ProductBase>)listProduct;
-
-                if (listProductBase == null || listProductBase.Count == 0)
-                {
-                    throw new Exception("Không có thông tin chi tiết dịch vụ.");
-                }
-
-                foreach (var item in listProductBase)
-                {
-                    Inventec.Common.EHoaDon.InvoiceDetailsWS product = new Inventec.Common.EHoaDon.InvoiceDetailsWS();
-                    product.Qty = (double)(item.ProdQuantity ?? 0);
-                    product.ItemName = item.ProdName ?? "";
-                    product.UnitName = item.ProdUnit ?? "";
-                    product.TaxRateID = item.TaxRateID;
-                    product.Amount = (double)item.Amount;
-                    product.Price = (double)(item.ProdPrice ?? 0);
-
-                    products.Add(product);
-                }
-            }
-            else
-            {
-                List<ProductBasePlus> listProductBase = (List<ProductBasePlus>)listProduct;
-
-                if (listProductBase == null || listProductBase.Count == 0)
-                {
-                    throw new Exception("Không có thông tin chi tiết dịch vụ.");
-                }
-
-                //"TaxRateID": 3,//ID Thuế suất: 1-0%, 2-5%, 3-10%, 4-Không chịu thuế, 5-Không kê khai thuế , 6-Khác
-                //"TaxRate": 10.0, //Thuế suất: 0, 5, 10, -1 (Không chịu thuế), -2 (Không kê khai thuế), -4 (Thuế nhà thầu)
-
-                foreach (var item in listProductBase)
-                {
-                    Inventec.Common.EHoaDon.InvoiceDetailsWS product = new Inventec.Common.EHoaDon.InvoiceDetailsWS();
-                    product.Qty = (double)(item.ProdQuantity ?? 0);
-                    product.ItemName = item.ProdName ?? "";
-                    product.UnitName = item.ProdUnit ?? "";
-                    product.Amount = (double)item.AmountWithoutTax;
-                    product.TaxAmount = (double)item.TaxAmount;
-                    product.Price = (double)(item.ProdPrice ?? 0);
-
-                    if (!item.TaxPercentage.HasValue)
-                    {
-                        product.TaxRateID = 4;
-                    }
-                    else if (item.TaxPercentage == 0)
-                    {
-                        product.TaxRateID = 1;
-                    }
-                    else if (item.TaxPercentage == 1)
-                    {
-                        product.TaxRateID = 2;
-                    }
-                    else if (item.TaxPercentage == 2)
-                    {
-                        product.TaxRateID = 3;
-                    }
-                    else if (item.TaxPercentage == 3)
-                    {
-                        product.TaxRateID = 6;
-                    }
-                    else
-                    {
-                        product.TaxRateID = 6;
-                    }
-
-                    products.Add(product);
-                }
-            }
-
-            return products;
-        }
-    }
+		private List<InvoiceDetailsWS> GetProductElectronicBill(ElectronicBillDataInput dataInput)
+		{
+			//IL_019c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01a3: Expected O, but got Unknown
+			//IL_0086: Unknown result type (might be due to invalid IL or missing references)
+			//IL_008d: Expected O, but got Unknown
+			List<InvoiceDetailsWS> list = new List<InvoiceDetailsWS>();
+			IRunTemplate runTemplate = TemplateFactory.MakeIRun(TempType, dataInput);
+			object obj = runTemplate.Run();
+			if (obj == null)
+			{
+				throw new Exception("Không có thông tin chi tiết dịch vụ.");
+			}
+			if (TempType != TemplateEnum.TYPE.TemplateNhaThuoc)
+			{
+				List<ProductBase> list2 = (List<ProductBase>)obj;
+				if (list2 == null || list2.Count == 0)
+				{
+					throw new Exception("Không có thông tin chi tiết dịch vụ.");
+				}
+				foreach (ProductBase item in list2)
+				{
+					InvoiceDetailsWS val = new InvoiceDetailsWS();
+					val.Qty = (double)item.ProdQuantity.GetValueOrDefault();
+					val.ItemName = item.ProdName ?? "";
+					val.UnitName = item.ProdUnit ?? "";
+					val.TaxRateID = ((item.TaxRateID > 0) ? item.TaxRateID : 4);
+					val.Amount = (double)item.Amount;
+					val.Price = (double)item.ProdPrice.GetValueOrDefault();
+					list.Add(val);
+				}
+			}
+			else
+			{
+				List<ProductBasePlus> list3 = (List<ProductBasePlus>)obj;
+				if (list3 == null || list3.Count == 0)
+				{
+					throw new Exception("Không có thông tin chi tiết dịch vụ.");
+				}
+				foreach (ProductBasePlus item2 in list3)
+				{
+					InvoiceDetailsWS val2 = new InvoiceDetailsWS();
+					val2.Qty = (double)item2.ProdQuantity.GetValueOrDefault();
+					val2.ItemName = item2.ProdName ?? "";
+					val2.UnitName = item2.ProdUnit ?? "";
+					val2.Amount = (double)item2.AmountWithoutTax.Value;
+					val2.TaxAmount = (double)item2.TaxAmount.Value;
+					val2.Price = (double)item2.ProdPrice.GetValueOrDefault();
+					if (!item2.TaxPercentage.HasValue)
+					{
+						val2.TaxRateID = 4;
+					}
+					else if (item2.TaxPercentage == 0)
+					{
+						val2.TaxRateID = 1;
+					}
+					else if (item2.TaxPercentage == 1)
+					{
+						val2.TaxRateID = 2;
+					}
+					else if (item2.TaxPercentage == 2)
+					{
+						val2.TaxRateID = 3;
+					}
+					else if (item2.TaxPercentage == 3)
+					{
+						val2.TaxRateID = 6;
+					}
+					else
+					{
+						val2.TaxRateID = 6;
+					}
+					list.Add(val2);
+				}
+			}
+			return list;
+		}
+	}
 }

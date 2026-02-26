@@ -1,206 +1,134 @@
-/* IVT
- * @Project : hisnguonmo
- * Copyright (C) 2017 INVENTEC
- *  
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *  
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
- * GNU General Public License for more details.
- *  
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
-using HIS.Desktop.ApiConsumer;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using HIS.Desktop.LocalStorage.BackendData;
 using HIS.Desktop.Plugins.Library.ElectronicBill.Base;
 using HIS.Desktop.Plugins.Library.ElectronicBill.Config;
 using HIS.Desktop.Plugins.Library.ElectronicBill.Data;
-using Inventec.Common.Adapter;
-using Inventec.Core;
+using Inventec.Common.Logging;
+using Inventec.Common.Number;
 using MOS.EFMODEL.DataModels;
-using MOS.Filter;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using MOS.LibraryHein.Bhyt;
 
 namespace HIS.Desktop.Plugins.Library.ElectronicBill.Template
 {
-    class Template5 : IRunTemplate
-    {
-        private Base.ElectronicBillDataInput DataInput;
+	internal class Template5 : IRunTemplate
+	{
+		private ElectronicBillDataInput DataInput;
 
-        public Template5(Base.ElectronicBillDataInput dataInput)
-        {
-            // TODO: Complete member initialization
-            this.DataInput = dataInput;
-        }
+		public Template5(ElectronicBillDataInput dataInput)
+		{
+			DataInput = dataInput;
+		}
 
-        public object Run()
-        {
-            List<ProductBase> result = new List<ProductBase>();
-            try
-            {
-                if (DataInput.SereServBill != null && DataInput.SereServBill.Count > 0)
-                {
-                    List<V_HIS_SERVICE> services = BackendDataWorker.Get<V_HIS_SERVICE>().Where(o => DataInput.SereServBill.Exists(e => e.TDL_SERVICE_ID == o.ID)).ToList();
-
-                    if (DataInput.Treatment.TDL_PATIENT_TYPE_ID == HisPatientTypeCFG.PATIENT_TYPE_ID__BHYT)
-                    {
-                        var sereServBhyt = DataInput.SereServBill.Where(o => o.TDL_PATIENT_TYPE_ID == HisPatientTypeCFG.PATIENT_TYPE_ID__BHYT).ToList();
-                        var sereServNotBhyt = DataInput.SereServBill.Where(o => o.TDL_PATIENT_TYPE_ID != HisPatientTypeCFG.PATIENT_TYPE_ID__BHYT).ToList();
-                        if (sereServBhyt != null && sereServBhyt.Count > 0)
-                        {
-                            //Doi tuong benh nhan
-                            if (DataInput.LastPatientTypeAlter == null)
-                            {
-                                Inventec.Common.Logging.LogSystem.Debug("Khong tim thay doi tuong benh nhan hien tai!");
-                                return null;
-                            }
-
-                            ProductBase product = new ProductBase();
-                            product.Amount = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(sereServBhyt.Sum(o => o.PRICE));
-
-                            decimal ratio = (new MOS.LibraryHein.Bhyt.BhytHeinProcessor().GetDefaultHeinRatio(DataInput.LastPatientTypeAlter.HEIN_TREATMENT_TYPE_CODE, DataInput.LastPatientTypeAlter.HEIN_CARD_NUMBER, DataInput.Branch.HEIN_LEVEL_CODE, DataInput.LastPatientTypeAlter.RIGHT_ROUTE_CODE) ?? 0) * 100;
-                            string prodName = "";
-
-                            if (DataInput.LastPatientTypeAlter.TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNGOAITRU)
-                            {
-                                if (ratio != 100)
-                                {
-                                    prodName = String.Format("{0:0.####}% bệnh nhân đồng chi trả - Viện phí bệnh án ngoại trú", 100 - ratio);
-                                }
-                                else
-                                {
-                                    prodName = "Thu viện phí - Viện phí bệnh án ngoại trú";
-                                }
-                            }
-                            else if (DataInput.LastPatientTypeAlter.TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__DTNOITRU)
-                            {
-                                if (ratio != 100)
-                                {
-                                    prodName = String.Format("{0:0.####}% bệnh nhân đồng chi trả - Viện phí bệnh án nội trú", 100 - ratio);
-                                }
-                                else
-                                {
-                                    prodName = "Thu viện phí - Viện phí bệnh án nội trú";
-                                }
-                            }
-                            else if (DataInput.LastPatientTypeAlter.TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__KHAM)
-                            {
-                                if (ratio != 100)
-                                {
-                                    prodName = String.Format("{0:0.####}% bệnh nhân đồng chi trả - Khám bệnh ngoại trú", 100 - ratio);
-                                }
-                                else
-                                {
-                                    prodName = "Thu viện phí - khám bệnh ngoại trú";
-                                }
-                            }
-                            else
-                            {
-                                if (ratio != 100)
-                                {
-                                    prodName = String.Format("{0:0.####}% bệnh nhân đồng chi trả - Khám bệnh", 100 - ratio);
-                                }
-                                else
-                                {
-                                    prodName = "Thu viện phí - khám bệnh";
-                                }
-                            }
-
-                            product.ProdUnit = "";
-                            product.ProdName = prodName;
-                            product.TaxRateID = Base.ProviderType.tax_KCT;
-                            product.ProdCode = General.GetFirstWord(product.ProdName);
-                            product.Type = sereServBhyt.Count() == sereServBhyt.Count(o => o.TDL_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__THUOC) ? 1 : 0;
-                            result.Add(product);
-                        }
-
-                        if (sereServNotBhyt != null && sereServNotBhyt.Count > 0)
-                        {
-                            var groupPrice = sereServNotBhyt.GroupBy(o => new { o.TDL_SERVICE_ID, o.TDL_REAL_PRICE }).ToList();
-                            foreach (var item in groupPrice)
-                            {
-                                V_HIS_SERVICE service = services != null ? services.FirstOrDefault(o => o.ID == item.First().TDL_SERVICE_ID) : null;
-                                ProductBase product = new ProductBase();
-                                product.ProdName = item.First().TDL_SERVICE_NAME;
-                                //product.ProdPrice = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(item.First().TDL_REAL_PRICE ?? 0);
-                                product.ProdQuantity = item.Sum(s => s.TDL_AMOUNT ?? 0);
-                                product.Amount = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(item.Sum(s => s.PRICE));
-                                product.ProdPrice = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(product.Amount / (product.ProdQuantity ?? 1));
-                                product.ProdUnit = service != null ? service.SERVICE_UNIT_NAME : "";
-                                product.TaxRateID = (int)(service != null ? (service.TAX_RATE_TYPE ?? Base.ProviderType.tax_KCT) : Base.ProviderType.tax_KCT);
-                                product.ProdCode = item.First().TDL_SERVICE_CODE;
-                                product.Type = item.First().TDL_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__THUOC ? 1 : 0;
-                                result.Add(product);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        var groupPrice = DataInput.SereServBill.GroupBy(o => new { o.TDL_SERVICE_ID, o.TDL_REAL_PRICE }).ToList();
-                        foreach (var item in groupPrice)
-                        {
-                            V_HIS_SERVICE service = services != null ? services.FirstOrDefault(o => o.ID == item.First().TDL_SERVICE_ID) : null;
-                            ProductBase product = new ProductBase();
-                            product.ProdName = item.First().TDL_SERVICE_NAME;
-                            //product.ProdPrice = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(item.First().TDL_REAL_PRICE ?? 0);
-                            product.ProdQuantity = item.Sum(s => s.TDL_AMOUNT ?? 0);
-                            product.Amount = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(item.Sum(s => s.PRICE));
-                            product.ProdPrice = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(product.Amount / (product.ProdQuantity ?? 1));
-                            product.ProdUnit = service != null ? service.SERVICE_UNIT_NAME : "";
-                            product.TaxRateID = (int)(service != null ? (service.TAX_RATE_TYPE ?? Base.ProviderType.tax_KCT) : Base.ProviderType.tax_KCT);
-                            product.ProdCode = item.First().TDL_SERVICE_CODE;
-                            product.Type = item.First().TDL_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__THUOC ? 1 : 0;
-                            result.Add(product);
-                        }
-                    }
-                }
-
-                if (result.Count > 0)
-                {
-                    foreach (var product in result)
-                    {
-                        if (HisConfigCFG.RoundTransactionAmountOption == "1")
-                        {
-                            product.Amount = Math.Round(product.Amount, 0, MidpointRounding.AwayFromZero);
-                            product.ProdPrice = Math.Round(product.ProdPrice ?? 0, 0, MidpointRounding.AwayFromZero);
-                        }
-                        else if (HisConfigCFG.RoundTransactionAmountOption == "2")
-                        {
-                            product.Amount = Math.Round(product.Amount, 0, MidpointRounding.AwayFromZero);
-                        }
-
-                        if (HisConfigCFG.IsHidePrice)
-                        {
-                            product.ProdPrice = null;
-                        }
-
-                        if (HisConfigCFG.IsHideQuantity)
-                        {
-                            product.ProdQuantity = null;
-                        }
-
-                        if (HisConfigCFG.IsHideUnitName)
-                        {
-                            product.ProdUnit = "";
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                result = null;
-                Inventec.Common.Logging.LogSystem.Error(ex);
-            }
-            return result;
-        }
-    }
+		public object Run()
+		{
+			//IL_016c: Unknown result type (might be due to invalid IL or missing references)
+			List<ProductBase> list = new List<ProductBase>();
+			try
+			{
+				if (DataInput.SereServBill != null && DataInput.SereServBill.Count > 0)
+				{
+					List<V_HIS_SERVICE> list2 = (from o in BackendDataWorker.Get<V_HIS_SERVICE>()
+						where DataInput.SereServBill.Exists((HIS_SERE_SERV_BILL e) => e.TDL_SERVICE_ID == o.ID)
+						select o).ToList();
+					if (DataInput.Treatment.TDL_PATIENT_TYPE_ID == HisPatientTypeCFG.PATIENT_TYPE_ID__BHYT)
+					{
+						List<HIS_SERE_SERV_BILL> list3 = DataInput.SereServBill.Where((HIS_SERE_SERV_BILL o) => o.TDL_PATIENT_TYPE_ID == HisPatientTypeCFG.PATIENT_TYPE_ID__BHYT).ToList();
+						List<HIS_SERE_SERV_BILL> list4 = DataInput.SereServBill.Where((HIS_SERE_SERV_BILL o) => o.TDL_PATIENT_TYPE_ID != HisPatientTypeCFG.PATIENT_TYPE_ID__BHYT).ToList();
+						if (list3 != null && list3.Count > 0)
+						{
+							if (DataInput.LastPatientTypeAlter == null)
+							{
+								LogSystem.Debug("Khong tim thay doi tuong benh nhan hien tai!");
+								return null;
+							}
+							ProductBase productBase = new ProductBase();
+							productBase.Amount = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(list3.Sum((HIS_SERE_SERV_BILL o) => o.PRICE));
+							decimal num = new BhytHeinProcessor().GetDefaultHeinRatio(DataInput.LastPatientTypeAlter.HEIN_TREATMENT_TYPE_CODE, DataInput.LastPatientTypeAlter.HEIN_CARD_NUMBER, DataInput.Branch.HEIN_LEVEL_CODE, DataInput.LastPatientTypeAlter.RIGHT_ROUTE_CODE).GetValueOrDefault() * 100m;
+							string text = "";
+							text = ((DataInput.LastPatientTypeAlter.TREATMENT_TYPE_ID == 2) ? ((!(num != 100m)) ? "Thu viện phí - Viện phí bệnh án ngoại trú" : string.Format("{0:0.####}% bệnh nhân đồng chi trả - Viện phí bệnh án ngoại trú", 100m - num)) : ((DataInput.LastPatientTypeAlter.TREATMENT_TYPE_ID == 3) ? ((!(num != 100m)) ? "Thu viện phí - Viện phí bệnh án nội trú" : string.Format("{0:0.####}% bệnh nhân đồng chi trả - Viện phí bệnh án nội trú", 100m - num)) : ((DataInput.LastPatientTypeAlter.TREATMENT_TYPE_ID == 1) ? ((!(num != 100m)) ? "Thu viện phí - khám bệnh ngoại trú" : string.Format("{0:0.####}% bệnh nhân đồng chi trả - Khám bệnh ngoại trú", 100m - num)) : ((!(num != 100m)) ? "Thu viện phí - khám bệnh" : string.Format("{0:0.####}% bệnh nhân đồng chi trả - Khám bệnh", 100m - num)))));
+							productBase.ProdUnit = "";
+							productBase.ProdName = text;
+							productBase.TaxRateID = 4;
+							productBase.ProdCode = General.GetFirstWord(productBase.ProdName);
+							productBase.Type = ((list3.Count() == list3.Count((HIS_SERE_SERV_BILL o) => o.TDL_SERVICE_TYPE_ID == 6)) ? 1 : 0);
+							list.Add(productBase);
+						}
+						if (list4 != null && list4.Count > 0)
+						{
+							var list5 = (from o in list4
+								group o by new { o.TDL_SERVICE_ID, o.TDL_REAL_PRICE }).ToList();
+							foreach (var item in list5)
+							{
+								V_HIS_SERVICE val = ((list2 != null) ? list2.FirstOrDefault((V_HIS_SERVICE o) => o.ID == item.First().TDL_SERVICE_ID) : null);
+								ProductBase productBase2 = new ProductBase();
+								productBase2.ProdName = item.First().TDL_SERVICE_NAME;
+								productBase2.ProdQuantity = item.Sum((HIS_SERE_SERV_BILL s) => s.TDL_AMOUNT.GetValueOrDefault());
+								productBase2.Amount = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(item.Sum((HIS_SERE_SERV_BILL s) => s.PRICE));
+								productBase2.ProdPrice = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(productBase2.Amount / (productBase2.ProdQuantity ?? 1m));
+								productBase2.ProdUnit = ((val != null) ? val.SERVICE_UNIT_NAME : "");
+								productBase2.TaxRateID = (int)((val != null) ? (val.TAX_RATE_TYPE ?? 4) : 4);
+								productBase2.ProdCode = item.First().TDL_SERVICE_CODE;
+								productBase2.Type = ((item.First().TDL_SERVICE_TYPE_ID == 6) ? 1 : 0);
+								list.Add(productBase2);
+							}
+						}
+					}
+					else
+					{
+						var list6 = (from o in DataInput.SereServBill
+							group o by new { o.TDL_SERVICE_ID, o.TDL_REAL_PRICE }).ToList();
+						foreach (var item2 in list6)
+						{
+							V_HIS_SERVICE val2 = ((list2 != null) ? list2.FirstOrDefault((V_HIS_SERVICE o) => o.ID == item2.First().TDL_SERVICE_ID) : null);
+							ProductBase productBase3 = new ProductBase();
+							productBase3.ProdName = item2.First().TDL_SERVICE_NAME;
+							productBase3.ProdQuantity = item2.Sum((HIS_SERE_SERV_BILL s) => s.TDL_AMOUNT.GetValueOrDefault());
+							productBase3.Amount = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(item2.Sum((HIS_SERE_SERV_BILL s) => s.PRICE));
+							productBase3.ProdPrice = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(productBase3.Amount / (productBase3.ProdQuantity ?? 1m));
+							productBase3.ProdUnit = ((val2 != null) ? val2.SERVICE_UNIT_NAME : "");
+							productBase3.TaxRateID = (int)((val2 != null) ? (val2.TAX_RATE_TYPE ?? 4) : 4);
+							productBase3.ProdCode = item2.First().TDL_SERVICE_CODE;
+							productBase3.Type = ((item2.First().TDL_SERVICE_TYPE_ID == 6) ? 1 : 0);
+							list.Add(productBase3);
+						}
+					}
+				}
+				if (list.Count > 0)
+				{
+					foreach (ProductBase item3 in list)
+					{
+						if (HisConfigCFG.RoundTransactionAmountOption == "1")
+						{
+							item3.Amount = Math.Round(item3.Amount, 0, MidpointRounding.AwayFromZero);
+							item3.ProdPrice = Math.Round(item3.ProdPrice.GetValueOrDefault(), 0, MidpointRounding.AwayFromZero);
+						}
+						else if (HisConfigCFG.RoundTransactionAmountOption == "2")
+						{
+							item3.Amount = Math.Round(item3.Amount, 0, MidpointRounding.AwayFromZero);
+						}
+						if (HisConfigCFG.IsHidePrice)
+						{
+							item3.ProdPrice = null;
+						}
+						if (HisConfigCFG.IsHideQuantity)
+						{
+							item3.ProdQuantity = null;
+						}
+						if (HisConfigCFG.IsHideUnitName)
+						{
+							item3.ProdUnit = "";
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				list = null;
+				LogSystem.Error(ex);
+			}
+			return list;
+		}
+	}
 }

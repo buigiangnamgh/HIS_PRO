@@ -1,221 +1,180 @@
-/* IVT
- * @Project : hisnguonmo
- * Copyright (C) 2017 INVENTEC
- *  
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *  
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
- * GNU General Public License for more details.
- *  
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
-using HIS.Desktop.Plugins.Library.ElectronicBill.Config;
-using HIS.Desktop.Plugins.Library.ElectronicBill.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using HIS.Desktop.Plugins.Library.ElectronicBill.Base;
+using HIS.Desktop.Plugins.Library.ElectronicBill.Config;
+using HIS.Desktop.Plugins.Library.ElectronicBill.Data;
+using Inventec.Common.Logging;
+using Inventec.Common.Number;
+using MOS.EFMODEL.DataModels;
 
 namespace HIS.Desktop.Plugins.Library.ElectronicBill.Template
 {
-    class Template6 : IRunTemplate
-    {
-        private Base.ElectronicBillDataInput DataInput;
+	internal class Template6 : IRunTemplate
+	{
+		private ElectronicBillDataInput DataInput;
 
-        public Template6(Base.ElectronicBillDataInput dataInput)
-        {
-            // TODO: Complete member initialization
-            this.DataInput = dataInput;
-        }
+		public Template6(ElectronicBillDataInput dataInput)
+		{
+			DataInput = dataInput;
+		}
 
-        public object Run()
-        {
-            List<ProductBase> result = new List<ProductBase>();
-            try
-            {
-                if (DataInput.SereServBill != null && DataInput.SereServBill.Count > 0)
-                {
-                    var sereServExam = DataInput.SereServBill.Where(o => o.TDL_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__KH).ToList();
-                    var sereServSubclinical = DataInput.SereServBill.Where(o => o.TDL_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__XN ||
-                        o.TDL_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__CDHA ||
-                        o.TDL_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__TDCN ||
-                        o.TDL_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__NS ||
-                        o.TDL_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__SA ||
-                        o.TDL_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__GPBL).ToList();
-                    var sereServPttt = DataInput.SereServBill.Where(o => o.TDL_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__PT ||
-                        o.TDL_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__TT ||
-                        o.TDL_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__PHCN).ToList();
-                    var sereServBed = DataInput.SereServBill.Where(o => o.TDL_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__G).ToList();
-                    var sereServMediMate = DataInput.SereServBill.Where(o => o.TDL_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__THUOC ||
-                        o.TDL_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__VT ||
-                        o.TDL_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__MAU).ToList();
-                    var sereServOther = DataInput.SereServBill.Where(o => (sereServExam != null ? !sereServExam.Contains(o) : true) &&
-                        (sereServSubclinical != null ? !sereServSubclinical.Contains(o) : true) &&
-                        (sereServPttt != null ? !sereServPttt.Contains(o) : true) &&
-                        (sereServBed != null ? !sereServBed.Contains(o) : true) &&
-                        (sereServMediMate != null ? !sereServMediMate.Contains(o) : true)).ToList();
-
-                    if (sereServExam != null && sereServExam.Count > 0)
-                    {
-                        ProductBase product = new ProductBase();
-                        product.ProdName = "Khám bệnh";
-                        product.ProdPrice = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(sereServExam.Sum(s => s.PRICE));
-                        product.ProdQuantity = 1;
-                        product.Amount = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(sereServExam.Sum(s => s.PRICE));
-                        product.ProdUnit = " ";
-                        product.TaxRateID = Base.ProviderType.tax_KCT;
-                        product.ProdCode = "KB";
-                        result.Add(product);
-                    }
-
-                    if (sereServSubclinical != null && sereServSubclinical.Count > 0)
-                    {
-                        ProductBase product = new ProductBase();
-                        product.ProdName = "Cận lâm sàng";
-                        product.ProdPrice = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(sereServSubclinical.Sum(s => s.PRICE));
-                        product.ProdQuantity = 1;
-                        product.Amount = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(sereServSubclinical.Sum(s => s.PRICE));
-                        product.ProdUnit = " ";
-                        product.TaxRateID = Base.ProviderType.tax_KCT;
-                        product.ProdCode = "CLS";
-                        result.Add(product);
-                    }
-
-                    if (sereServPttt != null && sereServPttt.Count > 0)
-                    {
-                        ProductBase product = new ProductBase();
-                        product.ProdName = "Phẫu thuật, thủ thuật";
-                        product.ProdPrice = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(sereServPttt.Sum(s => s.PRICE));
-                        product.ProdQuantity = 1;
-                        product.Amount = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(sereServPttt.Sum(s => s.PRICE));
-                        product.ProdUnit = " ";
-                        product.TaxRateID = Base.ProviderType.tax_KCT;
-                        product.ProdCode = "PTTT";
-                        result.Add(product);
-                    }
-
-                    if (sereServBed != null && sereServBed.Count > 0)
-                    {
-                        ProductBase product = new ProductBase();
-                        product.ProdName = "Giường bệnh";
-                        product.ProdPrice = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(sereServBed.Sum(s => s.PRICE));
-                        product.ProdQuantity = 1;
-                        product.Amount = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(sereServBed.Sum(s => s.PRICE));
-                        product.ProdUnit = " ";
-                        product.TaxRateID = Base.ProviderType.tax_KCT;
-                        product.ProdCode = "GB";
-                        result.Add(product);
-                    }
-
-                    if (sereServMediMate != null && sereServMediMate.Count > 0)
-                    {
-                        ProductBase product = new ProductBase();
-                        product.ProdName = "Thuốc, VTYT";
-                        product.ProdPrice = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(sereServMediMate.Sum(s => s.PRICE));
-                        product.ProdQuantity = 1;
-                        product.Amount = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(sereServMediMate.Sum(s => s.PRICE));
-                        product.ProdUnit = " ";
-                        product.TaxRateID = Base.ProviderType.tax_KCT;
-                        product.ProdCode = "TH";
-                        product.Type = 1;
-                        result.Add(product);
-                    }
-
-                    if (sereServOther != null && sereServOther.Count > 0)
-                    {
-                        if ((DataInput.Transaction != null && DataInput.Transaction.SALE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SALE_TYPE.ID__SALE_OTHER)
-                            || (DataInput.ListTransaction != null && DataInput.ListTransaction.Count > 0 && DataInput.ListTransaction.Exists(o => o.SALE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SALE_TYPE.ID__SALE_OTHER)))
-                        {
-                            var serviceTypesZero = sereServOther.Where(o => o.TDL_SERVICE_TYPE_ID == 0).ToList();
-                            foreach (var item in serviceTypesZero)
-                            {
-                                ProductBase product = new ProductBase();
-                                product.ProdName = item.TDL_SERVICE_NAME;
-                                product.ProdPrice = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(item.TDL_PRICE ?? 0);
-                                product.ProdQuantity = item.TDL_AMOUNT;
-                                product.Amount = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(item.PRICE);
-                                product.ProdUnit = " ";
-                                product.TaxRateID = Base.ProviderType.tax_KCT;
-                                product.ProdCode = item.TDL_SERVICE_CODE;
-                                product.Type = item.TDL_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__THUOC ? 1 : 0;
-                                result.Add(product);
-                            }
-
-                            var ssOther = sereServOther.Where(o => o.TDL_SERVICE_TYPE_ID > 0).ToList();
-                            if (ssOther != null && ssOther.Count > 0)
-                            {
-                                ProductBase product = new ProductBase();
-                                product.ProdName = "Dịch vụ khác";
-                                product.ProdPrice = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(ssOther.Sum(s => s.PRICE));
-                                product.ProdQuantity = 1;
-                                product.Amount = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(ssOther.Sum(s => s.PRICE));
-                                product.ProdUnit = " ";
-                                product.TaxRateID = Base.ProviderType.tax_KCT;
-                                product.ProdCode = "DVKH";
-                                product.Type = ssOther.Count() == ssOther.Count(o => o.TDL_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__THUOC) ? 1 : 0;
-                                result.Add(product);
-                            }
-                        }
-                        else
-                        {
-                            ProductBase product = new ProductBase();
-                            product.ProdName = "Dịch vụ khác";
-                            product.ProdPrice = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(sereServOther.Sum(s => s.PRICE));
-                            product.ProdQuantity = 1;
-                            product.Amount = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(sereServOther.Sum(s => s.PRICE));
-                            product.ProdUnit = " ";
-                            product.TaxRateID = Base.ProviderType.tax_KCT;
-                            product.ProdCode = "DVKH";
-                            product.Type = sereServOther.Count() == sereServOther.Count(o => o.TDL_SERVICE_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__THUOC) ? 1 : 0;
-                            result.Add(product);
-                        }
-                    }
-                }
-
-                if (result.Count > 0)
-                {
-                    foreach (var product in result)
-                    {
-                        if (HisConfigCFG.RoundTransactionAmountOption == "1")
-                        {
-                            product.Amount = Math.Round(product.Amount, 0, MidpointRounding.AwayFromZero);
-                            product.ProdPrice = Math.Round(product.ProdPrice ?? 0, 0, MidpointRounding.AwayFromZero);
-                        }
-                        else if (HisConfigCFG.RoundTransactionAmountOption == "2")
-                        {
-                            product.Amount = Math.Round(product.Amount, 0, MidpointRounding.AwayFromZero);
-                        }
-
-                        if (HisConfigCFG.IsHidePrice)
-                        {
-                            product.ProdPrice = null;
-                        }
-
-                        if (HisConfigCFG.IsHideQuantity)
-                        {
-                            product.ProdQuantity = null;
-                        }
-
-                        if (HisConfigCFG.IsHideUnitName)
-                        {
-                            product.ProdUnit = "";
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                result = null;
-                Inventec.Common.Logging.LogSystem.Error(ex);
-            }
-            return result;
-        }
-    }
+		public object Run()
+		{
+			List<ProductBase> list = new List<ProductBase>();
+			try
+			{
+				if (DataInput.SereServBill != null && DataInput.SereServBill.Count > 0)
+				{
+					List<HIS_SERE_SERV_BILL> sereServExam = DataInput.SereServBill.Where((HIS_SERE_SERV_BILL o) => o.TDL_SERVICE_TYPE_ID == 1).ToList();
+					List<HIS_SERE_SERV_BILL> sereServSubclinical = DataInput.SereServBill.Where((HIS_SERE_SERV_BILL o) => o.TDL_SERVICE_TYPE_ID == 2 || o.TDL_SERVICE_TYPE_ID == 3 || o.TDL_SERVICE_TYPE_ID == 5 || o.TDL_SERVICE_TYPE_ID == 9 || o.TDL_SERVICE_TYPE_ID == 10 || o.TDL_SERVICE_TYPE_ID == 15).ToList();
+					List<HIS_SERE_SERV_BILL> sereServPttt = DataInput.SereServBill.Where((HIS_SERE_SERV_BILL o) => o.TDL_SERVICE_TYPE_ID == 11 || o.TDL_SERVICE_TYPE_ID == 4 || o.TDL_SERVICE_TYPE_ID == 13).ToList();
+					List<HIS_SERE_SERV_BILL> sereServBed = DataInput.SereServBill.Where((HIS_SERE_SERV_BILL o) => o.TDL_SERVICE_TYPE_ID == 8).ToList();
+					List<HIS_SERE_SERV_BILL> sereServMediMate = DataInput.SereServBill.Where((HIS_SERE_SERV_BILL o) => o.TDL_SERVICE_TYPE_ID == 6 || o.TDL_SERVICE_TYPE_ID == 7 || o.TDL_SERVICE_TYPE_ID == 14).ToList();
+					List<HIS_SERE_SERV_BILL> list2 = DataInput.SereServBill.Where((HIS_SERE_SERV_BILL o) => (sereServExam == null || !sereServExam.Contains(o)) && (sereServSubclinical == null || !sereServSubclinical.Contains(o)) && (sereServPttt == null || !sereServPttt.Contains(o)) && (sereServBed == null || !sereServBed.Contains(o)) && (sereServMediMate == null || !sereServMediMate.Contains(o))).ToList();
+					if (sereServExam != null && sereServExam.Count > 0)
+					{
+						ProductBase productBase = new ProductBase();
+						productBase.ProdName = "Khám bệnh";
+						productBase.ProdPrice = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(sereServExam.Sum((HIS_SERE_SERV_BILL s) => s.PRICE));
+						productBase.ProdQuantity = 1;
+						productBase.Amount = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(sereServExam.Sum((HIS_SERE_SERV_BILL s) => s.PRICE));
+						productBase.ProdUnit = " ";
+						productBase.TaxRateID = 4;
+						productBase.ProdCode = "KB";
+						list.Add(productBase);
+					}
+					if (sereServSubclinical != null && sereServSubclinical.Count > 0)
+					{
+						ProductBase productBase2 = new ProductBase();
+						productBase2.ProdName = "Cận lâm sàng";
+						productBase2.ProdPrice = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(sereServSubclinical.Sum((HIS_SERE_SERV_BILL s) => s.PRICE));
+						productBase2.ProdQuantity = 1;
+						productBase2.Amount = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(sereServSubclinical.Sum((HIS_SERE_SERV_BILL s) => s.PRICE));
+						productBase2.ProdUnit = " ";
+						productBase2.TaxRateID = 4;
+						productBase2.ProdCode = "CLS";
+						list.Add(productBase2);
+					}
+					if (sereServPttt != null && sereServPttt.Count > 0)
+					{
+						ProductBase productBase3 = new ProductBase();
+						productBase3.ProdName = "Phẫu thuật, thủ thuật";
+						productBase3.ProdPrice = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(sereServPttt.Sum((HIS_SERE_SERV_BILL s) => s.PRICE));
+						productBase3.ProdQuantity = 1;
+						productBase3.Amount = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(sereServPttt.Sum((HIS_SERE_SERV_BILL s) => s.PRICE));
+						productBase3.ProdUnit = " ";
+						productBase3.TaxRateID = 4;
+						productBase3.ProdCode = "PTTT";
+						list.Add(productBase3);
+					}
+					if (sereServBed != null && sereServBed.Count > 0)
+					{
+						ProductBase productBase4 = new ProductBase();
+						productBase4.ProdName = "Giường bệnh";
+						productBase4.ProdPrice = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(sereServBed.Sum((HIS_SERE_SERV_BILL s) => s.PRICE));
+						productBase4.ProdQuantity = 1;
+						productBase4.Amount = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(sereServBed.Sum((HIS_SERE_SERV_BILL s) => s.PRICE));
+						productBase4.ProdUnit = " ";
+						productBase4.TaxRateID = 4;
+						productBase4.ProdCode = "GB";
+						list.Add(productBase4);
+					}
+					if (sereServMediMate != null && sereServMediMate.Count > 0)
+					{
+						ProductBase productBase5 = new ProductBase();
+						productBase5.ProdName = "Thuốc, VTYT";
+						productBase5.ProdPrice = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(sereServMediMate.Sum((HIS_SERE_SERV_BILL s) => s.PRICE));
+						productBase5.ProdQuantity = 1;
+						productBase5.Amount = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(sereServMediMate.Sum((HIS_SERE_SERV_BILL s) => s.PRICE));
+						productBase5.ProdUnit = " ";
+						productBase5.TaxRateID = 4;
+						productBase5.ProdCode = "TH";
+						productBase5.Type = 1;
+						list.Add(productBase5);
+					}
+					if (list2 != null && list2.Count > 0)
+					{
+						if ((DataInput.Transaction != null && DataInput.Transaction.SALE_TYPE_ID == 2) || (DataInput.ListTransaction != null && DataInput.ListTransaction.Count > 0 && DataInput.ListTransaction.Exists((V_HIS_TRANSACTION o) => o.SALE_TYPE_ID == 2)))
+						{
+							List<HIS_SERE_SERV_BILL> list3 = list2.Where((HIS_SERE_SERV_BILL o) => o.TDL_SERVICE_TYPE_ID == 0).ToList();
+							foreach (HIS_SERE_SERV_BILL item in list3)
+							{
+								ProductBase productBase6 = new ProductBase();
+								productBase6.ProdName = item.TDL_SERVICE_NAME;
+								productBase6.ProdPrice = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(item.PRICE);
+								productBase6.ProdQuantity = 1;
+								productBase6.Amount = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(item.PRICE);
+								productBase6.ProdUnit = " ";
+								productBase6.TaxRateID = 4;
+								productBase6.ProdCode = item.TDL_SERVICE_CODE;
+								productBase6.Type = ((item.TDL_SERVICE_TYPE_ID == 6) ? 1 : 0);
+								list.Add(productBase6);
+							}
+							List<HIS_SERE_SERV_BILL> list4 = list2.Where((HIS_SERE_SERV_BILL o) => o.TDL_SERVICE_TYPE_ID > 0).ToList();
+							if (list4 != null && list4.Count > 0)
+							{
+								ProductBase productBase7 = new ProductBase();
+								productBase7.ProdName = "Dịch vụ khác";
+								productBase7.ProdPrice = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(list4.Sum((HIS_SERE_SERV_BILL s) => s.PRICE));
+								productBase7.ProdQuantity = 1;
+								productBase7.Amount = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(list4.Sum((HIS_SERE_SERV_BILL s) => s.PRICE));
+								productBase7.ProdUnit = " ";
+								productBase7.TaxRateID = 4;
+								productBase7.ProdCode = "DVKH";
+								productBase7.Type = ((list4.Count() == list4.Count((HIS_SERE_SERV_BILL o) => o.TDL_SERVICE_TYPE_ID == 6)) ? 1 : 0);
+								list.Add(productBase7);
+							}
+						}
+						else
+						{
+							ProductBase productBase8 = new ProductBase();
+							productBase8.ProdName = "Dịch vụ khác";
+							productBase8.ProdPrice = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(list2.Sum((HIS_SERE_SERV_BILL s) => s.PRICE));
+							productBase8.ProdQuantity = 1;
+							productBase8.Amount = Inventec.Common.Number.Convert.NumberToNumberRoundMax4(list2.Sum((HIS_SERE_SERV_BILL s) => s.PRICE));
+							productBase8.ProdUnit = " ";
+							productBase8.TaxRateID = 4;
+							productBase8.ProdCode = "DVKH";
+							productBase8.Type = ((list2.Count() == list2.Count((HIS_SERE_SERV_BILL o) => o.TDL_SERVICE_TYPE_ID == 6)) ? 1 : 0);
+							list.Add(productBase8);
+						}
+					}
+				}
+				if (list.Count > 0)
+				{
+					foreach (ProductBase item2 in list)
+					{
+						if (HisConfigCFG.RoundTransactionAmountOption == "1")
+						{
+							item2.Amount = Math.Round(item2.Amount, 0, MidpointRounding.AwayFromZero);
+							item2.ProdPrice = Math.Round(item2.ProdPrice.GetValueOrDefault(), 0, MidpointRounding.AwayFromZero);
+						}
+						else if (HisConfigCFG.RoundTransactionAmountOption == "2")
+						{
+							item2.Amount = Math.Round(item2.Amount, 0, MidpointRounding.AwayFromZero);
+						}
+						if (HisConfigCFG.IsHidePrice)
+						{
+							item2.ProdPrice = null;
+						}
+						if (HisConfigCFG.IsHideQuantity)
+						{
+							item2.ProdQuantity = null;
+						}
+						if (HisConfigCFG.IsHideUnitName)
+						{
+							item2.ProdUnit = "";
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				list = null;
+				LogSystem.Error(ex);
+			}
+			return list;
+		}
+	}
 }

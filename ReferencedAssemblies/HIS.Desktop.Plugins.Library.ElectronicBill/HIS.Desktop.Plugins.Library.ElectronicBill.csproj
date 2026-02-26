@@ -32,131 +32,139 @@
   <ItemGroup>
     <Reference Include="AutoMapper, Version=4.0.4.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\RELEASE\MPSv2\MPS\AutoMapper.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\AutoMapper.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Data.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\RELEASE\MPSv2\MPS.ProcessorBase\DevExpress.Data.v15.2.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\DevExpress.Data.v15.2.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Pdf.v15.2.Drawing, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\RELEASE\MPSv2\MPS.ProcessorBase\DevExpress.Pdf.v15.2.Drawing.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\DevExpress.Pdf.v15.2.Drawing.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Utils.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\RELEASE\MPSv2\MPS.ProcessorBase\DevExpress.Utils.v15.2.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\DevExpress.Utils.v15.2.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.XtraEditors.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.XtraGrid.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\RELEASE\MPSv2\MPS.ProcessorBase\DevExpress.XtraGrid.v15.2.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\DevExpress.XtraGrid.v15.2.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.XtraLayout.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\RELEASE\MPSv2\MPS.ProcessorBase\DevExpress.XtraLayout.v15.2.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\DevExpress.XtraLayout.v15.2.dll</HintPath>
     </Reference>
     <Reference Include="HIS.Common.Treatment">
-      <HintPath>..\..\..\..\..\..\RELEASE\HIS\HIS.Common\HIS.Common.Treatment\HIS.Common.Treatment.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.Common.Treatment.dll</HintPath>
     </Reference>
     <Reference Include="HIS.UC.MenuPrint">
-      <HintPath>..\..\..\..\..\..\RELEASE\HIS\HIS.UC.MenuPrint\HIS.UC.MenuPrint.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.UC.MenuPrint.dll</HintPath>
     </Reference>
     <Reference Include="IMSys.DbConfig.HIS_RS">
-      <HintPath>..\..\..\..\..\..\RELEASE\IMSys.DbConfig\IMSys.DbConfig.HIS_RS\IMSys.DbConfig.HIS_RS.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\IMSys.DbConfig.HIS_RS.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Common.Adapter">
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Common\Inventec.Common.Adapter\Inventec.Common.Adapter.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.Adapter.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Common.BarCode">
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Common\Inventec.Common.BarCode\Inventec.Common.BarCode.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.BarCode.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Common.BarcodeLib">
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Common\Inventec.Common.BarcodeLib\Inventec.Common.BarcodeLib.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.BarcodeLib.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Common.Controls.EditorLoader">
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Common\Inventec.Common.Controls.EditorLoader\Inventec.Common.Controls.EditorLoader.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.Controls.EditorLoader.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Common.DateTime">
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Common\Inventec.Common.DateTime\Inventec.Common.DateTime.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.DateTime.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Common.EBillSoftDreams">
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Common\Inventec.Common.EBillSoftDreams\Inventec.Common.EBillSoftDreams.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.EBillSoftDreams.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.EHoaDon, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.EHoaDon.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.ElectronicBill, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.ElectronicBill.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Common.ElectronicBill.Misa">
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Common\Inventec.Common.ElectronicBill.Misa\Inventec.Common.ElectronicBill.Misa.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.ElectronicBill.Misa.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Common.ElectronicBillMoit, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Common\Inventec.Common.ElectronicBillMoit\Inventec.Common.ElectronicBillMoit.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.ElectronicBillMoit.dll</HintPath>
     </Reference>
-    <Reference Include="Inventec.Common.ElectronicBillViettel, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Common\Inventec.Common.ElectronicBillViettel\Inventec.Common.ElectronicBillViettel.dll</HintPath>
+    <Reference Include="Inventec.Common.ElectronicBillViettel">
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.ElectronicBillViettel.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Common.Logging">
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Common\Inventec.Common.Logging\Inventec.Common.Logging.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.Logging.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Common.Mapper">
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Common\Inventec.Common.Mapper\Inventec.Common.Mapper.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.Mapper.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Common.Number, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Common\Inventec.Common.Number\Inventec.Common.Number.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.Number.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Common.Repository, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Common\Inventec.Common.Repository\Inventec.Common.Repository.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.Repository.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Common.Resource">
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Common\Inventec.Common.Resource\Inventec.Common.Resource.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.Resource.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Common.RichEditor">
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Common\Inventec.Common.RichEditor\Inventec.Common.RichEditor.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.RichEditor.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Common.String, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Common\Inventec.Common.String\Inventec.Common.String.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.String.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Common.ThreadCustom">
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Common\Inventec.Common.ThreadCustom\Inventec.Common.ThreadCustom.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.ThreadCustom.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Common.TypeConvert, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Common\Inventec.Common.TypeConvert\Inventec.Common.TypeConvert.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.TypeConvert.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Common.WebApiClient">
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Common\Inventec.Common.WebApiClient\Inventec.Common.WebApiClient.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.WebApiClient.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Core">
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Core\Inventec.Core.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Inventec.Desktop.Common.Controls.ValidationRule">
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Desktop\Inventec.Desktop.Common.Controls.ValidationRule\Inventec.Desktop.Common.Controls.ValidationRule.dll</HintPath>
+    <Reference Include="Inventec.Desktop.Common.Controls.ValidationRule, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Desktop.Common.Controls.ValidationRule.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Desktop.Common.LanguageManager">
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Desktop\Inventec.Desktop.Common.LanguageManager\Inventec.Desktop.Common.LanguageManager.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Desktop.Common.LanguageManager.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Desktop.Common.LibraryMessage">
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Desktop\Inventec.Desktop.Common.LibraryMessage\Inventec.Desktop.Common.LibraryMessage.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Desktop.Common.LibraryMessage.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Desktop.Common.Message">
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Desktop\Inventec.Desktop.Common.Message\Inventec.Desktop.Common.Message.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Desktop.Common.Message.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Fss.Client, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Fss.Client\Inventec.Fss.Client.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Fss.Client.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Fss.Utility, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Fss.Client\Inventec.Fss.Utility.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Fss.Utility.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.Token.ClientSystem, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.Token\Inventec.Token.ClientSystem\Inventec.Token.ClientSystem.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Token.ClientSystem.dll</HintPath>
     </Reference>
     <Reference Include="Inventec.UC.Login, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\RELEASE\Inventec.UC\Inventec.UC.Login\Inventec.UC.Login.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.UC.Login.dll</HintPath>
     </Reference>
     <Reference Include="MOS.EFMODEL, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -170,21 +178,20 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\RELEASE\MOS\MOS.LibraryHein.Bhyt.dll</HintPath>
     </Reference>
-    <Reference Include="MOS.SDO, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\RELEASE\MOS\MOS.SDO.dll</HintPath>
+    <Reference Include="MOS.SDO">
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\MOS.SDO.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\..\..\..\RELEASE\WCF\Sdc.Client\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="SDA.EFMODEL, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\RELEASE\SDA\SDA.EFMODEL.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\SDA.EFMODEL.dll</HintPath>
     </Reference>
     <Reference Include="SDA.Filter, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\RELEASE\SDA\SDA.Filter.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\SDA.Filter.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -202,28 +209,28 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="Telerik.WinControls">
-      <HintPath>..\..\..\..\..\..\RELEASE\Library packages\Telerik\Telerik.WinControls.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Telerik.WinControls.dll</HintPath>
     </Reference>
     <Reference Include="Telerik.WinControls.PdfViewer">
-      <HintPath>..\..\..\..\..\..\RELEASE\Library packages\Telerik\Telerik.WinControls.PdfViewer.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Telerik.WinControls.PdfViewer.dll</HintPath>
     </Reference>
     <Reference Include="Telerik.WinControls.UI">
-      <HintPath>..\..\..\..\..\..\RELEASE\Library packages\Telerik\Telerik.WinControls.UI.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Telerik.WinControls.UI.dll</HintPath>
     </Reference>
     <Reference Include="Telerik.Windows.Documents.Core">
-      <HintPath>..\..\..\..\..\..\RELEASE\Library packages\Telerik\Telerik.Windows.Documents.Core.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Telerik.Windows.Documents.Core.dll</HintPath>
     </Reference>
     <Reference Include="Telerik.Windows.Documents.Fixed">
-      <HintPath>..\..\..\..\..\..\RELEASE\Library packages\Telerik\Telerik.Windows.Documents.Fixed.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Telerik.Windows.Documents.Fixed.dll</HintPath>
     </Reference>
     <Reference Include="TelerikCommon">
-      <HintPath>..\..\..\..\..\..\RELEASE\Library packages\Telerik\TelerikCommon.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\TelerikCommon.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Base\ApiConsumerV2.cs" />
-    <Compile Include="Base\Delegate.cs" />
+    <Compile Include="Base\DelegateSignAndRelease.cs" />
     <Compile Include="Base\ElectronicBillDataInput.cs" />
     <Compile Include="Base\ElectronicBillResult.cs" />
     <Compile Include="Base\ElectronicBillResultUtil.cs" />
@@ -232,74 +239,154 @@
     <Compile Include="Base\IRun.cs" />
     <Compile Include="Base\ProviderType.cs" />
     <Compile Include="Base\RequestUriStore.cs" />
-    <Compile Include="Config\SdaConfigKey.cs" />
-    <Compile Include="ProviderBehavior\CYBERBILL\CYBERBILLBehavior.cs" />
-    <Compile Include="ProviderBehavior\CYBERBILL\Model\CancelElectronicBill.cs" />
-    <Compile Include="ProviderBehavior\CYBERBILL\Model\ConvertElectronicBill.cs" />
-    <Compile Include="ProviderBehavior\CYBERBILL\Model\ElectronicBill.cs" />
-    <Compile Include="ProviderBehavior\CYBERBILL\Model\LoginDataCyberbill.cs" />
-    <Compile Include="ProviderBehavior\CYBERBILL\Model\LoginResultCyberbill.cs" />
-    <Compile Include="ProviderBehavior\CYBERBILL\Model\SignElectronicBill.cs" />
-    <Compile Include="ProviderBehavior\MOBIFONE\Model\ApiConsumer.cs" />
-    <Compile Include="ProviderBehavior\MOBIFONE\Model\CancelInvResult.cs" />
-    <Compile Include="ProviderBehavior\MOBIFONE\Model\DataReferences.cs" />
-    <Compile Include="ProviderBehavior\MOBIFONE\Model\HoaDon78Init.cs" />
-    <Compile Include="ProviderBehavior\MOBIFONE\Model\HoaDon78Result.cs" />
-    <Compile Include="ProviderBehavior\MOBIFONE\Model\LoginData.cs" />
-    <Compile Include="ProviderBehavior\MOBIFONE\Model\LoginResultData.cs" />
-    <Compile Include="Data\SignDelegate.cs" />
-    <Compile Include="Data\SignInitData.cs" />
     <Compile Include="Config\HisConfigCFG.cs" />
     <Compile Include="Config\HisPatientTypeCFG.cs" />
+    <Compile Include="Config\SdaConfigKey.cs" />
     <Compile Include="Data\ProductBase.cs" />
     <Compile Include="Data\ProductBasePlus.cs" />
-    <Compile Include="ElectronicBillProcessor.cs" />
+    <Compile Include="Data\SignDelegate.cs" />
+    <Compile Include="Data\SignInitData.cs" />
     <Compile Include="InvoiceInfo\InvoiceInfoADO.cs" />
     <Compile Include="InvoiceInfo\InvoiceInfoProcessor.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProviderBehavior\BKAV\BKAVBehavior.cs" />
     <Compile Include="ProviderBehavior\BKAV\UserDefineADO.cs" />
+    <Compile Include="ProviderBehavior\CYBERBILL\Model\CancelElectronicBill.cs" />
+    <Compile Include="ProviderBehavior\CYBERBILL\Model\DanhSachChiTiet.cs" />
+    <Compile Include="ProviderBehavior\CYBERBILL\Model\DanhSachThue.cs" />
+    <Compile Include="ProviderBehavior\CYBERBILL\Model\ErrorCyberbill.cs" />
+    <Compile Include="ProviderBehavior\CYBERBILL\Model\HoaDon.cs" />
+    <Compile Include="ProviderBehavior\CYBERBILL\Model\InputCancelElectronicBill.cs" />
+    <Compile Include="ProviderBehavior\CYBERBILL\Model\InputConvertElectronicBill.cs" />
+    <Compile Include="ProviderBehavior\CYBERBILL\Model\InputElectronicBill.cs" />
+    <Compile Include="ProviderBehavior\CYBERBILL\Model\InputReplaceElectronicBill.cs" />
+    <Compile Include="ProviderBehavior\CYBERBILL\Model\InputSendAndSignElectronicBill.cs" />
+    <Compile Include="ProviderBehavior\CYBERBILL\Model\InputSignElectronicBill.cs" />
+    <Compile Include="ProviderBehavior\CYBERBILL\Model\LoginDataCyberbill.cs" />
+    <Compile Include="ProviderBehavior\CYBERBILL\Model\LoginResultCyberbill.cs" />
+    <Compile Include="ProviderBehavior\CYBERBILL\Model\OutputCancelElectronicBill.cs" />
+    <Compile Include="ProviderBehavior\CYBERBILL\Model\OutputConvertElectronicBill.cs" />
+    <Compile Include="ProviderBehavior\CYBERBILL\Model\OutputElectronicBill.cs" />
+    <Compile Include="ProviderBehavior\CYBERBILL\Model\OutputReplaceElectronicBill.cs" />
+    <Compile Include="ProviderBehavior\CYBERBILL\Model\OutputSendAndSignElectronicBill.cs" />
+    <Compile Include="ProviderBehavior\CYBERBILL\Model\OutputSignElectronicBill.cs" />
+    <Compile Include="ProviderBehavior\CYBERBILL\Model\ResultCancelElectronicBill.cs" />
+    <Compile Include="ProviderBehavior\CYBERBILL\Model\ResultConvertElectronicBill.cs" />
+    <Compile Include="ProviderBehavior\CYBERBILL\Model\ResultCyberbill.cs" />
+    <Compile Include="ProviderBehavior\CYBERBILL\Model\ResultElectronicBill.cs" />
+    <Compile Include="ProviderBehavior\CYBERBILL\Model\ResultReplaceElectronicBill.cs" />
+    <Compile Include="ProviderBehavior\CYBERBILL\Model\ResultSendAndSignElectronicBill.cs" />
+    <Compile Include="ProviderBehavior\CYBERBILL\Model\ResultSignElectronicBill.cs" />
+    <Compile Include="ProviderBehavior\CYBERBILL\CYBERBILLBehavior.cs" />
+    <Compile Include="ProviderBehavior\MInvoice\ApiDataResult.cs" />
+    <Compile Include="ProviderBehavior\MInvoice\ApiSignDataResult.cs" />
+    <Compile Include="ProviderBehavior\MInvoice\DeleteDataItem.cs" />
+    <Compile Include="ProviderBehavior\MInvoice\DeleteInvoiceData.cs" />
+    <Compile Include="ProviderBehavior\MInvoice\DeleteInvoiceResult.cs" />
+    <Compile Include="ProviderBehavior\MInvoice\InvoiceADO.cs" />
+    <Compile Include="ProviderBehavior\MInvoice\InvoiceData.cs" />
+    <Compile Include="ProviderBehavior\MInvoice\InvoiceDataDelete.cs" />
+    <Compile Include="ProviderBehavior\MInvoice\InvoiceDetails.cs" />
+    <Compile Include="ProviderBehavior\MInvoice\InvoiceItem.cs" />
+    <Compile Include="ProviderBehavior\MInvoice\InvoiceResult.cs" />
+    <Compile Include="ProviderBehavior\MInvoice\LoginDataMinvoice.cs" />
+    <Compile Include="ProviderBehavior\MInvoice\MInvoiceBehavior.cs" />
+    <Compile Include="ProviderBehavior\MInvoice\ReplaceInvoice.cs" />
+    <Compile Include="ProviderBehavior\MInvoice\RpInvoiceData.cs" />
+    <Compile Include="ProviderBehavior\MInvoice\RpInvoiceDetails.cs" />
+    <Compile Include="ProviderBehavior\MInvoice\RpInvoiceItem.cs" />
+    <Compile Include="ProviderBehavior\MInvoice\SignInvoiceResult.cs" />
+    <Compile Include="ProviderBehavior\MInvoice\SignInvoiceResultItem.cs" />
     <Compile Include="ProviderBehavior\MISA\MISABehavior.cs" />
     <Compile Include="ProviderBehavior\MISA\MISABehaviorV2.cs" />
-    <Compile Include="ProviderBehavior\MOBIFONE\MIBIFONEBehavior.cs" />
+    <Compile Include="ProviderBehavior\MOBIFONE\Model\CancelInvResult.cs" />
+    <Compile Include="ProviderBehavior\MOBIFONE\Model\DataReferences.cs" />
+    <Compile Include="ProviderBehavior\MOBIFONE\Model\EditMode.cs" />
+    <Compile Include="ProviderBehavior\MOBIFONE\Model\HoaDon78Data.cs" />
+    <Compile Include="ProviderBehavior\MOBIFONE\Model\HoaDon78Details.cs" />
+    <Compile Include="ProviderBehavior\MOBIFONE\Model\HoaDon78DetailsData.cs" />
+    <Compile Include="ProviderBehavior\MOBIFONE\Model\HoaDon78Init.cs" />
+    <Compile Include="ProviderBehavior\MOBIFONE\Model\HoaDon78Khac.cs" />
+    <Compile Include="ProviderBehavior\MOBIFONE\Model\HoaDon78KhacData.cs" />
+    <Compile Include="ProviderBehavior\MOBIFONE\Model\HoaDon78Phi.cs" />
+    <Compile Include="ProviderBehavior\MOBIFONE\Model\HoaDon78PhiData.cs" />
+    <Compile Include="ProviderBehavior\MOBIFONE\Model\HoaDon78Result.cs" />
+    <Compile Include="ProviderBehavior\MOBIFONE\Model\HoaDon78ResultData.cs" />
+    <Compile Include="ProviderBehavior\MOBIFONE\Model\InvoiceHasCode.cs" />
+    <Compile Include="ProviderBehavior\MOBIFONE\Model\LoginData.cs" />
+    <Compile Include="ProviderBehavior\MOBIFONE\Model\LoginResultData.cs" />
+    <Compile Include="ProviderBehavior\MOBIFONE\Model\RelevantInvoiceType.cs" />
+    <Compile Include="ProviderBehavior\MOBIFONE\Model\ServiceType.cs" />
+    <Compile Include="ProviderBehavior\MOBIFONE\Model\SignInvoiceCertFile68Data.cs" />
     <Compile Include="ProviderBehavior\MOBIFONE\Model\SignInvoiceCertFile68Init.cs" />
     <Compile Include="ProviderBehavior\MOBIFONE\Model\SignInvoiceCertFile68Result.cs" />
+    <Compile Include="ProviderBehavior\MOBIFONE\Model\StatusInvoice.cs" />
+    <Compile Include="ProviderBehavior\MOBIFONE\Model\TaxRateCode.cs" />
+    <Compile Include="ProviderBehavior\MOBIFONE\Model\TypeCmd.cs" />
+    <Compile Include="ProviderBehavior\MOBIFONE\MIBIFONEBehavior.cs" />
     <Compile Include="ProviderBehavior\MOIT\VOITBehavior.cs" />
     <Compile Include="ProviderBehavior\SAFECERT\ADO\ApiObject.cs" />
     <Compile Include="ProviderBehavior\SAFECERT\ADO\ApiResultObject.cs" />
     <Compile Include="ProviderBehavior\SAFECERT\ADO\EInvoice.cs" />
     <Compile Include="ProviderBehavior\SAFECERT\ADO\EInvoiceInfo.cs" />
     <Compile Include="ProviderBehavior\SAFECERT\ADO\EinvoiceLine.cs" />
+    <Compile Include="ProviderBehavior\SAFECERT\ADO\HoaDonMoRong.cs" />
     <Compile Include="ProviderBehavior\SAFECERT\ApiConsumer.cs" />
     <Compile Include="ProviderBehavior\SAFECERT\SAFECERTBehavior.cs" />
     <Compile Include="ProviderBehavior\SAFECERT\UriStore.cs" />
+    <Compile Include="ProviderBehavior\SODR\Process\ApiConsumer.cs" />
+    <Compile Include="ProviderBehavior\SODR\Process\InvoiceRs.cs" />
+    <Compile Include="ProviderBehavior\SODR\Process\InvoiceV2.cs" />
+    <Compile Include="ProviderBehavior\SODR\Process\IssueCreateV2.cs" />
+    <Compile Include="ProviderBehavior\SODR\Process\ProductV2.cs" />
+    <Compile Include="ProviderBehavior\SODR\Process\ReplaceInvoiceV2.cs" />
+    <Compile Include="ProviderBehavior\SODR\Process\ResultDataV2.cs" />
+    <Compile Include="ProviderBehavior\SODR\Process\SoftDreamsProcessor.cs" />
+    <Compile Include="ProviderBehavior\SODR\Process\UriStore.cs" />
     <Compile Include="ProviderBehavior\SODR\SODRBehavior.cs" />
     <Compile Include="ProviderBehavior\VIETTEL\VIETTELBehavior.cs" />
+    <Compile Include="ProviderBehavior\VNInvoice\Model\InputCreateAndSignInvoice.cs" />
+    <Compile Include="ProviderBehavior\VNInvoice\Model\InputCreateInvoice.cs" />
+    <Compile Include="ProviderBehavior\VNInvoice\Model\InputLoginVNInvoice.cs" />
+    <Compile Include="ProviderBehavior\VNInvoice\Model\InputReplaceInvoice.cs" />
+    <Compile Include="ProviderBehavior\VNInvoice\Model\InvoiceDetailExtra.cs" />
+    <Compile Include="ProviderBehavior\VNInvoice\Model\InvoiceHeaderExtra.cs" />
+    <Compile Include="ProviderBehavior\VNInvoice\Model\InvoicePrintNote.cs" />
+    <Compile Include="ProviderBehavior\VNInvoice\Model\InvoiceSpecificProductExtra.cs" />
+    <Compile Include="ProviderBehavior\VNInvoice\Model\InvoiceTaxBreakdown.cs" />
+    <Compile Include="ProviderBehavior\VNInvoice\Model\OutputConvertInvoice.cs" />
+    <Compile Include="ProviderBehavior\VNInvoice\Model\OutputCreateAndSignInvoice.cs" />
+    <Compile Include="ProviderBehavior\VNInvoice\Model\OutPutCreateInvoice.cs" />
+    <Compile Include="ProviderBehavior\VNInvoice\Model\OutputDataCreateAndSign.cs" />
+    <Compile Include="ProviderBehavior\VNInvoice\Model\OutPutDataReplace.cs" />
+    <Compile Include="ProviderBehavior\VNInvoice\Model\OutPutDataSign.cs" />
+    <Compile Include="ProviderBehavior\VNInvoice\Model\OutputLoginVNInvoice.cs" />
+    <Compile Include="ProviderBehavior\VNInvoice\Model\OutputReplaceInvoice.cs" />
+    <Compile Include="ProviderBehavior\VNInvoice\Model\OutputSignInvoice.cs" />
+    <Compile Include="ProviderBehavior\VNInvoice\Model\VNInvoiceDetail.cs" />
+    <Compile Include="ProviderBehavior\VNInvoice\VNInvoiceBehavior.cs" />
     <Compile Include="ProviderBehavior\VNPT\VNPTBehavior.cs" />
-    <Compile Include="ProxyBehavior\BACHMAI\ApiConsumer.cs" />
-    <Compile Include="ProxyBehavior\BACHMAI\BACHMAIBehavior.cs" />
-    <Compile Include="ProxyBehavior\BACHMAI\Model\E_BM_Data.cs" />
-    <Compile Include="ProxyBehavior\BACHMAI\Model\E_BM_Invoice.cs" />
-    <Compile Include="ProxyBehavior\BACHMAI\Model\E_BM_InvoiceDetail.cs" />
-    <Compile Include="ProxyBehavior\BACHMAI\Model\E_BM_Invoice_TT78.cs" />
-    <Compile Include="ProxyBehavior\BACHMAI\SendDataADO.cs" />
-    <Compile Include="ProxyBehavior\CTO\ApiConsumer.cs" />
-    <Compile Include="ProxyBehavior\CTO\CTOBehavior.cs" />
-    <Compile Include="ProxyBehavior\CTO\Model\CancelTransactionInvoiceRequest.cs" />
-    <Compile Include="ProxyBehavior\CTO\Model\EBill.cs" />
-    <Compile Include="ProxyBehavior\CTO\Model\EbInfo.cs" />
-    <Compile Include="ProxyBehavior\CTO\Model\EbProduct.cs" />
-    <Compile Include="ProxyBehavior\CTO\Model\EbTemplate.cs" />
-    <Compile Include="ProxyBehavior\CTO\Model\EbVat.cs" />
-    <Compile Include="ProxyBehavior\CTO\Model\FileRequest.cs" />
-    <Compile Include="ProxyBehavior\CTO\Model\ResponeData.cs" />
-    <Compile Include="ProxyBehavior\CTO\UriStore.cs" />
-    <Compile Include="Resources\ResourceLanguageManager.cs" />
+    <Compile Include="ProviderBehavior\BACHMAI\Model\Chitiet_TT78.cs" />
+    <Compile Include="ProviderBehavior\BACHMAI\Model\E_BM_Data.cs" />
+    <Compile Include="ProviderBehavior\BACHMAI\Model\E_BM_Invoice.cs" />
+    <Compile Include="ProviderBehavior\BACHMAI\Model\E_BM_InvoiceDetail.cs" />
+    <Compile Include="ProviderBehavior\BACHMAI\Model\E_BM_Invoice_TT78.cs" />
+    <Compile Include="ProviderBehavior\BACHMAI\Model\Tonghop_TT78.cs" />
+    <Compile Include="ProviderBehavior\BACHMAI\ApiConsumer.cs" />
+    <Compile Include="ProviderBehavior\BACHMAI\BACHMAIBehavior.cs" />
+    <Compile Include="ProviderBehavior\BACHMAI\SendDataADO.cs" />
+    <Compile Include="ProviderBehavior\CTO\Model\CancelTransactionInvoiceRequest.cs" />
+    <Compile Include="ProviderBehavior\CTO\Model\EBill.cs" />
+    <Compile Include="ProviderBehavior\CTO\Model\EbInfo.cs" />
+    <Compile Include="ProviderBehavior\CTO\Model\EbProduct.cs" />
+    <Compile Include="ProviderBehavior\CTO\Model\EbTemplate.cs" />
+    <Compile Include="ProviderBehavior\CTO\Model\EbVat.cs" />
+    <Compile Include="ProviderBehavior\CTO\Model\FileRequest.cs" />
+    <Compile Include="ProviderBehavior\CTO\Model\ResponeData.cs" />
+    <Compile Include="ProviderBehavior\CTO\ApiConsumer.cs" />
+    <Compile Include="ProviderBehavior\CTO\CTOBehavior.cs" />
+    <Compile Include="ProviderBehavior\CTO\UriStore.cs" />
     <Compile Include="SignInvoice\FormSignInvoice.cs">
       <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SignInvoice\FormSignInvoice.Designer.cs">
-      <DependentUpon>FormSignInvoice.cs</DependentUpon>
     </Compile>
     <Compile Include="Template\IRunTemplate.cs" />
     <Compile Include="Template\Template1.cs" />
@@ -314,19 +401,13 @@
     <Compile Include="Template\Template8.cs" />
     <Compile Include="Template\Template9.cs" />
     <Compile Include="Template\TemplateDetailADO.cs" />
-    <Compile Include="Template\TemplateFactory.cs" />
     <Compile Include="Template\TemplateEnum.cs" />
+    <Compile Include="Template\TemplateFactory.cs" />
     <Compile Include="Template\TemplateNhaThuoc.cs" />
+    <Compile Include="ElectronicBillProcessor.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\..\SHAREUTIL\Inventec.Common\Inventec.Common.ElectronicBill\Inventec.Common.EHoaDon\Inventec.Common.EHoaDon.csproj">
-      <Project>{256c6c76-8afc-48bf-9c33-68f2acb5fc52}</Project>
-      <Name>Inventec.Common.EHoaDon</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\..\SHAREUTIL\Inventec.Common\Inventec.Common.ElectronicBill\Inventec.Common.ElectronicBill\Inventec.Common.ElectronicBill.csproj">
-      <Project>{7b82f5a9-e041-4ca1-8e84-44838d514e51}</Project>
-      <Name>Inventec.Common.ElectronicBill</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\HIS.Desktop.ApiConsumer\HIS.Desktop.ApiConsumer.csproj">
       <Project>{861bfedb-026f-4b6f-a3cf-32843ae8c03d}</Project>
       <Name>HIS.Desktop.ApiConsumer</Name>
@@ -362,18 +443,8 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\licenses.licx" />
-    <EmbeddedResource Include="Resources\Lang.en.resx" />
-    <EmbeddedResource Include="Resources\Lang.vi.resx" />
-    <EmbeddedResource Include="SignInvoice\FormSignInvoice.resx">
-      <DependentUpon>FormSignInvoice.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ProviderBehavior\VIETSENS\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

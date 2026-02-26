@@ -1,329 +1,307 @@
-/* IVT
- * @Project : hisnguonmo
- * Copyright (C) 2017 INVENTEC
- *  
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *  
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
- * GNU General Public License for more details.
- *  
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
-using HIS.Desktop.ApiConsumer;
-using HIS.Desktop.LocalStorage.BackendData;
-using HIS.Desktop.Plugins.Library.ElectronicBill.Config;
-using Inventec.Core;
-using MOS.EFMODEL.DataModels;
-using MOS.Filter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
+using System.Xml;
+using HIS.Desktop.ApiConsumer;
+using HIS.Desktop.LocalStorage.BackendData;
+using HIS.Desktop.Plugins.Library.ElectronicBill.Config;
+using Inventec.Common.Adapter;
+using Inventec.Common.DateTime;
+using Inventec.Common.Logging;
+using Inventec.Common.Repository;
+using Inventec.Common.String;
+using Inventec.Core;
+using MOS.EFMODEL.DataModels;
+using MOS.Filter;
+using MOS.LibraryHein.Bhyt;
 
 namespace HIS.Desktop.Plugins.Library.ElectronicBill.Base
 {
-    internal class General
-    {
-        internal static Dictionary<string, string> DicDataBuyerInfo = null;
+	internal class General
+	{
+		internal static Dictionary<string, string> DicDataBuyerInfo;
 
-        /// <summary>
-        /// trả ra các ký tự đầu tiên của từ trong chuỗi văn bản và viết hoa toàn bộ ký tự
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        internal static string GetFirstWord(string name)
-        {
-            string result = "";
-            try
-            {
-                if (!String.IsNullOrWhiteSpace(name))
-                {
-                    var spl = name.Split(' ', ',', '.', '/').ToList();
-                    foreach (var item in spl)
-                    {
-                        if (!String.IsNullOrWhiteSpace(item))
-                        {
-                            if (Char.IsLetter(item[0]))
-                            {
-                                result += item[0].ToString().ToUpper();
-                            }
-                        }
-                    }
-                }
+		internal static string GetFirstWord(string name)
+		{
+			string text = "";
+			try
+			{
+				if (!string.IsNullOrWhiteSpace(name))
+				{
+					List<string> list = name.Split(' ', ',', '.', '/').ToList();
+					foreach (string item in list)
+					{
+						if (!string.IsNullOrWhiteSpace(item) && char.IsLetter(item[0]))
+						{
+							text += item[0].ToString().ToUpper();
+						}
+					}
+				}
+				if (!string.IsNullOrWhiteSpace(text))
+				{
+					text = Inventec.Common.String.Convert.UnSignVNese2(text);
+				}
+			}
+			catch (Exception ex)
+			{
+				text = name.Split(' ', ',', '.').FirstOrDefault();
+				LogSystem.Error(ex);
+			}
+			return text;
+		}
 
-                if (!String.IsNullOrWhiteSpace(result))
-                {
-                    result = Inventec.Common.String.Convert.UnSignVNese2(result);
-                }
-            }
-            catch (Exception ex)
-            {
-                result = name.Split(' ', ',', '.').FirstOrDefault();
-                Inventec.Common.Logging.LogSystem.Error(ex);
-            }
-            return result;
-        }
+		internal static string GenarateXmlStringFromConfig(ElectronicBillDataInput inputData, Type dataType, Dictionary<string, string> dicReplateValue)
+		{
+			string result = "";
+			try
+			{
+				if (!string.IsNullOrWhiteSpace(HisConfigCFG.ElectronicBillXmlInvoicePlus) && inputData != null)
+				{
+					string[] array = HisConfigCFG.ElectronicBillXmlInvoicePlus.Split('|');
+					Dictionary<string, string> dictionary = new Dictionary<string, string>();
+					string[] array2 = array;
+					foreach (string text in array2)
+					{
+						string[] array3 = text.Split(':');
+						if (array3.Count() <= 1)
+						{
+							continue;
+						}
+						string text2 = text.Replace(array3[0] + ":", "");
+						if (!string.IsNullOrEmpty(text2))
+						{
+							char c = text2.FirstOrDefault((char ch) => !XmlConvert.IsXmlChar(ch));
+							if (!char.IsWhiteSpace(c))
+							{
+								dictionary[array3[0]] = string.Format("<![CDATA[{0}]]>", text2);
+							}
+							else
+							{
+								dictionary[array3[0]] = text2;
+							}
+						}
+						else
+						{
+							dictionary[array3[0]] = null;
+						}
+					}
+					Dictionary<string, string> dictionary2 = ProcessDicValueString(inputData);
+					PropertyInfo[] array4 = Properties.Get(dataType);
+					List<string> list = new List<string>();
+					foreach (KeyValuePair<string, string> item in dictionary)
+					{
+						string text3 = item.Value;
+						if (!string.IsNullOrWhiteSpace(text3))
+						{
+							foreach (KeyValuePair<string, string> item2 in dictionary2)
+							{
+								text3 = text3.Replace(item2.Key, item2.Value);
+							}
+						}
+						bool flag = false;
+						PropertyInfo[] array5 = array4;
+						foreach (PropertyInfo propertyInfo in array5)
+						{
+							if (propertyInfo.Name == item.Key)
+							{
+								flag = true;
+								break;
+							}
+						}
+						if (flag)
+						{
+							dicReplateValue[item.Key] = text3;
+						}
+						else
+						{
+							list.Add(string.Format("<{0}>{1}</{0}>", item.Key, text3));
+						}
+					}
+					result = string.Join("", list);
+				}
+			}
+			catch (Exception ex)
+			{
+				result = "";
+				LogSystem.Error(ex);
+			}
+			return result;
+		}
 
-        internal static string GenarateXmlStringFromConfig(ElectronicBillDataInput inputData, Type dataType, Dictionary<string, string> dicReplateValue)
-        {
-            string result = "";
-            try
-            {
-                if (!String.IsNullOrWhiteSpace(HisConfigCFG.ElectronicBillXmlInvoicePlus) && inputData != null)
-                {
-                    string[] xmlKeys = HisConfigCFG.ElectronicBillXmlInvoicePlus.Split('|');
-                    Dictionary<string, string> dicXmlKey = new Dictionary<string, string>();
-                    foreach (var item in xmlKeys)
-                    {
-                        string[] keys = item.Split(':');
-                        if (keys.Count() > 1)
-                        {
-                            string value = item.Replace(keys[0] + ":", "");
-                            //không có dữ liệu thì gán null để mất thẻ trong XML
-                            //dùng Empty để cho phép nhập khoảng trắng trong cấu hình
-                            if (!String.IsNullOrEmpty(value))
-                            {
-                                //nếu có ký tự đặc biệt không thuộc ký tự xml thì thêm thẻ cdata
-                                char checkXml = value.FirstOrDefault(ch => !System.Xml.XmlConvert.IsXmlChar(ch));
-                                if (!char.IsWhiteSpace(checkXml))
-                                {
-                                    dicXmlKey[keys[0]] = string.Format("<![CDATA[{0}]]>", value);
-                                }
-                                else
-                                {
-                                    dicXmlKey[keys[0]] = value;
-                                }
-                            }
-                            else
-                            {
-                                dicXmlKey[keys[0]] = null;
-                            }
-                        }
-                    }
-
-                    Dictionary<string, string> dicXmlValues = ProcessDicValueString(inputData);
-
-                    System.Reflection.PropertyInfo[] pi = Inventec.Common.Repository.Properties.Get(dataType);
-
-                    List<string> dataResult = new List<string>();
-                    foreach (var keys in dicXmlKey)
-                    {
-                        string value = keys.Value;
-                        if (!String.IsNullOrWhiteSpace(value))
-                        {
-                            foreach (var values in dicXmlValues)
-                            {
-                                value = value.Replace(values.Key, values.Value);
-                            }
-                        }
-
-                        bool isReplate = false;
-                        foreach (var item in pi)
-                        {
-                            if (item.Name == keys.Key)
-                            {
-                                isReplate = true;
-                                break;
-                            }
-                        }
-
-                        //trả ra dữ liệu null để gán dữ liệu
-                        if (isReplate)
-                        {
-                            dicReplateValue[keys.Key] = value;
-                        }
-                        else
-                        {
-                            dataResult.Add(string.Format("<{0}>{1}</{0}>", keys.Key, value));
-                        }
-                    }
-
-                    result = string.Join("", dataResult);
-                }
-            }
-            catch (Exception ex)
-            {
-                result = "";
-                Inventec.Common.Logging.LogSystem.Error(ex);
-            }
-            return result;
-        }
-
-        internal static Dictionary<string, string> ProcessDicValueString(ElectronicBillDataInput inputData)
-        {
-            Dictionary<string, string> result = new Dictionary<string, string>();
-            try
-            {
-                if (DicDataBuyerInfo != null && DicDataBuyerInfo.Count > 0)
-                {
-                    return DicDataBuyerInfo;
-                }
-
-                string yob = "";
-                string age = "";
-                string dobStr = "";
-                string treatmentCode = "";
-                string patientCode = "";
-                string patientTypeName = "";
-                string treatmentTypeName = "";
-                string currentRoomDepartment = "";
-                string cashierUsername = "";
-                string cashierLoginname = "";
-                string inTime = "";
-                string outTime = "";
-                string numOrder = "";
-                string gender = "";
-                string clinicalInTime = "";
-
-                if (inputData.Treatment != null)
-                {
-                    long dob = inputData.Treatment.TDL_PATIENT_DOB;
-
-                    long in_time = 0;
-                    if (dob > 0)
-                    {
-                        yob = dob.ToString().Substring(0, 4);
-                        in_time = inputData.Treatment != null ? inputData.Treatment.IN_TIME : (Inventec.Common.DateTime.Get.Now() ?? 0);
-                        age = dob > 0 && in_time > 0 ? Inventec.Common.DateTime.Calculation.AgeString(dob, "", "tháng", "ngày", "giờ", in_time) : "";
-                        dobStr = Inventec.Common.DateTime.Convert.TimeNumberToDateString(dob);
-                    }
-
-                    inTime = in_time > 0 ? Inventec.Common.DateTime.Convert.TimeNumberToDateString(in_time) : "";
-
-                    if (inputData.Treatment.CLINICAL_IN_TIME.HasValue)
-                    {
-                        clinicalInTime = Inventec.Common.DateTime.Convert.TimeNumberToDateString(inputData.Treatment.CLINICAL_IN_TIME.Value);
-                    }
-
-                    treatmentCode = inputData.Treatment.TREATMENT_CODE;
-                    patientCode = inputData.Treatment.TDL_PATIENT_CODE;
-                    gender = inputData.Treatment.TDL_PATIENT_GENDER_NAME;
-
-                    var patientType = BackendDataWorker.Get<HIS_PATIENT_TYPE>().FirstOrDefault(o => o.ID == inputData.Treatment.TDL_PATIENT_TYPE_ID);
-                    patientTypeName = patientType != null ? patientType.PATIENT_TYPE_NAME : "";
-
-                    var treatmentType = BackendDataWorker.Get<HIS_TREATMENT_TYPE>().FirstOrDefault(o => o.ID == inputData.Treatment.TDL_TREATMENT_TYPE_ID);
-                    treatmentTypeName = treatmentType != null ? treatmentType.TREATMENT_TYPE_NAME : "";
-
-                    if (inputData.Treatment.TDL_TREATMENT_TYPE_ID == IMSys.DbConfig.HIS_RS.HIS_TREATMENT_TYPE.ID__KHAM)
-                    {
-                        var endRoom = inputData.Treatment.END_ROOM_ID.HasValue ? BackendDataWorker.Get<V_HIS_ROOM>().FirstOrDefault(o => o.ID == inputData.Treatment.END_ROOM_ID) : null;
-                        if (endRoom != null)
-                        {
-                            currentRoomDepartment = endRoom.ROOM_NAME;
-                        }
-                        else
-                        {
-                            HisSereServFilter ssFilter = new HisSereServFilter();
-                            ssFilter.TREATMENT_ID = inputData.Treatment.ID;
-                            ssFilter.TDL_SERVICE_TYPE_ID = IMSys.DbConfig.HIS_RS.HIS_SERVICE_TYPE.ID__KH;
-                            var sereServKham = new Inventec.Common.Adapter.BackendAdapter(new CommonParam()).Get<List<HIS_SERE_SERV>>("api/HisSereServ/Get", ApiConsumers.MosConsumer, ssFilter, null);
-                            if (sereServKham != null && sereServKham.Count > 0)
-                            {
-                                sereServKham = sereServKham.OrderByDescending(o => o.TDL_IS_MAIN_EXAM ?? 0).ThenByDescending(o => o.TDL_INTRUCTION_TIME).ToList();
-                                var exeRoom = BackendDataWorker.Get<V_HIS_ROOM>().FirstOrDefault(o => o.ID == sereServKham.First().TDL_EXECUTE_ROOM_ID);
-                                if (exeRoom != null)
-                                {
-                                    currentRoomDepartment = exeRoom.ROOM_NAME;
-                                }
-                            }
-                        }
-                    }
-                    else if (inputData.Treatment.LAST_DEPARTMENT_ID.HasValue)
-                    {
-                        var department = BackendDataWorker.Get<HIS_DEPARTMENT>().FirstOrDefault(o => o.ID == inputData.Treatment.LAST_DEPARTMENT_ID.Value);
-                        if (department != null)
-                        {
-                            currentRoomDepartment = department.DEPARTMENT_NAME;
-                        }
-                    }
-                    else
-                    {
-                        HisDepartmentTranLastFilter filter = new HisDepartmentTranLastFilter();
-                        filter.TREATMENT_ID = inputData.Treatment.ID;
-                        V_HIS_DEPARTMENT_TRAN tran = new Inventec.Common.Adapter.BackendAdapter(new CommonParam()).Get<V_HIS_DEPARTMENT_TRAN>("api/HisDepartmentTran/GetLastByTreatmentId", ApiConsumer.ApiConsumers.MosConsumer, filter, null);
-                        if (tran != null)
-                        {
-                            currentRoomDepartment = tran.DEPARTMENT_NAME;
-                        }
-                    }
-
-                    if (inputData.Treatment.OUT_TIME.HasValue)
-                    {
-                        outTime = Inventec.Common.DateTime.Convert.TimeNumberToDateString(inputData.Treatment.OUT_TIME.Value);
-                    }
-                }
-
-                if (inputData.Transaction != null)
-                {
-                    cashierLoginname = inputData.Transaction.CASHIER_LOGINNAME;
-                    cashierUsername = inputData.Transaction.CASHIER_USERNAME;
-                    numOrder = inputData.Transaction.NUM_ORDER + "";
-                }
-                else if (inputData.ListTransaction != null && inputData.ListTransaction.Count > 0)
-                {
-                    var lastTransaction = inputData.ListTransaction.OrderByDescending(o => o.ID).FirstOrDefault();
-
-                    cashierLoginname = lastTransaction.CASHIER_LOGINNAME;
-                    cashierUsername = lastTransaction.CASHIER_USERNAME;
-                }
-
-                string lydo = "Thu viện phí";
-
-                if (inputData.Transaction != null && (!String.IsNullOrWhiteSpace(inputData.Transaction.EXEMPTION_REASON) || !String.IsNullOrWhiteSpace(inputData.Transaction.DESCRIPTION)))
-                {
-                    if (!String.IsNullOrWhiteSpace(inputData.Transaction.EXEMPTION_REASON))
-                        lydo = inputData.Transaction.EXEMPTION_REASON;
-                    else if (!String.IsNullOrWhiteSpace(inputData.Transaction.DESCRIPTION))
-                        lydo = inputData.Transaction.DESCRIPTION;
-                }
-
-                string heinRatio = "";
-                string heinCardNumber = "";
-                if (inputData.LastPatientTypeAlter != null)
-                {
-                    decimal ratio = (new MOS.LibraryHein.Bhyt.BhytHeinProcessor().GetDefaultHeinRatio(inputData.LastPatientTypeAlter.HEIN_TREATMENT_TYPE_CODE, inputData.LastPatientTypeAlter.HEIN_CARD_NUMBER, inputData.LastPatientTypeAlter.LEVEL_CODE, inputData.LastPatientTypeAlter.RIGHT_ROUTE_CODE) ?? 0) * 100;
-                    heinRatio = ratio + "%";
-                    heinCardNumber = inputData.LastPatientTypeAlter.HEIN_CARD_NUMBER;
-                }
-
-                result["YOB"] = yob;
-                result["AGE"] = age;
-                result["TREATMENT_CODE"] = treatmentCode;
-                result["PATIENT_CODE"] = patientCode;
-                result["PATIENT_TYPE_NAME"] = patientTypeName;
-                result["TREATMENT_TYPE_NAME"] = treatmentTypeName;
-                result["CURRENT_ROOM_DEPARTMENT"] = currentRoomDepartment;
-                result["CASHIER_LOGINNAME"] = cashierLoginname;
-                result["CASHIER_USERNAME"] = cashierUsername;
-                result["IN_TIME"] = inTime;
-                result["OUT_TIME"] = outTime;
-                result["REASON"] = lydo;
-                result["TRANSACTION_NUM_ORDER"] = numOrder;
-                result["GENDER_NAME"] = gender;
-                result["CLINICAL_IN_TIME"] = clinicalInTime;
-                result["HEIN_RATIO"] = heinRatio;
-                result["DOB_STR"] = dobStr;
-                result["HEIN_CARD_NUMBER"] = heinCardNumber;
-            }
-            catch (Exception ex)
-            {
-                result = new Dictionary<string, string>();
-                Inventec.Common.Logging.LogSystem.Error(ex);
-            }
-            finally
-            {
-                DicDataBuyerInfo = result;
-            }
-
-            return result;
-        }
-    }
+		internal static Dictionary<string, string> ProcessDicValueString(ElectronicBillDataInput inputData)
+		{
+			//IL_06a3: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0461: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0468: Expected O, but got Unknown
+			//IL_0480: Unknown result type (might be due to invalid IL or missing references)
+			//IL_048a: Expected O, but got Unknown
+			//IL_0485: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0302: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0309: Expected O, but got Unknown
+			//IL_0337: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0341: Expected O, but got Unknown
+			//IL_033c: Unknown result type (might be due to invalid IL or missing references)
+			Dictionary<string, string> dictionary = new Dictionary<string, string>();
+			try
+			{
+				if (DicDataBuyerInfo != null && DicDataBuyerInfo.Count > 0)
+				{
+					return DicDataBuyerInfo;
+				}
+				string value = "";
+				string value2 = "";
+				string value3 = "";
+				string value4 = "";
+				string value5 = "";
+				string value6 = "";
+				string value7 = "";
+				string value8 = "";
+				string value9 = "";
+				string value10 = "";
+				string value11 = "";
+				string value12 = "";
+				string value13 = "";
+				string value14 = "";
+				string value15 = "";
+				string value16 = "";
+				string value17 = "";
+				if (inputData.Treatment != null)
+				{
+					long tDL_PATIENT_DOB = inputData.Treatment.TDL_PATIENT_DOB;
+					long num = 0L;
+					if (tDL_PATIENT_DOB > 0)
+					{
+						value = tDL_PATIENT_DOB.ToString().Substring(0, 4);
+						num = ((inputData.Treatment != null) ? inputData.Treatment.IN_TIME : Inventec.Common.DateTime.Get.Now().GetValueOrDefault());
+						value2 = ((tDL_PATIENT_DOB > 0 && num > 0) ? Calculation.AgeString(tDL_PATIENT_DOB, "", "tháng", "ngày", "giờ", (long?)num) : "");
+						value3 = Inventec.Common.DateTime.Convert.TimeNumberToDateString(tDL_PATIENT_DOB);
+					}
+					value14 = ((num > 0) ? Inventec.Common.DateTime.Convert.TimeNumberToDateString(num) : "");
+					if (inputData.Treatment.CLINICAL_IN_TIME.HasValue)
+					{
+						value16 = Inventec.Common.DateTime.Convert.TimeNumberToDateString(inputData.Treatment.CLINICAL_IN_TIME.Value);
+					}
+					value7 = inputData.Treatment.TREATMENT_CODE;
+					value8 = inputData.Treatment.TDL_PATIENT_CODE;
+					value4 = inputData.Treatment.TDL_PATIENT_GENDER_NAME;
+					value5 = inputData.Treatment.TDL_PATIENT_CCCD_NUMBER;
+					value6 = inputData.Treatment.TDL_PATIENT_CMND_NUMBER;
+					HIS_PATIENT_TYPE val = BackendDataWorker.Get<HIS_PATIENT_TYPE>().FirstOrDefault((HIS_PATIENT_TYPE o) => o.ID == inputData.Treatment.TDL_PATIENT_TYPE_ID);
+					value9 = ((val != null) ? val.PATIENT_TYPE_NAME : "");
+					HIS_TREATMENT_TYPE val2 = BackendDataWorker.Get<HIS_TREATMENT_TYPE>().FirstOrDefault((HIS_TREATMENT_TYPE o) => o.ID == inputData.Treatment.TDL_TREATMENT_TYPE_ID);
+					value10 = ((val2 != null) ? val2.TREATMENT_TYPE_NAME : "");
+					if (inputData.Treatment.TDL_TREATMENT_TYPE_ID == 1)
+					{
+						V_HIS_ROOM val3 = (inputData.Treatment.END_ROOM_ID.HasValue ? BackendDataWorker.Get<V_HIS_ROOM>().FirstOrDefault((V_HIS_ROOM o) => o.ID == inputData.Treatment.END_ROOM_ID) : null);
+						if (val3 != null)
+						{
+							value11 = val3.ROOM_NAME;
+						}
+						else
+						{
+							HisSereServFilter val4 = new HisSereServFilter();
+							val4.TREATMENT_ID = inputData.Treatment.ID;
+							val4.TDL_SERVICE_TYPE_ID = 1L;
+							List<HIS_SERE_SERV> sereServKham = ((AdapterBase)new BackendAdapter(new CommonParam())).Get<List<HIS_SERE_SERV>>("api/HisSereServ/Get", ApiConsumers.MosConsumer, (object)val4, (CommonParam)null);
+							if (sereServKham != null && sereServKham.Count > 0)
+							{
+								sereServKham = (from o in sereServKham
+									orderby o.TDL_IS_MAIN_EXAM.GetValueOrDefault() descending, o.TDL_INTRUCTION_TIME descending
+									select o).ToList();
+								V_HIS_ROOM val5 = BackendDataWorker.Get<V_HIS_ROOM>().FirstOrDefault((V_HIS_ROOM o) => o.ID == sereServKham.First().TDL_EXECUTE_ROOM_ID);
+								if (val5 != null)
+								{
+									value11 = val5.ROOM_NAME;
+								}
+							}
+						}
+					}
+					else if (inputData.Treatment.LAST_DEPARTMENT_ID.HasValue)
+					{
+						HIS_DEPARTMENT val6 = BackendDataWorker.Get<HIS_DEPARTMENT>().FirstOrDefault((HIS_DEPARTMENT o) => o.ID == inputData.Treatment.LAST_DEPARTMENT_ID.Value);
+						if (val6 != null)
+						{
+							value11 = val6.DEPARTMENT_NAME;
+						}
+					}
+					else
+					{
+						HisDepartmentTranLastFilter val7 = new HisDepartmentTranLastFilter();
+						val7.TREATMENT_ID = inputData.Treatment.ID;
+						V_HIS_DEPARTMENT_TRAN val8 = ((AdapterBase)new BackendAdapter(new CommonParam())).Get<V_HIS_DEPARTMENT_TRAN>("api/HisDepartmentTran/GetLastByTreatmentId", ApiConsumers.MosConsumer, (object)val7, (CommonParam)null);
+						if (val8 != null)
+						{
+							value11 = val8.DEPARTMENT_NAME;
+						}
+					}
+					if (inputData.Treatment.OUT_TIME.HasValue)
+					{
+						value15 = Inventec.Common.DateTime.Convert.TimeNumberToDateString(inputData.Treatment.OUT_TIME.Value);
+					}
+				}
+				if (inputData.Transaction != null)
+				{
+					value13 = inputData.Transaction.CASHIER_LOGINNAME;
+					value12 = inputData.Transaction.CASHIER_USERNAME;
+					value17 = inputData.Transaction.NUM_ORDER.ToString() ?? "";
+				}
+				else if (inputData.ListTransaction != null && inputData.ListTransaction.Count > 0)
+				{
+					V_HIS_TRANSACTION val9 = inputData.ListTransaction.OrderByDescending((V_HIS_TRANSACTION o) => o.ID).FirstOrDefault();
+					value13 = val9.CASHIER_LOGINNAME;
+					value12 = val9.CASHIER_USERNAME;
+				}
+				string value18 = "Thu viện phí";
+				if (inputData.Transaction != null && (!string.IsNullOrWhiteSpace(inputData.Transaction.EXEMPTION_REASON) || !string.IsNullOrWhiteSpace(inputData.Transaction.DESCRIPTION)))
+				{
+					if (!string.IsNullOrWhiteSpace(inputData.Transaction.EXEMPTION_REASON))
+					{
+						value18 = inputData.Transaction.EXEMPTION_REASON;
+					}
+					else if (!string.IsNullOrWhiteSpace(inputData.Transaction.DESCRIPTION))
+					{
+						value18 = inputData.Transaction.DESCRIPTION;
+					}
+				}
+				string value19 = "";
+				string value20 = "";
+				if (inputData.LastPatientTypeAlter != null)
+				{
+					value19 = new BhytHeinProcessor().GetDefaultHeinRatio(inputData.LastPatientTypeAlter.HEIN_TREATMENT_TYPE_CODE, inputData.LastPatientTypeAlter.HEIN_CARD_NUMBER, inputData.LastPatientTypeAlter.LEVEL_CODE, inputData.LastPatientTypeAlter.RIGHT_ROUTE_CODE).GetValueOrDefault() * 100m + "%";
+					value20 = inputData.LastPatientTypeAlter.HEIN_CARD_NUMBER;
+				}
+				dictionary["YOB"] = value;
+				dictionary["AGE"] = value2;
+				dictionary["TREATMENT_CODE"] = value7;
+				dictionary["PATIENT_CODE"] = value8;
+				dictionary["PATIENT_TYPE_NAME"] = value9;
+				dictionary["TREATMENT_TYPE_NAME"] = value10;
+				dictionary["CURRENT_ROOM_DEPARTMENT"] = value11;
+				dictionary["CASHIER_LOGINNAME"] = value13;
+				dictionary["CASHIER_USERNAME"] = value12;
+				dictionary["IN_TIME"] = value14;
+				dictionary["OUT_TIME"] = value15;
+				dictionary["REASON"] = value18;
+				dictionary["TRANSACTION_NUM_ORDER"] = value17;
+				dictionary["GENDER_NAME"] = value4;
+				dictionary["CLINICAL_IN_TIME"] = value16;
+				dictionary["HEIN_RATIO"] = value19;
+				dictionary["DOB_STR"] = value3;
+				dictionary["HEIN_CARD_NUMBER"] = value20;
+				dictionary["CCCD_NUMBER"] = value5;
+				dictionary["CMND_NUMBER"] = value6;
+			}
+			catch (Exception ex)
+			{
+				dictionary = new Dictionary<string, string>();
+				LogSystem.Error(ex);
+			}
+			finally
+			{
+				DicDataBuyerInfo = dictionary;
+			}
+			return dictionary;
+		}
+	}
 }
