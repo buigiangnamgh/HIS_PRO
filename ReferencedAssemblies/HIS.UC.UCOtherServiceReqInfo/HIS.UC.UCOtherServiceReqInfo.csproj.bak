@@ -1,0 +1,214 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{3FE38A92-0C75-475C-AAEA-F1C3A647963A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>HIS.UC.UCOtherServiceReqInfo</RootNamespace>
+    <AssemblyName>HIS.UC.UCOtherServiceReqInfo</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ACS.EFMODEL, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\RELEASE\ACS\ACS.EFMODEL.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.Data.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.ExpressApp.PivotGrid.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.PivotGrid.v15.2.Core, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Printing.v15.2.Core, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.RichEdit.v15.2.Core, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Sparkline.v15.2.Core, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Spreadsheet.v15.2.Core, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Utils.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Xpf.NavBar.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraBars.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraEditors.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraGrid.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraLayout.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraNavBar.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraTreeList.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="HIS.Desktop.Utility">
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.Desktop.Utility.dll</HintPath>
+    </Reference>
+    <Reference Include="His.UC.LibraryMessage">
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\His.UC.LibraryMessage.dll</HintPath>
+    </Reference>
+    <Reference Include="IMSys.DbConfig.HIS_RS">
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\IMSys.DbConfig.HIS_RS.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.Adapter, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.Adapter.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.Controls.EditorLoader">
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.Controls.EditorLoader.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.Controls.PopupLoader">
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.Controls.PopupLoader.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.DateTime, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.DateTime.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.Logging">
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.Resource">
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.Resource.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.String">
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.String.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.TypeConvert, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.TypeConvert.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.WebApiClient">
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.WebApiClient.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Desktop.Common.Controls">
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Desktop.Common.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Desktop.Common.Controls.ValidationRule, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Desktop.Common.Controls.ValidationRule.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Desktop.Common.LanguageManager, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Desktop.Common.LanguageManager.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Desktop.Common.Message, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Desktop.Common.Message.dll</HintPath>
+    </Reference>
+    <Reference Include="MOS.EFMODEL, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\RELEASE\MOS\MOS.EFMODEL.dll</HintPath>
+    </Reference>
+    <Reference Include="MOS.Filter, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Release\MOS\MOS.Filter.dll</HintPath>
+    </Reference>
+    <Reference Include="MOS.SDO, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\RELEASE\MOS\MOS.SDO.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\HIS\HIS.Desktop.ApiConsumer\HIS.Desktop.ApiConsumer.csproj">
+      <Project>{861bfedb-026f-4b6f-a3cf-32843ae8c03d}</Project>
+      <Name>HIS.Desktop.ApiConsumer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\HIS\HIS.Desktop.LibraryMessage\HIS.Desktop.LibraryMessage.csproj">
+      <Project>{48d9a44a-7120-4c9b-8923-b1af16b1992f}</Project>
+      <Name>HIS.Desktop.LibraryMessage</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\HIS\HIS.Desktop.LocalStorage.BackendData\HIS.Desktop.LocalStorage.BackendData.csproj">
+      <Project>{86709a9c-a149-4ebb-a817-1bf8f4f4bc07}</Project>
+      <Name>HIS.Desktop.LocalStorage.BackendData</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\HIS\HIS.Desktop.LocalStorage.ConfigApplication\HIS.Desktop.LocalStorage.ConfigApplication.csproj">
+      <Project>{3a2c932a-9d3a-483b-89a0-9f9c8225b283}</Project>
+      <Name>HIS.Desktop.LocalStorage.ConfigApplication</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\HIS\HIS.Desktop.LocalStorage.HisConfig\HIS.Desktop.LocalStorage.HisConfig.csproj">
+      <Project>{d1e5461b-8a8e-46f7-9aee-5c1b327e5f2b}</Project>
+      <Name>HIS.Desktop.LocalStorage.HisConfig</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\HIS\HIS.Desktop.LocalStorage.Location\HIS.Desktop.LocalStorage.Location.csproj">
+      <Project>{67e93829-79bd-407e-a4dd-b46cebb55a41}</Project>
+      <Name>HIS.Desktop.LocalStorage.Location</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\HIS\Plugins\HIS.Desktop.Library.CacheClient\HIS.Desktop.Library.CacheClient.csproj">
+      <Project>{64837e01-803d-4f1e-9dfc-d34b38ea78f9}</Project>
+      <Name>HIS.Desktop.Library.CacheClient</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\HIS\Plugins\HIS.Desktop.Plugins.Library.RegisterConfig\HIS.Desktop.Plugins.Library.RegisterConfig.csproj">
+      <Project>{9247dd49-482c-4227-88df-616a8aaf3f38}</Project>
+      <Name>HIS.Desktop.Plugins.Library.RegisterConfig</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="HIS.UC.UCOtherServiceReqInfo.ADO\otherPaySourceDetailADO.cs" />
+    <Compile Include="HIS.UC.UCOtherServiceReqInfo.ADO\UCServiceReqInfoADO.cs" />
+    <Compile Include="HIS.UC.UCOtherServiceReqInfo.Config\HisConfig.cs" />
+    <Compile Include="HIS.UC.UCOtherServiceReqInfo.FUN\frmFun.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="HIS.UC.UCOtherServiceReqInfo.Properties\Resources.cs" />
+    <Compile Include="HIS.UC.UCOtherServiceReqInfo.Resources\ResourceLanguageManager.cs" />
+    <Compile Include="HIS.UC.UCOtherServiceReqInfo.Resources\ResourceMessage.cs" />
+    <Compile Include="HIS.UC.UCOtherServiceReqInfo.Valid\Combo___ValidationRule.cs" />
+    <Compile Include="HIS.UC.UCOtherServiceReqInfo.Valid\FrmFunValidationRule.cs" />
+    <Compile Include="HIS.UC.UCOtherServiceReqInfo.Valid\IntructionTime__ValidationRule.cs" />
+    <Compile Include="HIS.UC.UCOtherServiceReqInfo.Valid\MessageUtil.cs" />
+    <Compile Include="HIS.UC.UCOtherServiceReqInfo.Valid\PriorityType__ValidationRule.cs" />
+    <Compile Include="HIS.UC.UCOtherServiceReqInfo.Valid\Priority__ValidationRule.cs" />
+    <Compile Include="HIS.UC.UCOtherServiceReqInfo.Valid\ServiceReqNumOrder__ValidationRule.cs" />
+    <Compile Include="HIS.UC.UCOtherServiceReqInfo.Valid\SpinValidationRule.cs" />
+    <Compile Include="HIS.UC.UCOtherServiceReqInfo.Valid\TextEditMaxLengthValidationRule.cs" />
+    <Compile Include="HIS.UC.UCOtherServiceReqInfo.Valid\TextValidationRule.cs" />
+    <Compile Include="HIS.UC.UCOtherServiceReqInfo.Valid\TimeValidationRule.cs" />
+    <Compile Include="HIS.UC.UCOtherServiceReqInfo.Valid\TokenStore.cs" />
+    <Compile Include="HIS.UC.UCOtherServiceReqInfo.Valid\TreatmentType__ValidationRule.cs" />
+    <Compile Include="HIS.UC.UCOtherServiceReqInfo\OtherServiceReqInfoProcessor.cs" />
+    <Compile Include="HIS.UC.UCOtherServiceReqInfo\UCOtherServiceReqInfo.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="HIS.UC.UCOtherServiceReqInfo.FUN\frmFun.resx">
+      <DependentUpon>frmFun.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HIS.UC.UCOtherServiceReqInfo\UCOtherServiceReqInfo.resx">
+      <DependentUpon>UCOtherServiceReqInfo.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
