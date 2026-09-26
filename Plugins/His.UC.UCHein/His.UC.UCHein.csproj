@@ -1,0 +1,411 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{1E91B7CE-5850-402B-90ED-55DD0680398D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>His.UC.UCHein</RootNamespace>
+    <AssemblyName>His.UC.UCHein</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Accessibility" />
+    <Reference Include="ACS.EFMODEL">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\ACS.EFMODEL.dll</HintPath>
+    </Reference>
+    <Reference Include="AutoMapper">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.Data.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\LIBRARY\DevLib\DevExpress.Data.v15.2.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.Printing.v15.2.Core, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Sparkline.v15.2.Core, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Utils.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\LIBRARY\DevLib\DevExpress.Utils.v15.2.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.XtraBars.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\LIBRARY\DevLib\DevExpress.XtraBars.v15.2.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.XtraEditors.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraGrid.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\LIBRARY\DevLib\DevExpress.XtraGrid.v15.2.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.XtraLayout.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\LIBRARY\DevLib\DevExpress.XtraLayout.v15.2.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.XtraTreeList.v15.2, Version=15.2.9.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\LIBRARY\DevLib\DevExpress.XtraTreeList.v15.2.dll</HintPath>
+    </Reference>
+    <Reference Include="His.Bhyt.InsuranceExpertise">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\His.Bhyt.InsuranceExpertise.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.ADO">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.Desktop.ADO.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.ApiConsumer">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.Desktop.ApiConsumer.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.ApplicationFont">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.Desktop.ApplicationFont.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.Common, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.Desktop.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.Library.CacheClient">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.Desktop.Library.CacheClient.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.LocalStorage.BackendData">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.Desktop.LocalStorage.BackendData.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.LocalStorage.ConfigApplication">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.Desktop.LocalStorage.ConfigApplication.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.LocalStorage.ConfigSystem">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.Desktop.LocalStorage.ConfigSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.LocalStorage.HisConfig">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.Desktop.LocalStorage.HisConfig.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.LocalStorage.LocalData">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.Desktop.LocalStorage.LocalData.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.LocalStorage.Location">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\HIS.Desktop.LocalStorage.Location.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.ModuleExt">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.Desktop.ModuleExt.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.Plugins.Library.CheckHeinGOV">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.Desktop.Plugins.Library.CheckHeinGOV.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.Plugins.Library.CheckIcd">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.Desktop.Plugins.Library.CheckIcd.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.Desktop.Utility">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.Desktop.Utility.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.UC.Death">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.UC.Death.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.UC.Icd">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.UC.Icd.dll</HintPath>
+    </Reference>
+    <Reference Include="His.UC.LibraryMessage">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\His.UC.LibraryMessage.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.UC.SecondaryIcd">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.UC.SecondaryIcd.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.UC.Sick">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.UC.Sick.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.UC.SurgeryAppointment">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.UC.SurgeryAppointment.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.UC.TranPati">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.UC.TranPati.dll</HintPath>
+    </Reference>
+    <Reference Include="HIS.UC.UCCauseOfDeath">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\HIS.UC.UCCauseOfDeath.dll</HintPath>
+    </Reference>
+    <Reference Include="IMSys.DbConfig.HIS_RS">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\IMSys.DbConfig.HIS_RS.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.Adapter, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.Adapter.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.Controls.EditorLoader">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.Controls.EditorLoader.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.DateTime, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.DateTime.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.Logging">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.Mapper">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.Mapper.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.Number">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.Number.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.QrCodeBHYT ">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.QrCodeBHYT .dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.Resource">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.Resource.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.RichEditor">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\Inventec.Common.RichEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.String, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.String.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.TypeConvert">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.TypeConvert.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Common.WebApiClient, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Common.WebApiClient.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Core">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Desktop.Common.Controls.ValidationRule">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Desktop.Common.Controls.ValidationRule.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Desktop.Common.HtmlString">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Desktop.Common.HtmlString.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Desktop.Common.LanguageManager">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Desktop.Common.LanguageManager.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Desktop.Common.LibraryMessage">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Desktop.Common.LibraryMessage.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Desktop.Common.Message, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Desktop.Common.Message.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Desktop.Common.Modules, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Desktop.Common.Modules.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Desktop.Core">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Desktop.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Desktop.CustomControl">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Desktop.CustomControl.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Token.ClientSystem, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Token.ClientSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.Token.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.Token.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.UC.Login, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.UC.Login.dll</HintPath>
+    </Reference>
+    <Reference Include="Inventec.UC.Paging, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\Inventec.UC.Paging.dll</HintPath>
+    </Reference>
+    <Reference Include="MOS.EFMODEL">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\MOS.EFMODEL.dll</HintPath>
+    </Reference>
+    <Reference Include="MOS.Filter, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\MOS.Filter.dll</HintPath>
+    </Reference>
+    <Reference Include="MOS.LibraryHein.Bhyt">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\MOS.LibraryHein.Bhyt.dll</HintPath>
+    </Reference>
+    <Reference Include="MOS.SDO, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\MOS.SDO.dll</HintPath>
+    </Reference>
+    <Reference Include="MPS">
+      <HintPath>..\..\..\..\..\..\..\..\DkNA\HIS\HIS 2.351.0\HIS DESKTOP 2.351.0\ReferencedAssemblies\MPS.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\licenses.licx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="His.UC.UCHein.Base\ADOCheckIcdscs.cs" />
+    <Compile Include="His.UC.UCHein.Base\ApiConsumerStore.cs" />
+    <Compile Include="His.UC.UCHein.Base\IRun.cs" />
+    <Compile Include="His.UC.UCHein.Base\IRunNoResult.cs" />
+    <Compile Include="His.UC.UCHein.Base\LanguageManager.cs" />
+    <Compile Include="His.UC.UCHein.Base\MessageBoxManager.cs" />
+    <Compile Include="His.UC.UCHein.Base\MessageUtil.cs" />
+    <Compile Include="His.UC.UCHein.Base\NewLocalizerDX.cs" />
+    <Compile Include="His.UC.UCHein.Base\PatientTypeAlterADO.cs" />
+    <Compile Include="His.UC.UCHein.Base\RegistryConstant.cs" />
+    <Compile Include="His.UC.UCHein.Base\ResouceManager.cs" />
+    <Compile Include="His.UC.UCHein.Base\TokenStore.cs" />
+    <Compile Include="His.UC.UCHein.Config\DataStore.cs" />
+    <Compile Include="His.UC.UCHein.Config\HisConfigCFG.cs" />
+    <Compile Include="His.UC.UCHein.ControlProcess\HeinCardProcess.cs" />
+    <Compile Include="His.UC.UCHein.ControlProcess\HeinRightRouterTypeProcess.cs" />
+    <Compile Include="His.UC.UCHein.ControlProcess\IcdProcess.cs" />
+    <Compile Include="His.UC.UCHein.ControlProcess\KskContractProcess.cs" />
+    <Compile Include="His.UC.UCHein.ControlProcess\LiveAreaProcess.cs" />
+    <Compile Include="His.UC.UCHein.ControlProcess\MediOrgProcess.cs" />
+    <Compile Include="His.UC.UCHein.ControlProcess\PopupProcess.cs" />
+    <Compile Include="His.UC.UCHein.ControlProcess\ServiceRequestProcess.cs" />
+    <Compile Include="His.UC.UCHein.ControlProcess\TranPatiFormProcess.cs" />
+    <Compile Include="His.UC.UCHein.ControlProcess\TranPatiReasonProcess.cs" />
+    <Compile Include="His.UC.UCHein.Core.ResetValidationControl\IResetValidationControl.cs" />
+    <Compile Include="His.UC.UCHein.Core.ResetValidationControl\ResetValidationControlBehavior.cs" />
+    <Compile Include="His.UC.UCHein.Core.ResetValidationControl\ResetValidationControlFactory.cs" />
+    <Compile Include="His.UC.UCHein.Core.SetResultDataADO\ISetResultDataADO.cs" />
+    <Compile Include="His.UC.UCHein.Core.SetResultDataADO\SetResultDataADOBehavior.cs" />
+    <Compile Include="His.UC.UCHein.Core.SetResultDataADO\SetResultDataADOFactory.cs" />
+    <Compile Include="His.UC.UCHein.Core.UpdateDataFormIntoPatientProfile\IPatientOldUnder6.cs" />
+    <Compile Include="His.UC.UCHein.Core.UpdateDataFormIntoPatientProfile\IUpdateDataFormIntoPatientProfile.cs" />
+    <Compile Include="His.UC.UCHein.Core.UpdateDataFormIntoPatientProfile\PatientOldUnder6Behavior.cs" />
+    <Compile Include="His.UC.UCHein.Core.UpdateDataFormIntoPatientProfile\PatientOldUnder6Factory.cs" />
+    <Compile Include="His.UC.UCHein.Core.UpdateDataFormIntoPatientProfile\UpdateDataFormIntoPatientProfileBehavior.cs" />
+    <Compile Include="His.UC.UCHein.Core.UpdateDataFormIntoPatientProfile\UpdateDataFormIntoPatientProfileFactory.cs" />
+    <Compile Include="His.UC.UCHein.Core.UpdateDataFormIntoPatientTypeAlter\IUpdateDataFormIntoPatientTypeAlter.cs" />
+    <Compile Include="His.UC.UCHein.Core.UpdateDataFormIntoPatientTypeAlter\UpdateDataFormIntoPatientTypeAlterBehavior.cs" />
+    <Compile Include="His.UC.UCHein.Core.UpdateDataFormIntoPatientTypeAlter\UpdateDataFormIntoPatientTypeAlterFactory.cs" />
+    <Compile Include="His.UC.UCHein.Data\DataInitHeinBhyt.cs" />
+    <Compile Include="His.UC.UCHein.Data\IcdADO.cs" />
+    <Compile Include="His.UC.UCHein.Data\MediOrgADO.cs" />
+    <Compile Include="His.UC.UCHein.Design.TemplateHeinBHYT1.ValidationRule\TemplateHeinBHYT1__Address__ValidationRule.cs" />
+    <Compile Include="His.UC.UCHein.Design.TemplateHeinBHYT1.ValidationRule\TemplateHeinBHYT1__CheckBox__ValidationRule.cs" />
+    <Compile Include="His.UC.UCHein.Design.TemplateHeinBHYT1.ValidationRule\TemplateHeinBHYT1__ChuyenTuyen__ValidationRule.cs" />
+    <Compile Include="His.UC.UCHein.Design.TemplateHeinBHYT1.ValidationRule\TemplateHeinBHYT1__FreeCoPainTime__ValidationRule.cs" />
+    <Compile Include="His.UC.UCHein.Design.TemplateHeinBHYT1.ValidationRule\TemplateHeinBHYT1__HeinCardFromTime__ValidationRule.cs" />
+    <Compile Include="His.UC.UCHein.Design.TemplateHeinBHYT1.ValidationRule\TemplateHeinBHYT1__HeinCardNumber__ValidationRule.cs" />
+    <Compile Include="His.UC.UCHein.Design.TemplateHeinBHYT1.ValidationRule\TemplateHeinBHYT1__HeinCardToTime__ValidationRule.cs" />
+    <Compile Include="His.UC.UCHein.Design.TemplateHeinBHYT1.ValidationRule\TemplateHeinBHYT1__HNCode__ValidationRule.cs" />
+    <Compile Include="His.UC.UCHein.Design.TemplateHeinBHYT1.ValidationRule\TemplateHeinBHYT1__Icd__ValidationRule.cs" />
+    <Compile Include="His.UC.UCHein.Design.TemplateHeinBHYT1.ValidationRule\TemplateHeinBHYT1__Icd__ValidationRule_Is_MediOrg.cs" />
+    <Compile Include="His.UC.UCHein.Design.TemplateHeinBHYT1.ValidationRule\TemplateHeinBHYT1__MediOrg__ValidationRule.cs" />
+    <Compile Include="His.UC.UCHein.Design.TemplateHeinBHYT1.ValidationRule\TemplateHeinBHYT1__NoiChuyenDen__ValidationRule.cs" />
+    <Compile Include="His.UC.UCHein.Design.TemplateHeinBHYT1.ValidationRule\TemplateHeinBHYT1__PatientTypeCode__ValidationRule.cs" />
+    <Compile Include="His.UC.UCHein.Design.TemplateHeinBHYT1.ValidationRule\TemplateHeinBHYT1__RightRouteType__ValidationRule.cs" />
+    <Compile Include="His.UC.UCHein.Design.TemplateHeinBHYT1\Template__HeinBHYT1.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="His.UC.UCHein.Design\frmPatientChoice.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="His.UC.UCHein.Dispose\DisposeBehavior.cs" />
+    <Compile Include="His.UC.UCHein.Dispose\DisposeFactory.cs" />
+    <Compile Include="His.UC.UCHein.Dispose\IDispose.cs" />
+    <Compile Include="His.UC.UCHein.FillDataToHeinInsuranceInfoByOldPatient\FillDataToHeinInsuranceInfoByOldPatientBehaviorSDO.cs" />
+    <Compile Include="His.UC.UCHein.FillDataToHeinInsuranceInfoByOldPatient\FillDataToHeinInsuranceInfoByOldPatientFactory.cs" />
+    <Compile Include="His.UC.UCHein.FillDataTranPatiInForm\FillDataTranPatiInFormBehavior.cs" />
+    <Compile Include="His.UC.UCHein.FillDataTranPatiInForm\FillDataTranPatiInFormFactory.cs" />
+    <Compile Include="His.UC.UCHein.Get.ExpriedTimeHeinCardBhyt\ExpriedTimeHeinCardBhytBehavior.cs" />
+    <Compile Include="His.UC.UCHein.Get.ExpriedTimeHeinCardBhyt\ExpriedTimeHeinCardBhytFactory.cs" />
+    <Compile Include="His.UC.UCHein.Get.ExpriedTimeHeinCardBhyt\IExpriedTimeHeinCardBhyt.cs" />
+    <Compile Include="His.UC.UCHein.HisPatientTypeAlter\HisPatientTypeAlterGet.cs" />
+    <Compile Include="His.UC.UCHein.HisPatient\HisPatientGet.cs" />
+    <Compile Include="His.UC.UCHein.HisTreatment\HisTreatmentGet.cs" />
+    <Compile Include="His.UC.UCHein.Init\IInit.cs" />
+    <Compile Include="His.UC.UCHein.Init\IInitAsync.cs" />
+    <Compile Include="His.UC.UCHein.Init\InitBhytBehavior.cs" />
+    <Compile Include="His.UC.UCHein.Init\InitBhytUCBehavior.cs" />
+    <Compile Include="His.UC.UCHein.Init\InitFactory.cs" />
+    <Compile Include="His.UC.UCHein.Resources\ResourceLanguageManager.cs" />
+    <Compile Include="His.UC.UCHein.Set.DefaultFocusUserControl\DefaultFocusUserControlBhytBehavior.cs" />
+    <Compile Include="His.UC.UCHein.Set.DefaultFocusUserControl\DefaultFocusUserControlFactory.cs" />
+    <Compile Include="His.UC.UCHein.Set.DefaultFocusUserControl\IDefaultFocusUserControl.cs" />
+    <Compile Include="His.UC.UCHein.Set.FocusHeinCardFromTime\FocusHeinCardFromTimeBhytBehavior.cs" />
+    <Compile Include="His.UC.UCHein.Set.FocusHeinCardFromTime\FocusHeinCardFromTimeFactory.cs" />
+    <Compile Include="His.UC.UCHein.Set.FocusHeinCardFromTime\IFocusHeinCardFromTime.cs" />
+    <Compile Include="His.UC.UCHein.Set.InitValidationControl\IInitValidationControl.cs" />
+    <Compile Include="His.UC.UCHein.Set.InitValidationControl\InitValidationControlBhytBehavior.cs" />
+    <Compile Include="His.UC.UCHein.Set.InitValidationControl\InitValidationControlFactory.cs" />
+    <Compile Include="His.UC.UCHein.Set.ResetValueControl\IResetValueControl.cs" />
+    <Compile Include="His.UC.UCHein.Set.ResetValueControl\ResetValueControlBhytBehavior.cs" />
+    <Compile Include="His.UC.UCHein.Set.ResetValueControl\ResetValueControlFactory.cs" />
+    <Compile Include="His.UC.UCHein.Set.SetFocusUserByLiveAreaCode\ISetFocusUserByLiveAreaCode.cs" />
+    <Compile Include="His.UC.UCHein.Set.SetFocusUserByLiveAreaCode\SetFocusUserByLiveAreaCodeBhytBehavior.cs" />
+    <Compile Include="His.UC.UCHein.Set.SetFocusUserByLiveAreaCode\SetFocusUserByLiveAreaCodeFactory.cs" />
+    <Compile Include="His.UC.UCHein.Utils\HeinUtils.cs" />
+    <Compile Include="His.UC.UCHein.ValidationRule\TemplateHeinBHYT1__HeinMediOrg__ValidationRule.cs" />
+    <Compile Include="His.UC.UCHein\BeanObjectBase.cs" />
+    <Compile Include="His.UC.UCHein\BusinessBase.cs" />
+    <Compile Include="His.UC.UCHein\CheckExamHistoryByHeinCardNumber.cs" />
+    <Compile Include="His.UC.UCHein\Compare.cs" />
+    <Compile Include="His.UC.UCHein\DelegateAutoCheckCC.cs" />
+    <Compile Include="His.UC.UCHein\DelegateRefeshDataIcd.cs" />
+    <Compile Include="His.UC.UCHein\DelegateRefeshIcdChandoanphu.cs" />
+    <Compile Include="His.UC.UCHein\DelegateSetRelativeAddress.cs" />
+    <Compile Include="His.UC.UCHein\DeleteTreatmentTypeId.cs" />
+    <Compile Include="His.UC.UCHein\FillDataPatientSDOToRegisterForm.cs" />
+    <Compile Include="His.UC.UCHein\HeinCardNumberKeyDownByUc.cs" />
+    <Compile Include="His.UC.UCHein\MainHisHeinBhyt.cs" />
+    <Compile Include="His.UC.UCHein\ProcessFillDataCareerUnder6AgeByHeinCardNumber.cs" />
+    <Compile Include="His.UC.UCHein\RequestUriStore.cs" />
+    <Compile Include="His.UC.UCHein\ResetEditorControl.cs" />
+    <Compile Include="His.UC.UCHein\ResourceMessage.cs" />
+    <Compile Include="His.UC.UCHein\SetFocusMoveOut.cs" />
+    <Compile Include="His.UC.UCHein\SetRendererServiceReqControl.cs" />
+    <Compile Include="His.UC.UCHein\SetShortcutKeyDown.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="His.UC.UCHein.Design.TemplateHeinBHYT1\Template__HeinBHYT1.resx">
+      <DependentUpon>Template__HeinBHYT1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="His.UC.UCHein.Design\frmPatientChoice.resx">
+      <DependentUpon>frmPatientChoice.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>echo Copying files from $(ProjectDir)bin\$(Configuration) to $(SolutionDir)\$(SolutionName)\bin\$(Configuration)\ReferencedAssemblies</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
