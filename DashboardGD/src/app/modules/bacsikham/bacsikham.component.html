@@ -1,0 +1,139 @@
+
+<div style="margin: -0.5rem -1.5rem 0.5rem -1.5rem; background-color: #fff;  height: 50px;" class="text-right p-0">
+	<div id="chonngay" style="display: inline-block;">			
+		<div class="devi-dtpicker-wrap">	
+			<div class="card-body">
+			 <span dropdown (onShown)="onShown()" (onHidden)="onHidden()" (isOpenChange)="isOpenChange()">
+				<a href dropdownToggle (click)="false">
+					<div class="devi-dtpicker">		
+						<i class="fa fa-angle-down"></i> 
+						<i class="devi-dfrom">{{searchRangeDate?.dayfrom}}</i> 
+						<b>
+							<i class="devi-mfrom">{{searchRangeDate?.monthfrom}}</i> 
+							<i class="devi-yfrom">{{searchRangeDate?.yearfrom}}</i>
+						</b>					
+						<em>–</em>			
+						<i class="fa fa-angle-down"></i>
+						<i class="devi-dto">{{searchRangeDate?.dayto}}</i> 
+						<b>
+							<i class="devi-mto">{{searchRangeDate?.monthto}}</i> 
+							<i class="devi-yto">{{searchRangeDate?.yearto}}</i>
+						</b>				
+					</div>	
+				</a>
+				  <ul *dropdownMenu class="dropdown-menu">
+					<li>
+					  <a class="dropdown-item" (click)="ClickSearch(1)">Hôm nay</a>
+					  <a class="dropdown-item" (click)="ClickSearch(5)">Hôm qua</a>
+					  <a class="dropdown-item" (click)="ClickSearch(3)">Tháng này</a>
+					  <a class="dropdown-item" (click)="ClickSearch(6)">Tháng trước</a>
+					  <!-- <a class="dropdown-item" (click)="ClickSearch(4)">Năm nay</a>
+					  <a class="dropdown-item" (click)="ClickSearch(7)">Năm trước</a> -->
+					  <!-- <a *ngIf="IsAllowCustomDateRange == 1"  class="dropdown-item" href="" (click)="ChonNgayTuDen()">Bất kỳ</a> -->
+					</li>
+				  </ul>
+			  </span>
+			</div>
+		</div>			
+	</div>
+</div>
+<div class="animated fadeIn">
+  <div *ngIf="HaveData==0">
+  
+    <table class="table table-striped table-bordered datatable dataTable no-footer table-responsive-lg ">
+      <thead>		
+        <tr >
+          <th scope="col" style="width: 10% ">#</th>          
+          <th style="width: 30% ">Khoa khám</th>
+          <th style="width: 50%">Bác sĩ </th>
+          <th style="width: 10%">Số lượng</th>
+        </tr>		
+      </thead>
+      <tbody>	
+        <tr *ngFor="let item of dataExt; let j = index">
+          <td [attr.rowspan]="item.departmentSpan" *ngIf="item.departmentSpan">{{item.indexDepartment}}</td>     
+          <td [attr.rowspan]="item.departmentSpan" *ngIf="item.departmentSpan">{{ item.DEPARTMENT_NAME }}</td>
+          <td>{{ item.EXECUTE_USERNAME }}</td>
+          <td>{{ item.AMOUNT }}</td>
+        </tr>
+        <!-- <tr *ngFor="let item of bacsikhams; let j = index">
+          <td>{{j + 1}}</td>                   
+          <td>{{item?.DEPARTMENT_NAME}}</td>
+          <td>
+            <tr>
+              {{item?.EXECUTE_USERNAME}}
+            </tr>
+            <tr>
+              {{item?.EXECUTE_USERNAME}}
+            </tr>
+          </td>
+          
+          <td>
+            <tr>
+              {{item?.AMOUNT}}
+            </tr>
+            <tr>
+              {{item?.AMOUNT}}
+            </tr>
+          </td>
+        </tr>	 -->
+      </tbody>
+    </table>
+    <div class="form-group">
+      <div style="text-align: center" class="dataTables_paginate_alignment" id="DataTables_Table_0_info" role="status" aria-live="polite">{{total}} bản ghi - 
+        <input type="button" name="btnExport" class="export" (click)="exportExcel()" value="XLSX" />
+      </div>
+      <div>&nbsp;</div>
+      <!-- <div style="text-align: center"> -->
+        <!-- <div class="form-group"> -->
+          <!-- <pagination-template #p="paginationApi" (pageChange)="loadProfile($event)" maxSize="7" id="server"> -->
+            <!-- <ul class="pagination justify-content-center"> -->
+              <!-- <li class="page-item" [class.disabled]="p.isFirstPage()"> -->
+                <!-- <a class="page-link" *ngIf="!p.isFirstPage()" (click)="p.previous()"> -->
+                  <!-- <<</a> -->
+                    <!-- <a class="page-link" *ngIf="p.isFirstPage()"> -->
+                      <!-- <<</a> -->
+              <!-- </li> -->
+              <!-- <li class="page-item" *ngFor="let page of p.pages" [ngClass]="{'active': p.getCurrent() === page.value}"> -->
+                <!-- <a class="page-link" (click)="p.setCurrent(page.value)" *ngIf="p.getCurrent() !== page.value"> -->
+                  <!-- {{ page.label }}</a> -->
+                <!-- <a class="page-link" *ngIf="p.getCurrent() === page.value"> -->
+                  <!-- {{ page.label }}</a> -->
+              <!-- </li> -->
+              <!-- <li class="page-item" [class.disabled]="p.isLastPage()"> -->
+                <!-- <a class="page-link" *ngIf="!p.isLastPage()" (click)="p.next()">>></a> -->
+                <!-- <a class="page-link" *ngIf="p.isLastPage()">>></a> -->
+              <!-- </li> -->
+              <!-- <li> -->
+                <!-- <select #pageSizeSelect (change)="changePagesize(pageSizeSelect.value)" class="custom-select"> -->
+                  <!-- <option [selected]="10 === currentpageSize" value="10">10</option> -->
+                  <!-- <option [selected]="25 === currentpageSize" value="25">25</option> -->
+                  <!-- <option [selected]="50 === currentpageSize" value="50">50</option> -->
+                  <!-- <option [selected]="100 === currentpageSize" value="100">100</option> -->
+                  <!-- <option [selected]="500 === currentpageSize" value="500">500</option> -->
+                  <!-- <option [selected]="2000 === currentpageSize" value="2000">2000</option> -->
+                <!-- </select> -->
+              <!-- </li> -->
+            <!-- </ul> -->
+          <!-- </pagination-template> -->
+        <!-- </div> -->
+      <!-- </div> -->
+    </div>
+    <div class="spinner" [ngClass]="{ 'hidden': !loading }"></div>
+
+  </div>
+  <div *ngIf="HaveData==-1">
+    <div class="card">
+      <div class="card-body" style="text-align: center">
+        {{ 'message.dang tai du lieu' | translate }}
+      </div>
+    </div>
+  </div>  
+  <div *ngIf="HaveData==1">
+    <div class="card">
+      <div class="card-body" style="text-align: center">
+        {{ 'message.khong tim thay du lieu' | translate }}
+      </div>
+    </div>
+  </div>
+</div>

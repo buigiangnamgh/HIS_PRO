@@ -1,0 +1,20 @@
+@font-face {
+    font-family: 'hoc-tro1';
+    src: url('../../../assets/fonts/hoc-tro/HP001_4_hang_bold.ttf');
+  }
+  .hoc-tro1 {
+    display: inline-block;
+    font: italic normal bold 14px/1 hoc-tro1;
+    
+  }
+  .edit-frame{
+    border-bottom: transparent !important;
+  }
+  @media only screen and (max-device-width: 480px) {
+    .hoc-tro1 {
+      display: inline-block;
+      font: italic normal bold 14px/1 hoc-tro1;
+      font-size: 15px !important;
+      
+    }
+  }

@@ -1,0 +1,19 @@
+  .btn-search {
+    margin-top: 30px;
+  }  
+  .select-fix-with{
+    max-width: 50px;
+  }
+  .export{
+    border: 0,0,0,0;
+    border-color: transparent;
+    background-color: transparent;
+    color: #20a8d8;
+    cursor: pointer;
+  }
+  .export:hover{
+    text-decoration: underline;
+  }
+  .green {
+  color:green !important;
+  }

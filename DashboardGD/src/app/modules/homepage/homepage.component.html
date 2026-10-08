@@ -1,0 +1,289 @@
+<div style="margin: -0.5rem -1.5rem 0.5rem -1.5rem; background-color: #fff;  height: 50px;" class="text-right p-0">
+	<div id="chonngay" style="display: inline-block;">			
+		<div class="devi-dtpicker-wrap">	
+			<div class="card-body">
+			 <span dropdown (onShown)="onShown()" (onHidden)="onHidden()" (isOpenChange)="isOpenChange()">
+				<a href dropdownToggle (click)="false">
+					<div class="devi-dtpicker">		
+						<i class="fa fa-angle-down"></i> 
+						<i class="devi-dfrom">{{searchRangeDate?.dayfrom}}</i> 
+						<b>
+							<i class="devi-mfrom">{{searchRangeDate?.monthfrom}}</i> 
+							<i class="devi-yfrom">{{searchRangeDate?.yearfrom}}</i>
+						</b>					
+						<em>–</em>			
+						<i class="fa fa-angle-down"></i>
+						<i class="devi-dto">{{searchRangeDate?.dayto}}</i> 
+						<b>
+							<i class="devi-mto">{{searchRangeDate?.monthto}}</i> 
+							<i class="devi-yto">{{searchRangeDate?.yearto}}</i>
+						</b>				
+					</div>	
+				</a>
+				  <ul *dropdownMenu class="dropdown-menu">
+					<li>
+					  <a class="dropdown-item" href="#" (click)="ClickSearch(1)">Hôm nay</a>
+					  <a class="dropdown-item" href="#" (click)="ClickSearch(5)">Hôm qua</a>
+					  <a class="dropdown-item" href="#" (click)="ClickSearch(3)">Tháng này</a>
+					  <a class="dropdown-item" href="#" (click)="ClickSearch(6)">Tháng trước</a>
+					  <!-- <a class="dropdown-item" href="#" (click)="ClickSearch(4)">Năm nay</a>
+					  <a class="dropdown-item" href="#" (click)="ClickSearch(7)">Năm trước</a> -->
+					  <!-- <a *ngIf="IsAllowCustomDateRange == 1"  class="dropdown-item" href="#" (click)="ChonNgayTuDen()">Bất kỳ</a> -->
+					</li>
+				  </ul>
+			  </span>
+			</div>
+		</div>			
+	</div>
+</div>  
+
+<div class="animated fadeIn">  	
+  <div class="row" *ngIf="navItems != undefined && navItems != null && navItems.length > 0">  	
+	<div class="col-sm-3 col-lg-3 col-md-3" *ngFor="let item of navItems; let j = index">
+		<a href="/#{{item.url}}">
+		  <div class="card text-white {{item.cssname}}">
+			<div class="card-body pb-0">
+			  <button type="button" class="btn btn-transparent p-0 float-right">
+				<i class="{{item.icon}} p-2 font-5xl mr-2"></i>
+				<div *ngIf="item.loading != undefined && item.loading!=null && item.loading == 1" class="spinner-border"></div>
+				<!-- <h2 class="animated fadeInLeft"><i *ngIf="item.loading != undefined && item.loading!=null && item.loading == 1" class="fa fa-spinner fa-spin"></i></h2> -->
+			  </button>
+			  <div class="text-value text-uppercase font-weight-bold">{{item.name}}</div>			  
+			  <div *ngIf="item.reportdata != undefined && item.reportdata!=null">
+				<span class="h3">{{item.reportdata}}</span><span *ngIf="item.url0 != undefined && item.url0!=null"><a href="{{item.url0}}">(<i class="fa fa-hand-o-right" aria-hidden="true"></i>chi tiết)</a></span></div>
+			  <div *ngIf="item.reportdataext != undefined && item.reportdataext!=null"><span class="h6">{{item.reportdataext}}</span><span *ngIf="item.url1 != undefined && item.url1!=null"><a href="{{item.url1}}">(<i class="fa fa-hand-o-right" aria-hidden="true"></i>chi tiết)</a></span></div>			  
+			  <div *ngIf="item.reportdataext1 != undefined && item.reportdataext1!=null"><span class="h6">{{item.reportdataext1}}</span><span *ngIf="item.url2 != undefined && item.url2!=null"><a href="{{item.url2}}">(<i class="fa fa-hand-o-right" aria-hidden="true"></i>chi tiết)</a></span></div>
+			  <div *ngIf="item.reportdataext2 != undefined && item.reportdataext2!=null"><span class="h6">{{item.reportdataext2}}</span></div> 
+			  <div *ngIf="item.reportdataext3 != undefined && item.reportdataext3!=null"><span class="h6">{{item.reportdataext3}}</span><span *ngIf="item.url3 != undefined && item.url3!=null"><a href="{{item.url3}}">(<i class="fa fa-hand-o-right" aria-hidden="true"></i>chi tiết)</a></span></div> 
+			  <div *ngIf="item.reportdataext4 != undefined && item.reportdataext4!=null"><span class="h6">{{item.reportdataext4}}</span><span *ngIf="item.url4 != undefined && item.url4!=null"><a href="{{item.url4}}">(<i class="fa fa-hand-o-right" aria-hidden="true"></i>chi tiết)</a></span></div> 
+			  <div *ngIf="item.reportdataext5 != undefined && item.reportdataext5!=null"><span class="h6">{{item.reportdataext5}}</span><span *ngIf="item.url5 != undefined && item.url5!=null"><a href="{{item.url5}}">(<i class="fa fa-hand-o-right" aria-hidden="true"></i>chi tiết)</a></span></div> 
+			  <div *ngIf="item.reportdataext6 != undefined && item.reportdataext6!=null && item.reportdataext6!='	'"><span class="h6">{{item.reportdataext6}}</span><span *ngIf="item.url6 != undefined && item.url6!=null"><a href="{{item.url6}}">(<i class="fa fa-hand-o-right" aria-hidden="true"></i>chi tiết)</a></span></div> 
+			  <div *ngIf="item.reportdataext6 != undefined && item.reportdataext6!=null && item.reportdataext6==' '">&nbsp;</div>
+			  <div *ngIf="item.reportdataext7 != undefined && item.reportdataext7!=null && item.reportdataext7==' '">&nbsp;</div>
+			  <div *ngIf="item.reportdataext7 != undefined && item.reportdataext7!=null && item.reportdataext7!=' '"><span class="h6">{{item.reportdataext7}}</span><span *ngIf="item.url7 != undefined && item.url7!=null"><a href="{{item.url7}}">(<i class="fa fa-hand-o-right" aria-hidden="true"></i>chi tiết)</a></span></div>
+			  <div *ngIf="item.reportdataext8 != undefined && item.reportdataext8!=null && item.reportdataext8==' '">&nbsp;</div>
+			  <div *ngIf="item.reportdataext8 != undefined && item.reportdataext8!=null"><span class="h6">{{item.reportdataext8}}</span><span *ngIf="item.url8 != undefined && item.url8!=null"><a href="{{item.url8}}">(<i class="fa fa-hand-o-right" aria-hidden="true"></i>chi tiết)</a></span></div>
+			  <div *ngIf="item.reportdataext9 != undefined && item.reportdataext9!=null && item.reportdataext9==' '">&nbsp;</div>
+			  <div *ngIf="item.reportdataext9 != undefined && item.reportdataext9!=null"><span class="h6">{{item.reportdataext9}}</span><span *ngIf="item.url9 != undefined && item.url9!=null"><a href="{{item.url9}}">(<i class="fa fa-hand-o-right" aria-hidden="true"></i>chi tiết)</a></span></div>
+			  <div *ngIf="item.reportdataext10 != undefined && item.reportdataext10!=null"><span class="h6">{{item.reportdataext10}}</span><span *ngIf="item.url10 != undefined && item.url10!=null"><a href="{{item.url10}}">(<i class="fa fa-hand-o-right" aria-hidden="true"></i>chi tiết)</a></span></div>
+			  <div *ngIf="item.reportdataext11 != undefined && item.reportdataext11!=null"><span class="h6">{{item.reportdataext11}}</span><span *ngIf="item.url11 != undefined && item.url11!=null"><a href="{{item.url11}}">(<i class="fa fa-hand-o-right" aria-hidden="true"></i>chi tiết)</a></span></div>
+			  <div *ngIf="item.reportdataext12 != undefined && item.reportdataext12!=null"><span class="h6">{{item.reportdataext12}}</span><span *ngIf="item.url12 != undefined && item.url12!=null"><a href="{{item.url12}}">(<i class="fa fa-hand-o-right" aria-hidden="true"></i>chi tiết)</a></span></div>
+			  <div *ngIf="item.reportdataext13 != undefined && item.reportdataext13!=null"><span class="h6">{{item.reportdataext13}}</span><span *ngIf="item.url13 != undefined && item.url13!=null"><a href="{{item.url13}}">(<i class="fa fa-hand-o-right" aria-hidden="true"></i>chi tiết)</a></span></div>	
+			  <div *ngIf="item.reportdate != undefined && item.reportdate!=null"><small class="text-muted">{{item.reportdate}}</small></div>	
+			</div>
+		  </div>
+	  </a>
+    </div>
+	<div class="col-sm-6 col-lg-6 col-md-6">
+		<div class="card text-white">
+			<div class="card-body pb-0">				
+				<div class="control-section">
+					<div class="col-md-12">
+						 <ejs-accumulationchart id='container0' style='display:block; width: 92%' [legendSettings]="legendSettings0" [tooltip]="tooltip0" [title]="title0" (load)='onLoad0($event)'>
+							<e-accumulation-series-collection>
+								<e-accumulation-series name='SL' [dataSource]='data0' xName='x' yName='y' [startAngle]="startAngle0" [endAngle]="endAngle0" innerRadius="0%" [dataLabel]="dataLabel"> </e-accumulation-series>
+							</e-accumulation-series-collection>
+						</ejs-accumulationchart>
+					</div>
+				</div>
+			</div>
+		</div>	    
+	</div>	
+  </div> 
+	
+  <div class="row"> 
+	<div class="col-sm-6 col-lg-6 col-md-6">
+		<div class="card text-white">
+			<div class="card-body pb-0">				
+				<div class="control-section">
+					<div class="col-md-12">
+						<ejs-chart style='display:block;' [chartArea]='chartAreaslkb' [width]='widthslkb' align='center' id='chartcontainerslkb' [primaryXAxis]='primaryXAxisslkb'
+						[primaryYAxis]='primaryYAxisslkb' [title]='titleslkb' [tooltip]='tooltipslkb' (load)='loadslkb($event)'>
+						<e-series-collection>
+							<e-series [dataSource]='dataslkb' type='StackingBar' xName='x' yName='y' name='Số lượt khám' width=2> </e-series>
+						</e-series-collection>
+						</ejs-chart>
+					</div>
+				</div>
+			</div>
+		</div>	    
+	</div>  	
+	<div class="col-sm-6 col-lg-6 col-md-6">
+		<div class="card text-white">
+			<div class="card-body pb-0">				
+				<div class="control-section">
+					<div class="col-md-12">
+						<!-- <ejs-chart style='display:block;' #chart id='chartcontainer' [primaryXAxis]='primaryXAxis' [tooltip]='tooltip1' [crosshair]='crosshairLabel' -->
+							<!-- [primaryYAxis]='primaryYAxis' [title]='title1' (load)='load1($event)'> -->
+							<!-- <e-series-collection> -->
+								<!-- <e-series [dataSource]='data1' type='Column' xName='x' yName='y' name='Chỉ định' width=2 [marker]='marker'> </e-series> -->
+								<!-- <e-series [dataSource]='data2' type='Column' xName='x' yName='y' name='Thực làm' width=2 [marker]='marker1'> </e-series> -->
+							<!-- </e-series-collection> -->
+						<!-- </ejs-chart> -->
+						
+						 <ejs-chart #chart style='display:block; width: 92%' [primaryXAxis]='primaryXAxis' [primaryYAxis]='primaryYAxis' [legendSettings]='legend1' [title]='title1'
+							selectionMode='Point' highlightMode='' (load)='load1($event)'>
+							<e-series-collection>
+								<e-series [dataSource]='data1' type='Column' xName='x' yName='y' name='Chỉ định' width=2> </e-series>
+								<e-series [dataSource]='data2' type='Column' xName='x' yName='y' name='Thực làm' width=2> </e-series>
+							</e-series-collection>
+						 </ejs-chart>
+					</div>
+				</div>
+			</div>
+		</div>	    
+	</div>	
+	<div class="col-sm-6 col-lg-6 col-md-6">
+		<div class="card text-white">
+			<div class="card-body pb-0">				
+				<div class="control-section">
+					<div class="col-md-12">
+						<ejs-accumulationchart id="container" #pie style='display:block;  width: 92%' [legendSettings]="legendSettings" [tooltip]="tooltip" [title]="title" (load)='load($event)' [enableAnimation]= 'enableAnimation' [center]='center'>
+							<e-accumulation-series-collection>
+								<e-accumulation-series name='Browser' [dataSource]='data' xName='x' yName='y' [startAngle]="startAngle" [endAngle]="endAngle" innerRadius="0%" radius="70%" [dataLabel]="dataLabel" [explode]='explode' explodeOffset='10%' [explodeIndex]='0' >
+								</e-accumulation-series>
+							</e-accumulation-series-collection>
+						</ejs-accumulationchart>
+					</div>
+				</div>
+			</div>
+		</div>	    
+	</div>	
+	<div class="col-sm-6 col-lg-6 col-md-6">
+		<div class="card text-white">
+			<div class="card-body pb-0">				
+				<div class="control-section">
+					<div class="col-md-12">
+						 <div align='center'>
+							 <ejs-chart style='display:block;' [chartArea]='chartArea4' [width]='width4' align='center' id='chartcontainer4' [primaryXAxis]='primaryXAxis4'
+								[primaryYAxis]='primaryYAxis4' [title]='title4' [tooltip]='tooltip4' (load)='load4($event)'>
+								<e-series-collection>
+									<e-series [dataSource]='data4' type='Bar' xName='x' yName='y' name='Imports' [marker]='marker'> </e-series>
+									<e-series [dataSource]='data41' type='Bar' xName='x' yName='y' name='Exports' [marker]='marker'> </e-series>
+								</e-series-collection>
+							</ejs-chart>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>	    
+	</div>
+	<div class="col-sm-6 col-lg-6 col-md-6">
+		<div class="card text-white">
+			<div class="card-body pb-0">				
+				<div class="control-section">
+					<div class="col-md-12">
+						 <div align='center'>
+							  <ejs-chart id='spline-chartcontainer' align='center' [chartArea]='chartArea5' [width]='width5' style='display:block;' [primaryXAxis]='primaryXAxis5'
+								[primaryYAxis]='primaryYAxis5' (load)='load5($event)' [title]='title5' [tooltip]='tooltip5' [annotations]='annotations5'>
+								<e-series-collection>
+									<e-series [dataSource]='data5' type='Spline' xName='x' yName='y' name='Max Temp' width=2 [marker]='marker'> </e-series>
+									<e-series [dataSource]='data51' type='Spline' xName='x' yName='y' name='Avg Temp' width=2 [marker]='marker'> </e-series>
+									<e-series [dataSource]='data52' type='Spline' xName='x' yName='y' name='Min Temp' width=2 [marker]='marker'> </e-series>
+								</e-series-collection>
+							</ejs-chart>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>	    
+	</div>
+	<div class="col-sm-6 col-lg-6 col-md-6">
+		<div class="card text-white">
+			<div class="card-body pb-0">				
+				<div class="control-section">
+					<div class="col-md-12">
+						 <div align='center'>
+							<ejs-chart style='display:block;' [chartArea]='chartArea2' [width]='width2' align='center' id='chartcontainer2' [primaryXAxis]='primaryXAxis2' [primaryYAxis]='primaryYAxis2'
+								[title]='title2' [tooltip]='tooltip2' (pointRender)='pointRender2($event)' [legendSettings]='legend2' (load)='load2($event)'>
+								<e-series-collection>
+									<e-series [dataSource]='data3' type='Bar' name='Users' xName='x' yName='y' width=2 tooltipMappingName='country' [marker]='marker'> </e-series>
+								</e-series-collection>
+							</ejs-chart>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>	    
+	</div>
+	<div class="col-sm-6 col-lg-6 col-md-6">
+		<div class="card text-white">
+			<div class="card-body pb-0">				
+				<div class="control-section">
+					<div class="col-md-12">
+						 <div align='center'>
+							 <ejs-chart style='display:block;' [chartArea]='chartArea6' [width]='width6' align='center' [title]='title6' [primaryXAxis]='primaryXAxis6'
+								[primaryYAxis]='primaryYAxis6' (load)='load6($event)'>
+								<e-series-collection>
+									<e-series [dataSource]='data6' type='SplineArea' xName='x' yName='y' [marker]='marker' name='US' opacity=0.5 border-color='transparent'>
+									</e-series>
+									<e-series [dataSource]='data61' type='SplineArea' xName='x' yName='y' [marker]='marker' name='France' opacity=0.5 border-color='transparent'>
+									</e-series>
+									<e-series [dataSource]='data62' type='SplineArea' xName='x' yName='y' [marker]='marker' name='Germany' opacity=0.5 border-color='transparent'>
+									</e-series>
+								</e-series-collection>
+							</ejs-chart>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>	    
+	</div>
+	<div class="col-sm-6 col-lg-6 col-md-6">
+		<div class="card text-white">
+			<div class="card-body pb-0">				
+				<div class="control-section">
+					<div class="col-md-12">
+						 <div align='center'>
+							  <ejs-chart id='chartcontainer7' style='display:block;width: 92%' [chartArea]='chartArea7' [width]='width7' align='center' [chartArea]='chartArea7'
+								[primaryXAxis]='primaryXAxis7' [legendSettings]='legend7' [zoomSettings]='zoomSettings7' [title]='title7' [primaryYAxis]='primaryYAxis7'
+								(load)='load7($event)'>
+								<e-series-collection>
+									<e-series [dataSource]='series71' type='Area' xName='x' yName='y' [animation]='animation' fill='url(#gradient-chart)' [border]='border7'>
+									</e-series>
+								</e-series-collection>
+							</ejs-chart>
+						</div>
+						<svg style="height: 0">
+							<defs>
+								<linearGradient id="gradient-chart" x1="0" x2="0" y1="0" y2="1">
+									<stop offset="0" />
+									<stop offset="1" />
+								</linearGradient>
+							</defs>
+						</svg>
+					</div>
+				</div>
+			</div>
+		</div>	    
+	</div>
+	<div class="col-sm-6 col-lg-6 col-md-6">
+		<div class="card text-white">
+			<div class="card-body pb-0">				
+				<div class="control-section">
+					<div class="col-md-12">
+						 <div align='center'>
+							  <ejs-chart #chart8 style='display:block;' [title]='title8' [primaryXAxis]='primaryXAxis8' [primaryYAxis]='primaryYAxis8' (load)='load8($event)'
+								(animationComplete)='animationComplete8($event)' [chartArea]='chartArea8' [width]='width8' align='center' [selectionMode]='selectionMode8'
+								[chartArea]='chartArea8' [legendSettings]='legend8' [selectedDataIndexes]='selectedDataIndexes8' (chartMouseUp)='chartMouseUp8($event)'
+								(loaded)='loaded8($event)' [annotations]='annotations8'>
+								<e-series-collection>
+									<e-series [dataSource]='dataSource8' type='StackingColumn' xName='x' yName='y0' name='UK'>
+									</e-series>
+									<e-series [dataSource]='dataSource8' type='StackingColumn' xName='x' yName='y1' name='Germany'>
+									</e-series>
+									<e-series [dataSource]='dataSource8' type='StackingColumn' xName='x' yName='y2' name='France'>
+									</e-series>
+									<e-series [dataSource]='dataSource8' type='StackingColumn' xName='x' yName='y3' name='Italy'>
+									</e-series>
+								</e-series-collection>
+							</ejs-chart>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>	    
+	</div>
+	
+  </div>
+</div>

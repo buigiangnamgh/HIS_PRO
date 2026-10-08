@@ -1,0 +1,46 @@
+DECLARE
+APP_ID NUMBER;
+role_id_num number;
+BEGIN
+select max(role_id) into role_id_num from acs_application_role where application_id=(select id from acs_application where application_code='DHS');
+delete from acs_application_role where application_id in (select id from acs_application where application_code='DAB');commit;
+delete from acs_module_role where role_id=role_id_num and module_id in (select id from acs_module where APPLICATION_ID in (select id from acs_application where application_code='DAB'));commit;
+delete from acs_module where APPLICATION_ID in (select id from acs_application where application_code='DAB');commit;
+delete from acs_application where application_code = 'DAB';commit;
+delete from acs_module_group where module_group_code like 'DAB_%';commit;
+insert into acs_application (application_code,application_name,ALLOW_VERSION) values ('DAB','Dashboard','1.0.0'); commit;
+SELECT ID INTO APP_ID FROM ACS_APPLICATION WHERE APPLICATION_CODE = 'DAB';   
+insert into acs_module_group (module_group_code,module_group_name,num_order) values('DAB_TH','Tổng hợp khám điều trị',1);commit;
+insert into acs_module_group (module_group_code,module_group_name,num_order) values('DAB_CLS','Cận lâm sàng',2);commit;
+insert into acs_module_group (module_group_code,module_group_name,num_order) values('DAB_XN','Xét nghiệm',3);commit;
+insert into acs_module_group (module_group_code,module_group_name,num_order) values('DAB_KHAC','Mục khác',4);commit;
+		--là menu
+insert into ACS_MODULE(MODULE_NAME,MODULE_LINK,ICON_LINK,IS_ANONYMOUS,MODULE_URL,APPLICATION_ID,IS_VISIBLE,NUM_ORDER,module_group_id) VALUES ('Khám bệnh','/khambenh','fa fa-stethoscope','','bg-info',APP_ID,'1','20',(select id from acs_module_group where module_group_code='DAB_TH')); commit;
+insert into ACS_MODULE(MODULE_NAME,MODULE_LINK,ICON_LINK,IS_ANONYMOUS,MODULE_URL,APPLICATION_ID,IS_VISIBLE,NUM_ORDER,module_group_id) VALUES ('Khám cấp cứu','/khamcapcuu','fa fa-ambulance','','bg-info',APP_ID,'1','19',(select id from acs_module_group where module_group_code='DAB_TH')); commit;
+insert into ACS_MODULE(MODULE_NAME,MODULE_LINK,ICON_LINK,IS_ANONYMOUS,MODULE_URL,APPLICATION_ID,IS_VISIBLE,NUM_ORDER,module_group_id) VALUES ('Vào viện','/vaovien','fa fa-backward','','bg-info',APP_ID,'1','18',(select id from acs_module_group where module_group_code='DAB_TH')); commit;
+insert into ACS_MODULE(MODULE_NAME,MODULE_LINK,ICON_LINK,IS_ANONYMOUS,MODULE_URL,APPLICATION_ID,IS_VISIBLE,NUM_ORDER,module_group_id) VALUES ('Ra viện','/ravien','fa fa-arrows-alt','','bg-info',APP_ID,'1','17',(select id from acs_module_group where module_group_code='DAB_TH')); commit;
+insert into ACS_MODULE(MODULE_NAME,MODULE_LINK,ICON_LINK,IS_ANONYMOUS,MODULE_URL,APPLICATION_ID,IS_VISIBLE,NUM_ORDER,module_group_id) VALUES ('Đang nằm viện (nội trú)','/dangnamvien','fa fa-bed','','bg-info',APP_ID,'1','16',(select id from acs_module_group where module_group_code='DAB_TH')); commit;
+insert into ACS_MODULE(MODULE_NAME,MODULE_LINK,ICON_LINK,IS_ANONYMOUS,MODULE_URL,APPLICATION_ID,IS_VISIBLE,NUM_ORDER,module_group_id) VALUES ('Báo cáo thu tài chính','/taichinh','fa fa-usd','','bg-info',APP_ID,'1','15',(select id from acs_module_group where module_group_code='DAB_TH')); commit;        
+insert into ACS_MODULE(MODULE_NAME,MODULE_LINK,ICON_LINK,IS_ANONYMOUS,MODULE_URL,APPLICATION_ID,IS_VISIBLE,NUM_ORDER,module_group_id) VALUES ('Doanh thu ra viện','/chitietdoanhthu','fa fa-eye',NULL,'bg-info',APP_ID,1,14,(select id from acs_module_group where module_group_code='DAB_TH')); commit;
+insert into ACS_MODULE(MODULE_NAME,MODULE_LINK,ICON_LINK,IS_ANONYMOUS,MODULE_URL,APPLICATION_ID,IS_VISIBLE,NUM_ORDER,module_group_id) VALUES ('Cận lâm sàng','/canlamsang','fa fa-eye',NULL,'bg-warning',APP_ID,1,13,(select id from acs_module_group where module_group_code='DAB_CLS')); commit;
+insert into ACS_MODULE(MODULE_NAME,MODULE_LINK,ICON_LINK,IS_ANONYMOUS,MODULE_URL,APPLICATION_ID,IS_VISIBLE,NUM_ORDER,module_group_id) VALUES ('Siêu âm','/sieuam','fa fa-heart',NULL,'bg-warning',APP_ID,1,12,(select id from acs_module_group where module_group_code='DAB_CLS')); commit;
+insert into ACS_MODULE(MODULE_NAME,MODULE_LINK,ICON_LINK,IS_ANONYMOUS,MODULE_URL,APPLICATION_ID,IS_VISIBLE,NUM_ORDER,module_group_id) VALUES ('Nội soi','/noisoi','fa fa-ambulance',NULL,'bg-warning',APP_ID,1,11,(select id from acs_module_group where module_group_code='DAB_CLS')); commit;
+insert into ACS_MODULE(MODULE_NAME,MODULE_LINK,ICON_LINK,IS_ANONYMOUS,MODULE_URL,APPLICATION_ID,IS_VISIBLE,NUM_ORDER,module_group_id) VALUES ('Sinh thiết tức thì','/sinhthiettucthi','fa fa-eye',NULL,'bg-warning',APP_ID,1,10,(select id from acs_module_group where module_group_code='DAB_CLS')); commit;
+insert into ACS_MODULE(MODULE_NAME,MODULE_LINK,ICON_LINK,IS_ANONYMOUS,MODULE_URL,APPLICATION_ID,IS_VISIBLE,NUM_ORDER,module_group_id) VALUES ('Xét nghiệm sinh hóa','/xetnghiemsinhhoa','fa fa-filter',NULL,'bg-green',APP_ID,1,9,(select id from acs_module_group where module_group_code='DAB_XN')); commit;
+insert into ACS_MODULE(MODULE_NAME,MODULE_LINK,ICON_LINK,IS_ANONYMOUS,MODULE_URL,APPLICATION_ID,IS_VISIBLE,NUM_ORDER,module_group_id) VALUES ('Giải phẫu bệnh','/giaiphaubenh','fa fa-warning',NULL,'bg-green',APP_ID,1,8,(select id from acs_module_group where module_group_code='DAB_XN')); commit;
+insert into ACS_MODULE(MODULE_NAME,MODULE_LINK,ICON_LINK,IS_ANONYMOUS,MODULE_URL,APPLICATION_ID,IS_VISIBLE,NUM_ORDER,module_group_id) VALUES ('Xét nghiệm huyết học','/xetnghiemhuyethoc','fa fa-flask',NULL,'bg-green',APP_ID,1,7,(select id from acs_module_group where module_group_code='DAB_XN')); commit;
+insert into ACS_MODULE(MODULE_NAME,MODULE_LINK,ICON_LINK,IS_ANONYMOUS,MODULE_URL,APPLICATION_ID,IS_VISIBLE,NUM_ORDER,module_group_id) VALUES ('Máu và chế phẩm máu','/mau','fa fa-bold',NULL,'bg-green',APP_ID,1,6,(select id from acs_module_group where module_group_code='DAB_XN')); commit;
+insert into ACS_MODULE(MODULE_NAME,MODULE_LINK,ICON_LINK,IS_ANONYMOUS,MODULE_URL,APPLICATION_ID,IS_VISIBLE,NUM_ORDER,module_group_id) VALUES ('Xét nghiệm vi sinh','/xetnghiemvisinh','fa fa-flask',NULL,'bg-green',APP_ID,1,5,(select id from acs_module_group where module_group_code='DAB_XN')); commit;
+insert into ACS_MODULE(MODULE_NAME,MODULE_LINK,ICON_LINK,IS_ANONYMOUS,MODULE_URL,APPLICATION_ID,IS_VISIBLE,NUM_ORDER,module_group_id) VALUES ('Di truyền - Sinh học phân tử','/dtshpt','fa fa-eye',NULL,'bg-green',APP_ID,1,4,(select id from acs_module_group where module_group_code='DAB_XN')); commit;
+insert into ACS_MODULE(MODULE_NAME,MODULE_LINK,ICON_LINK,IS_ANONYMOUS,MODULE_URL,APPLICATION_ID,IS_VISIBLE,NUM_ORDER,module_group_id) VALUES ('Phẫu thuật','/phauthuat','fa fa-users',NULL,'bg-red',APP_ID,1,3,(select id from acs_module_group where module_group_code='DAB_KHAC')); commit;	
+insert into ACS_MODULE(MODULE_NAME,MODULE_LINK,ICON_LINK,IS_ANONYMOUS,MODULE_URL,APPLICATION_ID,IS_VISIBLE,NUM_ORDER,module_group_id) VALUES ('Thủ thuật','/thuthuat','fa fa-users',NULL,'bg-red',APP_ID,1,3,(select id from acs_module_group where module_group_code='DAB_KHAC')); commit;	
+insert into ACS_MODULE(MODULE_NAME,MODULE_LINK,ICON_LINK,IS_ANONYMOUS,MODULE_URL,APPLICATION_ID,IS_VISIBLE,NUM_ORDER,module_group_id) VALUES ('Gây mê ngoài phòng mổ','/ngoaiphongmo','fa fa-users',NULL,'bg-red',APP_ID,1,2,(select id from acs_module_group where module_group_code='DAB_KHAC')); commit;
+insert into ACS_MODULE(MODULE_NAME,MODULE_LINK,ICON_LINK,IS_ANONYMOUS,MODULE_URL,APPLICATION_ID,IS_VISIBLE,NUM_ORDER,module_group_id) VALUES ('Can thiệp','/tmcanthiep','fa fa-ambulance',NULL,'bg-red',APP_ID,1,1,(select id from acs_module_group where module_group_code='DAB_KHAC')); commit;
+update ACS_MODULE set NUM_ORDER=NUM_ORDER+1 where application_id=app_id; commit;	
+insert into ACS_MODULE(MODULE_NAME,MODULE_LINK,ICON_LINK,IS_ANONYMOUS,MODULE_URL,APPLICATION_ID,IS_VISIBLE,NUM_ORDER,PARENT_ID) VALUES ('Trung bình khám','/trungbinhkham','fa fa-bold',NULL,'bg-green',APP_ID,1,1,(select max(id) from acs_module where module_link='/khambenh' and application_id=APP_ID)); commit;
+insert into ACS_MODULE(MODULE_NAME,MODULE_LINK,ICON_LINK,IS_ANONYMOUS,MODULE_URL,APPLICATION_ID,IS_VISIBLE,NUM_ORDER,PARENT_ID) VALUES ('Thời gian chờ & thực hiện khám','/thoigiankham','fa fa-clock-o',NULL,'bg-green',APP_ID,1,1,(select max(id) from acs_module where module_link='/khambenh' and application_id=APP_ID)); commit;
+insert into acs_module_role (role_id,module_id) select role_id_num,id from acs_module where APPLICATION_ID =APP_ID;commit;
+delete from acs_module_role where module_id in (select id from acs_module where application_id=APP_ID and module_link like '%/taichinh%');commit;
+delete from acs_module where application_id=APP_ID and module_link like '%/taichinh%';commit;
+insert into acs_application_role (application_id,role_id) values ((select id from acs_application where application_code='DAB'),role_id_num);commit;
+END;

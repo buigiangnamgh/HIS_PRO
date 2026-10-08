@@ -1,0 +1,129 @@
+
+<div style="margin: -0.5rem -1.5rem 0.5rem -1.5rem; background-color: #fff;  height: 50px;" class="text-right p-0">
+	<div id="chonngay" style="display: inline-block;">			
+		<div class="devi-dtpicker-wrap">	
+			<div class="card-body">
+			 <span dropdown (onShown)="onShown()" (onHidden)="onHidden()" (isOpenChange)="isOpenChange()">
+				<a href dropdownToggle (click)="false">
+					<div class="devi-dtpicker">		
+						<i class="fa fa-angle-down"></i> 
+						<i class="devi-dfrom">{{searchRangeDate?.dayfrom}}</i> 
+						<b>
+							<i class="devi-mfrom">{{searchRangeDate?.monthfrom}}</i> 
+							<i class="devi-yfrom">{{searchRangeDate?.yearfrom}}</i>
+						</b>					
+						<em>–</em>			
+						<i class="fa fa-angle-down"></i>
+						<i class="devi-dto">{{searchRangeDate?.dayto}}</i> 
+						<b>
+							<i class="devi-mto">{{searchRangeDate?.monthto}}</i> 
+							<i class="devi-yto">{{searchRangeDate?.yearto}}</i>
+						</b>				
+					</div>	
+				</a>
+        <button
+        type="button"
+        class="btn btn-primary btn-lg"
+        id="previous_slide"
+        (click)="ClickSegment(1)"
+      >
+        <
+      </button>
+      <button
+        type="button"
+        class="btn btn-primary btn-lg"
+        id="next_slide"
+        (click)="ClickSegment(-1)"
+      >
+        >
+      </button>
+				  <ul *dropdownMenu class="dropdown-menu">
+					<li>
+					  <a class="dropdown-item" (click)="ClickSearch(1)">Hôm nay</a>
+					  <a class="dropdown-item" (click)="ClickSearch(5)">Hôm qua</a>
+					  <a class="dropdown-item" (click)="ClickSearch(3)">Tháng này</a>
+					  <a class="dropdown-item" (click)="ClickSearch(6)">Tháng trước</a>
+					  <!-- <a class="dropdown-item" (click)="ClickSearch(4)">Năm nay</a>
+					  <a class="dropdown-item" (click)="ClickSearch(7)">Năm trước</a> -->
+					  <!-- <a *ngIf="IsAllowCustomDateRange == 1"  class="dropdown-item" (click)="ChonNgayTuDen()">Bất kỳ</a> -->
+					</li>
+				  </ul>
+			  </span>
+			</div>
+		</div>			
+	</div>
+</div>
+
+<div  class="animated fadeIn">
+  <h1 class="align-middle text-center font-weight-bold-title green">
+    {{ ReportOptionName }}
+  </h1>
+  <div *ngIf="HaveData0 == 0">
+    <table
+      id="table-list-groups"
+      class="table table-bordered table-hover table-striped"
+    >
+      <thead
+        class="thead bg-green text-value font-weight-bold text-white"
+      >
+      <tr>
+      <!-- <th scope="col">#</th>           -->
+      <th style="width: 100px" class="align-middle text-center" >
+        Nội soi
+      </th>
+      <th style="width: 100px" class="align-middle text-center">
+       Thay băng bỏng
+      </th>
+      <th style="width: 100px" class="align-middle text-center">
+        Chọc trứng
+      </th>
+      <th style="width: 100px" class="align-middle text-center">
+        Can thiệp mạch
+      </th>
+      <th style="width: 100px" class="align-middle text-center">
+        Tổng
+      </th>
+      </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let item of reportdatas1; let j = index">
+          <tr>
+            <td class="align-middle  text-center font-weight-bold">
+              {{ item?.AMOUNT_NOISOI }}
+            </td>
+            <td class="align-middle text-center font-weight-bold">
+              {{ item?.AMOUNT_THAYBANGBONG }}
+            </td>
+            <td class="align-middle text-center font-weight-bold">
+              {{ item?.AMOUNT_CHOCTRUNG }}
+            </td>
+            <td class="align-middle text-center font-weight-bold">
+              {{ item?.AMOUNT_CANTHIEPMACH }}
+            </td>
+            <td class="align-middle text-center font-weight-bold">
+              {{ item?.AMOUNT_TONG }}
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+
+    <div class="spinner" [ngClass]="{ hidden: !loading }"></div>
+  </div>
+  <div *ngIf="HaveData0 == -1">
+    <div class="card">
+      <div class="card-body" style="text-align: center">
+        {{ "message.dang tai du lieu" | translate }}
+      </div>
+    </div>
+  </div>
+  <div *ngIf="HaveData0 == 1">
+    <div class="card">
+      <div class="card-body" style="text-align: center">
+        {{ "message.khong tim thay du lieu" | translate }}
+      </div>
+    </div>
+  </div>
+
+  <div class="sk-circle12 sk-child"></div>
+</div>

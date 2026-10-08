@@ -1,0 +1,209 @@
+<ngx-loading-bar></ngx-loading-bar>
+<div
+  style="
+    margin: -0.5rem -1.5rem 0.5rem -1.5rem;
+    background-color: #fff;
+    height: 50px;
+  "
+  class="text-right p-0"
+>
+  <div id="chonngay" style="display: inline-block">
+    <div class="devi-dtpicker-wrap">
+      <div class="card-body">
+        <span
+          dropdown
+          (onShown)="onShown()"
+          (onHidden)="onHidden()"
+          (isOpenChange)="isOpenChange()"
+        >
+          <a href dropdownToggle (click)="(false)">
+            <div class="devi-dtpicker">
+              <i class="fa fa-angle-down"></i>
+              <i class="devi-dfrom">{{ searchRangeDate?.dayfrom }}</i>
+              <b>
+                <i class="devi-mfrom">{{ searchRangeDate?.monthfrom }}</i>
+                <i class="devi-yfrom">{{ searchRangeDate?.yearfrom }}</i>
+              </b>
+              <em>–</em>
+              <i class="fa fa-angle-down"></i>
+              <i class="devi-dto">{{ searchRangeDate?.dayto }}</i>
+              <b>
+                <i class="devi-mto">{{ searchRangeDate?.monthto }}</i>
+                <i class="devi-yto">{{ searchRangeDate?.yearto }}</i>
+              </b>
+            </div>
+          </a>
+          <button
+            type="button"
+            class="btn btn-primary btn-lg"
+            id="previous_slide"
+            (click)="ClickSegment(1)"
+          >
+            <
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary btn-lg"
+            id="next_slide"
+            (click)="ClickSegment(-1)"
+          >
+            >
+          </button>
+          <ul *dropdownMenu class="dropdown-menu">
+            <li>
+              <a class="dropdown-item" (click)="ClickSearch(1)">Hôm nay</a>
+              <a class="dropdown-item" (click)="ClickSearch(5)">Hôm qua</a>
+              <a class="dropdown-item" (click)="ClickSearch(3)">Tháng này</a>
+              <a class="dropdown-item" (click)="ClickSearch(6)">Tháng trước</a>
+              <!-- <a class="dropdown-item" (click)="ClickSearch(4)">Năm nay</a>
+              <a class="dropdown-item" (click)="ClickSearch(7)">Năm trước</a> -->
+              <!-- <a
+                *ngIf="IsAllowCustomDateRange == 1"
+                class="dropdown-item"
+                (click)="ChonNgayTuDen()"
+                >Bất kỳ</a
+              > -->
+            </li>
+          </ul>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="animated fadeIn">
+  <div class="text-value text-uppercase font-weight-bold">
+    Doanh thu tổng hợp
+  </div>
+  <div *ngIf="HaveData0 == 0" class="card-body">
+    <table
+      class="table table-striped table-bordered datatable dataTable no-footer table-responsive-lg"
+    >
+      <thead>
+        <tr>
+          <th style="width: 20%" class="align-middle text-center">STT</th>
+          <th style="width: 40%" class="align-middle text-center">Đối tượng</th>
+          <th style="width: 40%" class="align-middle text-center">Tổng thu</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td colspan="2">
+            <div class="text-value text-uppercase font-weight-bold">
+              Thu trực tiếp
+            </div>
+          </td>
+          <td>
+            <div class="text-value text-uppercase font-weight-bold">
+              {{ ConvertToStringShow(tongthutructiep) }}
+            </div>
+          </td>
+        </tr>
+        <tr *ngFor="let item of reportdatas; let j = index">
+          <td>{{ j + 1 }}</td>
+          <td>{{ item?.PATIENT_TYPE_NAME }}</td>
+          <td>{{ ConvertToStringShow(item?.TOTAL_PRICE) }}</td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <div class="text-value text-uppercase font-weight-bold">
+              Thanh toán ra viện
+            </div>
+          </td>
+          <td>
+            <div class="text-value text-uppercase font-weight-bold">
+              {{ ConvertToStringShow(tongthanhtoanravien) }}
+            </div>
+          </td>
+        </tr>
+
+        <tr *ngFor="let item of reportdatasRavien; let j = index">
+          <td>{{ j + 1 }}</td>
+          <td>{{ item?.PATIENT_TYPE_NAME }}</td>
+          <td>{{ ConvertToStringShow(item?.TOTAL_PRICE) }}</td>
+        </tr>
+        <tr></tr>
+        <tr>
+          <td colspan="2">
+            <div class="text-value text-uppercase font-weight-bold">Tổng</div>
+          </td>
+          <td>
+            <div class="text-value text-uppercase font-weight-bold">
+              {{ ConvertToStringShow(tongthutructiep + tongthanhtoanravien) }}
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="text-value text-uppercase font-weight-bold">
+    Doanh thu tổng hợp theo khoa
+  </div>
+  <div *ngIf="HaveData1 == 0" class="card-body">
+    <table
+      class="table table-striped table-bordered datatable dataTable no-footer table-responsive-lg"
+    >
+      <thead>
+        <tr>
+          <th scope="col" style="width: 20%" class="align-middle text-center">
+            STT
+          </th>
+          <th style="width: 40%" class="align-middle text-center">
+            Tên khoa phòng
+          </th>
+          <th style="width: 40%" class="align-middle text-center">Tổng thu</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of reportdatasgroupbydepartment; let j = index">
+          <td>{{ j + 1 }}</td>
+          <td>{{ item?.DEPARTMENT_NAME }}</td>
+          <td>{{ ConvertToStringShow(item?.TOTAL_PRICE) }}</td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <div class="text-value text-uppercase font-weight-bold">Tổng</div>
+          </td>
+          <td>
+            <div class="text-value text-uppercase font-weight-bold">
+              {{ ConvertToStringShow(tongtheokhoa) }}
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="form-group">
+      <div
+        style="text-align: center"
+        class="dataTables_paginate_alignment"
+        id="DataTables_Table_0_info"
+        role="status"
+        aria-live="polite"
+      >
+        {{ total1 }} bản ghi -
+        <input
+          type="button"
+          name="btnExport"
+          class="export"
+          (click)="exportExcel2()"
+          value="XLSX"
+        />
+      </div>
+      <div>&nbsp;</div>
+    </div>
+    <div class="spinner" [ngClass]="{ hidden: !loading }"></div>
+  </div>
+  <div *ngIf="HaveData1 == -1">
+    <div class="card">
+      <div class="card-body" style="text-align: center">
+        {{ "message.dang tai du lieu" | translate }}
+      </div>
+    </div>
+  </div>
+  <div *ngIf="HaveData1 == 1">
+    <div class="card">
+      <div class="card-body" style="text-align: center">
+        {{ "message.khong tim thay du lieu" | translate }}
+      </div>
+    </div>
+  </div>
+</div>

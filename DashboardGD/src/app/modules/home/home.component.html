@@ -1,0 +1,677 @@
+<div style="margin: -0.5rem -1.5rem 0.5rem -1.5rem; background-color: #fff;  height: 50px;" class="text-right p-0">
+	<div id="chonngay" style="display: inline-block;">			
+		<div class="devi-dtpicker-wrap">	
+			<div class="card-body">
+			 <span dropdown (onShown)="onShown()" (onHidden)="onHidden()" (isOpenChange)="isOpenChange()">
+				<a href dropdownToggle (click)="false">
+					<div class="devi-dtpicker">		
+						<i class="fa fa-angle-down"></i> 
+						<i class="devi-dfrom">{{searchRangeDate?.dayfrom}}</i> 
+						<b>
+							<i class="devi-mfrom">{{searchRangeDate?.monthfrom}}</i> 
+							<i class="devi-yfrom">{{searchRangeDate?.yearfrom}}</i>
+						</b>					
+						<em>–</em>			
+						<i class="fa fa-angle-down"></i>
+						<i class="devi-dto">{{searchRangeDate?.dayto}}</i> 
+						<b>
+							<i class="devi-mto">{{searchRangeDate?.monthto}}</i> 
+							<i class="devi-yto">{{searchRangeDate?.yearto}}</i>
+						</b>				
+					</div>	
+				</a>
+				  <ul *dropdownMenu class="dropdown-menu">
+					<li>
+					  <a class="dropdown-item" href="#" (click)="ClickSearch(1)">Hôm nay</a>
+					  <a class="dropdown-item" href="#" (click)="ClickSearch(5)">Hôm qua</a>
+					  <a class="dropdown-item" href="#" (click)="ClickSearch(3)">Tháng này</a>
+					  <a class="dropdown-item" href="#" (click)="ClickSearch(6)">Tháng trước</a>
+					  <!-- <a class="dropdown-item" href="#" (click)="ClickSearch(4)">Năm nay</a>
+					  <a class="dropdown-item" href="#" (click)="ClickSearch(7)">Năm trước</a> -->
+					  <!-- <a *ngIf="IsAllowCustomDateRange == 1"  class="dropdown-item" href="#" (click)="ChonNgayTuDen()">Bất kỳ</a> -->
+					</li>
+				  </ul>
+			  </span>
+			</div>
+		</div>			
+	</div>
+</div>  
+
+<div class="animated fadeIn">  	
+	<!-- <div *ngIf="groupItems != undefined && groupItems != null && groupItems.length > 0">    -->
+    <div>
+      <div class="text-value text-uppercase font-weight-bold " style="color: #ce1e50d7;">		
+       <a>1. TỔNG HỢP KHÁM VÀ ĐIỀU TRỊ</a>
+      </div>
+	  <div class="row">  	
+		<div  class="col-sm-6 col-lg-2 col-md-6" style = " border-color: bisque;">
+			<a href="http://localhost:4200/#/home">
+			  <div class="card text-white height-250" style="background-color: rgba(14, 67, 10, 0);">
+				<div class="card-body pb-0" style="background-color: rgb(87,197,115);">
+				  <div  class=" text-value text-uppercase font-weight-bold"> <span class="h3">TS KHÁM BỆNH: {{khambenh__SUM_COUNT_EXAM}}</span> </div>			  
+				  <div class="text-value text-uppercase font-weight-bold"><span class="h5" style = "color: white"> - CHUYỂN VIỆN: {{khambenh__SUM_COUNT_CHUYENVIEN}}</span></div>		
+				  <button type="button" class="btn btn-transparent p-0 float-right">
+					<i class="icon p-2 font-5xl mr-2"></i>
+					 <!-- <div  class="spinner-border"></div> -->
+					<!-- <h2 class="animated fadeInLeft"><i *ngIf="item.loading != undefined && item.loading!=null && item.loading == 1" class="fa fa-spinner fa-spin"></i></h2> -->
+				  </button>	  
+				</div>
+			  </div>
+		  </a>
+		</div>
+		<div  class="col-sm-6 col-lg-2 col-md-6" >
+			<a href="http://localhost:4200/#/home">
+			  <div class="card text-white height-250" style="background-color: rgb(87,197,115);">
+				<div class="card-body pb-0">
+				  <div class="text-value text-uppercase font-weight-bold" ><span class="h3">KHÁM YÊU CẦU: {{khambenhyeucau__SUM_TONG}}</span> </div>			  
+				  <div class="text-value text-uppercase font-weight-bold"><span class="h5" style = "color: rgb(243, 239, 246);">- DOANH THU: {{ConvertToStringShow(khambenhyeucau__TOTAL_PRICE)}}</span><span ><a href="http://localhost:4200/#/home"></a></span></div>
+				  <button type="button" class="btn btn-transparent p-0 float-right">
+					<i class="icon p-2 font-5xl mr-2"></i>
+					<!-- <div  class="spinner-border"></div> -->
+					
+					<!-- <h2 class="animated fadeInLeft"><i *ngIf="item.loading != undefined && item.loading!=null && item.loading == 1" class="fa fa-spinner fa-spin"></i></h2> -->
+				  </button>
+				</div>
+			  </div>
+		  </a>
+		</div>
+  	
+		<div  class="col-sm-6 col-lg-2 col-md-6">
+			<a href="http://localhost:4200/#/home">
+			  <div class="card text-white height-250" style="background-color: rgb(87,197,115);">
+				<div class="card-body pb-0">
+				  <div ><span class="h3" style = "color: white">KHÁM CẤP CỨU: {{khamcapcuu__SUM_TONG}}</span><span ><a href="http://localhost:4200/#/home"> <i class="fa fa-hand-o-right" aria-hidden="true"></i></a></span></div>
+				  <button type="button" class="btn btn-transparent p-0 float-right">
+					<i class="icon p-2 font-5xl mr-2"></i>
+					<!-- <div  class="spinner-border"></div> -->
+					<!-- <h2 class="animated fadeInLeft"><i *ngIf="item.loading != undefined && item.loading!=null && item.loading == 1" class="fa fa-spinner fa-spin"></i></h2> -->
+				  </button>
+				</div>
+			  </div>
+		  </a>
+		</div>
+		<div  class="col-sm-6 col-lg-2 col-md-6">
+			<a href="http://localhost:4200/#/home">
+			  <div class="card text-white height-250" style="background-color: rgb(87,197,115);">
+				<div class="card-body pb-0">
+				  <div ><span class="h3" style = "color: white;">ĐANG NẰM VIỆN {{dangnamvien__SUM}}</span></div>
+				  <div class="text-value text-uppercase font-weight-bold" ><span class="h5"> - BN BHYT: {{dangnamvien__SUM_BHYT}}</span> </div>		
+				  <div class="text-value text-uppercase font-weight-bold" ><span class="h5"> - BN VP: {{dangnamvien__SUM_VP}}</span></div>
+				  <span ><a href="http://localhost:4200/#/home"> <i class="fa fa-hand-o-right" aria-hidden="true"></i></a></span>			  	  
+				  <button type="button" class="btn btn-transparent p-0 float-right">
+					<i class="icon p-2 font-5xl mr-2"></i>
+					<!-- <div  class="spinner-border"></div> -->
+					<!-- <h2 class="animated fadeInLeft"><i *ngIf="item.loading != undefined && item.loading!=null && item.loading == 1" class="fa fa-spinner fa-spin"></i></h2> -->
+				  </button>
+				</div>
+			  </div>
+		  </a>
+		</div>
+		<div  class="col-sm-6 col-lg-2 col-md-6">
+			<a href="http://localhost:4200/#/home">
+			  <div class="card text-white height-250" style="background-color: rgb(87,197,115);">
+				<div class="card-body pb-0">
+				  <div ><span class="h3" style = "color: white;">VÀO VIỆN</span></div>
+				  <div class="text-value text-uppercase font-weight-bold" ><span class="h5"> - BHYT: {{vaovien__SUM_COUNT_TREATMENT_IN_BHYT}}</span> </div>	
+				  <div class="text-value text-uppercase font-weight-bold" ><span class="h5"> - VIỆN PHÍ: {{vaovien__SUM_VP}}</span></div>		
+				  <span ><a href="http://localhost:4200/#/home"><i class="fa fa-hand-o-right" aria-hidden="true"></i></a></span>
+				  <button type="button" class="btn btn-transparent p-0 float-right">
+					<i class="icon p-2 font-5xl mr-2"></i>
+					<!-- <div  class="spinner-border"></div> -->
+					<!-- <h2 class="animated fadeInLeft"><i *ngIf="item.loading != undefined && item.loading!=null && item.loading == 1" class="fa fa-spinner fa-spin"></i></h2> -->
+				  </button>	  		  
+				</div>
+			  </div>
+		  </a>
+		</div>
+		<div  class="col-sm-6 col-lg-2 col-md-6">
+			<a href="http://localhost:4200/#/home">
+			  <div class="card text-white height-250" style="background-color: rgb(87,197,115);">
+				<div class="card-body pb-0">
+				 
+				  <div ><span class="h3" style = "color: white;">RA VIỆN {{ravien__SUM_COUNT_EXP}}</span></div>
+				  <div class="text-value text-uppercase font-weight-bold" ><span class="h5"> - RA VIỆN: {{ravien__SUM_RAVIEN + ravien__SUM_KHAC}}</span> </div>			  
+				  <div class="text-value text-uppercase font-weight-bold" ><span class="h5"> - CHUYỂN VIỆN TT: {{ravien__SUM_COUNT_OUT_CV_LEN}}</span></div>		  
+				  <div class="text-value text-uppercase font-weight-bold" ><span class="h5"> - CHUYỂN VIỆN KHÁC: {{ravien__SUM_CVIEN}}</span></div>			  
+				  <div class="text-value text-uppercase font-weight-bold" ><span class="h5"> - TỬ VONG: {{ravien__SUM_TUVONG}}</span></div>			  
+				  <div class="text-value text-uppercase font-weight-bold" ><span class="h5"> - NẶNG XIN VỀ: {{ravien__SUM_NANGVE}}</span></div>		
+				  <span ><a href="http://localhost:4200/#/home"><i class="fa fa-hand-o-right" aria-hidden="true"></i></a></span>
+				  <button type="button" class="btn btn-transparent p-0 float-right">
+					<i class="icon p-2 font-5xl mr-2"></i>
+					<!-- <div  class="spinner-border"></div> -->
+					<!-- <h2 class="animated fadeInLeft"><i *ngIf="item.loading != undefined && item.loading!=null && item.loading == 1" class="fa fa-spinner fa-spin"></i></h2> -->
+				  </button>	  
+				</div>
+			  </div>
+		  </a>
+		</div>	
+	  </div> 
+	  <div class="row">
+		<div  class="col-sm-6 col-lg-4 col-md-6">
+			<a href="http://localhost:4200/#/home">
+			  <div class="card text-white" style="background-color: rgb(87,197,115); height: 470px;">
+				<div class="card-body pb-0">
+				  <div ><span class="h3" style = "color: rgb(249, 249, 249);">DOANH THU KCB TOÀN VIỆN: {{ConvertToStringShow(doanhthu__SUM)}} </span></div>
+				  <div class="text-value text-uppercase font-weight-bold" ><span class="h5">- DOANH THU RA VIỆN: {{ConvertToStringShow(doanhthu__SUM_TT_RA_VIEN)}}</span></div>		
+				  <div class="text-value text-uppercase font-weight-bold" ><span class="h5"> - DOANH THU TRỰC TIẾP: {{ConvertToStringShow(doanhthu__SUM_THU_TRUC_TIEP)}}</span></div>	
+				  <div class="text-value text-uppercase font-weight-bold" ><span class="h5"> - TẠM ỨNG: {{ConvertToStringShow(doanhthu__SUM_TAM_UNG)}}</span></div>	
+				  <div class="text-value text-uppercase font-weight-bold" ><span class="h5"> - DOANH THU NHÀ THUỐC: {{ConvertToStringShow(khambenh__SUM_NHA_THUOC)}}</span></div>	
+				  <div class="text-value text-uppercase font-weight-bold" ><span class="h5"> - ĐƠN VỊ: ĐỒNG</span></div>	
+				  <span ><a href="http://localhost:4200/#/home"><i class="fa fa-hand-o-right" aria-hidden="true"></i></a></span>
+				  <button type="button" class="btn btn-transparent p-0 float-right">
+					<i class="icon p-2 font-5xl mr-2"></i>
+					<!-- <div  class="spinner-border"></div> -->
+					<!-- <h2 class="animated fadeInLeft"><i *ngIf="item.loading != undefined && item.loading!=null && item.loading == 1" class="fa fa-spinner fa-spin"></i></h2> -->
+				  </button>
+				</div>
+			  </div>
+		  </a>
+		</div>
+		<div class="col-sm-6 col-lg-4 col-md-6">
+			 <div class="card text-white">
+				<div class="card-body pb-0">
+					<div class="control-section">
+						<div class="col-md-12">
+							 <ejs-accumulationchart id='container01' style='display:block; width: 105%' [legendSettings]="legendSettings0" [tooltip]="tooltip0" [titleStyle] = "titleStyle" [title]="title1" [enableSmartLabels] = 'enableSmartLabels' [enableAnimation] = 'enableAnimation' (load)='onLoad0($event)'>
+								<e-accumulation-series-collection> 
+									<e-accumulation-series name='SL' [dataSource]='data1' xName='x' yName='y' radius="100%" [startAngle]="startAngle0"  [endAngle]="endAngle0" innerRadius="0%"  [dataLabel]="dataLabel" [explode]='explode' [explodeOffset]='explodeOffset'> </e-accumulation-series>
+								</e-accumulation-series-collection>
+							</ejs-accumulationchart>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>	
+		<div class="col-sm-6 col-lg-4 col-md-6">
+			<div class="card text-white">
+				<div class="card-body pb-0">				
+					<div class="control-section">
+						<div class="col-md-12">
+							 <ejs-accumulationchart id='container0' style='display:block; width: 105%' [legendSettings]="legendSettings0" [tooltip]="tooltip0" [title]="title0" [titleStyle] = "titleStyle" (load)='onLoad0($event)'>
+								<e-accumulation-series-collection>
+									<e-accumulation-series name='SL' [dataSource]='data0' xName='x' yName='y' radius="100%"  [startAngle]="startAngle0" [endAngle]="endAngle0" innerRadius="0%" [dataLabel]="dataLabel"> </e-accumulation-series>
+								</e-accumulation-series-collection>
+							</ejs-accumulationchart>
+						</div>
+					</div>
+				</div>
+			</div>	    
+		</div>	
+	  </div>
+	  <div class="text-value text-uppercase font-weight-bold" style="color: #ce1e50d7;">		
+		<a>2. TỔNG HỢP CẬN LÂM SÀNG</a>
+		<div class="row">  	
+			<div  class="col-sm-6 col-lg-2 col-md-6">
+				<a href="http://localhost:4200/#/home">
+				  <div class="card text-white height-250" style="background-color: rgb(87,197,115);">
+					<div class="card-body pb-0" >
+					  <div class="text-value text-uppercase font-weight-bold">MRI: {{cls__SUM_MRI}}</div>			  
+					  <div class="text-value text-uppercase font-weight-bold" ><span class="h5">CHƯA XỬ LÝ: {{cls__SUM_MRI-cls__SUM_MRI_HT-cls__SUM_MRI_DXL}}</span></div>	
+					  <div class="text-value text-uppercase font-weight-bold" ><span class="h5">ĐANG XỬ LÝ: {{cls__SUM_MRI_DXL}}</span></div>	
+					  <div class="text-value text-uppercase font-weight-bold" ><span class="h5">HOÀN THÀNH: {{cls__SUM_MRI_HT}}</span></div>	
+					  <span ><a href="http://localhost:4200/#/home"><i class="fa fa-hand-o-right" aria-hidden="true"></i></a></span>
+					  
+						<button type="button" class="btn btn-transparent p-0 float-right">
+						  <i class="icon p-2 font-5xl mr-2"></i>
+						  <!-- <div  class="spinner-border"></div> -->
+						  <!-- <h2 class="animated fadeInLeft"><i *ngIf="item.loading != undefined && item.loading!=null && item.loading == 1" class="fa fa-spinner fa-spin"></i></h2> -->
+						</button>
+					</div>
+				  </div>
+			  </a>
+			</div>
+			<div  class="col-sm-6 col-lg-2 col-md-6" >
+				<a href="http://localhost:4200/#/home">
+				  <div class="card text-white height-250" style="background-color: rgb(87,197,115);">
+					<div class="card-body pb-0" >
+					<div class="text-value text-uppercase font-weight-bold">CT: {{cls__SUM_CT}}</div>			  
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">CHƯA XỬ LÝ: {{cls__SUM_CT-cls__SUM_CT_DXL-cls__SUM_CT_HT}}</span></div>	
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">ĐANG XỬ LÝ: {{cls__SUM_CT_DXL}}</span></div>	
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">HOÀN THÀNH: {{cls__SUM_CT_HT}}</span></div>	
+					<span ><a href="http://localhost:4200/#/home"><i class="fa fa-hand-o-right" aria-hidden="true"></i></a></span>
+					
+					  <button type="button" class="btn btn-transparent p-0 float-right">
+						<i class="icon p-2 font-5xl mr-2"></i>
+						<!-- <div  class="spinner-border"></div> -->
+						<!-- <h2 class="animated fadeInLeft"><i *ngIf="item.loading != undefined && item.loading!=null && item.loading == 1" class="fa fa-spinner fa-spin"></i></h2> -->
+					  </button>
+				  </div>
+				  </div>
+			  </a>
+			</div>
+			<div  class="col-sm-6 col-lg-2 col-md-6">
+				<a href="http://localhost:4200/#/home">
+				  <div class="card text-white height-250" style="background-color: rgb(87,197,115);">
+					<div class="card-body pb-0" >
+					<div class="text-value text-uppercase font-weight-bold">X-QUANG: {{cls__SUM_XQ}}</div>			  
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">CHƯA XỬ LÝ: {{cls__SUM_XQ-cls__SUM_XQ_DXL-cls__SUM_XQ_HT}}</span></div>	
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">ĐANG XỬ LÝ: {{cls__SUM_XQ_DXL}}</span></div>	
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">HOÀN THÀNH: {{cls__SUM_XQ_HT}}</span></div>	
+					<span ><a href="http://localhost:4200/#/home"><i class="fa fa-hand-o-right" aria-hidden="true"></i></a></span>
+					
+					  <button type="button" class="btn btn-transparent p-0 float-right">
+						<i class="icon p-2 font-5xl mr-2"></i>
+						<!-- <div  class="spinner-border"></div> -->
+						<!-- <h2 class="animated fadeInLeft"><i *ngIf="item.loading != undefined && item.loading!=null && item.loading == 1" class="fa fa-spinner fa-spin"></i></h2> -->
+					  </button>
+				  </div>
+				  </div>
+			  </a>
+			</div>
+			<div  class="col-sm-6 col-lg-2 col-md-6">
+				<a href="http://localhost:4200/#/home">
+				  <div class="card text-white height-250" style="background-color: rgb(87,197,115);">
+					<div class="card-body pb-0" >
+					<div class="text-value text-uppercase font-weight-bold">SIÊU ÂM: {{cls__SUM_SA}}</div>			  
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">CHƯA XỬ LÝ: {{cls__SUM_SA-cls__SUM_SA_DXL-cls__SUM_SA_HT}}</span></div>	
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">ĐANG XỬ LÝ: {{cls__SUM_SA_DXL}}</span></div>	
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">HOÀN THÀNH: {{cls__SUM_SA_HT}}</span></div>	
+					<span ><a href="http://localhost:4200/#/home"><i class="fa fa-hand-o-right" aria-hidden="true"></i></a></span>
+					
+					  <button type="button" class="btn btn-transparent p-0 float-right">
+						<i class="icon p-2 font-5xl mr-2"></i>
+						<!-- <div  class="spinner-border"></div> -->
+						<!-- <h2 class="animated fadeInLeft"><i *ngIf="item.loading != undefined && item.loading!=null && item.loading == 1" class="fa fa-spinner fa-spin"></i></h2> -->
+					  </button>
+				  </div>
+				  </div>
+			  </a>
+			</div>
+			<div  class="col-sm-6 col-lg-2 col-md-6">
+				<a href="http://localhost:4200/#/home">
+				  <div class="card text-white height-250" style="background-color: rgb(87,197,115);">
+					<div class="card-body pb-0" >
+					<div class="text-value text-uppercase font-weight-bold">NỘI SOI: {{cls__SUM_NS}}</div>			  
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">CHƯA XỬ LÝ: {{cls__SUM_NS-cls__SUM_NS_DXL-cls__SUM_NS_HT}}</span></div>	
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">ĐANG XỬ LÝ: {{cls__SUM_NS_DXL}}</span></div>	
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">HOÀN THÀNH: {{cls__SUM_NS_HT}}</span></div>	
+					<span ><a href="http://localhost:4200/#/home"><i class="fa fa-hand-o-right" aria-hidden="true"></i></a></span>
+					
+					  <button type="button" class="btn btn-transparent p-0 float-right">
+						<i class="icon p-2 font-5xl mr-2"></i>
+						<!-- <div  class="spinner-border"></div> -->
+						<!-- <h2 class="animated fadeInLeft"><i *ngIf="item.loading != undefined && item.loading!=null && item.loading == 1" class="fa fa-spinner fa-spin"></i></h2> -->
+					  </button>
+				  </div>
+				  </div>
+			  </a>
+			</div>
+			<div  class="col-sm-6 col-lg-2 col-md-6">
+				<a href="http://localhost:4200/#/home">
+				  <div class="card text-white height-250" style="background-color: rgb(87,197,115);">
+					<div class="card-body pb-0" >
+					<div class="text-value text-uppercase font-weight-bold">MÁU VÀ CHẾ PHẨM: {{donmau__SUM_AMOUNT}}</div>			  
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">CHƯA XỬ LÝ: {{donmau__SUM_AMOUNT-donmau__SUM_AMOUNT_DXL-donmau__SUM_AMOUNT_HT}}</span></div>	
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">ĐANG XỬ LÝ: {{donmau__SUM_AMOUNT_DXL}}</span></div>	
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">HOÀN THÀNH: {{donmau__SUM_AMOUNT_HT}}</span></div>	
+					<span ><a href="http://localhost:4200/#/home"><i class="fa fa-hand-o-right" aria-hidden="true"></i></a></span>
+					
+					  <button type="button" class="btn btn-transparent p-0 float-right">
+						<i class="icon p-2 font-5xl mr-2"></i>
+						<!-- <div  class="spinner-border"></div> -->
+						<!-- <h2 class="animated fadeInLeft"><i *ngIf="item.loading != undefined && item.loading!=null && item.loading == 1" class="fa fa-spinner fa-spin"></i></h2> -->
+					  </button>
+				  </div>
+				  </div>
+			  </a>
+			</div>
+		  </div> 
+		  <div class="row">  	
+			<div  class="col-sm-6 col-lg-2 col-md-6" >
+				<a href="http://localhost:4200/#/home">
+				  <div class="card text-white height-250" style="background-color: rgb(87,197,115);">
+					<div class="card-body pb-0" >
+					<div class="text-value text-uppercase font-weight-bold">XN SINH HÓA: {{xn__SH}}</div>			  
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">CHƯA XỬ LÝ: {{xn__SH-xn__SH_DXL-xn__SH_HT}}</span></div>	
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">ĐANG XỬ LÝ: {{xn__SH_DXL}}</span></div>	
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">HOÀN THÀNH: {{xn__SH_HT}}</span></div>	
+					<span ><a href="http://localhost:4200/#/home"><i class="fa fa-hand-o-right" aria-hidden="true"></i></a></span>
+					
+					  <button type="button" class="btn btn-transparent p-0 float-right">
+						<i class="icon p-2 font-5xl mr-2"></i>
+						<!-- <div  class="spinner-border"></div> -->
+						<!-- <h2 class="animated fadeInLeft"><i *ngIf="item.loading != undefined && item.loading!=null && item.loading == 1" class="fa fa-spinner fa-spin"></i></h2> -->
+					  </button>
+				  </div>
+				  </div>
+			  </a>
+			</div>
+			<div  class="col-sm-6 col-lg-2 col-md-6" >
+				<a href="http://localhost:4200/#/home">
+				  <div class="card text-white height-250" style="background-color: rgb(87,197,115);">
+					<div class="card-body pb-0" >
+					<div class="text-value text-uppercase font-weight-bold">XN HUYẾT HỌC: {{xn__HH}}</div>			  
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">CHƯA XỬ LÝ: {{xn__HH-xn__HH_DXL-xn__HH_HT}}</span></div>	
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">ĐANG XỬ LÝ: {{xn__HH_DXL}}</span></div>	
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">HOÀN THÀNH: {{xn__HH_HT}}</span></div>	
+					<span ><a href="http://localhost:4200/#/home"><i class="fa fa-hand-o-right" aria-hidden="true"></i></a></span>
+					
+					  <button type="button" class="btn btn-transparent p-0 float-right">
+						<i class="icon p-2 font-5xl mr-2"></i>
+						<!-- <div  class="spinner-border"></div> -->
+						<!-- <h2 class="animated fadeInLeft"><i *ngIf="item.loading != undefined && item.loading!=null && item.loading == 1" class="fa fa-spinner fa-spin"></i></h2> -->
+					  </button>
+				  </div>
+				  </div>
+			  </a>
+			</div>
+			<div  class="col-sm-6 col-lg-2 col-md-6">
+				<a href="http://localhost:4200/#/home">
+				  <div class="card text-white height-250" style="background-color: rgb(87,197,115);">
+					<div class="card-body pb-0" >
+					<div class="text-value text-uppercase font-weight-bold">XN VI SINH: {{xn__VS}}</div>			  
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">CHƯA XỬ LÝ: {{xn__VS-xn__VS_DXL-xn__VS_HT}}</span></div>	
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">ĐANG XỬ LÝ: {{xn__VS_DXL}}</span></div>	
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">HOÀN THÀNH: {{xn__VS_HT}}</span></div>	
+					<span ><a href="http://localhost:4200/#/home"><i class="fa fa-hand-o-right" aria-hidden="true"></i></a></span>
+					
+					  <button type="button" class="btn btn-transparent p-0 float-right">
+						<i class="icon p-2 font-5xl mr-2"></i>
+						<!-- <div  class="spinner-border"></div> -->
+						<!-- <h2 class="animated fadeInLeft"><i *ngIf="item.loading != undefined && item.loading!=null && item.loading == 1" class="fa fa-spinner fa-spin"></i></h2> -->
+					  </button>
+				  </div>
+				  </div>
+			  </a>
+			</div>
+			<div  class="col-sm-6 col-lg-2 col-md-6">
+				<a href="http://localhost:4200/#/home">
+				  <div class="card text-white height-250" style="background-color: rgb(87,197,115);">
+					<div class="card-body pb-0" >
+					<div class="text-value text-uppercase font-weight-bold">XN GPB: {{xn__GPB}}</div>			  
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">CHƯA XỬ LÝ: {{xn__GPB-xn__GPB_DXL-xn__GPB_HT}}</span></div>	
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">ĐANG XỬ LÝ: {{xn__GPB_DXL}}</span></div>	
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">HOÀN THÀNH: {{xn__GPB_HT}}</span></div>	
+					<span ><a href="http://localhost:4200/#/home"><i class="fa fa-hand-o-right" aria-hidden="true"></i></a></span>
+					
+					  <button type="button" class="btn btn-transparent p-0 float-right">
+						<i class="icon p-2 font-5xl mr-2"></i>
+						<!-- <div  class="spinner-border"></div> -->
+						<!-- <h2 class="animated fadeInLeft"><i *ngIf="item.loading != undefined && item.loading!=null && item.loading == 1" class="fa fa-spinner fa-spin"></i></h2> -->
+					  </button>
+				  </div>
+				  </div>
+			  </a>
+			</div>
+			<div  class="col-sm-6 col-lg-2 col-md-6">
+				<a href="http://localhost:4200/#/home">
+				  <div class="card text-white height-250" style="background-color: rgb(87,197,115);">
+					<div class="card-body pb-0" >
+					<div class="text-value text-uppercase font-weight-bold">SINH HỌC PT: {{xn__SHPT}}</div>			  
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">CHƯA XỬ LÝ: {{xn__SHPT-xn__SHPT_DXL-xn__SHPT_HT}}</span></div>	
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">ĐANG XỬ LÝ: {{xn__SHPT_DXL}}</span></div>	
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">HOÀN THÀNH: {{xn__SHPT_HT}}</span></div>	
+					<span ><a href="http://localhost:4200/#/home"><i class="fa fa-hand-o-right" aria-hidden="true"></i></a></span>
+					
+					  <button type="button" class="btn btn-transparent p-0 float-right">
+						<i class="icon p-2 font-5xl mr-2"></i>
+						<!-- <div  class="spinner-border"></div> -->
+						<!-- <h2 class="animated fadeInLeft"><i *ngIf="item.loading != undefined && item.loading!=null && item.loading == 1" class="fa fa-spinner fa-spin"></i></h2> -->
+					  </button>
+				  </div>
+				  </div>
+			  </a>
+			</div>
+			<div  class="col-sm-6 col-lg-2 col-md-6">
+				<a href="http://localhost:4200/#/home">
+				  <div class="card text-white height-250" style="background-color: rgb(87,197,115);">
+					<div class="card-body pb-0" >
+					<div class="text-value text-uppercase font-weight-bold">PT GMHS: {{pt__SUM}}</div>			  
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">MỔ CẤP CỨU: {{pt__SUM_CC}}</span></div>	
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">MỔ PHIÊN: {{pt__SUM-pt__SUM_CC}}</span></div>	
+					<span ><a href="http://localhost:4200/#/home"><i class="fa fa-hand-o-right" aria-hidden="true"></i></a></span>
+					
+					  <button type="button" class="btn btn-transparent p-0 float-right">
+						<i class="icon p-2 font-5xl mr-2"></i>
+						<!-- <div  class="spinner-border"></div> -->
+						<!-- <h2 class="animated fadeInLeft"><i *ngIf="item.loading != undefined && item.loading!=null && item.loading == 1" class="fa fa-spinner fa-spin"></i></h2> -->
+					  </button>
+				  </div>
+				  </div>
+			  </a>
+			</div>
+			<div  class="col-sm-6 col-lg-2 col-md-6">
+				<a href="http://localhost:4200/#/home">
+				  <div class="card text-white height-250" style="background-color: rgb(87,197,115);">
+					<div class="card-body pb-0" >
+					<div class="text-value text-uppercase font-weight-bold">THỦ THUẬT: {{tt__SUM}}</div>			  
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">CHƯA XỬ LÝ: {{tt__SUM-tt__SUM_DXL-tt__SUM_HT}}</span></div>	
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">ĐANG XỬ LÝ: {{tt__SUM_DXL}}</span></div>	
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">HOÀN THÀNH: {{tt__SUM_HT}}</span></div>	
+					<span ><a href="http://localhost:4200/#/home"><i class="fa fa-hand-o-right" aria-hidden="true"></i></a></span>
+					
+					  <button type="button" class="btn btn-transparent p-0 float-right">
+						<i class="icon p-2 font-5xl mr-2"></i>
+						<!-- <div  class="spinner-border"></div> -->
+						<!-- <h2 class="animated fadeInLeft"><i *ngIf="item.loading != undefined && item.loading!=null && item.loading == 1" class="fa fa-spinner fa-spin"></i></h2> -->
+					  </button>
+				  </div>
+				  </div>
+			  </a>
+			</div>
+			<div  class="col-sm-6 col-lg-2 col-md-6">
+				<a href="http://localhost:4200/#/home">
+				  <div class="card text-white height-250" style="background-color: rgb(87,197,115);">
+					<div class="card-body pb-0" >
+					<div class="text-value text-uppercase font-weight-bold">CAN THIỆP TM: {{ct__TM}}</div>			  
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">CHƯA XỬ LÝ: {{ct__TM-ct__TM_DXL-ct__TM_HT}}</span></div>	
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">ĐANG XỬ LÝ: {{ct__TM_DXL}}</span></div>	
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">HOÀN THÀNH: {{ct__TM_HT}}</span></div>	
+					<span ><a href="http://localhost:4200/#/home"><i class="fa fa-hand-o-right" aria-hidden="true"></i></a></span>
+					
+					  <button type="button" class="btn btn-transparent p-0 float-right">
+						<i class="icon p-2 font-5xl mr-2"></i>
+						<!-- <div  class="spinner-border"></div> -->
+						<!-- <h2 class="animated fadeInLeft"><i *ngIf="item.loading != undefined && item.loading!=null && item.loading == 1" class="fa fa-spinner fa-spin"></i></h2> -->
+					  </button>
+				  </div>
+				  </div>
+			  </a>
+			</div>
+			<div  class="col-sm-6 col-lg-2 col-md-6">
+				<a href="http://localhost:4200/#/home">
+				  <div class="card text-white height-250" style="background-color: rgb(87,197,115);">
+					<div class="card-body pb-0" >
+					<div class="text-value text-uppercase font-weight-bold">CAN THIỆP TTĐQ: {{ct__DQ}}</div>			  
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">CHƯA XỬ LÝ: {{ct__DQ-ct__DQ_DXL-ct__DQ_HT}}</span></div>	
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">ĐANG XỬ LÝ: {{ct__DQ_DXL}}</span></div>	
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">HOÀN THÀNH: {{ct__DQ_HT}}</span></div>	
+					<span ><a href="http://localhost:4200/#/home"><i class="fa fa-hand-o-right" aria-hidden="true"></i></a></span>
+					
+					  <button type="button" class="btn btn-transparent p-0 float-right">
+						<i class="icon p-2 font-5xl mr-2"></i>
+						<!-- <div  class="spinner-border"></div> -->
+						<!-- <h2 class="animated fadeInLeft"><i *ngIf="item.loading != undefined && item.loading!=null && item.loading == 1" class="fa fa-spinner fa-spin"></i></h2> -->
+					  </button>
+				  </div>
+				  </div>
+			  </a>
+			</div>
+			<div  class="col-sm-6 col-lg-2 col-md-6">
+				<a href="http://localhost:4200/#/home">
+				  <div class="card text-white height-250" style="background-color: rgb(87,197,115);">
+					<div class="card-body pb-0" >
+					<div class="text-value text-uppercase font-weight-bold">CAN THIỆP XQ: {{ct__XQ}}</div>			  
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">CHƯA XỬ LÝ: {{ct__XQ-ct__XQ_DXL-ct__XQ_HT}}</span></div>	
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">ĐANG XỬ LÝ: {{ct__XQ_DXL}}</span></div>	
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">HOÀN THÀNH: {{ct__XQ_HT}}</span></div>	
+					<span ><a href="http://localhost:4200/#/home"><i class="fa fa-hand-o-right" aria-hidden="true"></i></a></span>
+					
+					  <button type="button" class="btn btn-transparent p-0 float-right">
+						<i class="icon p-2 font-5xl mr-2"></i>
+						<!-- <div  class="spinner-border"></div> -->
+						<!-- <h2 class="animated fadeInLeft"><i *ngIf="item.loading != undefined && item.loading!=null && item.loading == 1" class="fa fa-spinner fa-spin"></i></h2> -->
+					  </button>
+				  </div>
+				  </div>
+			  </a>
+			</div>
+			<div  class="col-sm-6 col-lg-4 col-md-6">
+				<a href="http://localhost:4200/#/home">
+				  <div class="card text-white height-250" style="background-color: rgb(87,197,115);">
+					<div class="card-body pb-0" >
+					<div class="text-value text-uppercase font-weight-bold">GÂY MÊ NGOÀI PHÒNG MỔ: {{npm__SUM}}</div>			  
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">CHƯA XỬ LÝ: {{npm__SUM-npm__SUM_DXL-npm__SUM_HT}}</span></div>	
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">ĐANG XỬ LÝ: {{npm__SUM_DXL}}</span></div>	
+					<div class="text-value text-uppercase font-weight-bold" ><span class="h5">HOÀN THÀNH: {{npm__SUM_HT}}</span></div>	
+					<span ><a href="http://localhost:4200/#/home"><i class="fa fa-hand-o-right" aria-hidden="true"></i></a></span>
+					
+					  <button type="button" class="btn btn-transparent p-0 float-right">
+						<i class="icon p-2 font-5xl mr-2"></i>
+						<!-- <div  class="spinner-border"></div> -->
+						<!-- <h2 class="animated fadeInLeft"><i *ngIf="item.loading != undefined && item.loading!=null && item.loading == 1" class="fa fa-spinner fa-spin"></i></h2> -->
+					  </button>
+				  </div>
+				  </div>
+			  </a>
+			</div>
+		  </div> 
+	   </div>
+	   <div class="row">  	
+		<div  class="col-6" >
+			<div class="text-value text-uppercase font-weight-bold" style="color: #ce1e50d7;">3. THỜI GIAN KHÁM</div>			  
+		</div>
+		<div  class="col-6" >
+				<div class="text-value text-uppercase font-weight-bold" style="color: #ce1e50d7;">4. TÌNH HÌNH BỆNH TẬT</div>			  
+		</div>
+		</div>
+		<div class="row">
+			<div class="col-6">
+				<div class="card text-white">
+					<div class="card-body pb-0">				
+						<div class="control-section">
+							<div class="col-md-12">
+								<ejs-chart style='display:block;width:100%; max-width: 1800px;' [chartArea]='chartAreaslkb'  align='center' id='chartcontainerslkb1' [primaryXAxis]='primaryXAxisslkb'
+						[primaryYAxis]='primaryYAxisslkb' [title]='titleslkb' [tooltip]='tooltipslkb' (load)='loadslkb($event)'>
+						<e-series-collection>
+							<e-series [dataSource]='reportdatas0' type='StackingBar' xName='SERVICE_NAMEs' yName='SUM_TIME' name='Trung bình (phút)' width=2> </e-series>
+						</e-series-collection>
+						</ejs-chart>
+							</div>
+						</div>
+					</div>
+				</div>	    
+			</div>  	
+			<div class="col-6">
+				<div class="card text-white">
+					<div class="card-body pb-0">				
+						<div class="control-section">
+							<div class="col-md-12">
+								<ejs-chart style='display:block;width:100%;' [chartArea]='chartAreaslIcd' align='center' id='chartcontainerslIcd1' [primaryXAxis]='primaryXAxisslIcd'
+								[primaryYAxis]='primaryYAxisslIcd' [title]='titleslIcd' [tooltip]='tooltipslIcd' (load)='loadslkb($event)'>
+								<e-series-collection>
+									<e-series [dataSource]='dataslIcd' type='StackingColumn' xName='X' yName='Y' name='Số bệnh nhân' width=2> </e-series>
+								</e-series-collection>
+								</ejs-chart>
+							</div>
+						</div>
+					</div>
+				</div>	    
+			</div>  	
+		</div>
+	   <!-- ================= 5. ĐIỀU TRỊ NGOẠI TRÚ ================= -->
+<div class="row">
+
+    <div class="col-12">
+
+        <!-- Tiêu đề -->
+        <div class="text-value text-uppercase font-weight-bold"
+             style="color:#ce1e50d7;">
+            5. ĐIỀU TRỊ NGOẠI TRÚ
+        </div>
+
+        <!-- Khung chung chứa 2 chart -->
+        <div class="card text-white">
+
+            <div class="card-body pb-0">
+
+                <div class="control-section">
+
+                    <div class="row">
+
+                        <!-- CHART 1 -->
+                        <div class="col-6">
+
+                            <div class="col-md-12">
+
+                                <ejs-chart
+                                    style="display:block;width:100%;"
+                                    [chartArea]="chartAreaslTrongBuong"
+                                    align="center"
+                                    id="chartcontainerslTrongBuong"
+                                    [primaryXAxis]="primaryXAxisslTrongBuong"
+                                    [primaryYAxis]="primaryYAxisslTrongBuong"
+                                    [title]="titleslTrongBuong"
+                                    [tooltip]="tooltipslTrongBuong"
+                                    (load)="loadslkb($event)">
+
+                                    <e-series-collection>
+
+                                        <e-series
+                                            [dataSource]="dataslTrongBuong"
+                                            type="StackingBar"
+                                            xName="X"
+                                            yName="Y"
+                                            name="Số bệnh nhân"
+											[marker]="makerTrongBuong"
+                                            width="2">
+                                        </e-series>
+
+                                    </e-series-collection>
+
+                                </ejs-chart>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- CHART 2 -->
+                        <div class="col-6">
+
+                            <div class="col-md-12">
+
+                                <ejs-chart
+                                    style="display:block;width:100%;"
+                                    [chartArea]="chartAreaslVao"
+                                    align="center"
+                                    id="chartcontainerslVao"
+                                    [primaryXAxis]="primaryXAxisslVao"
+                                    [primaryYAxis]="primaryYAxisslVao"
+                                    [title]="titleslVao"
+                                    [tooltip]="tooltipslVao"
+                                    (load)="loadslkb($event)">
+
+                                    <e-series-collection>
+
+                                        <e-series
+                                            [dataSource]="dataslVao"
+                                            type="StackingBar"
+                                            xName="X"
+                                            yName="Y"
+                                            name="Số bệnh nhân"
+											[marker]="makerTrongBuong"
+                                            width="2">
+                                        </e-series>
+
+                                    </e-series-collection>
+
+                                </ejs-chart>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+  <!-- </div> -->
+</div>

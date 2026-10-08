@@ -1,0 +1,121 @@
+<ngx-loading-bar></ngx-loading-bar>
+<div style="margin: -0.5rem -1.5rem 0.5rem -1.5rem; background-color: #fff;  height: 50px;" class="text-right p-0">
+	<div id="chonngay" style="display: inline-block;">			
+		<div class="devi-dtpicker-wrap">	
+			<div class="card-body">
+			 <span dropdown (onShown)="onShown()" (onHidden)="onHidden()" (isOpenChange)="isOpenChange()">
+				<a href dropdownToggle (click)="false">
+					<div class="devi-dtpicker">		
+						<i class="fa fa-angle-down"></i> 
+						<i class="devi-dfrom">{{searchRangeDate?.dayfrom}}</i> 
+						<b>
+							<i class="devi-mfrom">{{searchRangeDate?.monthfrom}}</i> 
+							<i class="devi-yfrom">{{searchRangeDate?.yearfrom}}</i>
+						</b>					
+						<em>–</em>			
+						<i class="fa fa-angle-down"></i>
+						<i class="devi-dto">{{searchRangeDate?.dayto}}</i> 
+						<b>
+							<i class="devi-mto">{{searchRangeDate?.monthto}}</i> 
+							<i class="devi-yto">{{searchRangeDate?.yearto}}</i>
+						</b>				
+					</div>	
+				</a>
+				  <ul *dropdownMenu class="dropdown-menu">
+					<li>
+					  <a class="dropdown-item" (click)="ClickSearch(1)">Hôm nay</a>
+					  <a class="dropdown-item" (click)="ClickSearch(5)">Hôm qua</a>
+					  <a class="dropdown-item" (click)="ClickSearch(3)">Tháng này</a>
+					  <a class="dropdown-item" (click)="ClickSearch(6)">Tháng trước</a>
+					  <!-- <a class="dropdown-item" (click)="ClickSearch(4)">Năm nay</a>
+					  <a class="dropdown-item" (click)="ClickSearch(7)">Năm trước</a> -->
+					  <!-- <a *ngIf="IsAllowCustomDateRange == 1"  class="dropdown-item" (click)="ChonNgayTuDen()">Bất kỳ</a> -->
+					</li>
+				  </ul>
+			  </span>
+			</div>
+		</div>			
+	</div>
+</div>
+<div class="animated fadeIn">
+  <div *ngIf="HaveData0==0">
+    <table id="table-list-groups" class="table table-bordered table-hover">
+      <thead>
+        <tr>
+          <!-- <th scope="col">#</th>           -->
+          <th style="width: 150px" class="align-middle text-center">THỜI GIAN GIAO DỊCH</th>
+          <th style="width: 120px" class="align-middle text-center">MÃ BN</th>
+          <th style="width: 150px" class="align-middle text-center">HỌ VÀ TÊN</th>
+          <th style="width: 200px" class="align-middle text-center">ĐỐI TƯỢNG</th>
+		  <th style="width: 150px" class="align-middle text-center">KHOA PHÒNG</th>
+		  <th style="width: 150px" class="align-middle text-center">SỔ</th>
+		  <th style="width: 100px" class="align-middle text-center">SỐ BL</th>
+		  <th style="width: 150px" class="align-middle text-center">NGÀY ĐÓNG</th>
+		  <th style="width: 150px" class="align-middle text-center">NGÀY THANH TOÁN</th>
+		  <th style="width: 150px" class="align-middle text-center">SỐ TIỀN</th>
+		  <th style="width: 150px" class="align-middle text-center">NGƯỜI THU TIỀN</th>
+        </tr>
+      </thead>
+      <tbody>
+		<!-- <tr *ngIf="reportdatas1?.length == 0"> -->
+		  <!-- <td colspan="3">Không tìm thấy dữ liệu</td> -->
+		<!-- </tr> -->
+		<tr>
+		  <td colspan="9">
+			<div class="font-weight-bold">Tổng số</div>
+		  </td>
+		  <td colspan="2">
+			<div class="font-weight-bold">{{sumDEPOSIT_CASH}}</div>
+		  </td>
+		</tr>
+		<ng-container *ngFor="let itemParent of reportdatas1; let i = index">
+		  <tr>
+			<td colspan="9">
+				<div class="text-value text-uppercase font-weight-bold">{{itemParent.TRANSACTION_DATE_STR}}</div>
+			</td>
+			<td colspan="2">
+				<div class="text-value text-uppercase font-weight-bold">{{itemParent.DEPOSIT_CASH}}</div>
+			</td>
+		  </tr>
+		  <ng-container *ngFor="let item of itemParent?.datas; let j = index">
+			<tr>			  
+			  <td>{{item?.TRANSACTION_TIME_STR}}</td>
+			  <td>{{item?.HIS_TREATMENT.TDL_PATIENT_CODE}}</td>
+			  <td>{{item?.VIR_PATIENT_NAME}}</td>
+			  <td>{{GetPatientTypeData(item?.HIS_TREATMENT.TDL_PATIENT_TYPE_ID)}}</td>
+			  <td>{{item?.NOW_DEPARTMENT_NAME}}</td>
+			  <td>{{item?.TRANSACTION.ACCOUNT_BOOK_NAME}}</td>
+			  <td>{{item?.TRANSACTION.NUM_ORDER}}</td>
+			  <td>{{formatNumberDate(item?.HIS_TREATMENT.OUT_TIME)}}</td>
+			  <td>{{formatNumberDate(item?.HIS_TREATMENT.FEE_LOCK_TIME)}}</td>
+			  <td>{{ConvertToStringShow(item?.DEPOSIT_CASH)}}</td>
+			  <td>{{item?.CASHIER_USERNAME}}</td>
+			</tr>
+		  </ng-container>
+		</ng-container>
+	  </tbody>
+    </table>
+    <div class="form-group">
+      <div style="text-align: center" class="dataTables_paginate_alignment" id="DataTables_Table_0_info" role="status" aria-live="polite">{{total0}} bản ghi - 
+        <input type="button" name="btnExport" class="export" (click)="exportExcel()" value="XLSX" />
+      </div>
+      <div>&nbsp;</div>
+    </div>
+    <div class="spinner" [ngClass]="{ 'hidden': !loading }"></div>
+  </div>
+  <div *ngIf="HaveData0==-1">
+    <div class="card">
+      <div class="card-body" style="text-align: center">
+        {{ 'message.dang tai du lieu' | translate }}
+      </div>
+    </div>
+  </div>  
+  <div *ngIf="HaveData0==1">
+    <div class="card">
+      <div class="card-body" style="text-align: center">
+        {{ 'message.khong tim thay du lieu' | translate }}
+      </div>
+    </div>
+  </div>
+  <div class="sk-circle12 sk-child"></div>
+</div>

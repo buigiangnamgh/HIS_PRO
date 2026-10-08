@@ -1,0 +1,193 @@
+
+<div style="margin: -0.5rem -1.5rem 0.5rem -1.5rem; background-color: #fff;  height: 50px;" class="text-right p-0">
+	<div id="chonngay" style="display: inline-block;">			
+		<div class="devi-dtpicker-wrap">	
+			<div class="card-body">
+			 <span dropdown (onShown)="onShown()" (onHidden)="onHidden()" (isOpenChange)="isOpenChange()">
+				<a href dropdownToggle (click)="false">
+					<div class="devi-dtpicker">		
+						<i class="fa fa-angle-down"></i> 
+						<i class="devi-dfrom">{{searchRangeDate?.dayfrom}}</i> 
+						<b>
+							<i class="devi-mfrom">{{searchRangeDate?.monthfrom}}</i> 
+							<i class="devi-yfrom">{{searchRangeDate?.yearfrom}}</i>
+						</b>					
+						<em>–</em>			
+						<i class="fa fa-angle-down"></i>
+						<i class="devi-dto">{{searchRangeDate?.dayto}}</i> 
+						<b>
+							<i class="devi-mto">{{searchRangeDate?.monthto}}</i> 
+							<i class="devi-yto">{{searchRangeDate?.yearto}}</i>
+						</b>				
+					</div>	
+				</a>
+				  <ul *dropdownMenu class="dropdown-menu">
+					<li>
+					  <a class="dropdown-item" (click)="ClickSearch(1)">Hôm nay</a>
+					  <a class="dropdown-item" (click)="ClickSearch(5)">Hôm qua</a>
+					  <a class="dropdown-item" (click)="ClickSearch(3)">Tháng này</a>
+					  <a class="dropdown-item" (click)="ClickSearch(6)">Tháng trước</a>
+					  <!-- <a class="dropdown-item" (click)="ClickSearch(4)">Năm nay</a>
+					  <a class="dropdown-item" (click)="ClickSearch(7)">Năm trước</a> -->
+					  <!-- <a *ngIf="IsAllowCustomDateRange == 1"  class="dropdown-item" (click)="ChonNgayTuDen()">Bất kỳ</a> -->
+					</li>
+				  </ul>
+			  </span>
+			</div>
+		</div>			
+	</div>
+</div>
+<div class="animated fadeIn">
+  <div>Loại đối tượng: BHYT</div>
+  <div *ngIf="HaveData0==0">
+	<!-- <div class="row"> -->
+		<!-- <div class="col-sm-4"> -->
+		  <!-- <label for="cvv">Tổng số khám: </label> -->
+		<!-- </div> -->
+		<!-- <div class="form-group col-sm-2"> -->
+		  <!-- <input type="text" class="form-control value" disabled value="{{ totalExam }}"> -->
+		<!-- </div> -->
+		<!-- <div class="col-sm-4"> -->
+		  <!-- <label for="cvv">Trong đó BHYT: </label> -->
+		<!-- </div> -->
+		<!-- <div class="form-group col-sm-2"> -->
+		  <!-- <input type="text" class="form-control value" disabled value="{{ totalBhyt }}"> -->
+		<!-- </div> -->
+	<!-- </div>  -->
+    <table class="table table-striped table-bordered datatable dataTable no-footer table-responsive">
+      <thead>
+        <tr>
+          <th scope="col">#</th>          
+          <th style="width: 200px">Ngày giao dịch</th>
+          <th style="width: 150px">Số chứng từ</th>
+          <th style="width: 150px">Mã điều trị</th>
+          <th style="width: 200px">Tên bệnh nhân</th>
+		  <th style="width: 150px">Thu</th>
+		  <th style="width: 150px">Chi</th>
+		  <th style="width: 200px">Loại giao dịch</th>
+		  <th style="width: 150px">Còn lại phải thu</th>
+        </tr>
+      </thead>
+      <tbody>
+		<tr>
+		  <td colspan="5">
+			<div class="font-weight-bold">Tổng số</div>
+		  </td>
+		  <td>
+			<div class="font-weight-bold">{{sumDEP_BIL}}</div>
+		  </td>
+		  <td>
+			<div class="font-weight-bold">{{sumREPAYs}}</div>
+		  </td>
+		  <td>
+			<div class="font-weight-bold"></div>
+		  </td>
+		  <td>
+			<div class="font-weight-bold">{{sumREDIASUAL_AMOUNT}}</div>
+		  </td>
+		</tr>
+        <tr *ngFor="let item of reportdatas; let j = index">
+          <td>{{j + 1}}</td>                   
+          <td>{{formatNumberDate(item?.CREATE_TIME)}}</td>
+          <td>{{item?.NUM_ORDER_STR}}</td>
+		  <td>{{item?.TREATMENT_CODE}}</td>
+		  <td>{{item?.VIR_PATIENT_NAME}}</td>
+		  <td>{{ConvertToStringShow(item?.DEP_BIL)}}</td>
+		  <td>{{ConvertToStringShow(item?.REPAYs)}}</td>
+		  <td>{{item?.TRANSACTION_TYPE_NAME}}</td>
+		  <td>{{ConvertToStringShow(item?.REDIASUAL_AMOUNT)}}</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="form-group">
+      <div style="text-align: center" class="dataTables_paginate_alignment" id="DataTables_Table_0_info" role="status" aria-live="polite">{{total0}} bản ghi - 
+        <input type="button" name="btnExport" class="export" (click)="exportExcel()" value="XLSX" />
+      </div>
+      <div>&nbsp;</div>
+    </div>
+    <div class="spinner" [ngClass]="{ 'hidden': !loading }"></div>
+  </div>
+  <div *ngIf="HaveData0==-1">
+    <div class="card">
+      <div class="card-body" style="text-align: center">
+        {{ 'message.dang tai du lieu' | translate }}
+      </div>
+    </div>
+  </div>  
+  <div *ngIf="HaveData0==1">
+    <div class="card">
+      <div class="card-body" style="text-align: center">
+        {{ 'message.khong tim thay du lieu' | translate }}
+      </div>
+    </div>
+  </div>
+  <div>Loại đối tượng: Khác</div>
+  <div *ngIf="HaveData1==0">	
+    <table class="table table-striped table-bordered datatable dataTable no-footer table-responsive">
+      <thead>
+        <tr>
+          <th scope="col">#</th>          
+          <th style="width: 200px">Ngày giao dịch</th>
+          <th style="width: 150px">Số chứng từ</th>
+          <th style="width: 150px">Mã điều trị</th>
+          <th style="width: 200px">Tên bệnh nhân</th>
+		  <th style="width: 150px">Thu</th>
+		  <th style="width: 150px">Chi</th>
+		  <th style="width: 200px">Loại giao dịch</th>
+		  <th style="width: 150px">Còn lại phải thu</th>
+        </tr>
+      </thead>
+      <tbody>
+		<tr>
+		  <td colspan="5">
+			<div class="font-weight-bold">Tổng số</div>
+		  </td>
+		  <td>
+			<div class="font-weight-bold">{{sumDEP_BIL1}}</div>
+		  </td>
+		  <td>
+			<div class="font-weight-bold">{{sumREPAYs1}}</div>
+		  </td>
+		  <td>
+			<div class="font-weight-bold"></div>
+		  </td>
+		  <td>
+			<div class="font-weight-bold">{{sumREDIASUAL_AMOUNT1}}</div>
+		  </td>
+		</tr>
+        <tr *ngFor="let item of reportdatasOther; let j = index">
+          <td>{{j + 1}}</td>                   
+          <td>{{formatNumberDate(item?.CREATE_TIME)}}</td>
+          <td>{{item?.NUM_ORDER_STR}}</td>
+		  <td>{{item?.TREATMENT_CODE}}</td>
+		  <td>{{item?.VIR_PATIENT_NAME}}</td>
+		  <td>{{ConvertToStringShow(item?.DEP_BIL)}}</td>
+		  <td>{{ConvertToStringShow(item?.REPAYs)}}</td>
+		  <td>{{item?.TRANSACTION_TYPE_NAME}}</td>
+		  <td>{{ConvertToStringShow(item?.REDIASUAL_AMOUNT)}}</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="form-group">
+      <div style="text-align: center" class="dataTables_paginate_alignment" id="DataTables_Table_0_info" role="status" aria-live="polite">{{total1}} bản ghi - 
+        <input type="button" name="btnExport" class="export" (click)="exportExcel2()" value="XLSX" />
+      </div>
+      <div>&nbsp;</div>
+    </div>
+    <div class="spinner" [ngClass]="{ 'hidden': !loading }"></div>
+  </div>
+  <div *ngIf="HaveData1==-1">
+    <div class="card">
+      <div class="card-body" style="text-align: center">
+        {{ 'message.dang tai du lieu' | translate }}
+      </div>
+    </div>
+  </div>  
+  <div *ngIf="HaveData1==1">
+    <div class="card">
+      <div class="card-body" style="text-align: center">
+        {{ 'message.khong tim thay du lieu' | translate }}
+      </div>
+    </div>
+  </div>
+</div>

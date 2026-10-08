@@ -1,0 +1,54 @@
+{
+  "ROUTES.authen": "authen",
+  "ROUTES.login": "login",
+  "app": {
+    "title": "Bệnh viện Hữu nghị Đa khoa Nghệ An",
+    "shorttitle": "BV Hữu nghị Đa khoa Nghệ An",
+    "lang vi": "Tiếng Việt",
+    "lang en": "Tiếng Anh"
+  },
+  "login": {
+    "subTitle": "Đăng nhập",
+    "form title": "Đăng nhập để bắt đầu phiên làm việc",
+    "username placeholder": "Tên đăng nhập...",
+    "password placeholder": "Mật khẩu...",    
+    "username validator": "Bạn cần điền thông tin tên đăng nhập",
+    "password validator": "Bạn cần điền thông tin mật khẩu",
+    "submit button": "Đăng nhập",
+    "forgot password": "Tìm lại mật khẩu!"
+  },
+  "forgotpassword": {
+    "subTitle": "Tìm lại mật khẩu",
+    "form title": "Điền thông tin địa chỉ email!",
+    "email validator": "Bạn cần điền thông tin email",
+    "submit button": "Tìm lại mật khẩu",
+    "back to login": "Quay lại trang đăng nhập",
+    "email placeholder": "Email"  
+  },
+  "changepassword": {
+    "subTitle": "Đổi mật khẩu",
+    "field validator": "Bạn cần điền thông tin",
+    "close button": "Tìm lại mật khẩu",
+    "save button": "Lưu",
+    "back to login": "Quay lại trang đăng nhập",
+    "oldpassword placeholder": "Mật khẩu cũ",  
+    "newpassword placeholder": "Mật khẩu mới",  
+    "newpasswordconfirm placeholder": "Xác nhận mật khẩu mới"
+  },
+  "admin": {    
+    "profile": "Đổi mật khẩu",
+    "logout": "Đăng xuất",
+    "search": "Tìm kiếm...",
+    "menu": "Các chức năng"
+  },
+  "message": {
+    "the chua duoc tich hop voi he thong ho so suc khoe":"Thẻ của bạn chưa được tích hợp với hệ thống hồ sơ sức khỏe cá nhân. Vui lòng liên hệ bộ phận chăm sóc khách hàng 19006888 để được hỗ trợ.",
+    "dang nhap that bai":"Đăng nhập không thành công. Thông tin đăng nhập không chính xác!",
+    "xu ly that bai":"Xử lý thất bại",
+    "tinh nang nay chi danh cho chu so huu mot the quoc gia":"Tính năng này chỉ dành cho chủ sở hữu một thẻ quốc gia. Vui lòng liên hệ với cơ sở y tế khám chữa bệnh hoặc tổng đài 19006888 để được hỗ trợ.",
+    "ho so khong co anh kha dung":"Hồ sơ cá nhân của bạn hiện không có ảnh khả dụng. Vui lòng liên hệ với cơ sở y tế khám chữa bệnh hoặc tổng đài 19006888 để được hỗ trợ.",
+	"khong tim thay du lieu":"KHÔNG TÌM THẤY DỮ LIỆU",
+	"dang tai du lieu":"ĐANG TẢI DỮ LIỆU"
+  },
+  "emptySpace":": "
+}

@@ -1,0 +1,90 @@
+<div style="margin: -0.5rem -1.5rem 0.5rem -1.5rem; background-color: #fff;  height: 50px;" class="text-right p-0">
+	<div id="chonngay" style="display: inline-block;">			
+		<div class="devi-dtpicker-wrap">	
+			<div class="card-body">
+			 <span dropdown (onShown)="onShown()" (onHidden)="onHidden()" (isOpenChange)="isOpenChange()">
+				<a href dropdownToggle (click)="false">
+					<div class="devi-dtpicker">		
+						<i class="fa fa-angle-down"></i> 
+						<i class="devi-dfrom">{{searchRangeDate?.dayfrom}}</i> 
+						<b>
+							<i class="devi-mfrom">{{searchRangeDate?.monthfrom}}</i> 
+							<i class="devi-yfrom">{{searchRangeDate?.yearfrom}}</i>
+						</b>					
+						<em>–</em>			
+						<i class="fa fa-angle-down"></i>
+						<i class="devi-dto">{{searchRangeDate?.dayto}}</i> 
+						<b>
+							<i class="devi-mto">{{searchRangeDate?.monthto}}</i> 
+							<i class="devi-yto">{{searchRangeDate?.yearto}}</i>
+						</b>				
+					</div>	
+				</a>
+				
+				<button
+				type="button"
+				class="btn btn-primary btn-lg"
+				id="previous_slide"
+				(click)="ClickSegment(1)"
+			  >
+				<
+			  </button>
+			  <button
+				type="button"
+				class="btn btn-primary btn-lg"
+				id="next_slide"
+				(click)="ClickSegment(-1)"
+			  >
+				>
+			  </button>
+				  <ul *dropdownMenu class="dropdown-menu">
+					<li>
+					  <a class="dropdown-item" (click)="ClickSearch(1)">Hôm nay</a>
+					  <a class="dropdown-item"  (click)="ClickSearch(5)">Hôm qua</a>
+					  <a class="dropdown-item" (click)="ClickSearch(3)">Tháng này</a>
+					  <a class="dropdown-item"  (click)="ClickSearch(6)">Tháng trước</a>
+					  <!-- <a class="dropdown-item" (click)="ClickSearch(4)">Năm nay</a>
+					  <a class="dropdown-item" (click)="ClickSearch(7)">Năm trước</a> -->
+					  <!-- <a *ngIf="IsAllowCustomDateRange == 1"  class="dropdown-item"  (click)="ChonNgayTuDen()">Bất kỳ</a> -->
+					</li>
+				  </ul>
+			  </span>
+			</div>
+		</div>			
+	</div>
+</div>  
+<!-- http://localhost:4200/#/thoigiankham -->
+<div class="animated fadeIn">
+	<div class="card text-white">
+		<div class="card-body pb-0">
+			<div class="control-section" style="overflow-x:auto;">
+				<ejs-chart style="display:block; min-width:1400px;" id="chartTGKB" [chartArea]="chartAreaTG"
+					[primaryXAxis]="primaryXAxisTG" [primaryYAxis]="primaryYAxisTG"
+					[title]="titleTGKB" [tooltip]="tooltipTG" [legendSettings]="legendTG" (load)="loadTG($event)">
+					<e-series-collection>
+						<e-series [dataSource]="dataChoKB" type="Column" xName="x" yName="y" [fill]="colorCho"
+							[name]="hospitalName + ' - Thời gian chờ'" [marker]="markerTG" columnSpacing="0.1"></e-series>
+						<e-series [dataSource]="dataThucHienKB" type="Column" xName="x" yName="y" [fill]="colorThucHien"
+							[name]="hospitalName + ' - Thời gian thực hiện'" [marker]="markerTG" columnSpacing="0.1"></e-series>
+					</e-series-collection>
+				</ejs-chart>
+			</div>
+		</div>
+	</div>
+	<div class="card text-white">
+		<div class="card-body pb-0">
+			<div class="control-section" style="overflow-x:auto;">
+				<ejs-chart style="display:block; min-width:1400px;" id="chartTGCSSK" [chartArea]="chartAreaTG"
+					[primaryXAxis]="primaryXAxisTG" [primaryYAxis]="primaryYAxisTG"
+					[title]="titleTGCSSK" [tooltip]="tooltipTG" [legendSettings]="legendTG" (load)="loadTG($event)">
+					<e-series-collection>
+						<e-series [dataSource]="dataChoCSSK" type="Column" xName="x" yName="y" [fill]="colorCho"
+							[name]="hospitalName + ' - Thời gian chờ'" [marker]="markerTG" columnSpacing="0.1"></e-series>
+						<e-series [dataSource]="dataThucHienCSSK" type="Column" xName="x" yName="y" [fill]="colorThucHien"
+							[name]="hospitalName + ' - Thời gian thực hiện'" [marker]="markerTG" columnSpacing="0.1"></e-series>
+					</e-series-collection>
+				</ejs-chart>
+			</div>
+		</div>
+	</div>
+</div>

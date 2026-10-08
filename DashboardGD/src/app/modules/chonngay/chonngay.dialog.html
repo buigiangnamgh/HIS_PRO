@@ -1,0 +1,35 @@
+<div class="alert-box">
+	<div class="modal-header">
+		<h4 class="modal-title pull-left">Chọn ngày từ - đến</h4>
+		<button type="button" class="close pull-right" aria-label="Close" (click)="hide()">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body">
+		<table class="pickertable">
+			<tr>
+				<td>
+					<form>					
+						<div class="input-group">
+							<input class="form-control" angular-mydatepicker [(ngModel)]="modelSearch" name="mydaterange" [options]="myDateRangePickerOptions" 
+			#dp="angular-mydatepicker" (dateChanged)="onDateRangeChanged($event)" />						
+							<div class="input-group-append">
+							  <button type="button" class="btn btn-secondary" (click)="dp.clearDate()">
+								<i class="fa fa-close"></i>
+							  </button>
+							</div>
+							<div class="input-group-append">
+							  <button type="button" class="btn btn-secondary" (click)="dp.toggleCalendar()">
+								<i class="fa fa-calendar-o"></i>
+							  </button>
+							</div>
+						</div>
+						
+						 </form>
+				</td>
+			 </tr>
+		</table>			
+	</div>
+</div> 
+
+    

@@ -1,0 +1,33 @@
+a {
+  color: #3c8dbc;
+}
+a:hover,
+a:active,
+a:focus {
+  outline: none;
+  text-decoration: none;
+  color: #72afd2;
+}
+
+.hidespin{
+  display: none;
+}
+.height-250{
+  height: 250px !important;
+}
+.green {
+  color:green !important;
+  }
+  .font-weight-italic {
+    
+    font-size: 20px !important;
+  }
+  .font-weight-bold {
+    
+    font-size: 20px !important;
+  }
+  
+  .font-weight-bold-title {
+    
+    font-size: 40px !important;
+  }

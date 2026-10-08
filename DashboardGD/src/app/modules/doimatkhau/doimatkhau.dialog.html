@@ -1,0 +1,38 @@
+<!-- <div bsModal #smModal="bs-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content"> -->
+            <div class="alert-box" [formGroup]="form">
+                <div class="modal-header">
+                    <h4 class="modal-title pull-left">{{'changepassword.subTitle' | translate}}</h4>
+                    <button type="button" class="close pull-right" aria-label="Close" (click)="hide()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="container">                  
+                        <div class="input-group mb-3">
+                            <input type="password" class="form-control" id="oldpassword" name="oldpassword" placeholder="{{'changepassword.oldpassword placeholder' | translate}}" formControlName="oldpassword" [ngClass]="{'is-invalid': !form.controls['oldpassword'].valid}">
+                            <!-- <div class="help-block with-errors"></div> -->
+                            <!-- <em id="password-error" class="error invalid-feedback">Your password must be at least 5 characters long</em> -->
+                            <!-- <input type="password" class="form-control is-invalid" id="password" name="password" placeholder="Password" aria-describedby="password-error" aria-invalid="true"><em id="password-error" class="error invalid-feedback">Your password must be at least 5 characters long</em> -->
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="password" class="form-control" id="newpassword" name="newpassword" placeholder="{{'changepassword.newpassword placeholder' | translate}}" formControlName="newpassword"  [ngClass]="{'is-invalid': !form.controls['newpassword'].valid}">
+                            <!-- <div class="help-block with-errors"></div> -->
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="password" class="form-control" name="newpasswordconfirm" placeholder="{{'changepassword.newpasswordconfirm placeholder' | translate}}" formControlName="newpasswordConfirm"  [ngClass]="{'is-invalid': !form.controls['newpasswordConfirm'].valid}">
+                            <!-- <div class="alert alert-danger" *ngIf="form.controls.newpasswordconfirm.errors?.MutchPassword">Password not match</div> -->
+                            <!-- <div class="help-block with-errors"></div> -->
+                        </div>                               
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" (click)="changePassword(form.value)" [disabled]="isDisableButton || !form.valid">{{'changepassword.save button' | translate}}</button>
+                </div>
+            </div>   
+            <!-- 
+        </div>
+    </div> -->
+    
+    
