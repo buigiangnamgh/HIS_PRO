@@ -97,6 +97,7 @@
 				  <div ><span class="h3" style = "color: white;">ĐANG NẰM VIỆN {{dangnamvien__SUM}}</span></div>
 				  <div class="text-value text-uppercase font-weight-bold" ><span class="h5"> - BN BHYT: {{dangnamvien__SUM_BHYT}}</span> </div>		
 				  <div class="text-value text-uppercase font-weight-bold" ><span class="h5"> - BN VP: {{dangnamvien__SUM_VP}}</span></div>
+				  <div class="text-value text-uppercase font-weight-bold" ><span class="h5"> - TG ĐIỀU TRỊ TB TOÀN VIỆN: {{dangnamvien__TG_DIEUTRI}} NGÀY</span></div>
 				  <span ><a href="http://localhost:4200/#/home"> <i class="fa fa-hand-o-right" aria-hidden="true"></i></a></span>			  	  
 				  <button type="button" class="btn btn-transparent p-0 float-right">
 					<i class="icon p-2 font-5xl mr-2"></i>
@@ -172,9 +173,9 @@
 				<div class="card-body pb-0">
 					<div class="control-section">
 						<div class="col-md-12">
-							 <ejs-accumulationchart id='container01' style='display:block; width: 105%' [legendSettings]="legendSettings0" [tooltip]="tooltip0" [titleStyle] = "titleStyle" [title]="title1" [enableSmartLabels] = 'enableSmartLabels' [enableAnimation] = 'enableAnimation' (load)='onLoad0($event)'>
+							 <ejs-accumulationchart id='container01' style='display:block; width: 105%' (tooltipRender)="tooltipRenderHTT($event)" (loaded)="loadedHTT($event)" (animationComplete)="loadedHTT($event)" [legendSettings]="legendSettings0" [tooltip]="tooltip0" [titleStyle] = "titleStyle" [title]="title1" [enableSmartLabels] = 'enableSmartLabels' [enableAnimation] = 'enableAnimation' (load)='onLoad0($event)'>
 								<e-accumulation-series-collection> 
-									<e-accumulation-series name='SL' [dataSource]='data1' xName='x' yName='y' radius="100%" [startAngle]="startAngle0"  [endAngle]="endAngle0" innerRadius="0%"  [dataLabel]="dataLabel" [explode]='explode' [explodeOffset]='explodeOffset'> </e-accumulation-series>
+									<e-accumulation-series name='SL' [dataSource]='data1' xName='x' yName='y' radius="80%" [startAngle]="startAngle0"  [endAngle]="endAngle0" innerRadius="0%"  [dataLabel]="dataLabelHTT" [explode]='explode' [explodeOffset]='explodeOffset'> </e-accumulation-series>
 								</e-accumulation-series-collection>
 							</ejs-accumulationchart>
 						</div>
@@ -527,16 +528,13 @@
 			</div>
 		  </div> 
 	   </div>
-	   <div class="row">  	
-		<div  class="col-6" >
-			<div class="text-value text-uppercase font-weight-bold" style="color: #ce1e50d7;">3. THỜI GIAN KHÁM</div>			  
+	   <div class="row">
+		<div class="col-12">
+			<div class="text-value text-uppercase font-weight-bold" style="color: #ce1e50d7;">3. THỜI GIAN KHÁM</div>
 		</div>
-		<div  class="col-6" >
-				<div class="text-value text-uppercase font-weight-bold" style="color: #ce1e50d7;">4. TÌNH HÌNH BỆNH TẬT</div>			  
-		</div>
-		</div>
+	   </div>
 		<div class="row">
-			<div class="col-6">
+			<div class="col-12">
 				<div class="card text-white">
 					<div class="card-body pb-0">				
 						<div class="control-section">
@@ -552,7 +550,89 @@
 					</div>
 				</div>	    
 			</div>  	
-			<div class="col-6">
+		</div>
+		<div class="row">
+			<div class="col-12">
+				<div class="text-value text-uppercase font-weight-bold" style="color: #ce1e50d7;">4. THỜI GIAN CHỜ &amp; THỰC HIỆN KHÁM</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-12">
+				<div class="card text-white">
+					<div class="card-body pb-0">
+						<div class="control-section" style="overflow-x:auto;">
+							<ejs-chart style="display:block; min-width:1400px;" height="900px" id="chartcontainerSLKB" [chartArea]="chartAreaslkb" align="center"
+								[primaryXAxis]="primaryXAxisSL" [primaryYAxis]="primaryYAxisSL"
+								[title]="titleSLKB" [tooltip]="tooltipSL" [legendSettings]="legendSL"
+								(load)="loadslkb($event)" (textRender)="textRenderSL($event)" (legendRender)="legendRenderSL($event)">
+								<e-series-collection>
+									<e-series [dataSource]="dataDaSLKB" type="StackingColumn" xName="x" yName="y" name="Đã thực hiện" [fill]="colorDa" [marker]="markerSL"></e-series>
+									<e-series [dataSource]="dataDangSLKB" type="StackingColumn" xName="x" yName="y" name="Đang thực hiện" [fill]="colorDang" [marker]="markerSL"></e-series>
+									<e-series [dataSource]="dataChuaSLKB" type="StackingColumn" xName="x" yName="y" name="Chưa thực hiện" [fill]="colorChua" [marker]="markerSL"></e-series>
+									<e-series [dataSource]="dataTongSLKB" type="Line" xName="x" yName="y" name="Tổng" width="0" fill="transparent" [marker]="markerTongSL"></e-series>
+								</e-series-collection>
+							</ejs-chart>
+						</div>
+					</div>
+				</div>
+				<div class="card text-white">
+					<div class="card-body pb-0">
+						<div class="control-section" style="overflow-x:auto;">
+							<ejs-chart style="display:block; min-width:1400px;" height="900px" id="chartcontainerSLYC" [chartArea]="chartAreaslkb" align="center"
+								[primaryXAxis]="primaryXAxisSL" [primaryYAxis]="primaryYAxisSL"
+								[title]="titleSLYC" [tooltip]="tooltipSL" [legendSettings]="legendSL"
+								(load)="loadslkb($event)" (textRender)="textRenderSL($event)" (legendRender)="legendRenderSL($event)">
+								<e-series-collection>
+									<e-series [dataSource]="dataDaSLYC" type="StackingColumn" xName="x" yName="y" name="Đã thực hiện" [fill]="colorDa" [marker]="markerSL"></e-series>
+									<e-series [dataSource]="dataDangSLYC" type="StackingColumn" xName="x" yName="y" name="Đang thực hiện" [fill]="colorDang" [marker]="markerSL"></e-series>
+									<e-series [dataSource]="dataChuaSLYC" type="StackingColumn" xName="x" yName="y" name="Chưa thực hiện" [fill]="colorChua" [marker]="markerSL"></e-series>
+									<e-series [dataSource]="dataTongSLYC" type="Line" xName="x" yName="y" name="Tổng" width="0" fill="transparent" [marker]="markerTongSL"></e-series>
+								</e-series-collection>
+							</ejs-chart>
+						</div>
+					</div>
+				</div>
+				<div class="card text-white">
+					<div class="card-body pb-0">
+						<div class="control-section" style="overflow-x:auto;">
+							<ejs-chart style="display:block; min-width:1400px;" height="900px" id="chartcontainerTGKB" [chartArea]="chartAreaslkb" align="center"
+								[primaryXAxis]="primaryXAxisTG" [primaryYAxis]="primaryYAxisTG"
+								[title]="titleTGKB" [tooltip]="tooltipTG" [legendSettings]="legendTG" (load)="loadslkb($event)">
+								<e-series-collection>
+									<e-series [dataSource]="dataChoKB" type="Column" xName="x" yName="y" [fill]="colorCho"
+										[name]="hospitalName + ' - Thời gian chờ'" [marker]="markerTG" columnSpacing="0.1"></e-series>
+									<e-series [dataSource]="dataThucHienKB" type="Column" xName="x" yName="y" [fill]="colorThucHien"
+										[name]="hospitalName + ' - Thời gian thực hiện'" [marker]="markerTG" columnSpacing="0.1"></e-series>
+								</e-series-collection>
+							</ejs-chart>
+						</div>
+					</div>
+				</div>
+				<div class="card text-white">
+					<div class="card-body pb-0">
+						<div class="control-section" style="overflow-x:auto;">
+							<ejs-chart style="display:block; min-width:1400px;" height="900px" id="chartcontainerTGCSSK" [chartArea]="chartAreaslkb" align="center"
+								[primaryXAxis]="primaryXAxisTG" [primaryYAxis]="primaryYAxisTG"
+								[title]="titleTGCSSK" [tooltip]="tooltipTG" [legendSettings]="legendTG" (load)="loadslkb($event)">
+								<e-series-collection>
+									<e-series [dataSource]="dataChoCSSK" type="Column" xName="x" yName="y" [fill]="colorCho"
+										[name]="hospitalName + ' - Thời gian chờ'" [marker]="markerTG" columnSpacing="0.1"></e-series>
+									<e-series [dataSource]="dataThucHienCSSK" type="Column" xName="x" yName="y" [fill]="colorThucHien"
+										[name]="hospitalName + ' - Thời gian thực hiện'" [marker]="markerTG" columnSpacing="0.1"></e-series>
+								</e-series-collection>
+							</ejs-chart>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-12">
+				<div class="text-value text-uppercase font-weight-bold" style="color: #ce1e50d7;">5. TÌNH HÌNH BỆNH TẬT</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-12">
 				<div class="card text-white">
 					<div class="card-body pb-0">				
 						<div class="control-section">
@@ -569,7 +649,7 @@
 				</div>	    
 			</div>  	
 		</div>
-	   <!-- ================= 5. ĐIỀU TRỊ NGOẠI TRÚ ================= -->
+	   <!-- ================= 6. ĐIỀU TRỊ NGOẠI TRÚ ================= -->
 <div class="row">
 
     <div class="col-12">
@@ -577,7 +657,7 @@
         <!-- Tiêu đề -->
         <div class="text-value text-uppercase font-weight-bold"
              style="color:#ce1e50d7;">
-            5. ĐIỀU TRỊ NGOẠI TRÚ
+            6. ĐIỀU TRỊ NGOẠI TRÚ
         </div>
 
         <!-- Khung chung chứa 2 chart -->

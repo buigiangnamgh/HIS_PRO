@@ -209,6 +209,80 @@ public tooltipslTrongBuong: string = "BUỒNG ĐIỀU TRỊ NGOẠI TRÚ";
 public titleslVao: string = "VÀO VIỆN ĐIỀU TRỊ NGOẠI TRÚ";
 public tooltipslVao: string = "VÀO VIỆN ĐIỀU TRỊ NGOẠI TRÚ";
 
+// ===== 4. THỜI GIAN CHỜ & THỰC HIỆN KHÁM =====
+public hospitalName: string = 'Bệnh viện Hữu nghị đa khoa Nghệ An';
+public dataChoKB: Object[] = [];
+public dataThucHienKB: Object[] = [];
+public dataChoCSSK: Object[] = [];
+public dataThucHienCSSK: Object[] = [];
+public colorCho: string = '#29b6f6';
+public colorThucHien: string = '#5b4fc4';
+// --- Số lượt khám theo phòng (cột chồng: chưa / đang / đã thực hiện) ---
+public dataDaSLKB: Object[] = [];
+public dataDangSLKB: Object[] = [];
+public dataChuaSLKB: Object[] = [];
+public dataTongSLKB: Object[] = [];
+public dataDaSLYC: Object[] = [];
+public dataDangSLYC: Object[] = [];
+public dataChuaSLYC: Object[] = [];
+public dataTongSLYC: Object[] = [];
+public titleSLKB: string = 'Tổng số lượt khám: 0 - Tổng số phòng thực hiện: 0';
+public titleSLYC: string = 'Tổng số lượt khám PK Yêu cầu: 0 - Tổng số phòng thực hiện: 0';
+public colorChua: string = '#f15c5c';
+public colorDang: string = '#f7a35c';
+public colorDa: string = '#90ed7d';
+public primaryXAxisSL: Object = {
+  valueType: 'Category', interval: 1, labelRotation: -45,
+  labelIntersectAction: 'None', majorGridLines: { width: 0 }, title: 'Phòng thực hiện'
+};
+public primaryYAxisSL: Object = {
+  title: 'Số lượng bệnh nhân', minimum: 0, labelFormat: '{value}',
+  lineStyle: { width: 0 }, majorTickLines: { width: 0 }
+};
+public markerSL: Object = { dataLabel: { visible: true, position: 'Middle', font: { fontWeight: '600' } } };
+public markerTongSL: Object = { visible: false, dataLabel: { visible: true, position: 'Top', font: { fontWeight: '700' } } };
+public tooltipSL: Object = { enable: true, shared: true, format: '${series.name}: <b>${point.y}</b>', header: '<b>${point.x}</b>' };
+public legendSL: Object = { visible: true, position: 'Bottom', toggleVisibility: false };
+// ẩn nhãn "0" trong cột chồng
+public textRenderSL(args: any): void {
+  if (args.text === '0') { args.text = ''; }
+}
+// ẩn mục chú thích của series "Tổng" (chỉ dùng để hiện tổng trên đầu cột)
+public legendRenderSL(args: any): void {
+  if (args.text === 'Tổng') { args.cancel = true; }
+}
+private fmtSo(n: number): string {
+  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+private buildSL(rows: any[]): { da: Object[], dang: Object[], chua: Object[], tong: Object[], luot: number } {
+  const da: Object[] = [], dang: Object[] = [], chua: Object[] = [], tong: Object[] = [];
+  let luot = 0;
+  (rows || []).forEach(r => {
+    const x = r.ROOM_NAME || '';
+    const t = Number(r.TONG) || 0;
+    da.push({ x: x, y: Number(r.DA) || 0 });
+    dang.push({ x: x, y: Number(r.DANG) || 0 });
+    chua.push({ x: x, y: Number(r.CHUA) || 0 });
+    tong.push({ x: x, y: t });
+    luot += t;
+  });
+  return { da, dang, chua, tong, luot };
+}
+
+public titleTGKB: string = 'TRUNG BÌNH THỜI GIAN CHỜ & THỰC HIỆN KHÁM BỆNH';
+public titleTGCSSK: string = 'TRUNG BÌNH THỜI GIAN CHỜ & THỰC HIỆN ĐƠN VỊ CSSK YÊU CẦU';
+public primaryXAxisTG: Object = {
+  valueType: 'Category', interval: 1, labelRotation: -45,
+  labelIntersectAction: 'None', majorGridLines: { width: 0 }, title: 'Phòng khám'
+};
+public primaryYAxisTG: Object = {
+  title: 'Thời gian trung bình (phút)', minimum: 0, labelFormat: '{value}',
+  lineStyle: { width: 0 }, majorTickLines: { width: 0 }
+};
+public markerTG: Object = { dataLabel: { visible: true, position: 'Outer', font: { fontWeight: '600' } } };
+public tooltipTG: Object = { enable: true, shared: true, format: '${series.name}: <b>${point.y} phút</b>', header: '<b>${point.x}</b>' };
+public legendTG: Object = { visible: true, position: 'Bottom', toggleVisibility: true };
+
 public dataslIcd: any;
 
 public dataslTrongBuong: any;
@@ -296,6 +370,22 @@ public dataLabel: Object = {
     size: '15px'
   }
 };
+// Nhãn biểu đồ hình thức thu tiền: chữ trắng, nền đen cố định cho mọi lát cắt
+public dataLabelHTT: Object = {
+  visible: true,
+  position: 'Inside', maxWidth: 230,
+  textWrap: 'Wrap',
+  name: 'text',
+  enableRotation: false,
+  fill: '#000000',
+  opacity: 1,
+  border: { width: 0 },
+  font: {
+    fontWeight: '900',
+    color: '#ffffff',
+    size: '15px'
+  }
+};
 public title0: string = 'TỶ LỆ BỆNH NHÂN VÀO/RA';
 public title1: string = 'TỶ LỆ HÌNH THỨC THU TIỀN';
 	//begin chart hoat dong phau thuat thu thuat
@@ -356,6 +446,7 @@ public khambenhyeucau__TOTAL_PRICE : number = 0;
 public khamcapcuu__SUM_TONG = 0;
 public dangnamvien__SUM = 0;
 public dangnamvien__SUM_VP = 0;
+public dangnamvien__TG_DIEUTRI: string = '0';
 public dangnamvien__SUM_BHYT = 0;
 public vaovien__SUM_COUNT_TREATMENT_IN_BHYT : number;
 public vaovien__SUM_VP : number;
@@ -448,6 +539,9 @@ setReportDataMenu(){
   this.loadTopIcd();
   this.loadTrongBuong();
   this.loadVao();
+  this.loadThoiGianKham();
+  this.loadThoiGianDieuTri();
+  this.loadSoLuotKham();
 }
 
 LoadKhamBenh()  {
@@ -869,6 +963,132 @@ LoadNhaThuoc()  {
   });
 }
 
+// ===== Hiệu ứng 3D (giả lập) cho biểu đồ hình thức thu tiền =====
+public pie3dHTT: boolean = false;      // false = tắt hiệu ứng 3D, trở về hình tròn phẳng
+private pie3dK: number = 0.7;         // độ nghiêng: 1 = phẳng, càng nhỏ càng nghiêng
+private pie3dDepth: number = 4;       // độ dày mỗi lớp (px), xếp 4 lớp
+
+public loadedHTT(args: any): void {
+  setTimeout(() => { this.apply3dHTT(); this.applyArrowsHTT(); }, 0);
+  setTimeout(() => { this.apply3dHTT(); this.applyArrowsHTT(); }, 700); // nhãn xuất hiện sau hiệu ứng animation
+}
+
+// Gắn đầu mũi tên vào đường nối, mũi tên chỉ vào lát cắt tương ứng
+private applyArrowsHTT(): void {
+  const id = 'container01';
+  const svg: any = document.getElementById(id + '_svg');
+  const slices: any = document.getElementById(id + '_Series_0');
+  if (!svg || !slices || typeof slices.getBBox !== 'function') { return; }
+  const NS = 'http://www.w3.org/2000/svg';
+  if (!document.getElementById('arrowHTT')) {
+    let defs = svg.querySelector('defs');
+    if (!defs) { defs = document.createElementNS(NS, 'defs'); svg.insertBefore(defs, svg.firstChild); }
+    const mk = document.createElementNS(NS, 'marker');
+    mk.setAttribute('id', 'arrowHTT');
+    mk.setAttribute('viewBox', '0 0 10 10');
+    mk.setAttribute('refX', '9');
+    mk.setAttribute('refY', '5');
+    mk.setAttribute('markerUnits', 'userSpaceOnUse');
+    mk.setAttribute('markerWidth', '14');
+    mk.setAttribute('markerHeight', '14');
+    mk.setAttribute('orient', 'auto-start-reverse');
+    const ph = document.createElementNS(NS, 'path');
+    ph.setAttribute('d', 'M0,0 L10,5 L0,10 z');
+    ph.setAttribute('fill', '#000000');
+    mk.appendChild(ph);
+    defs.appendChild(mk);
+  }
+  // Rê chuột vào nhãn -> hiện tooltip của biểu đồ cho đúng lát cắt (cần cho lát rất nhỏ, khó rê trúng)
+  const names = ['Tiền mặt', 'Chuyển khoản', 'QR code', 'QRcode giao dịch check']; // theo thứ tự trong data1
+  const lbls = document.querySelectorAll('#' + id + ' .htt-label');
+  for (let t = 0; t < lbls.length; t++) {
+    const lb: any = lbls[t];
+    if (lb.getAttribute('data-tip')) { continue; }
+    const txt = (lb.textContent || '').trim();
+    let idx = -1;
+    for (let n = 0; n < names.length; n++) {
+      if (txt.indexOf(names[n]) === 0) { idx = n; }   // tên dài hơn đứng sau nên ưu tiên khớp dài nhất
+    }
+    if (idx < 0) { continue; }
+    lb.setAttribute('data-tip', '1');
+    const show = (ev: any) => {
+      ev.stopPropagation();
+      const sl: any = document.getElementById(id + '_Series_0_Point_' + idx);
+      if (!sl) { return; }
+      const r = sl.getBoundingClientRect();
+      sl.dispatchEvent(new MouseEvent('mousemove', {
+        bubbles: true, cancelable: true, view: window,
+        clientX: r.left + r.width / 2, clientY: r.top + r.height / 2
+      }));
+    };
+    lb.addEventListener('mouseenter', show);
+    lb.addEventListener('mousemove', show);
+  }
+  const bb = slices.getBBox();
+  const cx = bb.x + bb.width / 2, cy = bb.y + bb.height / 2;
+  const paths = svg.querySelectorAll('path[id^="' + id + '_datalabel_Series_0_connector"]');
+  for (let i = 0; i < paths.length; i++) {
+    const pth: any = paths[i];
+    if (pth.getAttribute('data-arrow') || typeof pth.getTotalLength !== 'function') { continue; }
+    const len = pth.getTotalLength();
+    const a = pth.getPointAtLength(0), b = pth.getPointAtLength(len);
+    const da = Math.hypot(a.x - cx, a.y - cy), db = Math.hypot(b.x - cx, b.y - cy);
+    // đầu gần tâm biểu đồ hơn là đầu chạm lát cắt -> đặt mũi tên ở đó
+    pth.setAttribute(da <= db ? 'marker-start' : 'marker-end', 'url(#arrowHTT)');
+    pth.setAttribute('data-arrow', '1');
+  }
+}
+
+private apply3dHTT(): void {
+  if (!this.pie3dHTT) { return; }
+  const id = 'container01';
+  const k = this.pie3dK;
+  const slices: any = document.getElementById(id + '_Series_0');
+  if (!slices || typeof slices.getBBox !== 'function') { return; }
+  if (!slices.getAttribute('data-3d')) {
+    const bb = slices.getBBox();
+    const cy = bb.y + bb.height / 2;
+    const old = slices.getAttribute('transform') || '';
+    slices.setAttribute('transform', 'translate(0,' + (cy * (1 - k)) + ') scale(1,' + k + ') ' + old);
+    const d = this.pie3dDepth;
+    const sh = 'drop-shadow(0px ' + d + 'px 0px rgba(0,0,0,0.28))';
+    slices.style.filter = sh + ' ' + sh + ' ' + sh + ' ' + sh;
+    slices.setAttribute('data-3d', '1');
+    slices.setAttribute('data-cy', String(cy));
+  }
+  const cy0 = parseFloat(slices.getAttribute('data-cy'));
+  const labels: any = document.getElementById(id + '_datalabel_Series_0');
+  if (labels && !labels.getAttribute('data-3d') && !isNaN(cy0)) {
+    // Chỉ DỜI VỊ TRÍ từng nhãn theo độ nghiêng, không co dãn chữ (chữ giữ nguyên cỡ 15px)
+    const els = labels.querySelectorAll('text, rect');
+    for (let i = 0; i < els.length; i++) {
+      const el: any = els[i];
+      if (typeof el.getBBox !== 'function') { continue; }
+      const eb = el.getBBox();
+      const yc = eb.y + eb.height / 2;
+      const dy = (1 - k) * (cy0 - yc);
+      const old = el.getAttribute('transform') || '';
+      el.setAttribute('transform', 'translate(0,' + dy + ') ' + old);
+    }
+    // đường nối nhãn: nghiêng cùng với lát cắt
+    const paths = labels.querySelectorAll('path');
+    for (let i = 0; i < paths.length; i++) {
+      const pth: any = paths[i];
+      const old = pth.getAttribute('transform') || '';
+      pth.setAttribute('transform', 'translate(0,' + (cy0 * (1 - k)) + ') scale(1,' + k + ') ' + old);
+      pth.style.setProperty('vector-effect', 'non-scaling-stroke');
+    }
+    labels.setAttribute('data-3d', '1');
+  }
+}
+
+// tooltip biểu đồ hình thức thu tiền: 32.15% -> 32,15%
+public tooltipRenderHTT(args: any): void {
+  if (args && typeof args.text === 'string') {
+    args.text = args.text.replace(/(\d)\.(\d{1,2})%/g, '$1,$2%');
+  }
+}
+
 LoadHinhThucThu()  {
   console.log("loading HinhThucThu " + new Date());
   let srpt1 = new SearchReport();
@@ -878,6 +1098,7 @@ LoadHinhThucThu()  {
     let SUM_TIEN_MAT = 0;
     let SUM_QR = 0;
     let SUM_CK = 0;     
+    let SUM_QR_CHECK = 0;
     if (
       tk != undefined &&
       tk != null &&
@@ -908,13 +1129,26 @@ LoadHinhThucThu()  {
         return accumulator + pilot.SUM_QR;
       },
       0);
-      let pSUM_TIEN_MAT = Math.round(SUM_TIEN_MAT*100/(SUM_TIEN_MAT+SUM_CK+SUM_QR));
-    let pSUM_QR = Math.round(SUM_QR*100/(SUM_TIEN_MAT+SUM_CK+SUM_QR));
-    let pSUM_CK = Math.round(SUM_CK*100/(SUM_TIEN_MAT+SUM_CK+SUM_QR));
+      SUM_QR_CHECK = tk.Data.DATA_DETAIL.Report0.reduce(function (
+        accumulator,
+        pilot
+      ) {
+        return accumulator + (Number(pilot.SUM_QR_CHECK) || 0);
+      },
+      0);
+      const TONG_HTT = SUM_TIEN_MAT + SUM_CK + SUM_QR + SUM_QR_CHECK;
+      // % với 2 số sau dấu phẩy (giá trị số dùng cho biểu đồ), chuỗi hiển thị dùng dấu phẩy kiểu Việt Nam
+      const pct = (v: number) => TONG_HTT > 0 ? Math.round(v * 10000 / TONG_HTT) / 100 : 0;
+      const f2 = (v: number) => v.toFixed(2).replace('.', ',');
+      let pSUM_TIEN_MAT = pct(SUM_TIEN_MAT);
+      let pSUM_QR = pct(SUM_QR);
+      let pSUM_CK = pct(SUM_CK);
+      let pSUM_QR_CHECK = pct(SUM_QR_CHECK);
   this.data1 =  [
-    { 'x': 'Tiền mặt: '+this.ConvertToStringShow(SUM_TIEN_MAT), y: pSUM_TIEN_MAT,  text: 'TM: ' + pSUM_TIEN_MAT + '% ' +this.ConvertToStringShow(SUM_TIEN_MAT)  },
-    { 'x': 'Chuyển khoản: '+this.ConvertToStringShow(SUM_CK), y: pSUM_CK, text: 'CK: '+ pSUM_CK+'% ' +this.ConvertToStringShow(SUM_CK)},
-    { 'x': 'QR code: '+this.ConvertToStringShow(SUM_QR), y: pSUM_QR, text: 'QR code: ' + pSUM_QR+'% ' +this.ConvertToStringShow(SUM_QR)},  
+    { 'x': 'Tiền mặt: '+this.ConvertToStringShow(SUM_TIEN_MAT), y: pSUM_TIEN_MAT,  text: 'TM: ' + f2(pSUM_TIEN_MAT) + '% ' +this.ConvertToStringShow(SUM_TIEN_MAT)  },
+    { 'x': 'Chuyển khoản: '+this.ConvertToStringShow(SUM_CK), y: pSUM_CK, text: 'CK: '+ f2(pSUM_CK)+'% ' +this.ConvertToStringShow(SUM_CK)},
+    { 'x': 'QR code: '+this.ConvertToStringShow(SUM_QR), y: pSUM_QR, text: 'QR code: ' + f2(pSUM_QR)+'% ' +this.ConvertToStringShow(SUM_QR)},
+    { 'x': 'QRcode giao dịch check: '+this.ConvertToStringShow(SUM_QR_CHECK), y: pSUM_QR_CHECK, text: 'QRcode giao dịch check: ' + f2(pSUM_QR_CHECK)+'% ' +this.ConvertToStringShow(SUM_QR_CHECK)},
   ];
     }
   });
@@ -1518,6 +1752,77 @@ loadTrongBuong(){
             console.log(this.dataslTrongBuong);
             }
           });
+}
+
+// Chuyển dòng SQL -> 2 series (chờ / thực hiện), đơn vị phút
+private buildTG(rows: any[]): { cho: Object[], thucHien: Object[] } {
+  const cho: Object[] = [], thucHien: Object[] = [];
+  (rows || []).forEach(r => {
+    const x = (r.ROOM_NAME || '') + (r.CNT ? ' (' + r.CNT + ')' : '');
+    cho.push({ x: x, y: Number(r.AVG_WAIT) || 0 });
+    thucHien.push({ x: x, y: Number(r.AVG_EXEC) || 0 });
+  });
+  return { cho, thucHien };
+}
+
+// Thời gian điều trị trung bình toàn viện (ngày)
+// Số lượt khám theo phòng thực hiện
+loadSoLuotKham(){
+  if (this.searchReport === undefined || this.searchReport === null)
+    this.searchReport = new SearchReport();
+  this.searchReport.TIME_FROM = (this.timefrom != undefined && this.timefrom != '') ? this.timefrom : null;
+  this.searchReport.TIME_TO = (this.timeto != undefined && this.timeto != '') ? this.timeto : null;
+  this.menuService.loadDataSoLuotKham(this.searchReport).subscribe((t) => {
+    console.log('[SoLuotKham] response:', t);
+    if (t != null && t.Success) {
+      const rows: any[] = t.Data.DATA_DETAIL.Report0 || [];
+      console.log('[SoLuotKham] số dòng:', rows.length, rows[0]);
+      const all = this.buildSL(rows);
+      const yc = this.buildSL(rows.filter(o => Number(o.IS_CSSK) === 1));
+      this.dataDaSLKB = all.da; this.dataDangSLKB = all.dang; this.dataChuaSLKB = all.chua; this.dataTongSLKB = all.tong;
+      this.titleSLKB = 'Tổng số lượt khám: ' + this.fmtSo(all.luot) + ' - Tổng số phòng thực hiện: ' + all.tong.length;
+      this.dataDaSLYC = yc.da; this.dataDangSLYC = yc.dang; this.dataChuaSLYC = yc.chua; this.dataTongSLYC = yc.tong;
+      this.titleSLYC = 'Tổng số lượt khám PK Yêu cầu: ' + this.fmtSo(yc.luot) + ' - Tổng số phòng thực hiện: ' + yc.tong.length;
+    } else {
+      this.titleSLKB = 'Không tải được dữ liệu (xem Console, mục [SoLuotKham])';
+      this.titleSLYC = this.titleSLKB;
+    }
+  }, (err) => {
+    console.error('[SoLuotKham] lỗi gọi API:', err);
+    this.titleSLKB = 'Lỗi gọi API (xem Console, mục [SoLuotKham])';
+    this.titleSLYC = this.titleSLKB;
+  });
+}
+
+loadThoiGianDieuTri(){
+  if (this.searchReport === undefined || this.searchReport === null)
+    this.searchReport = new SearchReport();
+  this.searchReport.TIME_FROM = (this.timefrom != undefined && this.timefrom != '') ? this.timefrom : null;
+  this.searchReport.TIME_TO = (this.timeto != undefined && this.timeto != '') ? this.timeto : null;
+  this.menuService.loadDataThoiGianDieuTri(this.searchReport).subscribe((t) => {
+    if (t != null && t.Success) {
+      const rows: any[] = t.Data.DATA_DETAIL.Report0 || [];
+      const v = rows.length > 0 ? Number(rows[0].AVG_DAY) : 0;
+      // hiển thị dấu phẩy kiểu Việt Nam, ví dụ 5,2
+      this.dangnamvien__TG_DIEUTRI = (isNaN(v) ? 0 : v).toString().replace('.', ',');
+    }
+  });
+}
+
+loadThoiGianKham(){
+  if (this.searchReport === undefined || this.searchReport === null)
+    this.searchReport = new SearchReport();
+  this.searchReport.TIME_FROM = (this.timefrom != undefined && this.timefrom != '') ? this.timefrom : null;
+  this.searchReport.TIME_TO = (this.timeto != undefined && this.timeto != '') ? this.timeto : null;
+  this.menuService.loadDataThoiGianKham(this.searchReport).subscribe((t) => {
+    if (t != null && t.Success) {
+      const rows: any[] = t.Data.DATA_DETAIL.Report0 || [];
+      const kb = this.buildTG(rows.filter(o => Number(o.IS_CSSK) !== 1));
+      const cssk = this.buildTG(rows.filter(o => Number(o.IS_CSSK) === 1));
+      this.dataChoKB = kb.cho; this.dataThucHienKB = kb.thucHien;
+      this.dataChoCSSK = cssk.cho; this.dataThucHienCSSK = cssk.thucHien;
+    }
+  });
 }
 
 loadVao(){

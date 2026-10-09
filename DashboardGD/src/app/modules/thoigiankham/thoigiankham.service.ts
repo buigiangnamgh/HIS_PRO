@@ -43,6 +43,6 @@ order by exro.room_name
 /*`;
         const filter = '{"TIME_FROM":' + search.TIME_FROM + ',"TIME_TO":' + search.TIME_TO + ',"SQL":"' + sql + '"}';
         const param = '{ "ApiData":  { "ReportTypeCode": "TKBJRTYE","ReportTemplateCode":"TKBJRTYE03", "Filter": ' + filter + '}, "CommonParam": {} }';
-        return this.webApiClientService.post<reportDatas>(AppConfig.domain.dbd, AppConfig.endpoints.DbdReportCreateSdoApi, param);
+        return this.webApiClientService.post<reportDatas>(AppConfig.domain.dbd, AppConfig.endpoints.DbdReportReloadSdoApi, param);
     }
 }

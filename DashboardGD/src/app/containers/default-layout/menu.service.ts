@@ -1066,7 +1066,8 @@ order by ss.tdl_service_name
       `*/
       select sum(case when pf.pay_form_code='01' then tran.amount end) SUM_TIEN_MAT,
       sum(case when pf.pay_form_code='02' then tran.amount end) SUM_CK,
-      sum(case when pf.pay_form_code='08' then tran.amount end) SUM_QR
+      sum(case when pf.pay_form_code='08' then tran.amount end) SUM_QR,
+      sum(case when tran.pay_form_id = 63 then tran.amount end) SUM_QR_CHECK
       from his_transaction tran 
       join his_pay_form pf on pf.id=tran.pay_form_id
       and tran.is_cancel is null
@@ -1401,6 +1402,115 @@ group by dp.department_name
     filter +
     '}, "CommonParam": {} }';
   console.log(param);
+  return this.webApiClientService.post<reportDatas>(
+    AppConfig.domain.dbd,
+    AppConfig.endpoints.DbdReportReloadSdoApi,
+    param
+  );
+}
+
+// Trung bình thời gian chờ (start_time - intruction_time) & thực hiện (finish_time - start_time) theo phòng khám, đơn vị phút
+loadDataThoiGianKham(
+  search: SearchReport
+): Observable<reportDatas> {
+  search.SQL = `*/
+select
+  exro.room_code,
+  exro.room_name,
+  (case when upper(exro.room_name) like '%YÊU CẦU%' then 1 else 0 end) is_cssk,
+  count(*) cnt,
+  round(avg((to_date(to_char(sr.start_time),'yyyymmddhh24miss') - to_date(to_char(sr.intruction_time),'yyyymmddhh24miss')) * 1440)) avg_wait,
+  round(avg((to_date(to_char(sr.finish_time),'yyyymmddhh24miss') - to_date(to_char(sr.start_time),'yyyymmddhh24miss')) * 1440)) avg_exec
+from his_service_req sr
+join v_his_room exro on exro.id = sr.execute_room_id
+where sr.is_delete = 0
+  and sr.is_no_execute is null
+  and sr.service_req_type_id = 1
+  and sr.service_req_stt_id = 3
+  and sr.intruction_time between ${search.TIME_FROM} and ${search.TIME_TO}
+  and sr.start_time is not null
+  and sr.finish_time is not null
+  and sr.start_time >= sr.intruction_time
+  and sr.finish_time >= sr.start_time
+group by exro.room_code, exro.room_name,
+  (case when upper(exro.room_name) like '%YÊU CẦU%' then 1 else 0 end)
+order by exro.room_name
+/*`;
+  const filter =
+    '{"TIME_FROM":' + search.TIME_FROM +
+    ',"TIME_TO":' + search.TIME_TO +
+    ',"SQL":"' + search.SQL + '"}';
+  const param =
+    '{ "ApiData":  { "ReportTypeCode": "TKBJRTYE","ReportTemplateCode":"TKBJRTYE03", "Filter": ' +
+    filter +
+    '}, "CommonParam": {} }';
+  return this.webApiClientService.post<reportDatas>(
+    AppConfig.domain.dbd,
+    AppConfig.endpoints.DbdReportReloadSdoApi,
+    param
+  );
+}
+
+// Thời gian điều trị trung bình toàn viện (ngày): BN nội trú ra viện trong khoảng thời gian chọn, TB (out_time - in_time)
+loadDataThoiGianDieuTri(
+  search: SearchReport
+): Observable<reportDatas> {
+  search.SQL = `*/
+select
+  count(*) cnt,
+  round(avg(to_date(to_char(trea.out_time),'yyyymmddhh24miss') - to_date(to_char(trea.in_time),'yyyymmddhh24miss')), 1) avg_day
+from his_treatment trea
+where trea.is_delete = 0
+  and trea.tdl_treatment_type_id = 3
+  and trea.out_time between ${search.TIME_FROM} and ${search.TIME_TO}
+  and trea.in_time is not null
+  and trea.out_time >= trea.in_time
+/*`;
+  const filter =
+    '{"TIME_FROM":' + search.TIME_FROM +
+    ',"TIME_TO":' + search.TIME_TO +
+    ',"SQL":"' + search.SQL + '"}';
+  const param =
+    '{ "ApiData":  { "ReportTypeCode": "TKBJRTYE","ReportTemplateCode":"TKBJRTYE03", "Filter": ' +
+    filter +
+    '}, "CommonParam": {} }';
+  return this.webApiClientService.post<reportDatas>(
+    AppConfig.domain.dbd,
+    AppConfig.endpoints.DbdReportReloadSdoApi,
+    param
+  );
+}
+
+// Số lượt khám theo phòng thực hiện & trạng thái y lệnh khám (1: chưa xử lý, 2: đang xử lý, 3: hoàn thành)
+loadDataSoLuotKham(
+  search: SearchReport
+): Observable<reportDatas> {
+  search.SQL = `*/
+select
+  exro.room_name,
+  (case when upper(exro.room_name) like '%YÊU CẦU%' then 1 else 0 end) is_cssk,
+  sum(case when sr.service_req_stt_id = 1 then 1 else 0 end) chua,
+  sum(case when sr.service_req_stt_id = 2 then 1 else 0 end) dang,
+  sum(case when sr.service_req_stt_id = 3 then 1 else 0 end) da,
+  count(*) tong
+from his_service_req sr
+join v_his_room exro on exro.id = sr.execute_room_id
+where sr.is_delete = 0
+  and sr.is_no_execute is null
+  and sr.service_req_type_id = 1
+  and sr.intruction_time between ${search.TIME_FROM} and ${search.TIME_TO}
+group by exro.room_name,
+  (case when upper(exro.room_name) like '%YÊU CẦU%' then 1 else 0 end)
+order by exro.room_name
+/*`;
+  const filter =
+    '{"TIME_FROM":' + search.TIME_FROM +
+    ',"TIME_TO":' + search.TIME_TO +
+    ',"SQL":"' + search.SQL + '"}';
+  const param =
+    '{ "ApiData":  { "ReportTypeCode": "TKBJRTYE","ReportTemplateCode":"TKBJRTYE03", "Filter": ' +
+    filter +
+    '}, "CommonParam": {} }';
   return this.webApiClientService.post<reportDatas>(
     AppConfig.domain.dbd,
     AppConfig.endpoints.DbdReportReloadSdoApi,
